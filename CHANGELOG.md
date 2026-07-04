@@ -1,5 +1,9 @@
 # Changelog - 02gpkg CAD/GIS Converter
 
+## [0.1.1] - 2026-07-04
+
+- Bump version for metadata updates
+
 ## [0.1.0] - 2026-07-04
 
 - Refactored release
