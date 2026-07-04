@@ -54,18 +54,32 @@ from ..core.gis_engine import GisConverterEngine
 from ..core.cad_engine import CadCleanupEngine, CadStylingEngine, CadFeatureAugmenter, CadExportEngine
 from ..core.path_utils import ensure_extension, has_extension
 
+# ──────────────────────────────────────────────────────────────────────────────
+# Dock stylesheet — every text colour, background and border is *pinned* so
+# the panel reads identically under QGIS 3 (Qt5 / light host palette) and
+# QGIS 4 (Qt6 / often-dark host palette).  Without pinning, combo-box popups
+# render solid-black and labels vanish against the white cards on dark themes.
+# This follows the same remedy applied in the zero2viz studio.
+# ──────────────────────────────────────────────────────────────────────────────
 DOCK_STYLE = """
+/* ── root & font ── */
 QWidget {
     font-family: 'Segoe UI', Arial, sans-serif;
     font-size: 12px;
+    color: #263238;
+    background: transparent;
 }
+
+/* ── tabs ── */
 QTabWidget::pane {
     border: 1px solid #cfd8dc;
     border-radius: 4px;
     top: -1px;
+    background: #ffffff;
 }
 QTabBar::tab {
     background: #eceff1;
+    color: #546e7a;
     border: 1px solid #cfd8dc;
     padding: 6px 12px;
     border-top-left-radius: 4px;
@@ -77,8 +91,15 @@ QTabBar::tab:selected {
     font-weight: bold;
     color: #0277bd;
 }
+QTabBar::tab:hover {
+    color: #01579b;
+}
+
+/* ── group boxes ── */
 QGroupBox {
     font-weight: bold;
+    color: #37474f;
+    background: #ffffff;
     border: 1px solid #cfd8dc;
     border-radius: 6px;
     margin-top: 10px;
@@ -91,6 +112,126 @@ QGroupBox::title {
     padding: 0 5px;
     color: #0277bd;
 }
+
+/* ── labels: pinned dark so they never inherit a host-palette light/dark
+      colour and become invisible on white cards ── */
+QLabel {
+    color: #37474f;
+    background: transparent;
+}
+QLabel#dock_title {
+    color: #263238;
+    font-size: 15px;
+    font-weight: bold;
+}
+QLabel#dock_subtitle {
+    color: #607d8b;
+    font-size: 11px;
+}
+
+/* ── checkboxes ── */
+QCheckBox {
+    color: #37474f;
+    background: transparent;
+    spacing: 6px;
+}
+QCheckBox:disabled {
+    color: #90a4ae;
+}
+
+/* ── inputs: white field, dark text, teal selection — independent of the
+      host palette so the dropdown popup is never black ── */
+QLineEdit {
+    border: 1px solid #cfd8dc;
+    border-radius: 4px;
+    padding: 4px;
+    background-color: #ffffff;
+    color: #263238;
+    selection-background-color: #0277bd;
+    selection-color: #ffffff;
+}
+QLineEdit:focus {
+    border: 1px solid #0277bd;
+}
+QLineEdit:disabled {
+    background: #eceff1;
+    color: #90a4ae;
+    border-color: #dde2e6;
+}
+
+QComboBox {
+    background: #ffffff;
+    color: #263238;
+    border: 1px solid #cfd8dc;
+    border-radius: 4px;
+    padding: 4px 6px;
+    selection-background-color: #0277bd;
+    selection-color: #ffffff;
+}
+QComboBox:focus {
+    border: 1px solid #0277bd;
+}
+QComboBox:disabled {
+    background: #eceff1;
+    color: #90a4ae;
+    border-color: #dde2e6;
+}
+/* the drop-down list popup — without pinning this was solid black on
+   dark-themed QGIS 4 */
+QComboBox QAbstractItemView {
+    background: #ffffff;
+    color: #263238;
+    border: 1px solid #cfd8dc;
+    selection-background-color: #0277bd;
+    selection-color: #ffffff;
+    outline: 0;
+}
+QComboBox QAbstractItemView::item {
+    min-height: 22px;
+    padding: 2px 4px;
+}
+
+QDoubleSpinBox, QSpinBox {
+    background: #ffffff;
+    color: #263238;
+    border: 1px solid #cfd8dc;
+    border-radius: 4px;
+    padding: 3px 6px;
+    selection-background-color: #0277bd;
+    selection-color: #ffffff;
+}
+QDoubleSpinBox:focus, QSpinBox:focus {
+    border: 1px solid #0277bd;
+}
+QDoubleSpinBox:disabled, QSpinBox:disabled {
+    background: #eceff1;
+    color: #90a4ae;
+    border-color: #dde2e6;
+}
+
+/* ── tree widget ── */
+QTreeWidget {
+    border: 1px solid #cfd8dc;
+    border-radius: 4px;
+    background-color: #ffffff;
+    color: #263238;
+}
+QTreeWidget::item {
+    color: #263238;
+}
+QTreeWidget::item:selected {
+    background: #0277bd;
+    color: #ffffff;
+}
+QHeaderView::section {
+    background: #eceff1;
+    color: #37474f;
+    border: 1px solid #cfd8dc;
+    padding: 4px;
+    font-weight: bold;
+}
+
+/* ── primary action buttons ── */
 QPushButton#convert_btn {
     background-color: #2e7d32;
     color: white;
@@ -107,6 +248,8 @@ QPushButton#convert_btn:disabled {
     background-color: #b0bec5;
     color: #78909c;
 }
+
+/* ── browse / save-as buttons ── */
 QPushButton#browse_btn {
     background-color: #0277bd;
     color: white;
@@ -118,40 +261,45 @@ QPushButton#browse_btn {
 QPushButton#browse_btn:hover {
     background-color: #01579b;
 }
-QLineEdit {
+
+/* ── secondary / generic buttons (Select All, Deselect All, etc.) ── */
+QPushButton {
+    background: #eceff1;
+    color: #263238;
     border: 1px solid #cfd8dc;
     border-radius: 4px;
-    padding: 4px;
-    background-color: #ffffff;
+    padding: 5px 10px;
 }
-QTreeWidget {
-    border: 1px solid #cfd8dc;
-    border-radius: 4px;
-    background-color: #ffffff;
+QPushButton:hover {
+    background: #e0e4e8;
 }
+QPushButton:disabled {
+    background: #f5f5f5;
+    color: #90a4ae;
+    border-color: #e0e4e8;
+}
+
+/* ── progress bar ── */
 QProgressBar {
     border: 1px solid #cfd8dc;
     border-radius: 4px;
     text-align: center;
     font-weight: bold;
+    background: #ffffff;
+    color: #263238;
 }
 QProgressBar::chunk {
     background-color: #ffb300;
 }
+
+/* ── dock header card ── */
 QWidget#dock_header {
     background: #f8fafc;
     border: 1px solid #d7e0e7;
     border-radius: 6px;
 }
-QLabel#dock_title {
-    color: #263238;
-    font-size: 15px;
-    font-weight: bold;
-}
-QLabel#dock_subtitle {
-    color: #607d8b;
-    font-size: 11px;
-}
+
+/* ── guide button & body ── */
 QPushButton#guide_btn {
     background-color: #263238;
     color: #ffffff;
@@ -167,7 +315,24 @@ QTextBrowser#guide_body {
     border: 1px solid #d7e0e7;
     border-radius: 6px;
     background: #ffffff;
+    color: #263238;
     padding: 8px;
+}
+
+/* ── tooltips ── */
+QToolTip {
+    background: #263238;
+    color: #ffffff;
+    border: 1px solid #263238;
+    padding: 4px 6px;
+}
+
+/* ── splitter handle ── */
+QSplitter::handle {
+    background: #cfd8dc;
+}
+QSplitter::handle:hover {
+    background: #0277bd;
 }
 """
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.3] - 2026-07-04
+
+- Fix QGIS 3/4 GUI compatibility: pin all widget colours in QSS so the panel reads identically under any host theme (dark QGIS 4 no longer bleeds into combos, labels, tree items)
+
 All notable changes to 02gpkg are documented here.
 
 ## [0.1.2] - 2026-07-04
