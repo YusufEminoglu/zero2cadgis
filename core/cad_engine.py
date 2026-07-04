@@ -240,6 +240,7 @@ class CadExportEngine:
         transform_context = QgsProject.instance().transformContext()
         options = QgsVectorFileWriter.SaveVectorOptions()
         options.driverName = "DXF"
+        options.skipAttributeCreation = True
 
         err, err_msg, _, _ = QgsVectorFileWriter.writeAsVectorFormatV3(
             layer, output_path, transform_context, options

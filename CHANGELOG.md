@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.9] - 2026-07-04
+
+- Fix DXF export failure by skipping attribute table creation
+
 ## [0.1.8] - 2026-07-04
 
 - Fix scratch layer attributes mapping and dynamic KML options in UI
