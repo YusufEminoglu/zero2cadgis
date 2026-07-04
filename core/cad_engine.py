@@ -86,7 +86,7 @@ class CadCleanupEngine:
             
         first = coords[0]
         last = coords[-1]
-        dist = math.hypot(first.x - last.x, first.y - last.y)
+        dist = math.hypot(first.x() - last.x(), first.y() - last.y())
         
         closed_coords = list(coords)
         if dist > 0.0001 and dist <= tolerance:

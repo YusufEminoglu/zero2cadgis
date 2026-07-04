@@ -2,6 +2,10 @@
 
 ## [0.1.1] - 2026-07-04
 
+- Update metadata details
+
+## [0.1.1] - 2026-07-04
+
 - Update icons to ultra-minimalist
 
 ## [0.1.1] - 2026-07-04

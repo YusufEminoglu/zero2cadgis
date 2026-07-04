@@ -86,16 +86,25 @@ class TestZero2GpkgConverter(unittest.TestCase):
 
     def test_cad_polyline_closure(self):
         """Verifies polyline endpoint automatic closure gap tolerance."""
+        class MockPointXY:
+            def __init__(self, x, y):
+                self._x = x
+                self._y = y
+            def x(self):
+                return self._x
+            def y(self):
+                return self._y
+
         coords = [
-            NetcadCoordinate(0.0, 0.0),
-            NetcadCoordinate(0.0, 10.0),
-            NetcadCoordinate(10.0, 10.0),
-            NetcadCoordinate(10.0, 0.05),
+            MockPointXY(0.0, 0.0),
+            MockPointXY(0.0, 10.0),
+            MockPointXY(10.0, 10.0),
+            MockPointXY(10.0, 0.05),
         ]
         closed = CadCleanupEngine.close_polyline(coords, 0.1)
         self.assertEqual(len(closed), 5)
-        self.assertEqual(closed[-1].x, 0.0)
-        self.assertEqual(closed[-1].y, 0.0)
+        self.assertEqual(closed[-1].x(), 0.0)
+        self.assertEqual(closed[-1].y(), 0.0)
 
 
 if __name__ == "__main__":
