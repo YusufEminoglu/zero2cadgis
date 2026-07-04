@@ -80,7 +80,7 @@ class CadCleanupEngine:
         return simplified
 
     @staticmethod
-    def close_polyline(coords: list, tolerance: float) -> list:
+    def close_polyline(coords: list, tolerance: float, force: bool = False) -> list:
         if len(coords) < 3:
             return coords
             
@@ -89,9 +89,9 @@ class CadCleanupEngine:
         dist = math.hypot(first.x() - last.x(), first.y() - last.y())
         
         closed_coords = list(coords)
-        if dist > 0.0001 and dist <= tolerance:
-            closed_coords.append(first)
-        elif dist > tolerance:
+        if dist <= 0.0001:
+            return closed_coords
+        if force or dist <= tolerance:
             closed_coords.append(first)
             
         return closed_coords

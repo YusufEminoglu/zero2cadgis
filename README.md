@@ -1,127 +1,134 @@
-# 02gpkg: Multi-Format CAD & GIS Converter and Exporter Studio
+<div align="center">
+  <img src="icons/icon.png" width="148" height="148" alt="02gpkg icon">
+  <h1>02gpkg</h1>
+  <p><strong>CAD, KML, GDB and Netcad conversion studio for QGIS</strong></p>
+  <p>
+    <a href="https://plugins.qgis.org/"><img alt="QGIS" src="https://img.shields.io/badge/QGIS-3.22%2B-589632?style=for-the-badge"></a>
+    <img alt="License" src="https://img.shields.io/badge/GPL--2.0--or--later-blue?style=for-the-badge">
+    <img alt="GeoPackage" src="https://img.shields.io/badge/GeoPackage-output-2f855a?style=for-the-badge">
+    <img alt="PlanX" src="https://img.shields.io/badge/PlanX-ecosystem-263238?style=for-the-badge">
+  </p>
+</div>
 
-<p align="center">
-  <img src="icon.png" width="160" height="160" alt="02gpkg Logo">
-</p>
+**02gpkg** is a professional QGIS dock plugin for turning CAD and GIS exchange files into clean GeoPackage layers. It is built for planning, cadastral, municipal, and urban analytics workflows where DXF/DWG, KML/KMZ, DGN, FileGDB, and Netcad files need to become usable QGIS data quickly.
 
-An advanced, high-performance bidirectional QGIS plugin designed to convert, optimize, import, and export multiple CAD and GIS drawing formats directly to and from structured OGC GeoPackage (`.gpkg`) databases. 100% English interface, fully integrated with the PlanX ecosystem.
+<table>
+  <tr>
+    <td align="center" width="33%"><img src="icons/icon_cad.png" width="84" alt="CAD converter"><br><strong>Import & Convert</strong><br>CAD/GIS files to GeoPackage or scratch layers.</td>
+    <td align="center" width="33%"><img src="icons/icon_ncz.png" width="84" alt="Netcad importer"><br><strong>Netcad NCZ/NCA</strong><br>Batch import drawings, layers, text and tables.</td>
+    <td align="center" width="33%"><img src="icons/icon_gis.png" width="84" alt="GIS exporter"><br><strong>Export</strong><br>Write active QGIS vector layers to DXF, KML or KMZ.</td>
+  </tr>
+</table>
 
----
+## What It Does
 
-## 🌟 Key Features
+- Converts **DXF, DWG, KML, KMZ, DGN, FileGDB, NCZ and compatible NCA** files into `.gpkg` layers.
+- Imports multiple Netcad drawings at once with selectable CAD layers and `@TAB` attribute tables.
+- Expands KML balloon HTML tables and list descriptions into real attribute fields.
+- Extracts KML/KMZ `GroundOverlay` images as georeferenced GeoTIFF layers.
+- Simplifies collinear CAD vertices, removes duplicate nodes, and closes small polygon gaps by tolerance.
+- Preserves CAD color intent with QGIS renderers and optional buffered labels for text elements.
+- Exports active QGIS vector layers to **DXF, KML or KMZ**.
+- Includes a built-in **Guide** button in the QGIS dock for workflow help.
 
-* **Multi-Format Processing:** Handles AutoCAD (`.dxf`, `.dwg`), Netcad (`.ncz`), Microstation (`.dgn`), Google Earth (`.kml`, *.kmz*), and ArcGIS File Geodatabase (`.gdb`) formats.
-* **Bidirectional Studio (Competitor Domination):** Includes a dedicated **Exporter** tab to write active QGIS layers out to AutoCAD DXF, Google Earth KML, or KMZ files.
-* **GroundOverlay Georeferencing (kmltools Feyz):** Automatically extracts ground overlay images from KMZ/KML and transforms them into georeferenced GeoTiff raster layers via GDAL coordinates.
-* **HTML Balloon Expansion (kmltools Feyz):** Automatically parses HTML description tables (`<table>`, `<tr>`, `<td>`, `<li>`) from KML balloon text into structured database columns.
-* **CAD Attribute Augmentation (cad_to_gis_convert Feyz):** Computes geometric metrics (length, area, centroid coords) to enrich attribute columns.
-* **Direct GeoPackage Output:** Writes data straight to local sqlite-based `.gpkg` tables, avoiding unstable memory layers and slow disk reads.
-* **Collinear Node Simplification:** Automatic thinning algorithm that strips unnecessary points along straight segments to reduce file weight.
-* **Closed Loop Topology Builder:** Automatically closes gaps at the ends of open polylines within a customizable distance threshold to create clean polygon rings.
-* **Dynamic Styling & Annotation:** Translates original CAD ARGB color matrices into QGIS outline and fill styles, and converts text symbols into buffered, readable map labels.
-* **Automatic Database Joins:** Auto-detects table relations and links `@TAB` attribute databases back to geometric drawings.
+## Supported Workflows
 
----
+| Workflow | Input / Output | Engine | Best for |
+| --- | --- | --- | --- |
+| CAD/GIS import | `.dxf`, `.dwg`, `.dgn`, `.kml`, `.kmz`, `.gdb` to `.gpkg` or scratch layers | QGIS GDAL/OGR | Standard exchange files and planning datasets |
+| Netcad import | `.ncz`, compatible `.nca` | Built-in parser | Netcad drawings with layers, colors, labels and `@TAB` tables |
+| KML overlay extraction | KML/KMZ GroundOverlay to GeoTIFF | GDAL | Georeferenced image overlays |
+| QGIS export | Active vector layer to `.dxf`, `.kml`, `.kmz` | QGIS vector writer | Delivery back to CAD/GIS exchange formats |
 
-## 🔄 Bidirectional Workflow
+## QGIS Dock
+
+The plugin opens as one compact dock with three focused panels:
+
+1. **CAD & GIS Converter**
+   Select source type, source path, target GeoPackage, CRS, cleanup options, KML expansion and GroundOverlay extraction.
+
+2. **Netcad NCZ/NCA Importer**
+   Select one or more Netcad drawings, review metadata, choose CAD layers and `@TAB` tables, set closure tolerance, generate geometry metrics, apply colors/labels, and load to QGIS.
+
+3. **CAD & GIS Exporter**
+   Select a project vector layer and export it as DXF, KML or KMZ.
+
+Use **temporary scratch layers** for quick inspection. Use **GeoPackage output** for durable deliverables.
+
+## Conversion Flow
 
 ```mermaid
-flowchart TD
-    subgraph Import Workflow
-        A["Source File (.dxf, .dwg, .ncz, .kml, .kmz, .dgn, .gdb)"] --> B{"File Type?"}
-        B -->|KMZ/KML Raster| C["Extract GroundOverlay to GeoTiff"]
-        B -->|Other Formats| D["OGR Vector Layer Provider"]
-        C -->|Load Raster| K["QGIS Map Canvas"]
-        D --> E["CAD Optimization & Thinning Filters"]
-        E --> F["GPKG Vector Writer Engine"]
-        F --> G["Target GeoPackage (.gpkg)"]
-        G -->|Load Vectors| K
-    end
-    
-    subgraph Export Workflow
-        K --> H["Select Active QGIS Vector Layer"]
-        H --> I{"Format?"}
-        I -->|DXF| J["Export to AutoCAD DXF"]
-        I -->|KML/KMZ| L["Export to KML / KMZ"]
-    end
-    
-    style A fill:#e1f5fe,stroke:#0288d1,stroke-width:2px
-    style G fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
-    style K fill:#fff8e1,stroke:#f57f17,stroke-width:2px
+flowchart LR
+  A[CAD / GIS / Netcad source] --> B{Input type}
+  B -->|DXF DWG DGN KML KMZ GDB| C[QGIS OGR reader]
+  B -->|NCZ / NCA| D[Netcad parser]
+  C --> E[CRS + cleanup + attributes]
+  D --> E
+  E --> F{Output mode}
+  F -->|GeoPackage| G[(.gpkg)]
+  F -->|Scratch| H[QGIS memory layers]
+  G --> I[QGIS project]
+  H --> I
+  I --> J[DXF / KML / KMZ export]
 ```
 
----
+## Netcad Import Notes
 
-## 📊 Supported Formats Comparison
+The Netcad panel is intentionally detailed because these drawings often contain mixed geometry, text, colors and table data.
 
-| Format | Extension | Driver Engine | CAD Optimizations | Bidirectional Export | Special Augmentations |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **AutoCAD DXF** | `.dxf` | GDAL/OGR DXF | Yes | **Yes (Export Layer)** | Styling & Colors |
-| **AutoCAD DWG** | `.dwg` | GDAL/OGR (requires dwg2dxf) | Yes | No | Fallback converter tips |
-| **Netcad NCZ** | `.ncz` | Custom Binary Parser | Yes | No | ARGB Colors + Labels + Joins |
-| **Google Earth KML**| `.kml` | GDAL/OGR KML | Yes | **Yes (Export Layer)** | Balloon HTML Expansion |
-| **Google Earth KMZ**| `.kmz` | Zip Extractor + OGR KML | Yes | **Yes (Export Layer)** | GroundOverlay Georeferencing |
-| **Microstation DGN**| `.dgn` | GDAL/OGR DGN | Yes | No | Layer Styling |
-| **ArcGIS Database** | `.gdb` | GDAL/OGR OpenFileGDB | Yes | No | Full Attributes |
+- **Batch import:** select several files; 02gpkg keeps file groups separate in the QGIS layer tree.
+- **Metadata review:** version, projection text, EPSG hints, feature counts and table counts are shown before conversion.
+- **Layer filtering:** uncheck unnecessary CAD layers or `@TAB` tables before import.
+- **Closure tolerance:** keeps cadastral polygon creation controlled; use small values unless the drawing has known snap gaps.
+- **Geometry metrics:** optional length, area and centroid fields help QA and reporting.
+- **Styling:** ARGB colors and text labels can be carried into QGIS for easier review.
+- **Joins:** `@TAB` tables are linked back to geometry where matching name or label fields are available.
 
----
+If a file does not parse as expected, retry with cleanup disabled and inspect the raw layer selection before increasing tolerance.
 
-## 🛠️ Interface Walkthrough
+## Installation
 
-The interface is accessible via the **02gpkg** toolbar button or under **PlanX > 02gpkg - CAD & GIS Converter**.
+Development path in this plugin workspace:
 
-### 1. CAD & GIS Converter Tab
-Designed for bulk conversions:
-1. Select the **Dataset Type** from the dropdown menu.
-2. Browse to select your drawing file or GDB directory.
-3. Click **Save As...** to define the output `.gpkg` destination path.
-4. Set the **Target CRS** (automatically defaults to project projection).
-5. Tick conversion rules (simplification, GroundOverlay extraction, loading to canvas).
-6. Press **Convert to GeoPackage**.
-
-### 2. Netcad NCZ Importer Tab
-Designed for custom Netcad integration:
-1. Browse to select the `.ncz` binary drawing.
-2. View drawing metadata (version, native projection, total features).
-3. Toggle checkable items in the **CAD Layers** tree to import only selected layers.
-4. Define closure tolerance in meters (spinbox).
-5. Enable automated labeling, geometry calculations (Area/Length), and `@TAB` joins.
-6. Press **Convert NCZ & Load to Canvas**.
-
-### 3. CAD & GIS Exporter Tab
-Designed for exporting pro datasets:
-1. Select the **Source Layer** currently active in your QGIS project.
-2. Choose the **Target Export Format** (DXF, KML, or KMZ).
-3. Select the **Save Location** using the "Save As..." dialog.
-4. Press **Export Dataset** to complete the operation.
-
----
-
-## 🧪 Unit & E2E Validation Tests
-
-The package includes a comprehensive testing module that validates parsing, collinear thinning, and balloon HTML table extraction algorithms:
-```bash
-# Execute tests locally
-python -m unittest zero2gpkg_converter.tests.test_e2e_converter
-```
-
----
-
-## 📂 Installation
-
-### Production Directory Setup
-Clone or extract the repository directly to your QGIS plugin pathway:
-```bash
-# Path target
+```powershell
 C:\Users\YE\PyCharmMiscProject\qgis_plugins\zero2gpkg_converter
 ```
-Restart QGIS. Enable the plugin via **Plugins > Manage and Install Plugins...**
 
----
+Optional test environment variable:
 
-## ✍️ Ownership and License
+```powershell
+$env:QGIS_PLUGINPATH = "C:\Users\YE\PyCharmMiscProject\qgis_plugins"
+```
 
-* **Developer:** Yusuf Eminoğlu
-* **Email:** yusufeminoglu@planx.com
-* **Repository:** [YusufEminoglu/zero2gpkg_converter](https://github.com/YusufEminoglu/zero2gpkg_converter)
-* **License:** GNU General Public License v2.0 or later (GPL-2.0-or-later)
+Restart QGIS, then enable **02gpkg - Import and Convert CAD/KML/GDB Files** from **Plugins > Manage and Install Plugins**.
+
+## Build and Validate
+
+```powershell
+python -m unittest zero2gpkg_converter.tests.test_e2e_converter
+python packaging\validate_plugin.py zero2gpkg_converter --strict
+.\packaging\Build-PluginZip.ps1 -PluginDir zero2gpkg_converter
+```
+
+The release zip is written to:
+
+```powershell
+QGIS_Plugin_Releases\zero2gpkg_converter.zip
+```
+
+## Troubleshooting
+
+| Symptom | Likely cause | Fix |
+| --- | --- | --- |
+| Plugin does not appear | QGIS is not scanning this folder | Set `QGIS_PLUGINPATH` and restart QGIS. |
+| DWG does not open | GDAL build lacks DWG support | Convert to DXF first, then run 02gpkg. |
+| KML overlay is missing | No valid `GroundOverlay` or image path | Check the KML/KMZ structure and referenced image files. |
+| Netcad layers are missing | Unsupported entity block or aggressive cleanup | Retry with cleanup disabled and lower closure tolerance. |
+| Hub icon is missing | Metadata icon path mismatch | Keep `icon=icons/icon.png` and package with the provided build script. |
+
+## Ownership and License
+
+- Developer: Yusuf Eminoglu
+- Email: yusuf.eminoglu@deu.edu.tr
+- Repository: <https://github.com/YusufEminoglu/zero2gpkg_converter>
+- License: GNU General Public License v2.0 or later

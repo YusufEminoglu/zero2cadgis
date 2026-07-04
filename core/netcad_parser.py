@@ -952,6 +952,7 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
             data[offset + 7],
             data[offset + 37],
             [a, b, c],
+            is_closed=True,
         )
 
     def read_block_reference(offset, block_size, gis_difference):

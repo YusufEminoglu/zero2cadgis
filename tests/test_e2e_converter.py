@@ -27,10 +27,17 @@ qgis.core.QgsFields = MagicMock
 from zero2gpkg_converter.core.gis_engine import parse_kml_html_table
 from zero2gpkg_converter.core.cad_engine import CadCleanupEngine
 from zero2gpkg_converter.core.netcad_parser import NetcadCoordinate, NetcadEntity
+from zero2gpkg_converter.core.path_utils import ensure_extension, has_extension
 
 
 class TestZero2GpkgConverter(unittest.TestCase):
     
+    def test_path_extension_helpers_are_case_insensitive(self):
+        self.assertTrue(has_extension(r"C:\data\PARCELS.GPKG", ".gpkg"))
+        self.assertTrue(has_extension(r"C:\data\source.GDB", ".gdb"))
+        self.assertEqual(ensure_extension(r"C:\data\out.GPKG", ".gpkg"), r"C:\data\out.GPKG")
+        self.assertEqual(ensure_extension(r"C:\data\out", ".gpkg"), r"C:\data\out.gpkg")
+
     def test_kml_html_balloon_parsing(self):
         """Tests that HTML balloon description tables are successfully expanded to fields."""
         html_input = """
@@ -99,12 +106,26 @@ class TestZero2GpkgConverter(unittest.TestCase):
             MockPointXY(0.0, 0.0),
             MockPointXY(0.0, 10.0),
             MockPointXY(10.0, 10.0),
-            MockPointXY(10.0, 0.05),
+            MockPointXY(0.05, 0.0),
         ]
         closed = CadCleanupEngine.close_polyline(coords, 0.1)
         self.assertEqual(len(closed), 5)
         self.assertEqual(closed[-1].x(), 0.0)
         self.assertEqual(closed[-1].y(), 0.0)
+
+        far_open = [
+            MockPointXY(0.0, 0.0),
+            MockPointXY(0.0, 10.0),
+            MockPointXY(10.0, 10.0),
+            MockPointXY(20.0, 20.0),
+        ]
+        unchanged = CadCleanupEngine.close_polyline(far_open, 0.1)
+        self.assertEqual(len(unchanged), 4)
+
+        forced = CadCleanupEngine.close_polyline(far_open, 0.1, force=True)
+        self.assertEqual(len(forced), 5)
+        self.assertEqual(forced[-1].x(), 0.0)
+        self.assertEqual(forced[-1].y(), 0.0)
 
 
 if __name__ == "__main__":

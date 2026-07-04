@@ -78,6 +78,7 @@ class Zero2GpkgConverter:
     # ───────────────────────── Dock widget ─────────────────────────
 
     def _toggle_dock(self) -> None:
+        created = False
         if self._dock is None:
             try:
                 from .dialogs.dock import Zero2GpkgConverterDockWidget
@@ -86,14 +87,19 @@ class Zero2GpkgConverter:
                 self._dock.setObjectName("Zero2GpkgConverterDock")
                 self._dock.visibilityChanged.connect(self.panel_action.setChecked)
                 self.iface.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self._dock)
+                created = True
             except Exception as exc:
                 QMessageBox.critical(self.iface.mainWindow(), "Error", f"Could not create dock widget:\n{exc}")
                 self.panel_action.setChecked(False)
                 return
                 
-        self._dock.setVisible(not self._dock.isVisible())
-        if self._dock.isVisible():
+        if created or not self._dock.isVisible():
+            self._dock.setVisible(True)
+            self.panel_action.setChecked(True)
             self._dock.raise_()
+        else:
+            self._dock.setVisible(False)
+            self.panel_action.setChecked(False)
 
     # ───────────────────────── Helpers ─────────────────────────
 

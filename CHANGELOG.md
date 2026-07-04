@@ -1,85 +1,35 @@
-# Changelog - 02gpkg CAD/GIS Converter
+# Changelog
+
+All notable changes to 02gpkg are documented here.
 
 ## [0.1.1] - 2026-07-04
 
-- Fix OGR temp GPKG action
+### Added
+- Batch NCZ import for selecting and processing multiple Netcad drawings together.
+- Temporary scratch-layer output for CAD/GIS and NCZ import workflows.
+- CAD/GIS exporter tab for DXF, KML, and KMZ output from active QGIS vector layers.
+- KML/KMZ GroundOverlay extraction to georeferenced GeoTIFF rasters.
+- Built-in dock Guide button with an expanded quick-start workflow reference, including detailed Netcad NCZ/NCA import guidance.
 
-## [0.1.1] - 2026-07-04
+### Changed
+- Replaced the plugin icon system with a new premium 02gpkg main icon and distinct workflow-specific panel icons.
+- Updated metadata to use the canonical `icons/icon.png` path.
+- Redesigned the GitHub README with workflow icon cards, clearer format support, installation, Netcad notes, and troubleshooting sections.
+- Consolidated repeated 0.1.1 release notes into one coherent entry.
 
-- Fix SQLite locking via OGR merge
-
-## [0.1.1] - 2026-07-04
-
-- Fix SQLite locking on physical GPKG
-
-## [0.1.1] - 2026-07-04
-
-- Fix SQLite database locking
-
-## [0.1.1] - 2026-07-04
-
-- Implement temporary GPKG layer support
-
-## [0.1.1] - 2026-07-04
-
-- Fix QgsPointXY method call
-
-## [0.1.1] - 2026-07-04
-
-- Update metadata details
-
-## [0.1.1] - 2026-07-04
-
-- Update icons to ultra-minimalist
-
-## [0.1.1] - 2026-07-04
-
-- Fix Indentation
-
-## [0.1.1] - 2026-07-04
-
-- Fix TypeError and add temporary memory layer support
-
-## [0.1.1] - 2026-07-04
-
-- Fix AttributeError
-
-## [0.1.1] - 2026-07-04
-
-- Fix NameError
-
-## [0.1.1] - 2026-07-04
-
-- Bump version for metadata updates
-
-## [0.1.0] - 2026-07-04
-
-- Refactored release
-
-## [0.1.0] - 2026-07-04
-
-- Refactored release
-
-## [0.1.0] - 2026-07-04
-
-- Initial release
-
-All notable changes to this project will be documented in this file.
+### Fixed
+- Fixed first-click dock behavior so the panel opens immediately after creation.
+- Fixed case-insensitive handling for output and input extensions such as `.GPKG`, `.GDB`, `.DXF`, `.KML`, and `.KMZ`.
+- Fixed temporary import mode so scratch workflows no longer silently write hidden temporary GeoPackages when memory layers are available.
+- Fixed polygon closure logic so open polylines are only closed inside tolerance unless the source entity is explicitly closed.
+- Fixed triangle NCZ entities so they are treated as closed polygon geometry.
+- Reduced SQLite lock risk by keeping the per-layer temporary GeoPackage merge path and cleaning temporary files with `finally`.
+- Removed an unsafe vector writer geometry override from the GIS conversion path.
 
 ## [0.1.0] - 2026-07-04
 
 ### Added
-- Initial Release under **Yusuf Eminoğlu** ownership for the PlanX monorepo.
-- 100% English multi-tab docked interface (`dialogs/dock.py`).
-- **CAD & GIS Converter Tab:**
-  - Converts DXF, DWG, KML, KMZ, DGN, and GDB datasets directly into local GeoPackage (`.gpkg`) tables.
-  - Automatically unzips KMZ archives to extract internal KML documents.
-  - Resolves sublayers recursively using OGR drivers.
-- **Netcad NCZ Importer Tab:**
-  - Dedicated NCZ binary parser integration.
-  - Reads geometry, tables, and version metadata.
-  - Custom polyline closure tolerance spinbox.
-- **Optimization Tools:** Collinear node simplification and duplicate node cleanup.
-- **Styling & Annotation:** Auto ARGB coloring, outline rendering, and text to map label transformation.
-- **Relationship Joins:** Automatic join linking for Netcad `@TAB` database tables.
-- PlanX-matching premium plugin icon integrated.
+- Initial QGIS plugin release for the PlanX monorepo.
+- Docked English interface for CAD/GIS conversion, Netcad NCZ import, and vector export.
+- DXF, DWG, KML, KMZ, DGN, GDB, and NCZ input workflows.
+- GeoPackage writer integration, CAD cleanup, styling, labels, geometry metrics, and `@TAB` joins.

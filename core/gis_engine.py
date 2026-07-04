@@ -71,6 +71,7 @@ class GisConverterEngine:
         self.target_gpkg = target_gpkg
         self.target_crs = target_crs
         self.temp_dirs = []
+        self.last_warnings: list[str] = []
 
     def cleanup(self):
         for temp_dir in self.temp_dirs:
@@ -118,6 +119,7 @@ class GisConverterEngine:
 
         loaded_layers = []
         transform_context = QgsProject.instance().transformContext()
+        wrote_any = False
 
         for layer_name in layer_names:
             uri = f"{src}|layername={layer_name}"
@@ -133,8 +135,11 @@ class GisConverterEngine:
             options = QgsVectorFileWriter.SaveVectorOptions()
             options.driverName = "GPKG"
             options.layerName = self._sanitize_column_name(layer_name)
-            options.actionOnExistingFile = QgsVectorFileWriter.ActionOnExistingFile.CreateOrOverwriteLayer
-            options.overrideGeometryType = processed_layer.geometryType()
+            options.actionOnExistingFile = (
+                QgsVectorFileWriter.ActionOnExistingFile.CreateOrOverwriteLayer
+                if wrote_any
+                else QgsVectorFileWriter.ActionOnExistingFile.CreateOrOverwriteFile
+            )
             
             if processed_layer.crs() != self.target_crs:
                 options.ct = QgsCoordinateTransform(processed_layer.crs(), self.target_crs, QgsProject.instance())
@@ -147,6 +152,7 @@ class GisConverterEngine:
             )
             if err != QgsVectorFileWriter.WriterError.NoError:
                 raise ValueError(f"Failed writing layer '{layer_name}' to GPKG: {err_msg}")
+            wrote_any = True
 
             gpkg_uri = f"{self.target_gpkg}|layername={options.layerName}"
             gpkg_layer = QgsVectorLayer(gpkg_uri, layer_name, "ogr")
@@ -160,6 +166,7 @@ class GisConverterEngine:
         Feyz taken from kmltools.
         """
         loaded_rasters = []
+        self.last_warnings = []
         src = self.source_path
         extracted_dir = None
         
@@ -169,6 +176,7 @@ class GisConverterEngine:
             with zipfile.ZipFile(self.source_path, 'r') as zip_ref:
                 kml_files = [n for n in zip_ref.namelist() if n.lower().endswith(".kml")]
                 if not kml_files:
+                    self.last_warnings.append("No KML document was found inside the KMZ package.")
                     return loaded_rasters
                 zip_ref.extractall(extracted_dir)
                 src = os.path.join(extracted_dir, kml_files[0])
@@ -233,6 +241,10 @@ class GisConverterEngine:
                 # Create destination georeferenced GeoTiff
                 driver = gdal.GetDriverByName("GTiff")
                 dst_ds = driver.CreateCopy(output_tiff, src_ds)
+                if dst_ds is None:
+                    self.last_warnings.append(f"Could not create georeferenced raster for {image_ref}.")
+                    src_ds = None
+                    continue
                 
                 # Apply geotransform coordinates
                 # [West limits, pixel width, rotationX, North limits, rotationY, -pixel height]
@@ -251,8 +263,8 @@ class GisConverterEngine:
                 if raster_layer.isValid():
                     loaded_rasters.append(raster_layer)
 
-        except Exception:
-            pass
+        except Exception as exc:
+            self.last_warnings.append(f"GroundOverlay extraction skipped: {exc}")
 
         return loaded_rasters
 
