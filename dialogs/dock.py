@@ -150,11 +150,25 @@ QCheckBox::indicator {
     height: 14px;
     border: 1px solid #546e7a;
     border-radius: 2px;
+    background: #ffffff;
 }
 QCheckBox::indicator:hover {
     border-color: #0277bd;
 }
+QCheckBox::indicator:checked {
+    background: #0277bd;
+    border-color: #0277bd;
+    image: url(__CHECKBOX_CHECKED_ICON__);
+}
+QCheckBox::indicator:checked:hover {
+    background: #01579b;
+    border-color: #01579b;
+}
 QCheckBox::indicator:disabled {
+    border-color: #b0bec5;
+}
+QCheckBox::indicator:checked:disabled {
+    background: #b0bec5;
     border-color: #b0bec5;
 }
 QCheckBox:disabled {
@@ -403,7 +417,10 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
 
         self.setAllowedAreas(
             Qt.DockWidgetArea.LeftDockWidgetArea | Qt.DockWidgetArea.RightDockWidgetArea)
-        self.setStyleSheet(DOCK_STYLE)
+        checkbox_icon = os.path.join(
+            self.icon_dir, "checkbox_checked.png").replace("\\", "/")
+        self.setStyleSheet(
+            DOCK_STYLE.replace("__CHECKBOX_CHECKED_ICON__", checkbox_icon))
 
         self.current_netcad_paths: list[str] = []
         self.parsed_netcad_results = {}
