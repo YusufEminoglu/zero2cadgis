@@ -452,10 +452,21 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         type_layout = QHBoxLayout()
         type_layout.addWidget(QLabel("Dataset Type:"))
         self.cmb_src_type = QComboBox()
-        self.cmb_src_type.addItems(["DXF / DWG (*.dxf, *.dwg)",
+        self.cmb_src_type.addItems(["DXF (*.dxf)",
                                     "KML / KMZ (*.kml, *.kmz)",
                                     "Microstation DGN (*.dgn)",
                                     "ArcGIS File Geodatabase (*.gdb)"])
+        self.cmb_src_type.insertSeparator(4)
+        self.cmb_src_type.addItem(
+            "Future enhancement: DWG (*.dwg)")
+        future_dwg_index = self.cmb_src_type.count() - 1
+        future_dwg_item = self.cmb_src_type.model().item(future_dwg_index)
+        if future_dwg_item is not None:
+            future_dwg_item.setEnabled(False)
+        self.cmb_src_type.setItemData(
+            future_dwg_index,
+            "Current QGIS/GDAL builds only read limited DWG versions via libopencad. Convert DWG to DXF first.",
+            Qt.ItemDataRole.ToolTipRole)
         self.cmb_src_type.currentIndexChanged.connect(
             self._on_source_type_changed)
         type_layout.addWidget(self.cmb_src_type, 1)
@@ -824,7 +835,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
 
         <h3>1. Convert CAD or GIS to GeoPackage</h3>
         <ol>
-          <li>Choose the source family: DXF/DWG, KML/KMZ, DGN, or FileGDB.</li>
+          <li>Choose the source family: DXF, KML/KMZ, DGN, or FileGDB. DWG is listed as a future enhancement because current QGIS/GDAL builds only read limited DWG versions.</li>
           <li>Select the source file or `.gdb` folder.</li>
           <li>Choose a target `.gpkg`, or enable temporary scratch layers when you only want to inspect the result.</li>
           <li>Confirm the target CRS. The project CRS is used when the selector is not changed.</li>
@@ -877,14 +888,20 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         idx = self.cmb_src_type.currentIndex()
         if idx == 0:
             file_path, _ = QFileDialog.getOpenFileName(
-                self, "Select DXF or DWG File", "", "Drawing Files (*.dxf *.dwg);;All Files (*.*)")
+                self, "Select DXF File", "", "AutoCAD DXF (*.dxf)")
+            if file_path and not has_extension(file_path, ".dxf"):
+                QMessageBox.warning(
+                    self,
+                    "Unsupported Drawing Version",
+                    "DWG import is a future enhancement in this QGIS/GDAL build. Convert DWG to DXF first, then import the DXF file.")
+                return
         elif idx == 1:
             file_path, _ = QFileDialog.getOpenFileName(
-                self, "Select KML or KMZ File", "", "Keyhole Markup Language (*.kml *.kmz);;All Files (*.*)")
+                self, "Select KML or KMZ File", "", "Keyhole Markup Language (*.kml *.kmz)")
         elif idx == 2:
             file_path, _ = QFileDialog.getOpenFileName(
-                self, "Select Microstation DGN File", "", "Design Files (*.dgn);;All Files (*.*)")
-        else:
+                self, "Select Microstation DGN File", "", "Design Files (*.dgn)")
+        elif idx == 3:
             file_path = QFileDialog.getExistingDirectory(
                 self,
                 "Select ArcGIS File Geodatabase Directory",
@@ -896,6 +913,12 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                     "Invalid Folder",
                     "Please select a directory ending with '.gdb'.")
                 return
+        else:
+            QMessageBox.information(
+                self,
+                "Future Enhancement",
+                "DWG import needs broader CAD reader support than the current QGIS/GDAL libopencad driver provides. Convert DWG to DXF first.")
+            return
 
         if file_path:
             self.txt_src_path.setText(file_path)
@@ -930,6 +953,12 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         src = self.txt_src_path.text()
         dst = self.txt_gpkg_path.text()
         idx = self.cmb_src_type.currentIndex()
+        if idx > 3:
+            QMessageBox.information(
+                self,
+                "Future Enhancement",
+                "DWG import is planned for a future enhancement. Convert DWG to DXF first.")
+            return
 
         crs = self.converter_crs.crs()
         if not crs.isValid():

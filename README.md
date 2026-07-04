@@ -10,7 +10,7 @@
   </p>
 </div>
 
-**02gpkg** is a professional QGIS dock plugin for turning CAD and GIS exchange files into clean GeoPackage layers. It is built for planning, cadastral, municipal, and urban analytics workflows where DXF/DWG, KML/KMZ, DGN, FileGDB, and Netcad files need to become usable QGIS data quickly.
+**02gpkg** is a professional QGIS dock plugin for turning CAD and GIS exchange files into clean GeoPackage layers. It is built for planning, cadastral, municipal, and urban analytics workflows where DXF, KML/KMZ, DGN, FileGDB, and Netcad files need to become usable QGIS data quickly.
 
 <table>
   <tr>
@@ -22,7 +22,7 @@
 
 ## What It Does
 
-- Converts **DXF, DWG, KML, KMZ, DGN, FileGDB, NCZ and compatible NCA** files into `.gpkg` layers.
+- Converts **DXF, KML, KMZ, DGN, FileGDB, NCZ and compatible NCA** files into `.gpkg` layers.
 - Imports multiple Netcad drawings at once with selectable CAD layers and `@TAB` attribute tables.
 - Expands KML balloon HTML tables and list descriptions into real attribute fields.
 - Extracts KML/KMZ `GroundOverlay` images as georeferenced GeoTIFF layers.
@@ -35,7 +35,8 @@
 
 | Workflow | Input / Output | Engine | Best for |
 | --- | --- | --- | --- |
-| CAD/GIS import | `.dxf`, `.dwg`, `.dgn`, `.kml`, `.kmz`, `.gdb` to `.gpkg` or scratch layers | QGIS GDAL/OGR | Standard exchange files and planning datasets |
+| CAD/GIS import | `.dxf`, `.dgn`, `.kml`, `.kmz`, `.gdb` to `.gpkg` or scratch layers | QGIS GDAL/OGR | Standard exchange files and planning datasets |
+| Future enhancement | `.dwg` | Planned external/newer CAD reader path | DWG versions beyond GDAL libopencad support |
 | Netcad import | `.ncz`, compatible `.nca` | Built-in parser | Netcad drawings with layers, colors, labels and `@TAB` tables |
 | KML overlay extraction | KML/KMZ GroundOverlay to GeoTIFF | GDAL | Georeferenced image overlays |
 | QGIS export | Active vector layer to `.dxf`, `.kml`, `.kmz` | QGIS vector writer | Delivery back to CAD/GIS exchange formats |
@@ -60,7 +61,8 @@ Use **temporary scratch layers** for quick inspection. Use **GeoPackage output**
 ```mermaid
 flowchart LR
   A[CAD / GIS / Netcad source] --> B{Input type}
-  B -->|DXF DWG DGN KML KMZ GDB| C[QGIS OGR reader]
+  B -->|DXF DGN KML KMZ GDB| C[QGIS OGR reader]
+  B -->|DWG| X[Future enhancement]
   B -->|NCZ / NCA| D[Netcad parser]
   C --> E[CRS + cleanup + attributes]
   D --> E
@@ -121,7 +123,7 @@ QGIS_Plugin_Releases\zero2gpkg_converter.zip
 | Symptom | Likely cause | Fix |
 | --- | --- | --- |
 | Plugin does not appear | QGIS is not scanning this folder | Set `QGIS_PLUGINPATH` and restart QGIS. |
-| DWG does not open | GDAL build lacks DWG support | Convert to DXF first, then run 02gpkg. |
+| DWG does not open | DWG is currently a future enhancement; this QGIS/GDAL build only exposes limited libopencad support | Convert to DXF first, then run 02gpkg. |
 | KML overlay is missing | No valid `GroundOverlay` or image path | Check the KML/KMZ structure and referenced image files. |
 | Netcad layers are missing | Unsupported entity block or aggressive cleanup | Retry with cleanup disabled and lower closure tolerance. |
 | Hub icon is missing | Metadata icon path mismatch | Keep `icon=icons/icon.png` and package with the provided build script. |

@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.7] - 2026-07-04
+
+- Move DWG import to future enhancement and keep DXF DGN GDB active
+
 ## [0.1.6] - 2026-07-04
 
 - Fix QGIS 4 NCZ geometry preservation
