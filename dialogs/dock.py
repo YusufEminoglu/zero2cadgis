@@ -145,6 +145,18 @@ QCheckBox {
     background: transparent;
     spacing: 6px;
 }
+QCheckBox::indicator {
+    width: 14px;
+    height: 14px;
+    border: 1px solid #546e7a;
+    border-radius: 2px;
+}
+QCheckBox::indicator:hover {
+    border-color: #0277bd;
+}
+QCheckBox::indicator:disabled {
+    border-color: #b0bec5;
+}
 QCheckBox:disabled {
     color: #90a4ae;
 }
@@ -352,6 +364,7 @@ class LayerBucket:
     display_name: str
     geometry_type: str
     entities: list[NetcadEntity] = field(default_factory=list)
+    source_files: dict[int, str] = field(default_factory=dict)
 
 
 @dataclass
@@ -638,6 +651,14 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         self.chk_ncz_join.setChecked(True)
         ncz_opt_form.addRow(self.chk_ncz_join)
 
+        self.chk_ncz_merge_geometry = QCheckBox(
+            "Merge geometry types across selected files")
+        self.chk_ncz_merge_geometry.setToolTip(
+            "Batch NCZ import: group outputs by geometry type and merge "
+            "layers with the same geometry type and CAD layer name.")
+        self.chk_ncz_merge_geometry.setEnabled(False)
+        ncz_opt_form.addRow(self.chk_ncz_merge_geometry)
+
         self.chk_ncz_temporary = QCheckBox(
             "Import directly as temporary scratch layers (no GPKG)")
         ncz_opt_form.addRow(self.chk_ncz_temporary)
@@ -797,7 +818,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         <h3>2. Netcad NCZ/NCA Importer</h3>
         <p>The Netcad importer is designed for municipal drawing packages where geometry, CAD layers, colors, text, and attribute tables arrive together.</p>
         <ol>
-          <li>Select one or more `.ncz` or compatible `.nca` drawing files. Batch import groups each file separately in the QGIS layer tree.</li>
+          <li>Select one or more `.ncz` or compatible `.nca` drawing files. Batch import keeps files separate by default; enable <b>Merge geometry types</b> to group by geometry type and merge matching layer names across files.</li>
           <li>Check the metadata card before importing. Version, projection text, detected EPSG, feature count, and table count help you catch wrong files early.</li>
           <li>Use the layer tree to import only the CAD layers and `@TAB` tables you need. Parent checkboxes select or clear whole groups.</li>
           <li>Set the destination CRS. If an EPSG code is detected, 02gpkg preselects it; otherwise it falls back to the project CRS.</li>
@@ -990,6 +1011,11 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
             self.txt_ncz_path.setText(file_paths[0])
         else:
             self.txt_ncz_path.setText(f"{len(file_paths)} files selected")
+
+        is_batch_import = len(file_paths) > 1
+        self.chk_ncz_merge_geometry.setEnabled(is_batch_import)
+        if not is_batch_import:
+            self.chk_ncz_merge_geometry.setChecked(False)
 
         self.parsed_netcad_results = {}
         total_entities = 0
@@ -1205,7 +1231,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                 return
 
             self.progress_ncz.setValue(30)
-            self.progress_ncz.setFormat("Creating GeoPackage layers...")
+            self.progress_ncz.setFormat("Preparing Netcad layers...")
 
             gpkg_path = ""
             is_temp = self.chk_ncz_temporary.isChecked()
@@ -1228,11 +1254,16 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
             if not target_crs.isValid():
                 target_crs = QgsProject.instance().crs()
 
+            merge_geometry_types = (
+                self.chk_ncz_merge_geometry.isChecked()
+                and len(self.parsed_netcad_results) > 1
+            )
             layer_groups = []
+            merged_entity_groups = {}
             transform_context = QgsProject.instance().transformContext()
 
             for file_path, selection in selected_by_file.items():
-                selected_keys = selection["layers"]
+                selected_keys = set(selection["layers"])
                 selected_tables = selection["tables"]
                 if not selected_keys and not selected_tables:
                     continue
@@ -1242,74 +1273,45 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                     os.path.basename(file_path))[0]
                 file_base_name = self._sanitize_name(source_file_name)
 
-                # Group entities
-                grouped_entities = {}
+                grouped_entities = (
+                    merged_entity_groups if merge_geometry_types else {})
+
                 for entity in parsed.entities:
                     family, geometry_type = self._geometry_family(
                         entity.geometry_kind)
                     if not family:
                         continue
 
-                    key = (
-                        entity.layer_code,
-                        entity.layer_name or f"LAYER_{
-                            entity.layer_code}",
-                        family)
-                    if key not in selected_keys:
+                    layer_name = entity.layer_name or f"LAYER_{entity.layer_code}"
+                    selection_key = (entity.layer_code, layer_name, family)
+                    if selection_key not in selected_keys:
                         continue
 
-                    display_name = f"{file_base_name}_{
-                        self._sanitize_name(
-                            key[1])}_{
-                        key[2]}"
-                    group_name = f"{file_base_name}_{key[2]}"
+                    if merge_geometry_types:
+                        family_token = self._sanitize_name(family)
+                        layer_token = self._sanitize_name(layer_name)
+                        display_name = f"{base_name}_{layer_token}_{family_token}"
+                        group_name = f"{base_name}_{family_token}"
+                        bucket_key = (layer_token, family, geometry_type)
+                    else:
+                        display_name = f"{file_base_name}_{self._sanitize_name(layer_name)}_{family}"
+                        group_name = f"{file_base_name}_{family}"
+                        bucket_key = selection_key
 
-                    grouped_entities.setdefault(
+                    bucket = grouped_entities.setdefault(
                         group_name,
                         {}).setdefault(
-                        key,
+                        bucket_key,
                         LayerBucket(
                             display_name=display_name,
-                            geometry_type=geometry_type)).entities.append(entity)
+                            geometry_type=geometry_type))
+                    bucket.entities.append(entity)
+                    bucket.source_files[id(entity)] = source_file_name
 
-                # 1. Geometries
-                for group_name in sorted(grouped_entities.keys()):
-                    layers = []
-                    for key in sorted(grouped_entities[group_name].keys()):
-                        bucket = grouped_entities[group_name][key]
-
-                        temp_layer = self._create_temp_vector_layer(
-                            bucket.display_name,
-                            bucket.geometry_type,
-                            bucket.entities,
-                            target_crs,
-                            source_file_name
-                        )
-
-                        if temp_layer:
-                            processed_layer = temp_layer
-                            if self.chk_ncz_augment.isChecked():
-                                processed_layer = CadFeatureAugmenter.augment_layer(
-                                    temp_layer)
-
-                            if self.chk_ncz_style.isChecked():
-                                CadStylingEngine.apply_argb_renderer(
-                                    processed_layer, bucket.geometry_type)
-
-                            if self.chk_ncz_label.isChecked() and bucket.geometry_type == "Point":
-                                has_texts = any(
-                                    e.geometry_kind == "Text" for e in bucket.entities)
-                                if has_texts:
-                                    CadStylingEngine.apply_buffered_labels(
-                                        processed_layer)
-
-                            layers.append(processed_layer)
-
-                    if layers:
-                        layer_groups.append(
-                            LayerGroup(
-                                name=group_name,
-                                layers=layers))
+                if not merge_geometry_types:
+                    layer_groups.extend(
+                        self._build_layer_groups_from_buckets(
+                            grouped_entities, target_crs))
 
                 # 2. Attribute Tables
                 if parsed.attribute_tables and selected_tables:
@@ -1333,6 +1335,11 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                                 name=attribute_group_name,
                                 layers=attribute_layers))
 
+            if merge_geometry_types:
+                layer_groups.extend(
+                    self._build_layer_groups_from_buckets(
+                        merged_entity_groups, target_crs))
+
             if not layer_groups:
                 raise ValueError(
                     "Selected Netcad data did not produce any valid layers.")
@@ -1346,9 +1353,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                     for group in layer_groups:
                         for layer in group.layers:
                             fd, temp_gpkg = tempfile.mkstemp(
-                                suffix=".gpkg", prefix=f"ncz_l_{
-                                    self._sanitize_name(
-                                        layer.name())}_")
+                                suffix=".gpkg", prefix=f"ncz_l_{self._sanitize_name(layer.name())}_")
                             os.close(fd)
                             try:
                                 os.remove(temp_gpkg)
@@ -1364,8 +1369,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                                 layer, temp_gpkg, transform_context, options)
                             if err != QgsVectorFileWriter.WriterError.NoError:
                                 raise ValueError(
-                                    f"Failed to write layer '{
-                                        layer.name()}' to GPKG: {err_msg}")
+                                    f"Failed to write layer '{layer.name()}' to GPKG: {err_msg}")
 
                             temp_gpkg_files.append(temp_gpkg)
 
@@ -1387,8 +1391,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                             gpkg_path, temp_gpkg, format="GPKG", accessMode=mode)
                         if result is None:
                             raise ValueError(
-                                f"GDAL could not merge temporary layer {
-                                    os.path.basename(temp_gpkg)}.")
+                                f"GDAL could not merge temporary layer {os.path.basename(temp_gpkg)}.")
                         result = None
                         first = False
                 finally:
@@ -1442,13 +1445,61 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                 "Import Error",
                 f"Failed to import Netcad dataset:\n{exc}")
 
+    def _build_layer_groups_from_buckets(
+            self,
+            grouped_entities: dict,
+            target_crs: QgsCoordinateReferenceSystem) -> list[LayerGroup]:
+        layer_groups = []
+        for group_name in sorted(grouped_entities.keys()):
+            layers = []
+            for key in sorted(grouped_entities[group_name].keys()):
+                bucket = grouped_entities[group_name][key]
+                source_file_name = next(iter(bucket.source_files.values()), "")
+
+                temp_layer = self._create_temp_vector_layer(
+                    bucket.display_name,
+                    bucket.geometry_type,
+                    bucket.entities,
+                    target_crs,
+                    source_file_name,
+                    bucket.source_files,
+                )
+
+                if temp_layer:
+                    processed_layer = temp_layer
+                    if self.chk_ncz_augment.isChecked():
+                        processed_layer = CadFeatureAugmenter.augment_layer(
+                            temp_layer)
+
+                    if self.chk_ncz_style.isChecked():
+                        CadStylingEngine.apply_argb_renderer(
+                            processed_layer, bucket.geometry_type)
+
+                    if self.chk_ncz_label.isChecked() and bucket.geometry_type == "Point":
+                        has_texts = any(
+                            e.geometry_kind == "Text" for e in bucket.entities)
+                        if has_texts:
+                            CadStylingEngine.apply_buffered_labels(
+                                processed_layer)
+
+                    layers.append(processed_layer)
+
+            if layers:
+                layer_groups.append(
+                    LayerGroup(
+                        name=group_name,
+                        layers=layers))
+
+        return layer_groups
+
     def _create_temp_vector_layer(
         self,
         layer_name: str,
         geometry_type: str,
         entities: list[NetcadEntity],
         crs: QgsCoordinateReferenceSystem,
-        source_file_name: str
+        source_file_name: str,
+        entity_source_files: dict[int, str] | None = None
     ) -> QgsVectorLayer | None:
 
         uri = f"{geometry_type}?crs={crs.authid()}"
@@ -1482,10 +1533,15 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
             if not geom or geom.isEmpty():
                 continue
 
+            source_value = source_file_name
+            if entity_source_files:
+                source_value = entity_source_files.get(
+                    id(entity), source_file_name)
+
             feature = QgsFeature(layer.fields())
             feature.setGeometry(geom)
             feature.setAttributes([
-                source_file_name,
+                source_value,
                 entity.layer_code,
                 entity.layer_name,
                 entity.geometry_kind,

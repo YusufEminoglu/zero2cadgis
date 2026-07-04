@@ -76,7 +76,7 @@ flowchart LR
 
 The Netcad panel is intentionally detailed because these drawings often contain mixed geometry, text, colors and table data.
 
-- **Batch import:** select several files; 02gpkg keeps file groups separate in the QGIS layer tree.
+- **Batch import:** select several files; 02gpkg keeps file groups separate by default, or merges matching layer names inside geometry-type groups when **Merge geometry types** is enabled.
 - **Metadata review:** version, projection text, EPSG hints, feature counts and table counts are shown before conversion.
 - **Layer filtering:** uncheck unnecessary CAD layers or `@TAB` tables before import.
 - **Closure tolerance:** keeps cadastral polygon creation controlled; use small values unless the drawing has known snap gaps.

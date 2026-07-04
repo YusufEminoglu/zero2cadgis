@@ -1,8 +1,14 @@
 # Changelog
 
+## [0.1.4] - 2026-07-04
+
+- Add NCZ batch geometry merge and checkbox visibility fixes
+
 ## [0.1.3] - 2026-07-04
 
 - Fix QGIS 3/4 GUI compatibility: pin all widget colours in QSS so the panel reads identically under any host theme (dark QGIS 4 no longer bleeds into combos, labels, tree items)
+- Add visible checkbox indicator borders in the Netcad optimization panel.
+- Add optional NCZ batch geometry merging by geometry type and CAD layer name while preserving the `source_file` attribute.
 
 All notable changes to 02gpkg are documented here.
 
