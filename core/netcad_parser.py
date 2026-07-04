@@ -1,11 +1,75 @@
+# -*- coding: utf-8 -*-
+"""netcad_parser — Binary Netcad .ncz drawing stream parser.
+100% English code definitions.
+"""
+from __future__ import annotations
+
 import math
 import struct
-
+import json
+import os
+import subprocess
+from dataclasses import dataclass, field
+from typing import Optional
 
 EMBEDDED_GEOMETRY_CONTAINER_TYPES = {0, 5, 14, 48, 108, 111, 132, 150, 180}
 
 
-def parse_ncz(file_path):
+@dataclass
+class NetcadCoordinate:
+    x: float
+    y: float
+    z: float = 0.0
+
+
+@dataclass
+class NetcadEntity:
+    geometry_kind: str
+    layer_code: int
+    layer_name: str = ""
+    color_argb: Optional[int] = None
+    name: str = ""
+    label_text: str = ""
+    text_height: float = 0.0
+    rotation_degrees: float = 0.0
+    box_width: float = 0.0
+    box_height: float = 0.0
+    scale: float = 0.0
+    grid_x: float = 0.0
+    grid_y: float = 0.0
+    radius: float = 0.0
+    start_angle: float = 0.0
+    end_angle: float = 0.0
+    is_closed: bool = False
+    coordinates: list[NetcadCoordinate] = field(default_factory=list)
+
+
+@dataclass
+class NetcadAttributeRow:
+    row_index: int
+    columns: dict[str, object] = field(default_factory=dict)
+
+
+@dataclass
+class NetcadAttributeTable:
+    table_ref: str
+    rows: list[NetcadAttributeRow] = field(default_factory=list)
+
+
+@dataclass
+class NetcadParseResult:
+    entities: list[NetcadEntity] = field(default_factory=list)
+    attribute_tables: list[NetcadAttributeTable] = field(default_factory=list)
+    layer_names: list[str] = field(default_factory=list)
+    layer_colors: list[int] = field(default_factory=list)
+    parser_backend: str = ""
+    version_name: str = ""
+    epsg: str = ""
+    projection_text: str = ""
+    unsupported_geometry_types: dict[int, int] = field(default_factory=dict)
+
+
+def parse_netcad_binary_stream(file_path: str) -> dict:
     with open(file_path, "rb") as handle:
         data = handle.read()
 
@@ -1062,3 +1126,65 @@ def parse_ncz(file_path):
         "projection_text": projection_text,
         "unsupported_geometry_types": unsupported,
     }
+
+
+class NetcadBinaryReader:
+    def __init__(self, file_path):
+        self.file_path = file_path
+
+    def parse(self) -> NetcadParseResult:
+        payload = parse_netcad_binary_stream(self.file_path)
+        backend = "pure-python"
+
+        # If pure-python succeeds, return NetcadParseResult structure
+        return NetcadParseResult(
+            entities=[self._entity_from_dict(item) for item in payload["entities"]],
+            attribute_tables=[self._attribute_table_from_dict(item) for item in payload.get("attribute_tables", [])],
+            layer_names=list(payload["layer_names"]),
+            layer_colors=list(payload["layer_colors"]),
+            parser_backend=backend,
+            version_name=payload.get("version_name", ""),
+            epsg=payload.get("epsg", ""),
+            projection_text=payload.get("projection_text", ""),
+            unsupported_geometry_types={
+                int(key): value
+                for key, value in dict(payload.get("unsupported_geometry_types", {})).items()
+            },
+        )
+
+    def _entity_from_dict(self, payload) -> NetcadEntity:
+        return NetcadEntity(
+            geometry_kind=payload["geometry_kind"],
+            layer_code=payload["layer_code"],
+            layer_name=payload.get("layer_name", ""),
+            color_argb=payload.get("color_argb"),
+            name=payload.get("name", ""),
+            label_text=payload.get("label_text", ""),
+            text_height=payload.get("text_height", 0.0),
+            rotation_degrees=payload.get("rotation_degrees", 0.0),
+            box_width=payload.get("box_width", 0.0),
+            box_height=payload.get("box_height", 0.0),
+            scale=payload.get("scale", 0.0),
+            grid_x=payload.get("grid_x", 0.0),
+            grid_y=payload.get("grid_y", 0.0),
+            radius=payload.get("radius", 0.0),
+            start_angle=payload.get("start_angle", 0.0),
+            end_angle=payload.get("end_angle", 0.0),
+            is_closed=payload.get("is_closed", False),
+            coordinates=[
+                NetcadCoordinate(x=coord["x"], y=coord["y"], z=coord.get("z", 0.0))
+                for coord in payload.get("coordinates", [])
+            ],
+        )
+
+    def _attribute_table_from_dict(self, payload) -> NetcadAttributeTable:
+        return NetcadAttributeTable(
+            table_ref=payload.get("table_ref", ""),
+            rows=[
+                NetcadAttributeRow(
+                    row_index=item.get("row_index", 0),
+                    columns=dict(item.get("columns", {})),
+                )
+                for item in payload.get("rows", [])
+            ],
+        )

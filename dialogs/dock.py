@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
-"""zero2gpkg_converter — DockWidget.
-100% English, advanced multi-format CAD/GIS GPKG Converter & NCZ Importer.
+"""zero2gpkg_converter — Tabbed DockWidget Controller.
+100% English, fully integrated with core CAD/GIS engines.
 """
 from __future__ import annotations
 
 import os
 import re
 import math
-import zipfile
-import tempfile
 import shutil
 
 from qgis.PyQt.QtCore import Qt, QVariant, pyqtSignal
@@ -44,22 +42,16 @@ from qgis.core import (
     QgsPointXY,
     QgsCoordinateReferenceSystem,
     QgsCoordinateTransform,
-    QgsSingleSymbolRenderer,
-    QgsMarkerSymbol,
-    QgsLineSymbol,
-    QgsFillSymbol,
-    QgsPalLayerSettings,
-    QgsVectorLayerSimpleLabeling,
-    QgsTextFormat,
-    QgsTextBufferSettings,
     QgsVectorFileWriter,
     QgsCoordinateTransformContext
 )
 from qgis.gui import QgsProjectionSelectionWidget
 
-from ..ncz_binary import NCZBinaryReader, NCZEntity, NCZAttributeTable
+# Import new modular core services (No trace of old ncz_pure/binary names)
+from ..core.netcad_parser import NetcadBinaryReader, NetcadEntity, NetcadAttributeTable
+from ..core.gis_engine import GisConverterEngine
+from ..core.cad_engine import CadCleanupEngine, CadStylingEngine
 
-# Premium dark blue styling with orange/amber accents
 DOCK_STYLE = """
 QWidget {
     font-family: 'Segoe UI', Arial, sans-serif;
@@ -146,11 +138,13 @@ QProgressBar::chunk {
 }
 """
 
+
 @dataclass
 class LayerBucket:
     display_name: str
     geometry_type: str
-    entities: list[NCZEntity] = field(default_factory=list)
+    entities: list[NetcadEntity] = field(default_factory=list)
+
 
 @dataclass
 class LayerGroup:
@@ -159,7 +153,7 @@ class LayerGroup:
 
 
 class Zero2GpkgConverterDockWidget(QDockWidget):
-    """QDockWidget hosting English CAD/GIS format converter tabs."""
+    """100% English controller managing GIS/CAD converter engine operations."""
     
     FIELD_DEFINITIONS = [
         QgsField("source_file", QVariant.String),
@@ -189,17 +183,15 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         self.setAllowedAreas(Qt.DockWidgetArea.LeftDockWidgetArea | Qt.DockWidgetArea.RightDockWidgetArea)
         self.setStyleSheet(DOCK_STYLE)
         
-        self.current_ncz_path: str = ""
-        self.parsed_ncz_result = None
-        self.temp_dirs: list[str] = []
+        self.current_netcad_path: str = ""
+        self.parsed_netcad_result = None
+        self.gis_converter = None
         
         self._build_ui()
 
     def closeEvent(self, event):
-        # Cleanup temporary directories
-        for temp_path in self.temp_dirs:
-            if os.path.exists(temp_path):
-                shutil.rmtree(temp_path, ignore_errors=True)
+        if self.gis_converter:
+            self.gis_converter.cleanup()
         super().closeEvent(event)
 
     def _build_ui(self) -> None:
@@ -269,6 +261,11 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         self.chk_conv_clean = QCheckBox("Remove duplicate geometries and vertices")
         self.chk_conv_clean.setChecked(True)
         opt_form.addRow(self.chk_conv_clean)
+
+        self.chk_conv_kml_expand = QCheckBox("Expand KML HTML balloon tables (kmltools feyz)")
+        self.chk_conv_kml_expand.setChecked(True)
+        self.chk_conv_kml_expand.setToolTip("Parses HTML description tags into clean database columns.")
+        opt_form.addRow(self.chk_conv_kml_expand)
         
         self.chk_conv_load = QCheckBox("Load converted layers directly to canvas")
         self.chk_conv_load.setChecked(True)
@@ -413,7 +410,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         self.btn_convert_ncz = QPushButton("Convert NCZ & Load to Canvas")
         self.btn_convert_ncz.setObjectName("convert_btn")
         self.btn_convert_ncz.setEnabled(False)
-        self.btn_convert_ncz.clicked.connect(self._import_ncz_dataset)
+        self.btn_convert_ncz.clicked.connect(self._import_netcad_dataset)
         ncz_layout.addWidget(self.btn_convert_ncz)
         
         main_tab.addTab(tab_ncz, QIcon(os.path.join(self.icon_dir, "icon_ncz.png")), "Netcad NCZ Importer")
@@ -435,19 +432,19 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
 
     def _browse_src_dataset(self) -> None:
         idx = self.cmb_src_type.currentIndex()
-        if idx == 0: # DXF / DWG
+        if idx == 0:
             file_path, _ = QFileDialog.getOpenFileName(
                 self, "Select DXF or DWG File", "", "Drawing Files (*.dxf *.dwg);;All Files (*.*)"
             )
-        elif idx == 1: # KML / KMZ
+        elif idx == 1:
             file_path, _ = QFileDialog.getOpenFileName(
                 self, "Select KML or KMZ File", "", "Keyhole Markup Language (*.kml *.kmz);;All Files (*.*)"
             )
-        elif idx == 2: # Microstation DGN
+        elif idx == 2:
             file_path, _ = QFileDialog.getOpenFileName(
                 self, "Select Microstation DGN File", "", "Design Files (*.dgn);;All Files (*.*)"
             )
-        else: # ArcGIS File Geodatabase
+        else:
             file_path = QFileDialog.getExistingDirectory(
                 self, "Select ArcGIS File Geodatabase Directory", "", QFileDialog.Option.ShowDirsOnly
             )
@@ -485,171 +482,51 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
 
         self.progress_conv.setVisible(True)
         self.progress_conv.setValue(10)
-        self.progress_conv.setFormat("Initializing GDAL/OGR drivers...")
+        self.progress_conv.setFormat("Initializing GIS Converter...")
 
-        # We will use native QGIS/GDAL provider library via QgsVectorLayer to load, convert and save to GPKG.
-        # This is extremely resilient and doesn't crash even if OGR is compiled without specific formats (e.g. DWG).
         try:
-            temp_kml_dir = None
-            if idx == 1 and src.lower().endswith(".kmz"):
-                # Handle KMZ files (unzip to extract KML)
-                self.progress_conv.setValue(20)
-                self.progress_conv.setFormat("Unzipping KMZ file...")
-                temp_kml_dir = tempfile.mkdtemp(prefix="kmz_extract_")
-                self.temp_dirs.append(temp_kml_dir)
-                
-                with zipfile.ZipFile(src, 'r') as zip_ref:
-                    # Find doc.kml or any .kml
-                    kml_names = [n for n in zip_ref.namelist() if n.lower().endswith(".kml")]
-                    if not kml_names:
-                        raise ValueError("No KML document found inside the KMZ archive.")
-                    zip_ref.extractall(temp_kml_dir)
-                    # Point target to the extracted KML file
-                    src = os.path.join(temp_kml_dir, kml_names[0])
-
+            is_kmz = idx == 1 and src.lower().endswith(".kmz")
+            
+            # Initialize GisConverterEngine
+            self.gis_converter = GisConverterEngine(src, dst, crs)
+            
             self.progress_conv.setValue(40)
-            self.progress_conv.setFormat("Reading source layers...")
-
-            # Open with QgsVectorLayer to inspect layers. For file GDB, layers can be queried.
-            # For drawing/KML files, they might have sublayers. We query sublayers using GDAL/OGR wrapper or QGIS metadata.
-            sublayers = []
+            self.progress_conv.setFormat("Parsing and transforming layers...")
             
-            # Use QgsVectorLayer metadata/sublayers query
-            # A cleaner way: read via OGR module
-            from osgeo import ogr
-            ogr_ds = ogr.Open(src)
-            if ogr_ds is None:
-                # If OGR failed to open DWG, throw helpful error
-                if src.lower().endswith(".dwg"):
-                    raise ImportError("DWG driver not found in your GDAL library. Please convert your DWG to DXF first and load the DXF.")
-                raise ValueError("Could not open source dataset with GDAL/OGR driver.")
-
-            for i in range(ogr_ds.GetLayerCount()):
-                layer = ogr_ds.GetLayerByIndex(i)
-                sublayers.append(layer.GetName())
+            # Execute conversion (including HTML expansion from kmltools)
+            loaded_layers = self.gis_converter.convert(
+                is_kmz=is_kmz,
+                html_expansion=self.chk_conv_kml_expand.isChecked()
+            )
             
-            ogr_ds = None # Release file lock
-
-            if not sublayers:
-                raise ValueError("No vector layers found in the source drawing/dataset.")
-
-            self.progress_conv.setValue(60)
-            self.progress_conv.setFormat(f"Converting {len(sublayers)} layers to GeoPackage...")
-
-            # Clean output GPKG if exists
-            if os.path.exists(dst):
-                try:
-                    os.remove(dst)
-                except OSError:
-                    pass
-
-            converted_layers = []
-            transform_context = QgsProject.instance().transformContext()
-
-            for i, layer_name in enumerate(sublayers):
-                self.progress_conv.setValue(60 + int((i / len(sublayers)) * 30))
-                self.progress_conv.setFormat(f"Processing layer: {layer_name}")
-                
-                # Build URI
-                uri = src
-                if idx == 3: # GDB
-                    uri = f"{src}|layername={layer_name}"
-                else:
-                    uri = f"{src}|layername={layer_name}"
-
-                vlayer = QgsVectorLayer(uri, layer_name, "ogr")
-                if not vlayer.isValid():
-                    continue
-
-                # Optimize and simplify layer geometries if requested
-                processed_layer = vlayer
-                if self.chk_conv_simplify.isChecked() or self.chk_conv_clean.isChecked():
-                    processed_layer = self._optimize_vector_layer(vlayer)
-
-                # Save directly as GPKG layer
-                options = QgsVectorFileWriter.SaveVectorOptions()
-                options.driverName = "GPKG"
-                options.layerName = self._sanitize_name(layer_name)
-                options.actionOnExistingFile = QgsVectorFileWriter.ActionOnExistingFile.CreateOrOverwriteLayer
-                options.overrideGeometryType = processed_layer.geometryType()
-                
-                # Transform coordinates to target CRS
-                if processed_layer.crs() != crs:
-                    options.ct = QgsCoordinateTransform(processed_layer.crs(), crs, QgsProject.instance())
-
-                err, err_msg, _, _ = QgsVectorFileWriter.writeAsVectorFormatV3(
-                    processed_layer,
-                    dst,
-                    transform_context,
-                    options
-                )
-                if err != QgsVectorFileWriter.WriterError.NoError:
-                    raise ValueError(f"Failed to write layer '{layer_name}' to GPKG: {err_msg}")
-
-                # Load back from GPKG for canvas
-                if self.chk_conv_load.isChecked():
-                    gpkg_uri = f"{dst}|layername={options.layerName}"
-                    gpkg_layer = QgsVectorLayer(gpkg_uri, f"{layer_name}_Converted", "ogr")
-                    if gpkg_layer.isValid():
-                        converted_layers.append(gpkg_layer)
-
-            # Cleanup temp zip directory
-            if temp_kml_dir and os.path.exists(temp_kml_dir):
-                shutil.rmtree(temp_kml_dir, ignore_errors=True)
-
-            self.progress_conv.setValue(100)
-            self.progress_conv.setVisible(False)
-
-            # Load to canvas
-            if self.chk_conv_load.isChecked() and converted_layers:
-                # Add to a new group
+            self.progress_conv.setValue(80)
+            self.progress_conv.setFormat("Adding to canvas...")
+            
+            if self.chk_conv_load.isChecked() and loaded_layers:
                 root = QgsProject.instance().layerTreeRoot()
                 group_name = f"{self._sanitize_name(os.path.basename(src))}_GPKG"
+                
                 existing = root.findGroup(group_name)
                 if existing:
                     root.removeChildNode(existing)
+                    
                 group = root.addGroup(group_name)
-                
-                for cl in converted_layers:
+                for cl in loaded_layers:
                     QgsProject.instance().addMapLayer(cl, False)
                     group.addLayer(cl)
 
+            self.progress_conv.setValue(100)
+            self.progress_conv.setVisible(False)
+            
             QMessageBox.information(
                 self,
-                "Conversion Complete",
-                f"Successfully converted drawing dataset to GeoPackage!\nTarget path: {dst}\nTarget CRS: {crs.userFriendlyIdentifier()}"
+                "Success",
+                f"Conversion completed successfully!\nTarget path: {dst}"
             )
-
+            
         except Exception as exc:
             self.progress_conv.setVisible(False)
-            QMessageBox.critical(self, "Conversion Error", f"Failed to convert GIS dataset:\n{exc}")
-
-    def _optimize_vector_layer(self, layer: QgsVectorLayer) -> QgsVectorLayer:
-        """Create a temporary cleaned memory layer from the original layer."""
-        uri = f"{layer.geometryType().name()}?crs={layer.crs().authid()}"
-        mem_layer = QgsVectorLayer(uri, layer.name(), "memory")
-        prov = mem_layer.dataProvider()
-        prov.addAttributes(layer.fields())
-        mem_layer.updateFields()
-
-        features = []
-        for feat in layer.getFeatures():
-            geom = feat.geometry()
-            if not geom or geom.isEmpty():
-                continue
-            
-            # Collinear vertices simplification / Clean duplicate vertices
-            if self.chk_conv_simplify.isChecked():
-                geom = geom.simplify(0.01) # Simple tolerance
-            
-            new_feat = QgsFeature(mem_layer.fields())
-            new_feat.setGeometry(geom)
-            new_feat.setAttributes(feat.attributes())
-            features.append(new_feat)
-
-        prov.addFeatures(features)
-        mem_layer.updateExtents()
-        return mem_layer
+            QMessageBox.critical(self, "Conversion Error", f"Failed to execute GIS engine conversion:\n{exc}")
 
     # ───────────────────────── TAB 2: NETCAD NCZ IMPORTER CONTROLS ─────────────────────────
 
@@ -660,7 +537,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         if not file_path:
             return
             
-        self.current_ncz_path = file_path
+        self.current_netcad_path = file_path
         self.txt_ncz_path.setText(file_path)
         
         try:
@@ -668,27 +545,28 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
             self.progress_ncz.setValue(20)
             self.progress_ncz.setFormat("Parsing NCZ file...")
             
-            reader = NCZBinaryReader(file_path)
-            self.parsed_ncz_result = reader.parse()
+            # Use English NetcadBinaryReader
+            reader = NetcadBinaryReader(file_path)
+            self.parsed_netcad_result = reader.parse()
             
             self.progress_ncz.setValue(60)
             self.progress_ncz.setFormat("Building layer catalog...")
             
-            # Populate drawing details
-            self.lbl_ncz_version.setText(self.parsed_ncz_result.version_name or "Standard / Older version")
-            self.lbl_ncz_projection.setText(self.parsed_ncz_result.projection_text or "Undefined")
+            # Populate card
+            self.lbl_ncz_version.setText(self.parsed_netcad_result.version_name or "Standard / Older version")
+            self.lbl_ncz_projection.setText(self.parsed_netcad_result.projection_text or "Undefined")
             
-            epsg_str = self.parsed_ncz_result.epsg or "Not defined"
+            epsg_str = self.parsed_netcad_result.epsg or "Not defined"
             self.lbl_ncz_epsg.setText(epsg_str)
             
-            total_entities = len(self.parsed_ncz_result.entities)
-            total_tables = len(self.parsed_ncz_result.attribute_tables)
+            total_entities = len(self.parsed_netcad_result.entities)
+            total_tables = len(self.parsed_netcad_result.attribute_tables)
             self.lbl_ncz_counts.setText(f"{total_entities} features / {total_tables} attribute tables")
             
             # Guess target CRS
-            if self.parsed_ncz_result.epsg:
+            if self.parsed_netcad_result.epsg:
                 try:
-                    clean_epsg = self.parsed_ncz_result.epsg.replace("EPSG:", "").strip()
+                    clean_epsg = self.parsed_netcad_result.epsg.replace("EPSG:", "").strip()
                     crs = QgsCoordinateReferenceSystem(f"EPSG:{clean_epsg}")
                     if crs.isValid():
                         self.ncz_crs_selector.setCrs(crs)
@@ -709,12 +587,12 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
 
     def _fill_ncz_layer_tree(self) -> None:
         self.ncz_layer_tree.clear()
-        if not self.parsed_ncz_result:
+        if not self.parsed_netcad_result:
             return
             
         # Group entities
         layer_stats = {}
-        for entity in self.parsed_ncz_result.entities:
+        for entity in self.parsed_netcad_result.entities:
             family, _ = self._geometry_family(entity.geometry_kind)
             if not family:
                 continue
@@ -736,14 +614,14 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
             item.setCheckState(0, Qt.CheckState.Checked)
             item.setData(0, Qt.ItemDataRole.UserRole, (code, name, family))
             
-        if self.parsed_ncz_result.attribute_tables:
+        if self.parsed_netcad_result.attribute_tables:
             table_root = QTreeWidgetItem(self.ncz_layer_tree)
             table_root.setText(0, "Attribute Tables (@TAB)")
             table_root.setFlags(table_root.flags() | Qt.ItemFlag.ItemIsAutoTristate | Qt.ItemFlag.ItemIsUserCheckable)
             table_root.setCheckState(0, Qt.CheckState.Checked)
             table_root.setExpanded(True)
             
-            for table in self.parsed_ncz_result.attribute_tables:
+            for table in self.parsed_netcad_result.attribute_tables:
                 item = QTreeWidgetItem(table_root)
                 item.setText(0, table.table_ref)
                 item.setText(1, "Attribute Data")
@@ -776,11 +654,10 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
 
     def _sanitize_name(self, value: str) -> str:
         text = re.sub(r"\W+", "_", str(value).strip(), flags=re.UNICODE)
-        text = text.strip("_")
-        return text.upper() or "UNNAMED"
+        return text.strip("_").upper() or "LAYER"
 
-    def _import_ncz_dataset(self) -> None:
-        if not self.parsed_ncz_result:
+    def _import_netcad_dataset(self) -> None:
+        if not self.parsed_netcad_result:
             return
             
         try:
@@ -823,8 +700,8 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                 gpkg_path += ".gpkg"
                 
             # Build structures
-            base_name = self._sanitize_name(os.path.splitext(os.path.basename(self.current_ncz_path))[0])
-            source_file_name = os.path.splitext(os.path.basename(self.current_ncz_path))[0]
+            base_name = self._sanitize_name(os.path.splitext(os.path.basename(self.current_netcad_path))[0])
+            source_file_name = os.path.splitext(os.path.basename(self.current_netcad_path))[0]
             
             target_crs = self.ncz_crs_selector.crs()
             if not target_crs.isValid():
@@ -832,7 +709,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                 
             # Group entities
             grouped_entities = {}
-            for entity in self.parsed_ncz_result.entities:
+            for entity in self.parsed_netcad_result.entities:
                 family, geometry_type = self._geometry_family(entity.geometry_kind)
                 if not family:
                     continue
@@ -879,15 +756,15 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                     )
                     
                     if temp_layer:
-                        # NCZ Styling
+                        # Styling (CartoDXF feyz)
                         if self.chk_ncz_style.isChecked():
-                            self._apply_style_to_layer(temp_layer, bucket.geometry_type)
+                            CadStylingEngine.apply_argb_renderer(temp_layer, bucket.geometry_type)
                             
                         # Labels
                         if self.chk_ncz_label.isChecked() and bucket.geometry_type == "Point":
                             has_texts = any(e.geometry_kind == "Text" for e in bucket.entities)
                             if has_texts:
-                                self._apply_labeling_to_layer(temp_layer)
+                                CadStylingEngine.apply_buffered_labels(temp_layer)
                                 
                         # Write memory layer directly into the GPKG
                         options = QgsVectorFileWriter.SaveVectorOptions()
@@ -914,10 +791,10 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                     layer_groups.append(LayerGroup(name=group_name, layers=layers))
                     
             # 2. Attribute Tables
-            if self.parsed_ncz_result.attribute_tables and selected_tables:
+            if self.parsed_netcad_result.attribute_tables and selected_tables:
                 attribute_group_name = f"{base_name}_ATTRIBUTES"
                 attribute_layers = []
-                for table in self.parsed_ncz_result.attribute_tables:
+                for table in self.parsed_netcad_result.attribute_tables:
                     if table.table_ref not in selected_tables:
                         continue
                     table_name = self._sanitize_name(table.table_ref)
@@ -971,7 +848,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         self,
         layer_name: str,
         geometry_type: str,
-        entities: list[NCZEntity],
+        entities: list[NetcadEntity],
         crs: QgsCoordinateReferenceSystem,
         source_file_name: str
     ) -> QgsVectorLayer | None:
@@ -990,10 +867,10 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
             coords = entity.coordinates
             
             if self.chk_ncz_clean.isChecked():
-                coords = self._clean_duplicate_coords(coords)
+                coords = CadCleanupEngine.clean_duplicates(coords)
                 
             if self.chk_ncz_simplify.isChecked() and len(coords) > 3:
-                coords = self._simplify_collinear_coords(coords)
+                coords = CadCleanupEngine.simplify_collinear(coords)
                 
             geom = self._coords_to_geometry(entity.geometry_kind, geometry_type, coords, entity.radius)
             if not geom or geom.isEmpty():
@@ -1026,7 +903,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         layer.updateExtents()
         return layer
 
-    def _create_temp_attribute_layer(self, table_name: str, table: NCZAttributeTable, source_file_name: str) -> QgsVectorLayer | None:
+    def _create_temp_attribute_layer(self, table_name: str, table: NetcadAttributeTable, source_file_name: str) -> QgsVectorLayer | None:
         layer = QgsVectorLayer("None", f"{table_name}_TABLE", "memory")
         if not layer.isValid():
             return None
@@ -1092,55 +969,6 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                 project.addMapLayer(layer, False)
                 group.addLayer(layer)
 
-    # ───────────────────────── CAD Cleanup Helpers ─────────────────────────
-    
-    def _clean_duplicate_coords(self, coords: list) -> list:
-        if len(coords) < 2:
-            return coords
-        cleaned = []
-        for c in coords:
-            if not cleaned:
-                cleaned.append(c)
-                continue
-            prev = cleaned[-1]
-            if abs(prev.x - c.x) < 0.0001 and abs(prev.y - c.y) < 0.0001 and abs(prev.z - c.z) < 0.0001:
-                continue
-            cleaned.append(c)
-        return cleaned
-
-    def _simplify_collinear_coords(self, coords: list) -> list:
-        if len(coords) <= 3:
-            return coords
-            
-        simplified = list(coords)
-        removed = True
-        while removed and len(simplified) > 3:
-            removed = False
-            for idx in range(len(simplified)):
-                if idx == 0 or idx == len(simplified) - 1:
-                    continue
-                    
-                prev_p = simplified[idx - 1]
-                curr_p = simplified[idx]
-                next_p = simplified[idx + 1]
-                
-                v1x, v1y = curr_p.x - prev_p.x, curr_p.y - prev_p.y
-                v2x, v2y = next_p.x - curr_p.x, next_p.y - curr_p.y
-                
-                len1 = math.sqrt(v1x*v1x + v1y*v1y)
-                len2 = math.sqrt(v2x*v2x + v2y*v2y)
-                if len1 < 0.0001 or len2 < 0.0001:
-                    simplified.pop(idx)
-                    removed = True
-                    break
-                    
-                cross = abs(v1x*v2y - v1y*v2x) / (len1 * len2)
-                if cross <= 0.02:
-                    simplified.pop(idx)
-                    removed = True
-                    break
-        return simplified
-
     def _coords_to_geometry(self, geometry_kind: str, geometry_type: str, coords: list, radius: float) -> QgsGeometry | None:
         if geometry_type == "Point":
             if not coords:
@@ -1162,15 +990,8 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
             if len(ring) < 3:
                 return None
                 
-            tolerance = self.spin_ncz_tolerance.value()
-            if ring:
-                first = ring[0]
-                last = ring[-1]
-                dist = math.hypot(first.x() - last.x(), first.y() - last.y())
-                if dist > 0.0001 and dist <= tolerance:
-                    ring.append(QgsPointXY(first))
-                elif dist > tolerance:
-                    ring.append(QgsPointXY(first))
+            # Polyline closure using new cleanup engine
+            ring = CadCleanupEngine.close_polyline(ring, self.spin_ncz_tolerance.value())
                     
             if len(ring) < 4:
                 return None
@@ -1192,75 +1013,6 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
             )
         points.append(QgsPointXY(points[0]))
         return points
-
-    # ───────────────────────── NCZ Styling and Labeling ─────────────────────────
-    
-    def _apply_style_to_layer(self, layer: QgsVectorLayer, geometry_type: str) -> None:
-        color_rgb = None
-        for feature in layer.getFeatures():
-            color_str = feature["color_argb"]
-            if color_str:
-                try:
-                    argb = int(color_str)
-                    red = (argb >> 16) & 0xFF
-                    green = (argb >> 8) & 0xFF
-                    blue = argb & 0xFF
-                    color_rgb = QColor(red, green, blue)
-                    break
-                except ValueError:
-                    pass
-                    
-        if not color_rgb:
-            color_rgb = QColor(100, 100, 100)
-            
-        symbol = None
-        if geometry_type == "Point":
-            symbol = QgsMarkerSymbol.createSimple({
-                "name": "circle",
-                "color": color_rgb.name(),
-                "size": "3",
-                "outline_color": "#ffffff",
-                "outline_width": "0.4"
-            })
-        elif geometry_type == "LineString":
-            symbol = QgsLineSymbol.createSimple({
-                "color": color_rgb.name(),
-                "width": "0.6",
-                "line_style": "solid"
-            })
-        elif geometry_type == "Polygon":
-            symbol = QgsFillSymbol.createSimple({
-                "color": f"{color_rgb.red()},{color_rgb.green()},{color_rgb.blue()},80",
-                "outline_color": color_rgb.name(),
-                "outline_width": "0.4"
-            })
-            
-        if symbol:
-            renderer = QgsSingleSymbolRenderer(symbol)
-            layer.setRenderer(renderer)
-            layer.triggerRepaint()
-
-    def _apply_labeling_to_layer(self, layer: QgsVectorLayer) -> None:
-        text_format = QgsTextFormat()
-        text_format.setFont(QFont("Segoe UI", 9))
-        text_format.setColor(QColor(0, 0, 0))
-        
-        buffer = QgsTextBufferSettings()
-        buffer.setEnabled(True)
-        buffer.setSize(1.0)
-        buffer.setColor(QColor(255, 255, 255))
-        text_format.setBuffer(buffer)
-        
-        label_settings = QgsPalLayerSettings()
-        label_settings.setFormat(text_format)
-        label_settings.fieldName = "label"
-        label_settings.isExpression = False
-        label_settings.placement = QgsPalLayerSettings.Placement.OverPoint
-        
-        simple_labeling = QgsVectorLayerSimpleLabeling(label_settings)
-        layer.setLabeling(simple_labeling)
-        layer.setLabelsEnabled(True)
-        layer.triggerRepaint()
 
     # ───────────────────────── Join Relations ─────────────────────────
     
