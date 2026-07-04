@@ -890,6 +890,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                     table_name = self._sanitize_name(table.table_ref)
                     
                     temp_attr = self._create_temp_attribute_layer(table_name, table, source_file_name)
+                    if temp_attr:
                         if is_temp:
                             attribute_layers.append(temp_attr)
                         else:

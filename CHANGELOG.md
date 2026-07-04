@@ -2,6 +2,14 @@
 
 ## [0.1.1] - 2026-07-04
 
+- Fix Indentation
+
+## [0.1.1] - 2026-07-04
+
+- Fix TypeError and add temporary memory layer support
+
+## [0.1.1] - 2026-07-04
+
 - Fix AttributeError
 
 ## [0.1.1] - 2026-07-04
