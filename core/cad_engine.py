@@ -113,7 +113,12 @@ class CadFeatureAugmenter:
         fields.append(QgsField("cent_x", QVariant.Double))
         fields.append(QgsField("cent_y", QVariant.Double))
 
-        uri = f"{layer.geometryType().name()}?crs={layer.crs().authid()}"
+        geom_type_str = {
+            0: "Point",
+            1: "LineString",
+            2: "Polygon"
+        }.get(layer.geometryType(), "Point")
+        uri = f"{geom_type_str}?crs={layer.crs().authid()}"
         enriched_layer = QgsVectorLayer(uri, layer.name(), "memory")
         prov = enriched_layer.dataProvider()
         prov.addAttributes(fields)

@@ -307,7 +307,12 @@ class GisConverterEngine:
             if k not in [f.name() for f in layer.fields()]:
                 fields.append(QgsField(k, vtype))
 
-        uri = f"{layer.geometryType().name()}?crs={layer.crs().authid()}"
+        geom_type_str = {
+            0: "Point",
+            1: "LineString",
+            2: "Polygon"
+        }.get(layer.geometryType(), "Point")
+        uri = f"{geom_type_str}?crs={layer.crs().authid()}"
         expanded_layer = QgsVectorLayer(uri, layer.name(), "memory")
         prov = expanded_layer.dataProvider()
         prov.addAttributes(fields)
@@ -335,3 +340,67 @@ class GisConverterEngine:
     def _sanitize_column_name(self, value: str) -> str:
         text = re.sub(r"\W+", "_", str(value).strip(), flags=re.UNICODE)
         return text.strip("_").upper() or "LAYER"
+
+    def convert_to_memory(self, is_kmz: bool = False, html_expansion: bool = True) -> list[QgsVectorLayer]:
+        """Converts GIS layers directly to memory layers without writing a GPKG file."""
+        src = self.source_path
+        if is_kmz:
+            src = self.extract_kmz()
+
+        # Open source OGR dataset
+        ogr_ds = ogr.Open(src)
+        if ogr_ds is None:
+            raise ValueError(f"Unable to open source dataset with GDAL/OGR provider: {src}")
+
+        layer_names = []
+        for i in range(ogr_ds.GetLayerCount()):
+            layer_names.append(ogr_ds.GetLayerByIndex(i).GetName())
+        ogr_ds = None
+
+        if not layer_names:
+            raise ValueError("No layers discovered inside the source GIS dataset.")
+
+        loaded_layers = []
+        for layer_name in layer_names:
+            uri = f"{src}|layername={layer_name}"
+            vlayer = QgsVectorLayer(uri, layer_name, "ogr")
+            if not vlayer.isValid():
+                continue
+
+            processed_layer = vlayer
+            if html_expansion and "description" in [f.name() for f in vlayer.fields()]:
+                processed_layer = self._expand_html_descriptions(vlayer)
+
+            # Clone processed layer to a memory scratch layer
+            geom_type_str = {
+                0: "Point",
+                1: "LineString",
+                2: "Polygon"
+            }.get(processed_layer.geometryType(), "Point")
+            
+            mem_uri = f"{geom_type_str}?crs={self.target_crs.authid()}"
+            mem_layer = QgsVectorLayer(mem_uri, layer_name, "memory")
+            prov = mem_layer.dataProvider()
+            prov.addAttributes(processed_layer.fields())
+            mem_layer.updateFields()
+
+            transform = None
+            if processed_layer.crs() != self.target_crs:
+                transform = QgsCoordinateTransform(processed_layer.crs(), self.target_crs, QgsProject.instance())
+
+            features = []
+            for feat in processed_layer.getFeatures():
+                new_feat = QgsFeature(mem_layer.fields())
+                geom = feat.geometry()
+                if geom and not geom.isEmpty() and transform:
+                    geom.transform(transform)
+                new_feat.setGeometry(geom)
+                for field in processed_layer.fields():
+                    new_feat[field.name()] = feat[field.name()]
+                features.append(new_feat)
+
+            prov.addFeatures(features)
+            mem_layer.updateExtents()
+            loaded_layers.append(mem_layer)
+
+        return loaded_layers
