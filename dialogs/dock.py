@@ -871,9 +871,39 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                 if attribute_layers:
                     layer_groups.append(LayerGroup(name=attribute_group_name, layers=attribute_layers))
                     
-            # 3. Write all layers to the target GeoPackage (No locks because layers are not loaded in QGIS yet!)
+            # 3. Write each layer to a separate temp GPKG file to avoid SQLite database update mode locks!
+            import tempfile
+            temp_gpkg_files = []
+            layer_to_temp_gpkg = {}
+            
+            for group in layer_groups:
+                for layer in group.layers:
+                    fd, temp_gpkg = tempfile.mkstemp(suffix=".gpkg", prefix=f"ncz_l_{self._sanitize_name(layer.name())}_")
+                    os.close(fd)
+                    try:
+                        os.remove(temp_gpkg)
+                    except OSError:
+                        pass
+                        
+                    options = QgsVectorFileWriter.SaveVectorOptions()
+                    options.driverName = "GPKG"
+                    options.layerName = layer.name()
+                    options.actionOnExistingFile = QgsVectorFileWriter.ActionOnExistingFile.CreateOrOverwriteLayer
+                    
+                    err, err_msg, _, _ = QgsVectorFileWriter.writeAsVectorFormatV3(
+                        layer,
+                        temp_gpkg,
+                        transform_context,
+                        options
+                    )
+                    if err != QgsVectorFileWriter.WriterError.NoError:
+                        raise ValueError(f"Failed to write layer '{layer.name()}' to GPKG: {err_msg}")
+                        
+                    temp_gpkg_files.append(temp_gpkg)
+                    layer_to_temp_gpkg[layer.name()] = temp_gpkg
+
+            # 4. Determine final GPKG path
             if is_temp:
-                import tempfile
                 temp_dir = tempfile.gettempdir()
                 gpkg_path = os.path.join(temp_dir, f"zero2gpkg_temp_{base_name}.gpkg")
                 
@@ -882,24 +912,25 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                     os.remove(gpkg_path)
                 except OSError:
                     pass
+
+            # Combine separate temp GPKGs into the final single GPKG file via GDAL Translate
+            from osgeo import gdal
+            first = True
+            for temp_gpkg in temp_gpkg_files:
+                if first:
+                    gdal.VectorTranslate(gpkg_path, temp_gpkg, format="GPKG", accessMode="overwrite")
+                    first = False
+                else:
+                    gdal.VectorTranslate(gpkg_path, temp_gpkg, format="GPKG", accessMode="update")
                     
-            for group in layer_groups:
-                for layer in group.layers:
-                    options = QgsVectorFileWriter.SaveVectorOptions()
-                    options.driverName = "GPKG"
-                    options.layerName = layer.name()
-                    options.actionOnExistingFile = QgsVectorFileWriter.ActionOnExistingFile.CreateOrOverwriteLayer
-                    
-                    err, err_msg, _, _ = QgsVectorFileWriter.writeAsVectorFormatV3(
-                        layer,
-                        gpkg_path,
-                        transform_context,
-                        options
-                    )
-                    if err != QgsVectorFileWriter.WriterError.NoError:
-                        raise ValueError(f"Failed to write layer '{layer.name()}' to GPKG: {err_msg}")
-                        
-            # 4. Load written layers from the GPKG file
+            # Cleanup individual temp GPKG files
+            for temp_gpkg in temp_gpkg_files:
+                try:
+                    os.remove(temp_gpkg)
+                except OSError:
+                    pass
+
+            # 5. Load written layers from the final combined GPKG file
             final_layer_groups = []
             for group in layer_groups:
                 gpkg_layers = []
