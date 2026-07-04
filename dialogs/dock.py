@@ -455,8 +455,9 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         self.cmb_src_type.addItems(["DXF (*.dxf)",
                                     "KML / KMZ (*.kml, *.kmz)",
                                     "Microstation DGN (*.dgn)",
-                                    "ArcGIS File Geodatabase (*.gdb)"])
-        self.cmb_src_type.insertSeparator(4)
+                                    "ArcGIS File Geodatabase (*.gdb)",
+                                    "ArcGIS Personal Geodatabase (*.mdb)"])
+        self.cmb_src_type.insertSeparator(5)
         self.cmb_src_type.addItem(
             "Future enhancement: DWG (*.dwg)")
         future_dwg_index = self.cmb_src_type.count() - 1
@@ -556,6 +557,8 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         self.btn_convert_gis.setEnabled(False)
         self.btn_convert_gis.clicked.connect(self._convert_gis_dataset)
         cad_gis_layout.addWidget(self.btn_convert_gis)
+
+        self._on_source_type_changed(self.cmb_src_type.currentIndex())
 
         tab_cad_gis = self._make_scroll_tab(tab1_inner)
         main_tab.addTab(
@@ -883,6 +886,9 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
     def _on_source_type_changed(self, index: int) -> None:
         self.txt_src_path.clear()
         self.btn_convert_gis.setEnabled(False)
+        is_kml = index == 1
+        self.chk_conv_kml_expand.setEnabled(is_kml)
+        self.chk_conv_raster.setEnabled(is_kml)
 
     def _browse_src_dataset(self) -> None:
         idx = self.cmb_src_type.currentIndex()
@@ -913,6 +919,9 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                     "Invalid Folder",
                     "Please select a directory ending with '.gdb'.")
                 return
+        elif idx == 4:
+            file_path, _ = QFileDialog.getOpenFileName(
+                self, "Select ArcGIS Personal Geodatabase File", "", "ArcGIS Personal Geodatabase (*.mdb)")
         else:
             QMessageBox.information(
                 self,
@@ -953,7 +962,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         src = self.txt_src_path.text()
         dst = self.txt_gpkg_path.text()
         idx = self.cmb_src_type.currentIndex()
-        if idx > 3:
+        if idx == self.cmb_src_type.count() - 1:
             QMessageBox.information(
                 self,
                 "Future Enhancement",

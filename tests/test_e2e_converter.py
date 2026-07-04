@@ -149,6 +149,29 @@ class TestZero2GpkgConverter(unittest.TestCase):
         self.assertEqual(forced[-1].x(), 0.0)
         self.assertEqual(forced[-1].y(), 0.0)
 
+    def test_get_geom_type_str_with_mocks(self):
+        from zero2gpkg_converter.core.gis_engine import _get_geom_type_str
+
+        # Mock geometry with no object
+        self.assertEqual(_get_geom_type_str(None), "NoGeometry")
+
+        # Mock empty geometry
+        mock_empty_geom = MagicMock()
+        mock_empty_geom.isEmpty.return_value = True
+        self.assertEqual(_get_geom_type_str(mock_empty_geom), "NoGeometry")
+
+        # Mock Point geometry (type 0)
+        mock_point_geom = MagicMock()
+        mock_point_geom.isEmpty.return_value = False
+        mock_point_geom.type.return_value = 0
+        mock_point_geom.wkbType.return_value = 1  # Point
+        with patch("zero2gpkg_converter.core.gis_engine.QgsWkbTypes.isMultiType", return_value=False):
+            self.assertEqual(_get_geom_type_str(mock_point_geom), "Point")
+
+        # Mock MultiPoint geometry (type 0, multi type wkb)
+        with patch("zero2gpkg_converter.core.gis_engine.QgsWkbTypes.isMultiType", return_value=True):
+            self.assertEqual(_get_geom_type_str(mock_point_geom), "MultiPoint")
+
 
 if __name__ == "__main__":
     unittest.main()

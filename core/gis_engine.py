@@ -21,7 +21,8 @@ from qgis.core import (
     QgsCoordinateReferenceSystem,
     QgsCoordinateTransform,
     QgsVectorFileWriter,
-    QgsFields
+    QgsFields,
+    QgsWkbTypes
 )
 from qgis.PyQt.QtCore import QVariant
 from qgis.PyQt.QtXml import QDomDocument
@@ -66,6 +67,44 @@ def parse_kml_html_table(html_content: str) -> dict[str, str]:
     return attributes
 
 
+def _get_geom_type_str(geom) -> str:
+    """Helper to detect memory layer compatible geometry type string from QgsGeometry."""
+    if not geom or geom.isEmpty():
+        return "NoGeometry"
+
+    t = geom.type()
+    try:
+        t_val = int(t)
+    except (TypeError, ValueError):
+        t_val = getattr(t, "value", None)
+        if t_val is None:
+            t_str = str(t).lower()
+            if "point" in t_str:
+                t_val = 0
+            elif "line" in t_str:
+                t_val = 1
+            elif "polygon" in t_str:
+                t_val = 2
+            else:
+                t_val = 3
+
+    wkb = geom.wkbType()
+    is_multi = False
+    try:
+        is_multi = QgsWkbTypes.isMultiType(wkb)
+    except Exception:
+        pass
+
+    if t_val == 0:
+        return "MultiPoint" if is_multi else "Point"
+    elif t_val == 1:
+        return "MultiLineString" if is_multi else "LineString"
+    elif t_val == 2:
+        return "MultiPolygon" if is_multi else "Polygon"
+
+    return "NoGeometry"
+
+
 class GisConverterEngine:
     """Core GIS conversion service with HTML parser and GroundOverlay extraction."""
 
@@ -108,6 +147,13 @@ class GisConverterEngine:
         from osgeo import ogr
         ogr_ds = ogr.Open(src)
         if ogr_ds is None:
+            if src.lower().endswith(".mdb"):
+                raise ValueError(
+                    f"Unable to open source dataset with GDAL/OGR provider: {src}\n\n"
+                    "Note: Reading ArcGIS Personal Geodatabases (.mdb) requires the 64-bit "
+                    "Microsoft Access Database Engine (ODBC driver) to be installed on Windows. "
+                    "Make sure it matches your QGIS bitness (usually 64-bit)."
+                )
             raise ValueError(
                 f"Unable to open source dataset with GDAL/OGR provider: {src}")
 
@@ -437,6 +483,13 @@ class GisConverterEngine:
         # Open source OGR dataset
         ogr_ds = ogr.Open(src)
         if ogr_ds is None:
+            if src.lower().endswith(".mdb"):
+                raise ValueError(
+                    f"Unable to open source dataset with GDAL/OGR provider: {src}\n\n"
+                    "Note: Reading ArcGIS Personal Geodatabases (.mdb) requires the 64-bit "
+                    "Microsoft Access Database Engine (ODBC driver) to be installed on Windows. "
+                    "Make sure it matches your QGIS bitness (usually 64-bit)."
+                )
             raise ValueError(
                 f"Unable to open source dataset with GDAL/OGR provider: {src}")
 
@@ -461,34 +514,52 @@ class GisConverterEngine:
                     f.name() for f in vlayer.fields()]:
                 processed_layer = self._expand_html_descriptions(vlayer)
 
-            # Clone processed layer to a memory scratch layer
-            geom_type_str = memory_geometry_type_name(processed_layer)
-
-
-            mem_uri = f"{geom_type_str}?crs={self.target_crs.authid()}"
-            mem_layer = QgsVectorLayer(mem_uri, layer_name, "memory")
-            prov = mem_layer.dataProvider()
-            prov.addAttributes(processed_layer.fields())
-            mem_layer.updateFields()
+            # Group features by geometry type to support layers with mixed geometry types (e.g. DXF layers)
+            default_geom_type = memory_geometry_type_name(processed_layer)
+            features_by_type = {}
 
             transform = None
             if processed_layer.crs() != self.target_crs:
                 transform = QgsCoordinateTransform(
                     processed_layer.crs(), self.target_crs, QgsProject.instance())
 
-            features = []
             for feat in processed_layer.getFeatures():
-                new_feat = QgsFeature(mem_layer.fields())
                 geom = feat.geometry()
                 if geom and not geom.isEmpty() and transform:
                     geom.transform(transform)
-                new_feat.setGeometry(geom)
-                for field in processed_layer.fields():
-                    new_feat[field.name()] = feat[field.name()]
-                features.append(new_feat)
 
-            add_features_or_raise(
-                mem_layer, features, "GIS scratch layer clone")
-            loaded_layers.append(mem_layer)
+                geom_type_str = _get_geom_type_str(geom)
+                if geom_type_str == "NoGeometry":
+                    geom_type_str = default_geom_type
+
+                # Store geometry and original feature for later reconstruction
+                features_by_type.setdefault(geom_type_str, []).append((geom, feat))
+
+            if not features_by_type:
+                features_by_type[default_geom_type] = []
+
+            for geom_type_str, type_data in sorted(features_by_type.items()):
+                mem_uri = f"{geom_type_str}?crs={self.target_crs.authid()}"
+                mem_layer_name = (
+                    layer_name
+                    if len(features_by_type) == 1
+                    else f"{layer_name}_{geom_type_str}"
+                )
+                mem_layer = QgsVectorLayer(mem_uri, mem_layer_name, "memory")
+                prov = mem_layer.dataProvider()
+                prov.addAttributes(processed_layer.fields())
+                mem_layer.updateFields()
+
+                # Reconstruct features with target memory layer's fields
+                features = []
+                for geom, original_feat in type_data:
+                    new_feat = QgsFeature(mem_layer.fields())
+                    new_feat.setGeometry(geom)
+                    new_feat.setAttributes(original_feat.attributes())
+                    features.append(new_feat)
+
+                add_features_or_raise(
+                    mem_layer, features, "GIS scratch layer clone")
+                loaded_layers.append(mem_layer)
 
         return loaded_layers

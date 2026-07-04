@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.8] - 2026-07-04
+
+- Fix scratch layer attributes mapping and dynamic KML options in UI
+
 ## [0.1.7] - 2026-07-04
 
 - Move DWG import to future enhancement and keep DXF DGN GDB active
