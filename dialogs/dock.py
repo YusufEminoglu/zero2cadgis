@@ -288,7 +288,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         self.btn_convert_gis.clicked.connect(self._convert_gis_dataset)
         cad_gis_layout.addWidget(self.btn_convert_gis)
         
-        main_tab.addTab(tab_cad_gis, "CAD & GIS Converter")
+        main_tab.addTab(tab_cad_gis, QIcon(os.path.join(self.icon_dir, "icon_cad.png")), "CAD & GIS Converter")
         
         # ───────────────────────── TAB 2: Netcad NCZ Importer ─────────────────────────
         tab_ncz = QWidget()
@@ -416,7 +416,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         self.btn_convert_ncz.clicked.connect(self._import_ncz_dataset)
         ncz_layout.addWidget(self.btn_convert_ncz)
         
-        main_tab.addTab(tab_ncz, "Netcad NCZ Importer")
+        main_tab.addTab(tab_ncz, QIcon(os.path.join(self.icon_dir, "icon_ncz.png")), "Netcad NCZ Importer")
         
         # Set main layout
         main_layout = QVBoxLayout()
