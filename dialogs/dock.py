@@ -857,6 +857,17 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                                 CadStylingEngine.apply_buffered_labels(processed_layer)
                                 
                         # Save
+                        layer_gpkg_path = gpkg_path
+                        if is_temp:
+                            import tempfile
+                            temp_dir = tempfile.gettempdir()
+                            layer_gpkg_path = os.path.join(temp_dir, f"zero2gpkg_temp_{base_name}_{bucket.display_name}.gpkg")
+                            if os.path.exists(layer_gpkg_path):
+                                try:
+                                    os.remove(layer_gpkg_path)
+                                except OSError:
+                                    pass
+
                         options = QgsVectorFileWriter.SaveVectorOptions()
                         options.driverName = "GPKG"
                         options.layerName = bucket.display_name
@@ -864,7 +875,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                         
                         err, err_msg, _, _ = QgsVectorFileWriter.writeAsVectorFormatV3(
                             processed_layer,
-                            gpkg_path,
+                            layer_gpkg_path,
                             transform_context,
                             options
                         )
@@ -872,7 +883,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                             raise ValueError(f"Failed to write layer '{bucket.display_name}' to GPKG: {err_msg}")
                             
                         # Load from GPKG
-                        gpkg_uri = f"{gpkg_path}|layername={bucket.display_name}"
+                        gpkg_uri = f"{layer_gpkg_path}|layername={bucket.display_name}"
                         gpkg_layer = QgsVectorLayer(gpkg_uri, bucket.display_name, "ogr")
                         if gpkg_layer.isValid():
                             layers.append(gpkg_layer)
@@ -891,6 +902,17 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                     
                     temp_attr = self._create_temp_attribute_layer(table_name, table, source_file_name)
                     if temp_attr:
+                        table_gpkg_path = gpkg_path
+                        if is_temp:
+                            import tempfile
+                            temp_dir = tempfile.gettempdir()
+                            table_gpkg_path = os.path.join(temp_dir, f"zero2gpkg_temp_{base_name}_{table_name}_TABLE.gpkg")
+                            if os.path.exists(table_gpkg_path):
+                                try:
+                                    os.remove(table_gpkg_path)
+                                except OSError:
+                                    pass
+
                         options = QgsVectorFileWriter.SaveVectorOptions()
                         options.driverName = "GPKG"
                         options.layerName = f"{table_name}_TABLE"
@@ -898,12 +920,12 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                         
                         err, err_msg, _, _ = QgsVectorFileWriter.writeAsVectorFormatV3(
                             temp_attr,
-                            gpkg_path,
+                            table_gpkg_path,
                             transform_context,
                             options
                         )
                         if err == QgsVectorFileWriter.WriterError.NoError:
-                            gpkg_uri = f"{gpkg_path}|layername={options.layerName}"
+                            gpkg_uri = f"{table_gpkg_path}|layername={options.layerName}"
                             gpkg_layer = QgsVectorLayer(gpkg_uri, f"{table_name}_TABLE", "ogr")
                             if gpkg_layer.isValid():
                                 attribute_layers.append(gpkg_layer)
