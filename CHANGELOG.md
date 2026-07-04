@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.6] - 2026-07-04
+
+- Fix QGIS 4 NCZ geometry preservation
+
 ## [0.1.5] - 2026-07-04
 
 - Fix visible checked state for styled checkboxes

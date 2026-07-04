@@ -54,6 +54,7 @@ from ..core.netcad_parser import NetcadBinaryReader, NetcadEntity, NetcadAttribu
 from ..core.gis_engine import GisConverterEngine
 from ..core.cad_engine import CadCleanupEngine, CadStylingEngine, CadFeatureAugmenter, CadExportEngine
 from ..core.path_utils import ensure_extension, has_extension
+from ..core.qgis_compat import add_features_or_raise
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Dock stylesheet — every text colour, background and border is *pinned* so
@@ -1485,19 +1486,30 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                 if temp_layer:
                     processed_layer = temp_layer
                     if self.chk_ncz_augment.isChecked():
-                        processed_layer = CadFeatureAugmenter.augment_layer(
-                            temp_layer)
+                        try:
+                            augmented_layer = CadFeatureAugmenter.augment_layer(
+                                temp_layer)
+                            if augmented_layer.featureCount() == temp_layer.featureCount():
+                                processed_layer = augmented_layer
+                        except Exception:
+                            processed_layer = temp_layer
 
                     if self.chk_ncz_style.isChecked():
-                        CadStylingEngine.apply_argb_renderer(
-                            processed_layer, bucket.geometry_type)
+                        try:
+                            CadStylingEngine.apply_argb_renderer(
+                                processed_layer, bucket.geometry_type)
+                        except Exception:
+                            pass
 
                     if self.chk_ncz_label.isChecked() and bucket.geometry_type == "Point":
                         has_texts = any(
                             e.geometry_kind == "Text" for e in bucket.entities)
                         if has_texts:
-                            CadStylingEngine.apply_buffered_labels(
-                                processed_layer)
+                            try:
+                                CadStylingEngine.apply_buffered_labels(
+                                    processed_layer)
+                            except Exception:
+                                pass
 
                     layers.append(processed_layer)
 
@@ -1578,8 +1590,8 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
             ])
             features.append(feature)
 
-        provider.addFeatures(features)
-        layer.updateExtents()
+        add_features_or_raise(
+            layer, features, f"NCZ geometry layer {layer_name}")
         return layer
 
     def _create_temp_attribute_layer(
@@ -1640,8 +1652,8 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
             ])
             features.append(feature)
 
-        provider.addFeatures(features)
-        layer.updateExtents()
+        add_features_or_raise(
+            layer, features, f"NCZ attribute table {table_name}")
         return layer
 
     def _add_groups_to_project(self, layer_groups: list[LayerGroup]) -> None:

@@ -26,6 +26,8 @@ from qgis.core import (
 from qgis.PyQt.QtCore import QVariant
 from qgis.PyQt.QtXml import QDomDocument
 
+from .qgis_compat import add_features_or_raise, memory_geometry_type_name
+
 
 MAX_KML_XML_BYTES = 64 * 1024 * 1024
 
@@ -392,11 +394,8 @@ class GisConverterEngine:
             if k not in [f.name() for f in layer.fields()]:
                 fields.append(QgsField(k, vtype))
 
-        geom_type_str = {
-            0: "Point",
-            1: "LineString",
-            2: "Polygon"
-        }.get(layer.geometryType(), "Point")
+        geom_type_str = memory_geometry_type_name(layer)
+
         uri = f"{geom_type_str}?crs={layer.crs().authid()}"
         expanded_layer = QgsVectorLayer(uri, layer.name(), "memory")
         prov = expanded_layer.dataProvider()
@@ -418,8 +417,8 @@ class GisConverterEngine:
                     new_feat[k] = v
             features.append(new_feat)
 
-        prov.addFeatures(features)
-        expanded_layer.updateExtents()
+        add_features_or_raise(
+            expanded_layer, features, "KML attribute expansion")
         return expanded_layer
 
     def _sanitize_column_name(self, value: str) -> str:
@@ -463,11 +462,8 @@ class GisConverterEngine:
                 processed_layer = self._expand_html_descriptions(vlayer)
 
             # Clone processed layer to a memory scratch layer
-            geom_type_str = {
-                0: "Point",
-                1: "LineString",
-                2: "Polygon"
-            }.get(processed_layer.geometryType(), "Point")
+            geom_type_str = memory_geometry_type_name(processed_layer)
+
 
             mem_uri = f"{geom_type_str}?crs={self.target_crs.authid()}"
             mem_layer = QgsVectorLayer(mem_uri, layer_name, "memory")
@@ -491,8 +487,8 @@ class GisConverterEngine:
                     new_feat[field.name()] = feat[field.name()]
                 features.append(new_feat)
 
-            prov.addFeatures(features)
-            mem_layer.updateExtents()
+            add_features_or_raise(
+                mem_layer, features, "GIS scratch layer clone")
             loaded_layers.append(mem_layer)
 
         return loaded_layers

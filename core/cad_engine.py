@@ -24,6 +24,8 @@ from qgis.core import (
 from qgis.PyQt.QtCore import QVariant
 from qgis.PyQt.QtGui import QColor, QFont
 
+from .qgis_compat import add_features_or_raise, memory_geometry_type_name
+
 
 class CadCleanupEngine:
     """Removes collinear nodes and duplicate points from CAD paths."""
@@ -114,11 +116,8 @@ class CadFeatureAugmenter:
         fields.append(QgsField("cent_x", QVariant.Double))
         fields.append(QgsField("cent_y", QVariant.Double))
 
-        geom_type_str = {
-            0: "Point",
-            1: "LineString",
-            2: "Polygon"
-        }.get(layer.geometryType(), "Point")
+        geom_type_str = memory_geometry_type_name(layer)
+
         uri = f"{geom_type_str}?crs={layer.crs().authid()}"
         enriched_layer = QgsVectorLayer(uri, layer.name(), "memory")
         prov = enriched_layer.dataProvider()
@@ -155,8 +154,8 @@ class CadFeatureAugmenter:
             new_feat["cent_y"] = round(cy, 6)
             features.append(new_feat)
 
-        prov.addFeatures(features)
-        enriched_layer.updateExtents()
+        add_features_or_raise(
+            enriched_layer, features, "Geometry metadata augmentation")
         return enriched_layer
 
 

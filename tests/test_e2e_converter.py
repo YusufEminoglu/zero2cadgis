@@ -2,7 +2,7 @@
 """Unit and E2E validation tests with QGIS/GDAL mocking."""
 import sys
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 # Set up mock objects for QGIS and GDAL/OGR dependencies to allow test
 # execution without QGIS installation.
@@ -26,6 +26,7 @@ from zero2gpkg_converter.core.cad_engine import CadCleanupEngine  # noqa: E402
 from zero2gpkg_converter.core.gis_engine import parse_kml_html_table  # noqa: E402
 from zero2gpkg_converter.core.netcad_parser import NetcadCoordinate  # noqa: E402
 from zero2gpkg_converter.core.path_utils import ensure_extension, has_extension  # noqa: E402
+from zero2gpkg_converter.core.qgis_compat import memory_geometry_type_name  # noqa: E402
 
 
 class TestZero2GpkgConverter(unittest.TestCase):
@@ -90,6 +91,26 @@ class TestZero2GpkgConverter(unittest.TestCase):
         self.assertEqual(len(cleaned), 2)
         self.assertEqual(cleaned[0].x, 10.0)
         self.assertEqual(cleaned[1].x, 15.0)
+
+    def test_qgis4_geometry_enum_detects_line_layers(self):
+        class EnumLike:
+            name = "Line"
+
+            def __str__(self):
+                return "GeometryType.Line"
+
+        class FakeLayer:
+            def wkbType(self):
+                return object()
+
+            def geometryType(self):
+                return EnumLike()
+
+        with patch(
+            "zero2gpkg_converter.core.qgis_compat.QgsWkbTypes.displayString",
+            side_effect=Exception("no display string"),
+        ):
+            self.assertEqual(memory_geometry_type_name(FakeLayer()), "LineString")
 
     def test_cad_polyline_closure(self):
         class MockPointXY:
