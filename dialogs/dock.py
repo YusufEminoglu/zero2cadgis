@@ -34,7 +34,8 @@ from qgis.PyQt.QtWidgets import (
     QComboBox,
     QDialog,
     QTextBrowser,
-    QDialogButtonBox
+    QDialogButtonBox,
+    QScrollArea,
 )
 from qgis.core import (
     QgsProject,
@@ -102,15 +103,24 @@ QGroupBox {
     background: #ffffff;
     border: 1px solid #cfd8dc;
     border-radius: 6px;
-    margin-top: 10px;
-    padding-top: 15px;
+    margin-top: 6px;
+    padding-top: 12px;
 }
 QGroupBox::title {
     subcontrol-origin: margin;
     subcontrol-position: top left;
     left: 8px;
-    padding: 0 5px;
+    padding: 0 4px;
     color: #0277bd;
+}
+
+/* ── scroll area ── */
+QScrollArea {
+    border: none;
+    background: transparent;
+}
+QScrollArea > QWidget > QWidget {
+    background: transparent;
 }
 
 /* ── labels: pinned dark so they never inherit a host-palette light/dark
@@ -397,14 +407,16 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         main_tab = QTabWidget()
 
         # ───────────────────────── TAB 1: CAD & GIS Converter ────────────────
-        tab_cad_gis = QWidget()
-        cad_gis_layout = QVBoxLayout(tab_cad_gis)
-        cad_gis_layout.setContentsMargins(6, 6, 6, 6)
+        tab1_inner = QWidget()
+        cad_gis_layout = QVBoxLayout(tab1_inner)
+        cad_gis_layout.setContentsMargins(4, 4, 4, 4)
+        cad_gis_layout.setSpacing(2)
 
         # Source Selection
         src_group = QGroupBox("Source CAD / GIS Dataset")
         src_layout = QVBoxLayout(src_group)
-        src_layout.setContentsMargins(8, 12, 8, 8)
+        src_layout.setContentsMargins(6, 10, 6, 6)
+        src_layout.setSpacing(3)
 
         type_layout = QHBoxLayout()
         type_layout.addWidget(QLabel("Dataset Type:"))
@@ -435,7 +447,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         # Destination GPKG Selection
         dst_group = QGroupBox("Target GeoPackage (.gpkg)")
         dst_layout = QHBoxLayout(dst_group)
-        dst_layout.setContentsMargins(8, 12, 8, 8)
+        dst_layout.setContentsMargins(6, 10, 6, 6)
 
         self.txt_gpkg_path = QLineEdit()
         self.txt_gpkg_path.setReadOnly(True)
@@ -451,7 +463,8 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         # Options
         opt_group = QGroupBox("Conversion Parameters")
         opt_form = QFormLayout(opt_group)
-        opt_form.setContentsMargins(8, 12, 8, 8)
+        opt_form.setContentsMargins(6, 10, 6, 6)
+        opt_form.setSpacing(3)
 
         self.converter_crs = QgsProjectionSelectionWidget()
         self.converter_crs.setOptionVisible(
@@ -492,7 +505,6 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         cad_gis_layout.addWidget(opt_group)
 
         # Progress Bar & Trigger
-        cad_gis_layout.addStretch(1)
         self.progress_conv = QProgressBar()
         self.progress_conv.setVisible(False)
         cad_gis_layout.addWidget(self.progress_conv)
@@ -503,6 +515,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         self.btn_convert_gis.clicked.connect(self._convert_gis_dataset)
         cad_gis_layout.addWidget(self.btn_convert_gis)
 
+        tab_cad_gis = self._make_scroll_tab(tab1_inner)
         main_tab.addTab(
             tab_cad_gis,
             QIcon(
@@ -512,14 +525,15 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
             "CAD & GIS Converter")
 
         # ───────────────────────── TAB 2: Netcad NCZ Importer ────────────────
-        tab_ncz = QWidget()
-        ncz_layout = QVBoxLayout(tab_ncz)
-        ncz_layout.setContentsMargins(6, 6, 6, 6)
+        tab2_inner = QWidget()
+        ncz_layout = QVBoxLayout(tab2_inner)
+        ncz_layout.setContentsMargins(4, 4, 4, 4)
+        ncz_layout.setSpacing(2)
 
         # NCZ File Select
         ncz_file_group = QGroupBox("NCZ File Selection")
         ncz_file_layout = QHBoxLayout(ncz_file_group)
-        ncz_file_layout.setContentsMargins(8, 12, 8, 8)
+        ncz_file_layout.setContentsMargins(6, 10, 6, 6)
 
         self.txt_ncz_path = QLineEdit()
         self.txt_ncz_path.setReadOnly(True)
@@ -533,18 +547,11 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         ncz_file_layout.addWidget(self.btn_browse_ncz)
         ncz_layout.addWidget(ncz_file_group)
 
-        # Main Splitter for metadata, tree, and parameters
-        ncz_splitter = QSplitter(Qt.Orientation.Vertical)
-
-        # Metadata Card & Layer Tree
-        ncz_mid_widget = QWidget()
-        ncz_mid_layout = QVBoxLayout(ncz_mid_widget)
-        ncz_mid_layout.setContentsMargins(0, 0, 0, 0)
-
+        # Metadata Card
         self.ncz_meta_group = QGroupBox("Drawing Metadata")
         ncz_meta_form = QFormLayout(self.ncz_meta_group)
-        ncz_meta_form.setContentsMargins(8, 8, 8, 8)
-        ncz_meta_form.setSpacing(4)
+        ncz_meta_form.setContentsMargins(6, 8, 6, 4)
+        ncz_meta_form.setSpacing(2)
 
         self.lbl_ncz_version = QLabel("-")
         self.lbl_ncz_projection = QLabel("-")
@@ -555,11 +562,13 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         ncz_meta_form.addRow("Projection:", self.lbl_ncz_projection)
         ncz_meta_form.addRow("Detected EPSG:", self.lbl_ncz_epsg)
         ncz_meta_form.addRow("Objects / Tables:", self.lbl_ncz_counts)
-        ncz_mid_layout.addWidget(self.ncz_meta_group)
+        ncz_layout.addWidget(self.ncz_meta_group)
 
+        # Layer Tree
         ncz_tree_group = QGroupBox("Select Layers to Import")
         ncz_tree_layout = QVBoxLayout(ncz_tree_group)
-        ncz_tree_layout.setContentsMargins(6, 10, 6, 6)
+        ncz_tree_layout.setContentsMargins(4, 8, 4, 4)
+        ncz_tree_layout.setSpacing(2)
 
         self.ncz_layer_tree = QTreeWidget()
         self.ncz_layer_tree.setHeaderLabels(
@@ -570,6 +579,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
 
         # Selection tools
         ncz_sel_layout = QHBoxLayout()
+        ncz_sel_layout.setSpacing(4)
         self.btn_ncz_select_all = QPushButton("Select All")
         self.btn_ncz_select_all.clicked.connect(self._select_all_ncz_layers)
         self.btn_ncz_deselect_all = QPushButton("Deselect All")
@@ -578,19 +588,13 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         ncz_sel_layout.addWidget(self.btn_ncz_select_all)
         ncz_sel_layout.addWidget(self.btn_ncz_deselect_all)
         ncz_tree_layout.addLayout(ncz_sel_layout)
-        ncz_mid_layout.addWidget(ncz_tree_group)
-
-        ncz_mid_widget.setLayout(ncz_mid_layout)
-        ncz_splitter.addWidget(ncz_mid_widget)
+        ncz_layout.addWidget(ncz_tree_group)
 
         # Advanced CAD Options
-        ncz_opt_widget = QWidget()
-        ncz_opt_layout = QVBoxLayout(ncz_opt_widget)
-        ncz_opt_layout.setContentsMargins(0, 0, 0, 0)
-
         ncz_opt_group = QGroupBox("CAD Optimization & Styling")
         ncz_opt_form = QFormLayout(ncz_opt_group)
-        ncz_opt_form.setContentsMargins(8, 12, 8, 8)
+        ncz_opt_form.setContentsMargins(6, 10, 6, 6)
+        ncz_opt_form.setSpacing(3)
 
         self.ncz_crs_selector = QgsProjectionSelectionWidget()
         self.ncz_crs_selector.setOptionVisible(
@@ -638,10 +642,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
             "Import directly as temporary scratch layers (no GPKG)")
         ncz_opt_form.addRow(self.chk_ncz_temporary)
 
-        ncz_opt_layout.addWidget(ncz_opt_group)
-        ncz_opt_widget.setLayout(ncz_opt_layout)
-        ncz_splitter.addWidget(ncz_opt_widget)
-        ncz_layout.addWidget(ncz_splitter)
+        ncz_layout.addWidget(ncz_opt_group)
 
         # Progress Bar & Trigger
         self.progress_ncz = QProgressBar()
@@ -654,6 +655,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         self.btn_convert_ncz.clicked.connect(self._import_netcad_dataset)
         ncz_layout.addWidget(self.btn_convert_ncz)
 
+        tab_ncz = self._make_scroll_tab(tab2_inner)
         main_tab.addTab(
             tab_ncz,
             QIcon(
@@ -663,13 +665,15 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
             "Netcad NCZ/NCA Importer")
 
         # ───────────────────────── TAB 3: CAD & GIS Exporter ─────────────────
-        tab_exp = QWidget()
-        exp_layout = QVBoxLayout(tab_exp)
-        exp_layout.setContentsMargins(6, 6, 6, 6)
+        tab3_inner = QWidget()
+        exp_layout = QVBoxLayout(tab3_inner)
+        exp_layout.setContentsMargins(4, 4, 4, 4)
+        exp_layout.setSpacing(2)
 
         exp_group = QGroupBox("Export Active QGIS Layers")
         exp_form = QFormLayout(exp_group)
-        exp_form.setContentsMargins(8, 12, 8, 8)
+        exp_form.setContentsMargins(6, 10, 6, 6)
+        exp_form.setSpacing(3)
 
         self.cmb_exp_layer = QComboBox()
         exp_form.addRow("Select Source Layer:", self.cmb_exp_layer)
@@ -696,14 +700,15 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         exp_form.addRow("Save Location:", browse_layout)
 
         exp_layout.addWidget(exp_group)
-        exp_layout.addStretch(1)
 
         self.btn_run_export = QPushButton("Export Dataset")
         self.btn_run_export.setObjectName("convert_btn")
         self.btn_run_export.setEnabled(False)
         self.btn_run_export.clicked.connect(self._run_export_layer)
         exp_layout.addWidget(self.btn_run_export)
+        exp_layout.addStretch(1)
 
+        tab_exp = self._make_scroll_tab(tab3_inner)
         main_tab.addTab(
             tab_exp,
             QIcon(
@@ -714,10 +719,10 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
 
         # Set main layout
         main_layout = QVBoxLayout()
-        main_layout.setContentsMargins(4, 4, 4, 4)
-        main_layout.setSpacing(6)
+        main_layout.setContentsMargins(3, 3, 3, 3)
+        main_layout.setSpacing(3)
         main_layout.addWidget(self._build_header())
-        main_layout.addWidget(main_tab)
+        main_layout.addWidget(main_tab, 1)
 
         central_widget = QWidget()
         central_widget.setLayout(main_layout)
@@ -726,17 +731,26 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         # Populate layers after UI elements are fully constructed
         self._populate_layers_combo()
 
+    @staticmethod
+    def _make_scroll_tab(inner_widget: QWidget) -> QScrollArea:
+        """Wrap *inner_widget* in a QScrollArea so the tab content scrolls."""
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QScrollArea.Shape.NoFrame)
+        scroll.setWidget(inner_widget)
+        return scroll
+
     def _build_header(self) -> QWidget:
         header = QWidget()
         header.setObjectName("dock_header")
         layout = QHBoxLayout(header)
-        layout.setContentsMargins(10, 8, 10, 8)
-        layout.setSpacing(8)
+        layout.setContentsMargins(8, 5, 8, 5)
+        layout.setSpacing(6)
 
         title_box = QWidget()
         title_layout = QVBoxLayout(title_box)
         title_layout.setContentsMargins(0, 0, 0, 0)
-        title_layout.setSpacing(1)
+        title_layout.setSpacing(0)
 
         title = QLabel("02gpkg")
         title.setObjectName("dock_title")
