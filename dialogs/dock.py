@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """zero2gpkg_converter — Tabbed DockWidget Controller.
 100% English, fully integrated with core CAD/GIS engines.
+Includes dynamic Exporter module and GroundOverlay extraction.
 """
 from __future__ import annotations
 
@@ -47,10 +48,10 @@ from qgis.core import (
 )
 from qgis.gui import QgsProjectionSelectionWidget
 
-# Import new modular core services (No trace of old ncz_pure/binary names)
+# Core services imports
 from ..core.netcad_parser import NetcadBinaryReader, NetcadEntity, NetcadAttributeTable
 from ..core.gis_engine import GisConverterEngine
-from ..core.cad_engine import CadCleanupEngine, CadStylingEngine
+from ..core.cad_engine import CadCleanupEngine, CadStylingEngine, CadFeatureAugmenter, CadExportEngine
 
 DOCK_STYLE = """
 QWidget {
@@ -153,7 +154,7 @@ class LayerGroup:
 
 
 class Zero2GpkgConverterDockWidget(QDockWidget):
-    """100% English controller managing GIS/CAD converter engine operations."""
+    """100% English controller managing GIS/CAD converter, exporter, and NCZ imports."""
     
     FIELD_DEFINITIONS = [
         QgsField("source_file", QVariant.String),
@@ -264,8 +265,11 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
 
         self.chk_conv_kml_expand = QCheckBox("Expand KML HTML balloon tables (kmltools feyz)")
         self.chk_conv_kml_expand.setChecked(True)
-        self.chk_conv_kml_expand.setToolTip("Parses HTML description tags into clean database columns.")
         opt_form.addRow(self.chk_conv_kml_expand)
+
+        self.chk_conv_raster = QCheckBox("Extract KML GroundOverlays to GeoTiff")
+        self.chk_conv_raster.setChecked(True)
+        opt_form.addRow(self.chk_conv_raster)
         
         self.chk_conv_load = QCheckBox("Load converted layers directly to canvas")
         self.chk_conv_load.setChecked(True)
@@ -377,6 +381,10 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         self.chk_ncz_clean = QCheckBox("Clean duplicate nodes")
         self.chk_ncz_clean.setChecked(True)
         ncz_opt_form.addRow(self.chk_ncz_clean)
+
+        self.chk_ncz_augment = QCheckBox("Calculate geometry metadata (Area, Length)")
+        self.chk_ncz_augment.setChecked(True)
+        ncz_opt_form.addRow(self.chk_ncz_augment)
         
         self.spin_ncz_tolerance = QDoubleSpinBox()
         self.spin_ncz_tolerance.setRange(0.0, 10.0)
@@ -414,6 +422,48 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         ncz_layout.addWidget(self.btn_convert_ncz)
         
         main_tab.addTab(tab_ncz, QIcon(os.path.join(self.icon_dir, "icon_ncz.png")), "Netcad NCZ Importer")
+
+        # ───────────────────────── TAB 3: CAD & GIS Exporter ─────────────────────────
+        tab_exp = QWidget()
+        exp_layout = QVBoxLayout(tab_exp)
+        exp_layout.setContentsMargins(6, 6, 6, 6)
+
+        exp_group = QGroupBox("Export Active QGIS Layers")
+        exp_form = QFormLayout(exp_group)
+        exp_form.setContentsMargins(8, 12, 8, 8)
+
+        self.cmb_exp_layer = QComboBox()
+        self._populate_layers_combo()
+        exp_form.addRow("Select Source Layer:", self.cmb_exp_layer)
+
+        self.cmb_exp_format = QComboBox()
+        self.cmb_exp_format.addItems(["AutoCAD DXF (*.dxf)", "Google Earth KML (*.kml)", "Google Earth KMZ (*.kmz)"])
+        self.cmb_exp_format.currentIndexChanged.connect(self._on_export_format_changed)
+        exp_form.addRow("Target Export Format:", self.cmb_exp_format)
+
+        self.txt_exp_path = QLineEdit()
+        self.txt_exp_path.setReadOnly(True)
+        self.txt_exp_path.setPlaceholderText("Select destination export file...")
+        
+        self.btn_browse_exp = QPushButton("Save As...")
+        self.btn_browse_exp.setObjectName("browse_btn")
+        self.btn_browse_exp.clicked.connect(self._browse_export_destination)
+        
+        browse_layout = QHBoxLayout()
+        browse_layout.addWidget(self.txt_exp_path)
+        browse_layout.addWidget(self.btn_browse_exp)
+        exp_form.addRow("Save Location:", browse_layout)
+
+        exp_layout.addWidget(exp_group)
+        exp_layout.addStretch(1)
+
+        self.btn_run_export = QPushButton("Export Dataset")
+        self.btn_run_export.setObjectName("convert_btn")
+        self.btn_run_export.setEnabled(False)
+        self.btn_run_export.clicked.connect(self._run_export_layer)
+        exp_layout.addWidget(self.btn_run_export)
+
+        main_tab.addTab(tab_exp, QIcon(os.path.join(self.icon_dir, "icon_gis.png")), "CAD & GIS Exporter")
         
         # Set main layout
         main_layout = QVBoxLayout()
@@ -491,16 +541,24 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
             self.gis_converter = GisConverterEngine(src, dst, crs)
             
             self.progress_conv.setValue(40)
-            self.progress_conv.setFormat("Parsing and transforming layers...")
+            self.progress_conv.setFormat("Converting vector layers...")
             
             # Execute conversion (including HTML expansion from kmltools)
             loaded_layers = self.gis_converter.convert(
                 is_kmz=is_kmz,
                 html_expansion=self.chk_conv_kml_expand.isChecked()
             )
+
+            # GroundOverlay Extraction
+            if self.chk_conv_raster.isChecked() and idx == 1:
+                self.progress_conv.setValue(60)
+                self.progress_conv.setFormat("Extracting KML GroundOverlays (kmltools feyz)...")
+                raster_layers = self.gis_converter.extract_ground_overlays(is_kmz=is_kmz)
+                for rl in raster_layers:
+                    QgsProject.instance().addMapLayer(rl)
             
             self.progress_conv.setValue(80)
-            self.progress_conv.setFormat("Adding to canvas...")
+            self.progress_conv.setFormat("Adding vector layers to canvas...")
             
             if self.chk_conv_load.isChecked() and loaded_layers:
                 root = QgsProject.instance().layerTreeRoot()
@@ -518,6 +576,9 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
             self.progress_conv.setValue(100)
             self.progress_conv.setVisible(False)
             
+            # Refresh exporter layer combo list
+            self._populate_layers_combo()
+
             QMessageBox.information(
                 self,
                 "Success",
@@ -545,7 +606,6 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
             self.progress_ncz.setValue(20)
             self.progress_ncz.setFormat("Parsing NCZ file...")
             
-            # Use English NetcadBinaryReader
             reader = NetcadBinaryReader(file_path)
             self.parsed_netcad_result = reader.parse()
             
@@ -689,7 +749,6 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
             self.progress_ncz.setValue(30)
             self.progress_ncz.setFormat("Creating GeoPackage layers...")
             
-            # Destination path selection
             gpkg_path, _ = QFileDialog.getSaveFileName(
                 self, "Select Output GeoPackage for NCZ Data", "", "GeoPackage (*.gpkg)"
             )
@@ -699,7 +758,6 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
             if not gpkg_path.endswith(".gpkg"):
                 gpkg_path += ".gpkg"
                 
-            # Build structures
             base_name = self._sanitize_name(os.path.splitext(os.path.basename(self.current_netcad_path))[0])
             source_file_name = os.path.splitext(os.path.basename(self.current_netcad_path))[0]
             
@@ -729,11 +787,9 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
             self.progress_ncz.setValue(50)
             self.progress_ncz.setFormat("Writing CAD features to GeoPackage...")
             
-            # Create GeoPackage layers using memory buffers and QgsVectorFileWriter
             layer_groups = []
             transform_context = QgsProject.instance().transformContext()
             
-            # Delete file if exists to write fresh
             if os.path.exists(gpkg_path):
                 try:
                     os.remove(gpkg_path)
@@ -746,7 +802,6 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                 for key in sorted(grouped_entities[group_name].keys()):
                     bucket = grouped_entities[group_name][key]
                     
-                    # Create temporary memory layer
                     temp_layer = self._create_temp_vector_layer(
                         bucket.display_name,
                         bucket.geometry_type,
@@ -756,24 +811,27 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                     )
                     
                     if temp_layer:
-                        # Styling (CartoDXF feyz)
+                        # Augment geometry details (cad_to_gis_convert feyz)
+                        processed_layer = temp_layer
+                        if self.chk_ncz_augment.isChecked():
+                            processed_layer = CadFeatureAugmenter.augment_layer(temp_layer)
+
                         if self.chk_ncz_style.isChecked():
-                            CadStylingEngine.apply_argb_renderer(temp_layer, bucket.geometry_type)
+                            CadStylingEngine.apply_argb_renderer(processed_layer, bucket.geometry_type)
                             
-                        # Labels
                         if self.chk_ncz_label.isChecked() and bucket.geometry_type == "Point":
                             has_texts = any(e.geometry_kind == "Text" for e in bucket.entities)
                             if has_texts:
-                                CadStylingEngine.apply_buffered_labels(temp_layer)
+                                CadStylingEngine.apply_buffered_labels(processed_layer)
                                 
-                        # Write memory layer directly into the GPKG
+                        # Save
                         options = QgsVectorFileWriter.SaveVectorOptions()
                         options.driverName = "GPKG"
                         options.layerName = bucket.display_name
                         options.actionOnExistingFile = QgsVectorFileWriter.ActionOnExistingFile.CreateOrOverwriteLayer
                         
                         err, err_msg, _, _ = QgsVectorFileWriter.writeAsVectorFormatV3(
-                            temp_layer,
+                            processed_layer,
                             gpkg_path,
                             transform_context,
                             options
@@ -834,6 +892,9 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
             self.progress_ncz.setValue(100)
             self.progress_ncz.setVisible(False)
             
+            # Refresh exporter layer combo list
+            self._populate_layers_combo()
+
             QMessageBox.information(
                 self,
                 "Success",
@@ -990,7 +1051,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
             if len(ring) < 3:
                 return None
                 
-            # Polyline closure using new cleanup engine
+            # Polyline closure
             ring = CadCleanupEngine.close_polyline(ring, self.spin_ncz_tolerance.value())
                     
             if len(ring) < 4:
@@ -1062,3 +1123,79 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                     
                     geom_layer.addJoin(join_info)
                     geom_layer.triggerRepaint()
+
+    # ───────────────────────── TAB 3: EXPORTER CONTROLS ─────────────────────────
+
+    def _populate_layers_combo(self) -> None:
+        """Fills vector layers into exporter combobox."""
+        self.cmb_exp_layer.clear()
+        layers = QgsProject.instance().mapLayers().values()
+        for layer in layers:
+            if isinstance(layer, QgsVectorLayer) and layer.isValid():
+                self.cmb_exp_layer.addItem(layer.name(), layer.id())
+        self._update_export_button_state()
+
+    def _on_export_format_changed(self, index: int) -> None:
+        self.txt_exp_path.clear()
+        self._update_export_button_state()
+
+    def _browse_export_destination(self) -> None:
+        idx = self.cmb_exp_format.currentIndex()
+        if idx == 0:
+            file_path, _ = QFileDialog.getSaveFileName(
+                self, "Export to DXF Drawing", "", "AutoCAD DXF (*.dxf)"
+            )
+            if file_path and not file_path.lower().endswith(".dxf"):
+                file_path += ".dxf"
+        elif idx == 1:
+            file_path, _ = QFileDialog.getSaveFileName(
+                self, "Export to KML File", "", "Google Earth KML (*.kml)"
+            )
+            if file_path and not file_path.lower().endswith(".kml"):
+                file_path += ".kml"
+        else:
+            file_path, _ = QFileDialog.getSaveFileName(
+                self, "Export to KMZ Package", "", "Google Earth KMZ (*.kmz)"
+            )
+            if file_path and not file_path.lower().endswith(".kmz"):
+                file_path += ".kmz"
+
+        if file_path:
+            self.txt_exp_path.setText(file_path)
+            self._update_export_button_state()
+
+    def _update_export_button_state(self) -> None:
+        has_layer = self.cmb_exp_layer.currentIndex() >= 0
+        has_path = bool(self.txt_exp_path.text().strip())
+        self.btn_run_export.setEnabled(has_layer and has_path)
+
+    def _run_export_layer(self) -> None:
+        layer_id = self.cmb_exp_layer.currentData()
+        output_path = self.txt_exp_path.text()
+        format_idx = self.cmb_exp_format.currentIndex()
+        
+        layer = QgsProject.instance().mapLayer(layer_id)
+        if not layer or not isinstance(layer, QgsVectorLayer):
+            QMessageBox.warning(self, "Export Warning", "Source layer is no longer valid.")
+            return
+
+        try:
+            success = False
+            if format_idx == 0: # DXF
+                success = CadExportEngine.export_layer_to_dxf(layer, output_path)
+            elif format_idx == 1: # KML
+                success = GisConverterEngine.export_layer_to_gis(layer, output_path, "KML")
+            else: # KMZ
+                success = GisConverterEngine.export_layer_to_gis(layer, output_path, "KMZ")
+
+            if success:
+                QMessageBox.information(
+                    self,
+                    "Success",
+                    f"Successfully exported layer to drawing format!\nPath: {output_path}"
+                )
+            else:
+                raise ValueError("Engine reported export failure (check coordinate compatibility).")
+
+        except Exception as exc:
+            QMessageBox.critical(self, "Export Error", f"Failed exporting QGIS layer:\n{exc}")

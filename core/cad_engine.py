@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
-"""cad_engine — CAD feature cleanup and styling service.
-Provides vertex thinning, polyline closure tolerance, and custom styling.
+"""cad_engine — CAD feature cleanup, augmentation, and styling services.
+Provides vertex thinning, polyline closure tolerance, attribute augmentation, and dxf export.
 """
 from __future__ import annotations
 
 import math
 from qgis.core import (
+    QgsProject,
     QgsVectorLayer,
     QgsFeature,
+    QgsField,
     QgsGeometry,
     QgsPointXY,
     QgsMarkerSymbol,
@@ -17,8 +19,11 @@ from qgis.core import (
     QgsPalLayerSettings,
     QgsVectorLayerSimpleLabeling,
     QgsTextFormat,
-    QgsTextBufferSettings
+    QgsTextBufferSettings,
+    QgsVectorFileWriter,
+    QgsFields
 )
+from qgis.PyQt.QtCore import QVariant
 from qgis.PyQt.QtGui import QColor, QFont
 
 
@@ -76,9 +81,6 @@ class CadCleanupEngine:
 
     @staticmethod
     def close_polyline(coords: list, tolerance: float) -> list:
-        """Closes polylines if endpoints are within the specified tolerance.
-        Returns a closed geometry coordinate list.
-        """
         if len(coords) < 3:
             return coords
             
@@ -86,25 +88,77 @@ class CadCleanupEngine:
         last = coords[-1]
         dist = math.hypot(first.x - last.x, first.y - last.y)
         
-        # Build closed loop
         closed_coords = list(coords)
         if dist > 0.0001 and dist <= tolerance:
             closed_coords.append(first)
         elif dist > tolerance:
-            # Force close if polygon output is required
             closed_coords.append(first)
             
         return closed_coords
 
 
+class CadFeatureAugmenter:
+    """Calculates geometric properties (area, length, centroid) to enrich CAD data."""
+    
+    @staticmethod
+    def augment_layer(layer: QgsVectorLayer) -> QgsVectorLayer:
+        """Enriches memory layers with computed geometric metadata columns."""
+        fields = QgsFields()
+        for field in layer.fields():
+            fields.append(field)
+            
+        # Add new geo-statistical columns
+        fields.append(QgsField("geom_len", QVariant.Double))
+        fields.append(QgsField("geom_area", QVariant.Double))
+        fields.append(QgsField("cent_x", QVariant.Double))
+        fields.append(QgsField("cent_y", QVariant.Double))
+
+        uri = f"{layer.geometryType().name()}?crs={layer.crs().authid()}"
+        enriched_layer = QgsVectorLayer(uri, layer.name(), "memory")
+        prov = enriched_layer.dataProvider()
+        prov.addAttributes(fields)
+        enriched_layer.updateFields()
+
+        features = []
+        for feat in layer.getFeatures():
+            geom = feat.geometry()
+            new_feat = QgsFeature(enriched_layer.fields())
+            new_feat.setGeometry(geom)
+            
+            # Copy original values
+            for field in layer.fields():
+                new_feat[field.name()] = feat[field.name()]
+                
+            # Perform calculations
+            length = 0.0
+            area = 0.0
+            cx = 0.0
+            cy = 0.0
+            
+            if geom and not geom.isEmpty():
+                length = geom.length()
+                area = geom.area()
+                centroid = geom.centroid()
+                if centroid and not centroid.isEmpty():
+                    cx = centroid.asPoint().x()
+                    cy = centroid.asPoint().y()
+                    
+            new_feat["geom_len"] = round(length, 3)
+            new_feat["geom_area"] = round(area, 3)
+            new_feat["cent_x"] = round(cx, 6)
+            new_feat["cent_y"] = round(cy, 6)
+            features.append(new_feat)
+
+        prov.addFeatures(features)
+        enriched_layer.updateExtents()
+        return enriched_layer
+
+
 class CadStylingEngine:
-    """Translates CAD layout parameters to styled QGIS rendering.
-    Feyz taken from CartoDXF to dominate styling competitors.
-    """
+    """Translates CAD layout parameters to styled QGIS rendering."""
     
     @staticmethod
     def apply_argb_renderer(layer: QgsVectorLayer, geometry_type: str) -> None:
-        """Discovers ARGB code from features and sets matching vector layer style."""
         color_rgb = None
         for feature in layer.getFeatures():
             color_str = feature["color_argb"]
@@ -132,7 +186,6 @@ class CadStylingEngine:
                 "outline_width": "0.4"
             })
         elif geometry_type == "LineString":
-            # Map line patterns (CartoDXF styling feyz)
             symbol = QgsLineSymbol.createSimple({
                 "color": color_rgb.name(),
                 "width": "0.7",
@@ -140,7 +193,7 @@ class CadStylingEngine:
             })
         elif geometry_type == "Polygon":
             symbol = QgsFillSymbol.createSimple({
-                "color": f"{color_rgb.red()},{color_rgb.green()},{color_rgb.blue()},70", # Translucent fill
+                "color": f"{color_rgb.red()},{color_rgb.green()},{color_rgb.blue()},70",
                 "outline_color": color_rgb.name(),
                 "outline_width": "0.5"
             })
@@ -152,7 +205,6 @@ class CadStylingEngine:
 
     @staticmethod
     def apply_buffered_labels(layer: QgsVectorLayer) -> None:
-        """Sets clean labels with a thick buffer mask to prevent overlap background clutter."""
         text_format = QgsTextFormat()
         text_format.setFont(QFont("Segoe UI", 9))
         text_format.setColor(QColor(0, 0, 0))
@@ -173,3 +225,18 @@ class CadStylingEngine:
         layer.setLabeling(simple_labeling)
         layer.setLabelsEnabled(True)
         layer.triggerRepaint()
+
+
+class CadExportEngine:
+    """Exports active vectors into DXF format."""
+    
+    @staticmethod
+    def export_layer_to_dxf(layer: QgsVectorLayer, output_path: str) -> bool:
+        transform_context = QgsProject.instance().transformContext()
+        options = QgsVectorFileWriter.SaveVectorOptions()
+        options.driverName = "DXF"
+        
+        err, err_msg, _, _ = QgsVectorFileWriter.writeAsVectorFormatV3(
+            layer, output_path, transform_context, options
+        )
+        return err == QgsVectorFileWriter.WriterError.NoError
