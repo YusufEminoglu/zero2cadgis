@@ -556,6 +556,11 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         try:
             is_kmz = idx == 1 and src.lower().endswith(".kmz")
             
+            if self.chk_conv_temporary.isChecked():
+                import tempfile
+                temp_dir = tempfile.gettempdir()
+                dst = os.path.join(temp_dir, f"zero2gpkg_temp_{self._sanitize_name(os.path.basename(src))}.gpkg")
+            
             # Initialize GisConverterEngine
             self.gis_converter = GisConverterEngine(src, dst, crs)
             
@@ -563,16 +568,10 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
             self.progress_conv.setFormat("Converting vector layers...")
             
             # Execute conversion (including HTML expansion from kmltools)
-            if self.chk_conv_temporary.isChecked():
-                loaded_layers = self.gis_converter.convert_to_memory(
-                    is_kmz=is_kmz,
-                    html_expansion=self.chk_conv_kml_expand.isChecked()
-                )
-            else:
-                loaded_layers = self.gis_converter.convert(
-                    is_kmz=is_kmz,
-                    html_expansion=self.chk_conv_kml_expand.isChecked()
-                )
+            loaded_layers = self.gis_converter.convert(
+                is_kmz=is_kmz,
+                html_expansion=self.chk_conv_kml_expand.isChecked()
+            )
 
             # GroundOverlay Extraction
             if self.chk_conv_raster.isChecked() and idx == 1:
@@ -587,7 +586,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
             
             if self.chk_conv_load.isChecked() and loaded_layers:
                 root = QgsProject.instance().layerTreeRoot()
-                suffix = "MEMORY" if self.chk_conv_temporary.isChecked() else "GPKG"
+                suffix = "TEMP" if self.chk_conv_temporary.isChecked() else "GPKG"
                 group_name = f"{self._sanitize_name(os.path.basename(src))}_{suffix}"
                 
                 existing = root.findGroup(group_name)
@@ -777,7 +776,14 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
             
             gpkg_path = ""
             is_temp = self.chk_ncz_temporary.isChecked()
-            if not is_temp:
+            base_name = self._sanitize_name(os.path.splitext(os.path.basename(self.current_netcad_path))[0])
+            source_file_name = os.path.splitext(os.path.basename(self.current_netcad_path))[0]
+            
+            if is_temp:
+                import tempfile
+                temp_dir = tempfile.gettempdir()
+                gpkg_path = os.path.join(temp_dir, f"zero2gpkg_temp_{base_name}.gpkg")
+            else:
                 gpkg_path, _ = QFileDialog.getSaveFileName(
                     self, "Select Output GeoPackage for NCZ Data", "", "GeoPackage (*.gpkg)"
                 )
@@ -786,9 +792,6 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                     return
                 if not gpkg_path.endswith(".gpkg"):
                     gpkg_path += ".gpkg"
-                
-            base_name = self._sanitize_name(os.path.splitext(os.path.basename(self.current_netcad_path))[0])
-            source_file_name = os.path.splitext(os.path.basename(self.current_netcad_path))[0]
             
             target_crs = self.ncz_crs_selector.crs()
             if not target_crs.isValid():
@@ -853,29 +856,26 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                             if has_texts:
                                 CadStylingEngine.apply_buffered_labels(processed_layer)
                                 
-                        if is_temp:
-                            layers.append(processed_layer)
-                        else:
-                            # Save
-                            options = QgsVectorFileWriter.SaveVectorOptions()
-                            options.driverName = "GPKG"
-                            options.layerName = bucket.display_name
-                            options.actionOnExistingFile = QgsVectorFileWriter.ActionOnExistingFile.CreateOrOverwriteLayer
+                        # Save
+                        options = QgsVectorFileWriter.SaveVectorOptions()
+                        options.driverName = "GPKG"
+                        options.layerName = bucket.display_name
+                        options.actionOnExistingFile = QgsVectorFileWriter.ActionOnExistingFile.CreateOrOverwriteLayer
+                        
+                        err, err_msg, _, _ = QgsVectorFileWriter.writeAsVectorFormatV3(
+                            processed_layer,
+                            gpkg_path,
+                            transform_context,
+                            options
+                        )
+                        if err != QgsVectorFileWriter.WriterError.NoError:
+                            raise ValueError(f"Failed to write layer '{bucket.display_name}' to GPKG: {err_msg}")
                             
-                            err, err_msg, _, _ = QgsVectorFileWriter.writeAsVectorFormatV3(
-                                processed_layer,
-                                gpkg_path,
-                                transform_context,
-                                options
-                            )
-                            if err != QgsVectorFileWriter.WriterError.NoError:
-                                raise ValueError(f"Failed to write layer '{bucket.display_name}' to GPKG: {err_msg}")
-                                
-                            # Load from GPKG
-                            gpkg_uri = f"{gpkg_path}|layername={bucket.display_name}"
-                            gpkg_layer = QgsVectorLayer(gpkg_uri, bucket.display_name, "ogr")
-                            if gpkg_layer.isValid():
-                                layers.append(gpkg_layer)
+                        # Load from GPKG
+                        gpkg_uri = f"{gpkg_path}|layername={bucket.display_name}"
+                        gpkg_layer = QgsVectorLayer(gpkg_uri, bucket.display_name, "ogr")
+                        if gpkg_layer.isValid():
+                            layers.append(gpkg_layer)
                             
                 if layers:
                     layer_groups.append(LayerGroup(name=group_name, layers=layers))
@@ -891,25 +891,22 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                     
                     temp_attr = self._create_temp_attribute_layer(table_name, table, source_file_name)
                     if temp_attr:
-                        if is_temp:
-                            attribute_layers.append(temp_attr)
-                        else:
-                            options = QgsVectorFileWriter.SaveVectorOptions()
-                            options.driverName = "GPKG"
-                            options.layerName = f"{table_name}_TABLE"
-                            options.actionOnExistingFile = QgsVectorFileWriter.ActionOnExistingFile.CreateOrOverwriteLayer
-                            
-                            err, err_msg, _, _ = QgsVectorFileWriter.writeAsVectorFormatV3(
-                                temp_attr,
-                                gpkg_path,
-                                transform_context,
-                                options
-                            )
-                            if err == QgsVectorFileWriter.WriterError.NoError:
-                                gpkg_uri = f"{gpkg_path}|layername={options.layerName}"
-                                gpkg_layer = QgsVectorLayer(gpkg_uri, f"{table_name}_TABLE", "ogr")
-                                if gpkg_layer.isValid():
-                                    attribute_layers.append(gpkg_layer)
+                        options = QgsVectorFileWriter.SaveVectorOptions()
+                        options.driverName = "GPKG"
+                        options.layerName = f"{table_name}_TABLE"
+                        options.actionOnExistingFile = QgsVectorFileWriter.ActionOnExistingFile.CreateOrOverwriteLayer
+                        
+                        err, err_msg, _, _ = QgsVectorFileWriter.writeAsVectorFormatV3(
+                            temp_attr,
+                            gpkg_path,
+                            transform_context,
+                            options
+                        )
+                        if err == QgsVectorFileWriter.WriterError.NoError:
+                            gpkg_uri = f"{gpkg_path}|layername={options.layerName}"
+                            gpkg_layer = QgsVectorLayer(gpkg_uri, f"{table_name}_TABLE", "ogr")
+                            if gpkg_layer.isValid():
+                                attribute_layers.append(gpkg_layer)
                                 
                 if attribute_layers:
                     layer_groups.append(LayerGroup(name=attribute_group_name, layers=attribute_layers))
