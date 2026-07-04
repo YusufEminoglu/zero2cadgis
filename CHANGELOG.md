@@ -2,6 +2,10 @@
 
 ## [0.1.1] - 2026-07-04
 
+- Fix SQLite database locking
+
+## [0.1.1] - 2026-07-04
+
 - Implement temporary GPKG layer support
 
 ## [0.1.1] - 2026-07-04

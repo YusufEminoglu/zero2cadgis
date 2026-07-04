@@ -822,12 +822,6 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
             layer_groups = []
             transform_context = QgsProject.instance().transformContext()
             
-            if not is_temp and os.path.exists(gpkg_path):
-                try:
-                    os.remove(gpkg_path)
-                except OSError:
-                    pass
-            
             # 1. Geometries
             for group_name in sorted(grouped_entities.keys()):
                 layers = []
@@ -856,37 +850,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                             if has_texts:
                                 CadStylingEngine.apply_buffered_labels(processed_layer)
                                 
-                        # Save
-                        layer_gpkg_path = gpkg_path
-                        if is_temp:
-                            import tempfile
-                            temp_dir = tempfile.gettempdir()
-                            layer_gpkg_path = os.path.join(temp_dir, f"zero2gpkg_temp_{base_name}_{bucket.display_name}.gpkg")
-                            if os.path.exists(layer_gpkg_path):
-                                try:
-                                    os.remove(layer_gpkg_path)
-                                except OSError:
-                                    pass
-
-                        options = QgsVectorFileWriter.SaveVectorOptions()
-                        options.driverName = "GPKG"
-                        options.layerName = bucket.display_name
-                        options.actionOnExistingFile = QgsVectorFileWriter.ActionOnExistingFile.CreateOrOverwriteLayer
-                        
-                        err, err_msg, _, _ = QgsVectorFileWriter.writeAsVectorFormatV3(
-                            processed_layer,
-                            layer_gpkg_path,
-                            transform_context,
-                            options
-                        )
-                        if err != QgsVectorFileWriter.WriterError.NoError:
-                            raise ValueError(f"Failed to write layer '{bucket.display_name}' to GPKG: {err_msg}")
-                            
-                        # Load from GPKG
-                        gpkg_uri = f"{layer_gpkg_path}|layername={bucket.display_name}"
-                        gpkg_layer = QgsVectorLayer(gpkg_uri, bucket.display_name, "ogr")
-                        if gpkg_layer.isValid():
-                            layers.append(gpkg_layer)
+                        layers.append(processed_layer)
                             
                 if layers:
                     layer_groups.append(LayerGroup(name=group_name, layers=layers))
@@ -902,37 +866,52 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                     
                     temp_attr = self._create_temp_attribute_layer(table_name, table, source_file_name)
                     if temp_attr:
-                        table_gpkg_path = gpkg_path
-                        if is_temp:
-                            import tempfile
-                            temp_dir = tempfile.gettempdir()
-                            table_gpkg_path = os.path.join(temp_dir, f"zero2gpkg_temp_{base_name}_{table_name}_TABLE.gpkg")
-                            if os.path.exists(table_gpkg_path):
-                                try:
-                                    os.remove(table_gpkg_path)
-                                except OSError:
-                                    pass
-
-                        options = QgsVectorFileWriter.SaveVectorOptions()
-                        options.driverName = "GPKG"
-                        options.layerName = f"{table_name}_TABLE"
-                        options.actionOnExistingFile = QgsVectorFileWriter.ActionOnExistingFile.CreateOrOverwriteLayer
-                        
-                        err, err_msg, _, _ = QgsVectorFileWriter.writeAsVectorFormatV3(
-                            temp_attr,
-                            table_gpkg_path,
-                            transform_context,
-                            options
-                        )
-                        if err == QgsVectorFileWriter.WriterError.NoError:
-                            gpkg_uri = f"{table_gpkg_path}|layername={options.layerName}"
-                            gpkg_layer = QgsVectorLayer(gpkg_uri, f"{table_name}_TABLE", "ogr")
-                            if gpkg_layer.isValid():
-                                attribute_layers.append(gpkg_layer)
+                        attribute_layers.append(temp_attr)
                                 
                 if attribute_layers:
                     layer_groups.append(LayerGroup(name=attribute_group_name, layers=attribute_layers))
                     
+            # 3. Write all layers to the target GeoPackage (No locks because layers are not loaded in QGIS yet!)
+            if is_temp:
+                import tempfile
+                temp_dir = tempfile.gettempdir()
+                gpkg_path = os.path.join(temp_dir, f"zero2gpkg_temp_{base_name}.gpkg")
+                
+            if os.path.exists(gpkg_path):
+                try:
+                    os.remove(gpkg_path)
+                except OSError:
+                    pass
+                    
+            for group in layer_groups:
+                for layer in group.layers:
+                    options = QgsVectorFileWriter.SaveVectorOptions()
+                    options.driverName = "GPKG"
+                    options.layerName = layer.name()
+                    options.actionOnExistingFile = QgsVectorFileWriter.ActionOnExistingFile.CreateOrOverwriteLayer
+                    
+                    err, err_msg, _, _ = QgsVectorFileWriter.writeAsVectorFormatV3(
+                        layer,
+                        gpkg_path,
+                        transform_context,
+                        options
+                    )
+                    if err != QgsVectorFileWriter.WriterError.NoError:
+                        raise ValueError(f"Failed to write layer '{layer.name()}' to GPKG: {err_msg}")
+                        
+            # 4. Load written layers from the GPKG file
+            final_layer_groups = []
+            for group in layer_groups:
+                gpkg_layers = []
+                for layer in group.layers:
+                    gpkg_uri = f"{gpkg_path}|layername={layer.name()}"
+                    gpkg_layer = QgsVectorLayer(gpkg_uri, layer.name(), "ogr")
+                    if gpkg_layer.isValid():
+                        gpkg_layers.append(gpkg_layer)
+                if gpkg_layers:
+                    final_layer_groups.append(LayerGroup(name=group.name, layers=gpkg_layers))
+            layer_groups = final_layer_groups
+            
             self.progress_ncz.setValue(80)
             self.progress_ncz.setFormat("Adding layers to QGIS layout...")
             
