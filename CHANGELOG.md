@@ -6,6 +6,10 @@
 
 ## [0.1.0] - 2026-07-04
 
+- Refactored release
+
+## [0.1.0] - 2026-07-04
+
 - Initial release
 
 All notable changes to this project will be documented in this file.
