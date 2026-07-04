@@ -888,7 +888,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                     options = QgsVectorFileWriter.SaveVectorOptions()
                     options.driverName = "GPKG"
                     options.layerName = layer.name()
-                    options.actionOnExistingFile = QgsVectorFileWriter.ActionOnExistingFile.CreateOrOverwriteLayer
+                    options.actionOnExistingFile = QgsVectorFileWriter.ActionOnExistingFile.CreateOrOverwriteFile
                     
                     err, err_msg, _, _ = QgsVectorFileWriter.writeAsVectorFormatV3(
                         layer,
