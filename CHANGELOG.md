@@ -2,6 +2,10 @@
 
 ## [0.1.1] - 2026-07-04
 
+- Fix OGR temp GPKG action
+
+## [0.1.1] - 2026-07-04
+
 - Fix SQLite locking via OGR merge
 
 ## [0.1.1] - 2026-07-04

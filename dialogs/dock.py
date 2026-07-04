@@ -185,8 +185,8 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         self.setAllowedAreas(Qt.DockWidgetArea.LeftDockWidgetArea | Qt.DockWidgetArea.RightDockWidgetArea)
         self.setStyleSheet(DOCK_STYLE)
         
-        self.current_netcad_path: str = ""
-        self.parsed_netcad_result = None
+        self.current_netcad_paths: list[str] = []
+        self.parsed_netcad_results = {}
         self.gis_converter = None
         
         self._build_ui()
@@ -617,46 +617,66 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
     # ───────────────────────── TAB 2: NETCAD NCZ IMPORTER CONTROLS ─────────────────────────
 
     def _select_ncz_file(self) -> None:
-        file_path, _ = QFileDialog.getOpenFileName(
-            self, "Select Netcad NCZ Drawing File", "", "Netcad Drawing Files (*.ncz);;All Files (*.*)"
+        file_paths, _ = QFileDialog.getOpenFileNames(
+            self, "Select Netcad NCZ Drawing File(s)", "", "Netcad Drawing Files (*.ncz);;All Files (*.*)"
         )
-        if not file_path:
+        if not file_paths:
             return
             
-        self.current_netcad_path = file_path
-        self.txt_ncz_path.setText(file_path)
+        self.current_netcad_paths = file_paths
+        if len(file_paths) == 1:
+            self.txt_ncz_path.setText(file_paths[0])
+        else:
+            self.txt_ncz_path.setText(f"{len(file_paths)} files selected")
+        
+        self.parsed_netcad_results = {}
+        total_entities = 0
+        total_tables = 0
+        versions = set()
+        projections = set()
+        epsg_codes = set()
+        
+        self.progress_ncz.setVisible(True)
+        self.progress_ncz.setValue(10)
+        self.progress_ncz.setFormat("Parsing selected NCZ drawings...")
         
         try:
-            self.progress_ncz.setVisible(True)
-            self.progress_ncz.setValue(20)
-            self.progress_ncz.setFormat("Parsing NCZ file...")
-            
-            reader = NetcadBinaryReader(file_path)
-            self.parsed_netcad_result = reader.parse()
-            
+            for idx, file_path in enumerate(file_paths):
+                self.progress_ncz.setValue(10 + int((idx / len(file_paths)) * 50))
+                self.progress_ncz.setFormat(f"Parsing {os.path.basename(file_path)}...")
+                
+                reader = NetcadBinaryReader(file_path)
+                res = reader.parse()
+                self.parsed_netcad_results[file_path] = res
+                
+                total_entities += len(res.entities)
+                total_tables += len(res.attribute_tables)
+                if res.version_name:
+                    versions.add(res.version_name)
+                if res.projection_text:
+                    projections.add(res.projection_text)
+                if res.epsg:
+                    epsg_codes.add(res.epsg)
+
             self.progress_ncz.setValue(60)
             self.progress_ncz.setFormat("Building layer catalog...")
             
-            # Populate card
-            self.lbl_ncz_version.setText(self.parsed_netcad_result.version_name or "Standard / Older version")
-            self.lbl_ncz_projection.setText(self.parsed_netcad_result.projection_text or "Undefined")
-            
-            epsg_str = self.parsed_netcad_result.epsg or "Not defined"
-            self.lbl_ncz_epsg.setText(epsg_str)
-            
-            total_entities = len(self.parsed_netcad_result.entities)
-            total_tables = len(self.parsed_netcad_result.attribute_tables)
-            self.lbl_ncz_counts.setText(f"{total_entities} features / {total_tables} attribute tables")
-            
-            # Guess target CRS
-            if self.parsed_netcad_result.epsg:
+            # Guess target CRS from first valid EPSG found
+            for epsg in epsg_codes:
                 try:
-                    clean_epsg = self.parsed_netcad_result.epsg.replace("EPSG:", "").strip()
+                    clean_epsg = epsg.replace("EPSG:", "").strip()
                     crs = QgsCoordinateReferenceSystem(f"EPSG:{clean_epsg}")
                     if crs.isValid():
                         self.ncz_crs_selector.setCrs(crs)
+                        break
                 except Exception:
                     pass
+
+            # Populate card
+            self.lbl_ncz_version.setText(", ".join(versions) or "Standard / Older version")
+            self.lbl_ncz_projection.setText(", ".join(projections) or "Undefined")
+            self.lbl_ncz_epsg.setText(", ".join(epsg_codes) or "Not defined")
+            self.lbl_ncz_counts.setText(f"{total_entities} features / {total_tables} attribute tables across {len(file_paths)} files")
             
             # Fill Tree Widget
             self._fill_ncz_layer_tree()
@@ -668,52 +688,66 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         except Exception as exc:
             self.progress_ncz.setVisible(False)
             self.btn_convert_ncz.setEnabled(False)
-            QMessageBox.critical(self, "NCZ Parse Error", f"Could not parse binary NCZ drawing:\n{exc}")
+            QMessageBox.critical(self, "NCZ Parse Error", f"Could not parse binary NCZ drawings:\n{exc}")
 
     def _fill_ncz_layer_tree(self) -> None:
         self.ncz_layer_tree.clear()
-        if not self.parsed_netcad_result:
+        if not self.parsed_netcad_results:
             return
             
-        # Group entities
-        layer_stats = {}
-        for entity in self.parsed_netcad_result.entities:
-            family, _ = self._geometry_family(entity.geometry_kind)
-            if not family:
-                continue
-            key = (entity.layer_code, entity.layer_name or f"LAYER_{entity.layer_code}", family)
-            layer_stats[key] = layer_stats.get(key, 0) + 1
+        for file_path, parsed in sorted(self.parsed_netcad_results.items()):
+            file_name = os.path.basename(file_path)
             
-        root_item = QTreeWidgetItem(self.ncz_layer_tree)
-        root_item.setText(0, "CAD Layers")
-        root_item.setFlags(root_item.flags() | Qt.ItemFlag.ItemIsAutoTristate | Qt.ItemFlag.ItemIsUserCheckable)
-        root_item.setCheckState(0, Qt.CheckState.Checked)
-        root_item.setExpanded(True)
-        
-        for (code, name, family), count in sorted(layer_stats.items(), key=lambda x: x[0][1]):
-            item = QTreeWidgetItem(root_item)
-            item.setText(0, name)
-            item.setText(1, family)
-            item.setText(2, str(count))
-            item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
-            item.setCheckState(0, Qt.CheckState.Checked)
-            item.setData(0, Qt.ItemDataRole.UserRole, (code, name, family))
+            # 1. File Root Item
+            file_item = QTreeWidgetItem(self.ncz_layer_tree)
+            file_item.setText(0, file_name)
+            file_item.setData(0, Qt.ItemDataRole.UserRole, file_path)
+            file_item.setFlags(file_item.flags() | Qt.ItemFlag.ItemIsAutoTristate | Qt.ItemFlag.ItemIsUserCheckable)
+            file_item.setCheckState(0, Qt.CheckState.Checked)
+            file_item.setExpanded(True)
             
-        if self.parsed_netcad_result.attribute_tables:
-            table_root = QTreeWidgetItem(self.ncz_layer_tree)
-            table_root.setText(0, "Attribute Tables (@TAB)")
-            table_root.setFlags(table_root.flags() | Qt.ItemFlag.ItemIsAutoTristate | Qt.ItemFlag.ItemIsUserCheckable)
-            table_root.setCheckState(0, Qt.CheckState.Checked)
-            table_root.setExpanded(True)
-            
-            for table in self.parsed_netcad_result.attribute_tables:
-                item = QTreeWidgetItem(table_root)
-                item.setText(0, table.table_ref)
-                item.setText(1, "Attribute Data")
-                item.setText(2, f"{len(table.rows)} rows")
-                item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
-                item.setCheckState(0, Qt.CheckState.Checked)
-                item.setData(0, Qt.ItemDataRole.UserRole, ("TABLE", table.table_ref, "TABLE"))
+            # Group entities
+            layer_stats = {}
+            for entity in parsed.entities:
+                family, _ = self._geometry_family(entity.geometry_kind)
+                if not family:
+                    continue
+                key = (entity.layer_code, entity.layer_name or f"LAYER_{entity.layer_code}", family)
+                layer_stats[key] = layer_stats.get(key, 0) + 1
+                
+            # CAD Layers subroot
+            if layer_stats:
+                cad_root = QTreeWidgetItem(file_item)
+                cad_root.setText(0, "CAD Layers")
+                cad_root.setFlags(cad_root.flags() | Qt.ItemFlag.ItemIsAutoTristate | Qt.ItemFlag.ItemIsUserCheckable)
+                cad_root.setCheckState(0, Qt.CheckState.Checked)
+                cad_root.setExpanded(True)
+                
+                for (code, name, family), count in sorted(layer_stats.items(), key=lambda x: x[0][1]):
+                    item = QTreeWidgetItem(cad_root)
+                    item.setText(0, name)
+                    item.setText(1, family)
+                    item.setText(2, str(count))
+                    item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
+                    item.setCheckState(0, Qt.CheckState.Checked)
+                    item.setData(0, Qt.ItemDataRole.UserRole, (code, name, family))
+                    
+            # Attribute Tables subroot
+            if parsed.attribute_tables:
+                table_root = QTreeWidgetItem(file_item)
+                table_root.setText(0, "Attribute Tables (@TAB)")
+                table_root.setFlags(table_root.flags() | Qt.ItemFlag.ItemIsAutoTristate | Qt.ItemFlag.ItemIsUserCheckable)
+                table_root.setCheckState(0, Qt.CheckState.Checked)
+                table_root.setExpanded(True)
+                
+                for table in parsed.attribute_tables:
+                    item = QTreeWidgetItem(table_root)
+                    item.setText(0, table.table_ref)
+                    item.setText(1, "Attribute Data")
+                    item.setText(2, f"{len(table.rows)} rows")
+                    item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
+                    item.setCheckState(0, Qt.CheckState.Checked)
+                    item.setData(0, Qt.ItemDataRole.UserRole, ("TABLE", table.table_ref, "TABLE"))
 
     def _select_all_ncz_layers(self) -> None:
         self._set_ncz_tree_checked_state(Qt.CheckState.Checked)
@@ -726,7 +760,10 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
             item = self.ncz_layer_tree.topLevelItem(index)
             item.setCheckState(0, state)
             for child_idx in range(item.childCount()):
-                item.child(child_idx).setCheckState(0, state)
+                sub = item.child(child_idx)
+                sub.setCheckState(0, state)
+                for g_child_idx in range(sub.childCount()):
+                    sub.child(g_child_idx).setCheckState(0, state)
 
     def _geometry_family(self, geometry_kind: str) -> tuple[str, str] | tuple[None, None]:
         if geometry_kind in ("Point", "Text", "Symbol", "Block"):
@@ -740,9 +777,8 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
     def _sanitize_name(self, value: str) -> str:
         text = re.sub(r"\W+", "_", str(value).strip(), flags=re.UNICODE)
         return text.strip("_").upper() or "LAYER"
-
     def _import_netcad_dataset(self) -> None:
-        if not self.parsed_netcad_result:
+        if not self.parsed_netcad_results:
             return
             
         try:
@@ -750,23 +786,29 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
             self.progress_ncz.setValue(10)
             self.progress_ncz.setFormat("Filtering selected layers...")
             
-            selected_keys = []
-            selected_tables = []
-            
+            selected_by_file = {}
             root_count = self.ncz_layer_tree.topLevelItemCount()
-            for index in range(root_count):
-                root_item = self.ncz_layer_tree.topLevelItem(index)
-                for child_idx in range(root_item.childCount()):
-                    child = root_item.child(child_idx)
-                    if child.checkState(0) == Qt.CheckState.Checked:
-                        data = child.data(0, Qt.ItemDataRole.UserRole)
-                        if data:
-                            if data[0] == "TABLE":
-                                selected_tables.append(data[1])
-                            else:
-                                selected_keys.append(data)
-                                
-            if not selected_keys and not selected_tables:
+            for idx_file in range(root_count):
+                file_item = self.ncz_layer_tree.topLevelItem(idx_file)
+                file_path = file_item.data(0, Qt.ItemDataRole.UserRole)
+                if not file_path:
+                    continue
+                    
+                selected_by_file[file_path] = {"layers": [], "tables": []}
+                for idx_sub in range(file_item.childCount()):
+                    sub_item = file_item.child(idx_sub)
+                    for idx_child in range(sub_item.childCount()):
+                        child = sub_item.child(idx_child)
+                        if child.checkState(0) == Qt.CheckState.Checked:
+                            data = child.data(0, Qt.ItemDataRole.UserRole)
+                            if data:
+                                if data[0] == "TABLE":
+                                    selected_by_file[file_path]["tables"].append(data[1])
+                                else:
+                                    selected_by_file[file_path]["layers"].append(data)
+                                    
+            has_selection = any(len(v["layers"]) > 0 or len(v["tables"]) > 0 for v in selected_by_file.values())
+            if not has_selection:
                 QMessageBox.warning(self, "Warning", "Please select at least one layer or table to import.")
                 self.progress_ncz.setVisible(False)
                 return
@@ -776,8 +818,8 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
             
             gpkg_path = ""
             is_temp = self.chk_ncz_temporary.isChecked()
-            base_name = self._sanitize_name(os.path.splitext(os.path.basename(self.current_netcad_path))[0])
-            source_file_name = os.path.splitext(os.path.basename(self.current_netcad_path))[0]
+            first_file = os.path.splitext(os.path.basename(list(self.parsed_netcad_results.keys())[0]))[0]
+            base_name = self._sanitize_name(f"{first_file}_BATCH") if len(self.parsed_netcad_results) > 1 else self._sanitize_name(first_file)
             
             if is_temp:
                 import tempfile
@@ -797,84 +839,90 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
             if not target_crs.isValid():
                 target_crs = QgsProject.instance().crs()
                 
-            # Group entities
-            grouped_entities = {}
-            for entity in self.parsed_netcad_result.entities:
-                family, geometry_type = self._geometry_family(entity.geometry_kind)
-                if not family:
-                    continue
-                
-                key = (entity.layer_code, entity.layer_name or f"LAYER_{entity.layer_code}", family)
-                if key not in selected_keys:
-                    continue
-                    
-                display_name = f"{self._sanitize_name(key[1])}_{key[2]}"
-                group_name = f"{base_name}_{key[2]}"
-                
-                grouped_entities.setdefault(group_name, {}).setdefault(
-                    key,
-                    LayerBucket(display_name=display_name, geometry_type=geometry_type)
-                ).entities.append(entity)
-                
-            self.progress_ncz.setValue(50)
-            self.progress_ncz.setFormat("Writing CAD features to GeoPackage...")
-            
             layer_groups = []
             transform_context = QgsProject.instance().transformContext()
             
-            # 1. Geometries
-            for group_name in sorted(grouped_entities.keys()):
-                layers = []
-                for key in sorted(grouped_entities[group_name].keys()):
-                    bucket = grouped_entities[group_name][key]
+            for file_path, selection in selected_by_file.items():
+                selected_keys = selection["layers"]
+                selected_tables = selection["tables"]
+                if not selected_keys and not selected_tables:
+                    continue
                     
-                    temp_layer = self._create_temp_vector_layer(
-                        bucket.display_name,
-                        bucket.geometry_type,
-                        bucket.entities,
-                        target_crs,
-                        source_file_name
-                    )
-                    
-                    if temp_layer:
-                        # Augment geometry details (cad_to_gis_convert feyz)
-                        processed_layer = temp_layer
-                        if self.chk_ncz_augment.isChecked():
-                            processed_layer = CadFeatureAugmenter.augment_layer(temp_layer)
-
-                        if self.chk_ncz_style.isChecked():
-                            CadStylingEngine.apply_argb_renderer(processed_layer, bucket.geometry_type)
-                            
-                        if self.chk_ncz_label.isChecked() and bucket.geometry_type == "Point":
-                            has_texts = any(e.geometry_kind == "Text" for e in bucket.entities)
-                            if has_texts:
-                                CadStylingEngine.apply_buffered_labels(processed_layer)
-                                
-                        layers.append(processed_layer)
-                            
-                if layers:
-                    layer_groups.append(LayerGroup(name=group_name, layers=layers))
-                    
-            # 2. Attribute Tables
-            if self.parsed_netcad_result.attribute_tables and selected_tables:
-                attribute_group_name = f"{base_name}_ATTRIBUTES"
-                attribute_layers = []
-                for table in self.parsed_netcad_result.attribute_tables:
-                    if table.table_ref not in selected_tables:
+                parsed = self.parsed_netcad_results[file_path]
+                source_file_name = os.path.splitext(os.path.basename(file_path))[0]
+                file_base_name = self._sanitize_name(source_file_name)
+                
+                # Group entities
+                grouped_entities = {}
+                for entity in parsed.entities:
+                    family, geometry_type = self._geometry_family(entity.geometry_kind)
+                    if not family:
                         continue
-                    table_name = self._sanitize_name(table.table_ref)
                     
-                    temp_attr = self._create_temp_attribute_layer(table_name, table, source_file_name)
-                    if temp_attr:
-                        attribute_layers.append(temp_attr)
+                    key = (entity.layer_code, entity.layer_name or f"LAYER_{entity.layer_code}", family)
+                    if key not in selected_keys:
+                        continue
+                        
+                    display_name = f"{file_base_name}_{self._sanitize_name(key[1])}_{key[2]}"
+                    group_name = f"{file_base_name}_{key[2]}"
+                    
+                    grouped_entities.setdefault(group_name, {}).setdefault(
+                        key,
+                        LayerBucket(display_name=display_name, geometry_type=geometry_type)
+                    ).entities.append(entity)
+                    
+                # 1. Geometries
+                for group_name in sorted(grouped_entities.keys()):
+                    layers = []
+                    for key in sorted(grouped_entities[group_name].keys()):
+                        bucket = grouped_entities[group_name][key]
+                        
+                        temp_layer = self._create_temp_vector_layer(
+                            bucket.display_name,
+                            bucket.geometry_type,
+                            bucket.entities,
+                            target_crs,
+                            source_file_name
+                        )
+                        
+                        if temp_layer:
+                            processed_layer = temp_layer
+                            if self.chk_ncz_augment.isChecked():
+                                processed_layer = CadFeatureAugmenter.augment_layer(temp_layer)
+
+                            if self.chk_ncz_style.isChecked():
+                                CadStylingEngine.apply_argb_renderer(processed_layer, bucket.geometry_type)
                                 
-                if attribute_layers:
-                    layer_groups.append(LayerGroup(name=attribute_group_name, layers=attribute_layers))
+                            if self.chk_ncz_label.isChecked() and bucket.geometry_type == "Point":
+                                has_texts = any(e.geometry_kind == "Text" for e in bucket.entities)
+                                if has_texts:
+                                    CadStylingEngine.apply_buffered_labels(processed_layer)
+                                    
+                            layers.append(processed_layer)
+                                
+                    if layers:
+                        layer_groups.append(LayerGroup(name=group_name, layers=layers))
+                        
+                # 2. Attribute Tables
+                if parsed.attribute_tables and selected_tables:
+                    attribute_group_name = f"{file_base_name}_ATTRIBUTES"
+                    attribute_layers = []
+                    for table in parsed.attribute_tables:
+                        if table.table_ref not in selected_tables:
+                            continue
+                        table_name = self._sanitize_name(table.table_ref)
+                        
+                        temp_attr = self._create_temp_attribute_layer(table_name, table, source_file_name)
+                        if temp_attr:
+                            temp_attr.setName(f"{file_base_name}_{table_name}_TABLE")
+                            attribute_layers.append(temp_attr)
+                                    
+                    if attribute_layers:
+                        layer_groups.append(LayerGroup(name=attribute_group_name, layers=attribute_layers))
                     
             # 3. Write each layer to a separate temp GPKG file to avoid SQLite database update mode locks!
             import tempfile
             temp_gpkg_files = []
-            layer_to_temp_gpkg = {}
             
             for group in layer_groups:
                 for layer in group.layers:
@@ -900,20 +948,14 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                         raise ValueError(f"Failed to write layer '{layer.name()}' to GPKG: {err_msg}")
                         
                     temp_gpkg_files.append(temp_gpkg)
-                    layer_to_temp_gpkg[layer.name()] = temp_gpkg
 
-            # 4. Determine final GPKG path
-            if is_temp:
-                temp_dir = tempfile.gettempdir()
-                gpkg_path = os.path.join(temp_dir, f"zero2gpkg_temp_{base_name}.gpkg")
-                
+            # 4. Combine separate temp GPKGs into the final single GPKG file via GDAL Translate
             if os.path.exists(gpkg_path):
                 try:
                     os.remove(gpkg_path)
                 except OSError:
                     pass
 
-            # Combine separate temp GPKGs into the final single GPKG file via GDAL Translate
             from osgeo import gdal
             first = True
             for temp_gpkg in temp_gpkg_files:
@@ -950,7 +992,8 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
             self._add_groups_to_project(layer_groups)
             
             # Apply Join
-            if self.chk_ncz_join.isChecked() and selected_tables:
+            any_tables = any(v["tables"] for v in selected_by_file.values())
+            if self.chk_ncz_join.isChecked() and any_tables:
                 self._join_attributes_to_layers(layer_groups, base_name)
                 
             self.progress_ncz.setValue(100)
