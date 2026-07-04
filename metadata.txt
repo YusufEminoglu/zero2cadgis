@@ -1,0 +1,14 @@
+[general]
+name=02gpkg - Import and Convert CAD/KML/GDB Files
+qgisMinimumVersion=3.22
+qgisMaximumVersion=4.99
+description=Convert CAD (DXF/DWG/NCZ), KML/KMZ, DGN and GDB datasets directly into optimized GeoPackage layers with QGIS styling.
+version=0.1.0
+author=Yusuf Eminoğlu
+email=yusufeminoglu@planx.com
+about=An advanced CAD and GIS dataset converter utility for the PlanX ecosystem. Supports DXF, DWG, NCZ, KML, KMZ, DGN, and GDB formats, with CAD collinear simplification, coordinate transformation, automatic labeling, and database joins.
+tracker=https://github.com/YusufEminoglu/zero2gpkg_converter/issues
+repository=https://github.com/YusufEminoglu/zero2gpkg_converter
+category=Plugins
+icon=icon.png
+tags=cad,gpkg,kml,dxf,dwg,ncz,gdb,dgn,converter,importer
