@@ -63,13 +63,13 @@ class Zero2GpkgConverter:
             self.iface.removeDockWidget(self._dock)
             self._dock.deleteLater()
             self._dock = None
-            
+
         for action in self.actions:
             if self.menu:
                 self.menu.removeAction(action)
             if self.toolbar:
                 self.toolbar.removeAction(action)
-                
+
         if self.toolbar:
             self.iface.mainWindow().removeToolBar(self.toolbar)
             self.toolbar.deleteLater()
@@ -83,16 +83,22 @@ class Zero2GpkgConverter:
             try:
                 from .dialogs.dock import Zero2GpkgConverterDockWidget
 
-                self._dock = Zero2GpkgConverterDockWidget(self.iface, self.icon_dir, self.iface.mainWindow())
+                self._dock = Zero2GpkgConverterDockWidget(
+                    self.iface, self.icon_dir, self.iface.mainWindow())
                 self._dock.setObjectName("Zero2GpkgConverterDock")
-                self._dock.visibilityChanged.connect(self.panel_action.setChecked)
-                self.iface.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self._dock)
+                self._dock.visibilityChanged.connect(
+                    self.panel_action.setChecked)
+                self.iface.addDockWidget(
+                    Qt.DockWidgetArea.RightDockWidgetArea, self._dock)
                 created = True
             except Exception as exc:
-                QMessageBox.critical(self.iface.mainWindow(), "Error", f"Could not create dock widget:\n{exc}")
+                QMessageBox.critical(
+                    self.iface.mainWindow(),
+                    "Error",
+                    f"Could not create dock widget:\n{exc}")
                 self.panel_action.setChecked(False)
                 return
-                
+
         if created or not self._dock.isVisible():
             self._dock.setVisible(True)
             self.panel_action.setChecked(True)
@@ -103,8 +109,16 @@ class Zero2GpkgConverter:
 
     # ───────────────────────── Helpers ─────────────────────────
 
-    def _add_action(self, icon_path, text, callback, *, add_to_toolbar=True,
-                    add_to_menu=True, checkable=False, status_tip=None) -> QAction:
+    def _add_action(
+            self,
+            icon_path,
+            text,
+            callback,
+            *,
+            add_to_toolbar=True,
+            add_to_menu=True,
+            checkable=False,
+            status_tip=None) -> QAction:
         icon = QIcon(icon_path) if os.path.exists(icon_path) else QIcon()
         action = QAction(icon, text, self.iface.mainWindow())
         action.triggered.connect(callback)

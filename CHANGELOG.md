@@ -2,6 +2,15 @@
 
 All notable changes to 02gpkg are documented here.
 
+## [0.1.2] - 2026-07-04
+
+### Security
+- Replaced `xml.etree.ElementTree.parse` in KML GroundOverlay scanning with a dependency-free QGIS/PyQt XML parser path.
+- Reject KML documents with `DOCTYPE` declarations before overlay scanning.
+
+### Fixed
+- Cleaned Hub-reported flake8 issues across plugin Python files.
+- Removed silent exception handling in the Netcad CRS detection path.
 ## [0.1.1] - 2026-07-04
 
 ### Added

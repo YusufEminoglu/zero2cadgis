@@ -8,11 +8,10 @@ from __future__ import annotations
 import os
 import re
 import math
-import shutil
 from dataclasses import dataclass, field
 
-from qgis.PyQt.QtCore import Qt, QVariant, pyqtSignal
-from qgis.PyQt.QtGui import QIcon, QColor, QFont
+from qgis.PyQt.QtCore import Qt, QVariant
+from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import (
     QDockWidget,
     QWidget,
@@ -30,7 +29,6 @@ from qgis.PyQt.QtWidgets import (
     QProgressBar,
     QMessageBox,
     QFileDialog,
-    QFrame,
     QSplitter,
     QTabWidget,
     QComboBox,
@@ -46,9 +44,7 @@ from qgis.core import (
     QgsGeometry,
     QgsPointXY,
     QgsCoordinateReferenceSystem,
-    QgsCoordinateTransform,
-    QgsVectorFileWriter,
-    QgsCoordinateTransformContext
+    QgsVectorFileWriter
 )
 from qgis.gui import QgsProjectionSelectionWidget
 
@@ -191,7 +187,7 @@ class LayerGroup:
 
 class Zero2GpkgConverterDockWidget(QDockWidget):
     """100% English controller managing GIS/CAD converter, exporter, and NCZ imports."""
-    
+
     FIELD_DEFINITIONS = [
         QgsField("source_file", QVariant.String),
         QgsField("layer_code", QVariant.Int),
@@ -216,14 +212,15 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         super().__init__("02gpkg - Import and Convert CAD/KML/GDB Files", parent)
         self.iface = iface
         self.icon_dir = icon_dir
-        
-        self.setAllowedAreas(Qt.DockWidgetArea.LeftDockWidgetArea | Qt.DockWidgetArea.RightDockWidgetArea)
+
+        self.setAllowedAreas(
+            Qt.DockWidgetArea.LeftDockWidgetArea | Qt.DockWidgetArea.RightDockWidgetArea)
         self.setStyleSheet(DOCK_STYLE)
-        
+
         self.current_netcad_paths: list[str] = []
         self.parsed_netcad_results = {}
         self.gis_converter = None
-        
+
         self._build_ui()
 
     def closeEvent(self, event):
@@ -233,240 +230,274 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
 
     def _build_ui(self) -> None:
         main_tab = QTabWidget()
-        
-        # ───────────────────────── TAB 1: CAD & GIS Converter ─────────────────────────
+
+        # ───────────────────────── TAB 1: CAD & GIS Converter ────────────────
         tab_cad_gis = QWidget()
         cad_gis_layout = QVBoxLayout(tab_cad_gis)
         cad_gis_layout.setContentsMargins(6, 6, 6, 6)
-        
+
         # Source Selection
         src_group = QGroupBox("Source CAD / GIS Dataset")
         src_layout = QVBoxLayout(src_group)
         src_layout.setContentsMargins(8, 12, 8, 8)
-        
+
         type_layout = QHBoxLayout()
         type_layout.addWidget(QLabel("Dataset Type:"))
         self.cmb_src_type = QComboBox()
-        self.cmb_src_type.addItems(["DXF / DWG (*.dxf, *.dwg)", "KML / KMZ (*.kml, *.kmz)", "Microstation DGN (*.dgn)", "ArcGIS File Geodatabase (*.gdb)"])
-        self.cmb_src_type.currentIndexChanged.connect(self._on_source_type_changed)
+        self.cmb_src_type.addItems(["DXF / DWG (*.dxf, *.dwg)",
+                                    "KML / KMZ (*.kml, *.kmz)",
+                                    "Microstation DGN (*.dgn)",
+                                    "ArcGIS File Geodatabase (*.gdb)"])
+        self.cmb_src_type.currentIndexChanged.connect(
+            self._on_source_type_changed)
         type_layout.addWidget(self.cmb_src_type, 1)
         src_layout.addLayout(type_layout)
-        
+
         path_layout = QHBoxLayout()
         self.txt_src_path = QLineEdit()
         self.txt_src_path.setReadOnly(True)
-        self.txt_src_path.setPlaceholderText("Select drawing or GIS dataset...")
+        self.txt_src_path.setPlaceholderText(
+            "Select drawing or GIS dataset...")
         path_layout.addWidget(self.txt_src_path)
-        
+
         self.btn_browse_src = QPushButton("Browse...")
         self.btn_browse_src.setObjectName("browse_btn")
         self.btn_browse_src.clicked.connect(self._browse_src_dataset)
         path_layout.addWidget(self.btn_browse_src)
         src_layout.addLayout(path_layout)
         cad_gis_layout.addWidget(src_group)
-        
+
         # Destination GPKG Selection
         dst_group = QGroupBox("Target GeoPackage (.gpkg)")
         dst_layout = QHBoxLayout(dst_group)
         dst_layout.setContentsMargins(8, 12, 8, 8)
-        
+
         self.txt_gpkg_path = QLineEdit()
         self.txt_gpkg_path.setReadOnly(True)
         self.txt_gpkg_path.setPlaceholderText("Select output GPKG file...")
         dst_layout.addWidget(self.txt_gpkg_path)
-        
+
         self.btn_browse_gpkg = QPushButton("Save As...")
         self.btn_browse_gpkg.setObjectName("browse_btn")
         self.btn_browse_gpkg.clicked.connect(self._browse_gpkg_destination)
         dst_layout.addWidget(self.btn_browse_gpkg)
         cad_gis_layout.addWidget(dst_group)
-        
+
         # Options
         opt_group = QGroupBox("Conversion Parameters")
         opt_form = QFormLayout(opt_group)
         opt_form.setContentsMargins(8, 12, 8, 8)
-        
+
         self.converter_crs = QgsProjectionSelectionWidget()
-        self.converter_crs.setOptionVisible(QgsProjectionSelectionWidget.CrsOption.ProjectCrs, True)
+        self.converter_crs.setOptionVisible(
+            QgsProjectionSelectionWidget.CrsOption.ProjectCrs, True)
         self.converter_crs.setCrs(QgsProject.instance().crs())
         opt_form.addRow("Target CRS:", self.converter_crs)
-        
+
         self.chk_conv_simplify = QCheckBox("Simplify collinear segment nodes")
         self.chk_conv_simplify.setChecked(True)
         opt_form.addRow(self.chk_conv_simplify)
-        
-        self.chk_conv_clean = QCheckBox("Remove duplicate geometries and vertices")
+
+        self.chk_conv_clean = QCheckBox(
+            "Remove duplicate geometries and vertices")
         self.chk_conv_clean.setChecked(True)
         opt_form.addRow(self.chk_conv_clean)
 
-        self.chk_conv_kml_expand = QCheckBox("Expand KML HTML balloon tables (kmltools feyz)")
+        self.chk_conv_kml_expand = QCheckBox(
+            "Expand KML HTML balloon tables (kmltools feyz)")
         self.chk_conv_kml_expand.setChecked(True)
         opt_form.addRow(self.chk_conv_kml_expand)
 
-        self.chk_conv_raster = QCheckBox("Extract KML GroundOverlays to GeoTiff")
+        self.chk_conv_raster = QCheckBox(
+            "Extract KML GroundOverlays to GeoTiff")
         self.chk_conv_raster.setChecked(True)
         opt_form.addRow(self.chk_conv_raster)
-        
-        self.chk_conv_load = QCheckBox("Load converted layers directly to canvas")
+
+        self.chk_conv_load = QCheckBox(
+            "Load converted layers directly to canvas")
         self.chk_conv_load.setChecked(True)
         opt_form.addRow(self.chk_conv_load)
-        
-        self.chk_conv_temporary = QCheckBox("Import directly as temporary scratch layers (no GPKG)")
-        self.chk_conv_temporary.stateChanged.connect(self._on_conv_temporary_changed)
+
+        self.chk_conv_temporary = QCheckBox(
+            "Import directly as temporary scratch layers (no GPKG)")
+        self.chk_conv_temporary.stateChanged.connect(
+            self._on_conv_temporary_changed)
         opt_form.addRow(self.chk_conv_temporary)
-        
+
         cad_gis_layout.addWidget(opt_group)
-        
+
         # Progress Bar & Trigger
         cad_gis_layout.addStretch(1)
         self.progress_conv = QProgressBar()
         self.progress_conv.setVisible(False)
         cad_gis_layout.addWidget(self.progress_conv)
-        
+
         self.btn_convert_gis = QPushButton("Convert to GeoPackage")
         self.btn_convert_gis.setObjectName("convert_btn")
         self.btn_convert_gis.setEnabled(False)
         self.btn_convert_gis.clicked.connect(self._convert_gis_dataset)
         cad_gis_layout.addWidget(self.btn_convert_gis)
-        
-        main_tab.addTab(tab_cad_gis, QIcon(os.path.join(self.icon_dir, "icon_cad.png")), "CAD & GIS Converter")
-        
-        # ───────────────────────── TAB 2: Netcad NCZ Importer ─────────────────────────
+
+        main_tab.addTab(
+            tab_cad_gis,
+            QIcon(
+                os.path.join(
+                    self.icon_dir,
+                    "icon_cad.png")),
+            "CAD & GIS Converter")
+
+        # ───────────────────────── TAB 2: Netcad NCZ Importer ────────────────
         tab_ncz = QWidget()
         ncz_layout = QVBoxLayout(tab_ncz)
         ncz_layout.setContentsMargins(6, 6, 6, 6)
-        
+
         # NCZ File Select
         ncz_file_group = QGroupBox("NCZ File Selection")
         ncz_file_layout = QHBoxLayout(ncz_file_group)
         ncz_file_layout.setContentsMargins(8, 12, 8, 8)
-        
+
         self.txt_ncz_path = QLineEdit()
         self.txt_ncz_path.setReadOnly(True)
-        self.txt_ncz_path.setPlaceholderText("Select Netcad .ncz or .nca file...")
+        self.txt_ncz_path.setPlaceholderText(
+            "Select Netcad .ncz or .nca file...")
         ncz_file_layout.addWidget(self.txt_ncz_path)
-        
+
         self.btn_browse_ncz = QPushButton("Browse...")
         self.btn_browse_ncz.setObjectName("browse_btn")
         self.btn_browse_ncz.clicked.connect(self._select_ncz_file)
         ncz_file_layout.addWidget(self.btn_browse_ncz)
         ncz_layout.addWidget(ncz_file_group)
-        
+
         # Main Splitter for metadata, tree, and parameters
         ncz_splitter = QSplitter(Qt.Orientation.Vertical)
-        
+
         # Metadata Card & Layer Tree
         ncz_mid_widget = QWidget()
         ncz_mid_layout = QVBoxLayout(ncz_mid_widget)
         ncz_mid_layout.setContentsMargins(0, 0, 0, 0)
-        
+
         self.ncz_meta_group = QGroupBox("Drawing Metadata")
         ncz_meta_form = QFormLayout(self.ncz_meta_group)
         ncz_meta_form.setContentsMargins(8, 8, 8, 8)
         ncz_meta_form.setSpacing(4)
-        
+
         self.lbl_ncz_version = QLabel("-")
         self.lbl_ncz_projection = QLabel("-")
         self.lbl_ncz_epsg = QLabel("-")
         self.lbl_ncz_counts = QLabel("-")
-        
+
         ncz_meta_form.addRow("Netcad Version:", self.lbl_ncz_version)
         ncz_meta_form.addRow("Projection:", self.lbl_ncz_projection)
         ncz_meta_form.addRow("Detected EPSG:", self.lbl_ncz_epsg)
         ncz_meta_form.addRow("Objects / Tables:", self.lbl_ncz_counts)
         ncz_mid_layout.addWidget(self.ncz_meta_group)
-        
+
         ncz_tree_group = QGroupBox("Select Layers to Import")
         ncz_tree_layout = QVBoxLayout(ncz_tree_group)
         ncz_tree_layout.setContentsMargins(6, 10, 6, 6)
-        
+
         self.ncz_layer_tree = QTreeWidget()
-        self.ncz_layer_tree.setHeaderLabels(["Layer Name", "Geometry", "Count"])
+        self.ncz_layer_tree.setHeaderLabels(
+            ["Layer Name", "Geometry", "Count"])
         self.ncz_layer_tree.setColumnWidth(0, 140)
         self.ncz_layer_tree.setColumnWidth(1, 80)
         ncz_tree_layout.addWidget(self.ncz_layer_tree)
-        
+
         # Selection tools
         ncz_sel_layout = QHBoxLayout()
         self.btn_ncz_select_all = QPushButton("Select All")
         self.btn_ncz_select_all.clicked.connect(self._select_all_ncz_layers)
         self.btn_ncz_deselect_all = QPushButton("Deselect All")
-        self.btn_ncz_deselect_all.clicked.connect(self._deselect_all_ncz_layers)
+        self.btn_ncz_deselect_all.clicked.connect(
+            self._deselect_all_ncz_layers)
         ncz_sel_layout.addWidget(self.btn_ncz_select_all)
         ncz_sel_layout.addWidget(self.btn_ncz_deselect_all)
         ncz_tree_layout.addLayout(ncz_sel_layout)
         ncz_mid_layout.addWidget(ncz_tree_group)
-        
+
         ncz_mid_widget.setLayout(ncz_mid_layout)
         ncz_splitter.addWidget(ncz_mid_widget)
-        
+
         # Advanced CAD Options
         ncz_opt_widget = QWidget()
         ncz_opt_layout = QVBoxLayout(ncz_opt_widget)
         ncz_opt_layout.setContentsMargins(0, 0, 0, 0)
-        
+
         ncz_opt_group = QGroupBox("CAD Optimization & Styling")
         ncz_opt_form = QFormLayout(ncz_opt_group)
         ncz_opt_form.setContentsMargins(8, 12, 8, 8)
-        
+
         self.ncz_crs_selector = QgsProjectionSelectionWidget()
-        self.ncz_crs_selector.setOptionVisible(QgsProjectionSelectionWidget.CrsOption.ProjectCrs, True)
+        self.ncz_crs_selector.setOptionVisible(
+            QgsProjectionSelectionWidget.CrsOption.ProjectCrs, True)
         self.ncz_crs_selector.setCrs(QgsProject.instance().crs())
         ncz_opt_form.addRow("Destination CRS:", self.ncz_crs_selector)
-        
+
         self.chk_ncz_simplify = QCheckBox("Simplify collinear vertices")
         self.chk_ncz_simplify.setChecked(True)
         ncz_opt_form.addRow(self.chk_ncz_simplify)
-        
+
         self.chk_ncz_clean = QCheckBox("Clean duplicate nodes")
         self.chk_ncz_clean.setChecked(True)
         ncz_opt_form.addRow(self.chk_ncz_clean)
 
-        self.chk_ncz_augment = QCheckBox("Calculate geometry metadata (Area, Length)")
+        self.chk_ncz_augment = QCheckBox(
+            "Calculate geometry metadata (Area, Length)")
         self.chk_ncz_augment.setChecked(True)
         ncz_opt_form.addRow(self.chk_ncz_augment)
-        
+
         self.spin_ncz_tolerance = QDoubleSpinBox()
         self.spin_ncz_tolerance.setRange(0.0, 10.0)
         self.spin_ncz_tolerance.setSingleStep(0.05)
         self.spin_ncz_tolerance.setValue(0.10)
         self.spin_ncz_tolerance.setSuffix(" m")
-        ncz_opt_form.addRow("Polyline Closure Tolerance:", self.spin_ncz_tolerance)
-        
-        self.chk_ncz_style = QCheckBox("Apply original ARGB colors and line styles")
+        ncz_opt_form.addRow(
+            "Polyline Closure Tolerance:",
+            self.spin_ncz_tolerance)
+
+        self.chk_ncz_style = QCheckBox(
+            "Apply original ARGB colors and line styles")
         self.chk_ncz_style.setChecked(True)
         ncz_opt_form.addRow(self.chk_ncz_style)
-        
+
         self.chk_ncz_label = QCheckBox("Convert text elements to map labels")
         self.chk_ncz_label.setChecked(True)
         ncz_opt_form.addRow(self.chk_ncz_label)
-        
-        self.chk_ncz_join = QCheckBox("Join attribute tables (@TAB) automatically")
+
+        self.chk_ncz_join = QCheckBox(
+            "Join attribute tables (@TAB) automatically")
         self.chk_ncz_join.setChecked(True)
         ncz_opt_form.addRow(self.chk_ncz_join)
-        
-        self.chk_ncz_temporary = QCheckBox("Import directly as temporary scratch layers (no GPKG)")
+
+        self.chk_ncz_temporary = QCheckBox(
+            "Import directly as temporary scratch layers (no GPKG)")
         ncz_opt_form.addRow(self.chk_ncz_temporary)
-        
+
         ncz_opt_layout.addWidget(ncz_opt_group)
         ncz_opt_widget.setLayout(ncz_opt_layout)
         ncz_splitter.addWidget(ncz_opt_widget)
         ncz_layout.addWidget(ncz_splitter)
-        
+
         # Progress Bar & Trigger
         self.progress_ncz = QProgressBar()
         self.progress_ncz.setVisible(False)
         ncz_layout.addWidget(self.progress_ncz)
-        
+
         self.btn_convert_ncz = QPushButton("Convert Netcad & Load to Canvas")
         self.btn_convert_ncz.setObjectName("convert_btn")
         self.btn_convert_ncz.setEnabled(False)
         self.btn_convert_ncz.clicked.connect(self._import_netcad_dataset)
         ncz_layout.addWidget(self.btn_convert_ncz)
-        
-        main_tab.addTab(tab_ncz, QIcon(os.path.join(self.icon_dir, "icon_ncz.png")), "Netcad NCZ/NCA Importer")
 
-        # ───────────────────────── TAB 3: CAD & GIS Exporter ─────────────────────────
+        main_tab.addTab(
+            tab_ncz,
+            QIcon(
+                os.path.join(
+                    self.icon_dir,
+                    "icon_ncz.png")),
+            "Netcad NCZ/NCA Importer")
+
+        # ───────────────────────── TAB 3: CAD & GIS Exporter ─────────────────
         tab_exp = QWidget()
         exp_layout = QVBoxLayout(tab_exp)
         exp_layout.setContentsMargins(6, 6, 6, 6)
@@ -479,18 +510,21 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         exp_form.addRow("Select Source Layer:", self.cmb_exp_layer)
 
         self.cmb_exp_format = QComboBox()
-        self.cmb_exp_format.addItems(["AutoCAD DXF (*.dxf)", "Google Earth KML (*.kml)", "Google Earth KMZ (*.kmz)"])
-        self.cmb_exp_format.currentIndexChanged.connect(self._on_export_format_changed)
+        self.cmb_exp_format.addItems(
+            ["AutoCAD DXF (*.dxf)", "Google Earth KML (*.kml)", "Google Earth KMZ (*.kmz)"])
+        self.cmb_exp_format.currentIndexChanged.connect(
+            self._on_export_format_changed)
         exp_form.addRow("Target Export Format:", self.cmb_exp_format)
 
         self.txt_exp_path = QLineEdit()
         self.txt_exp_path.setReadOnly(True)
-        self.txt_exp_path.setPlaceholderText("Select destination export file...")
-        
+        self.txt_exp_path.setPlaceholderText(
+            "Select destination export file...")
+
         self.btn_browse_exp = QPushButton("Save As...")
         self.btn_browse_exp.setObjectName("browse_btn")
         self.btn_browse_exp.clicked.connect(self._browse_export_destination)
-        
+
         browse_layout = QHBoxLayout()
         browse_layout.addWidget(self.txt_exp_path)
         browse_layout.addWidget(self.btn_browse_exp)
@@ -505,19 +539,25 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         self.btn_run_export.clicked.connect(self._run_export_layer)
         exp_layout.addWidget(self.btn_run_export)
 
-        main_tab.addTab(tab_exp, QIcon(os.path.join(self.icon_dir, "icon_gis.png")), "CAD & GIS Exporter")
-        
+        main_tab.addTab(
+            tab_exp,
+            QIcon(
+                os.path.join(
+                    self.icon_dir,
+                    "icon_gis.png")),
+            "CAD & GIS Exporter")
+
         # Set main layout
         main_layout = QVBoxLayout()
         main_layout.setContentsMargins(4, 4, 4, 4)
         main_layout.setSpacing(6)
         main_layout.addWidget(self._build_header())
         main_layout.addWidget(main_tab)
-        
+
         central_widget = QWidget()
         central_widget.setLayout(main_layout)
         self.setWidget(central_widget)
-        
+
         # Populate layers after UI elements are fully constructed
         self._populate_layers_combo()
 
@@ -609,7 +649,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         layout.addWidget(buttons)
         dialog.exec()
 
-    # ───────────────────────── TAB 1: GIS/CAD CONVERTER CONTROLS ─────────────────────────
+    # ───────────────────────── TAB 1: GIS/CAD CONVERTER CONTROLS ────────────
 
     def _on_source_type_changed(self, index: int) -> None:
         self.txt_src_path.clear()
@@ -619,22 +659,24 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         idx = self.cmb_src_type.currentIndex()
         if idx == 0:
             file_path, _ = QFileDialog.getOpenFileName(
-                self, "Select DXF or DWG File", "", "Drawing Files (*.dxf *.dwg);;All Files (*.*)"
-            )
+                self, "Select DXF or DWG File", "", "Drawing Files (*.dxf *.dwg);;All Files (*.*)")
         elif idx == 1:
             file_path, _ = QFileDialog.getOpenFileName(
-                self, "Select KML or KMZ File", "", "Keyhole Markup Language (*.kml *.kmz);;All Files (*.*)"
-            )
+                self, "Select KML or KMZ File", "", "Keyhole Markup Language (*.kml *.kmz);;All Files (*.*)")
         elif idx == 2:
             file_path, _ = QFileDialog.getOpenFileName(
-                self, "Select Microstation DGN File", "", "Design Files (*.dgn);;All Files (*.*)"
-            )
+                self, "Select Microstation DGN File", "", "Design Files (*.dgn);;All Files (*.*)")
         else:
             file_path = QFileDialog.getExistingDirectory(
-                self, "Select ArcGIS File Geodatabase Directory", "", QFileDialog.Option.ShowDirsOnly
-            )
+                self,
+                "Select ArcGIS File Geodatabase Directory",
+                "",
+                QFileDialog.Option.ShowDirsOnly)
             if file_path and not has_extension(file_path, ".gdb"):
-                QMessageBox.warning(self, "Invalid Folder", "Please select a directory ending with '.gdb'.")
+                QMessageBox.warning(
+                    self,
+                    "Invalid Folder",
+                    "Please select a directory ending with '.gdb'.")
                 return
 
         if file_path:
@@ -670,7 +712,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         src = self.txt_src_path.text()
         dst = self.txt_gpkg_path.text()
         idx = self.cmb_src_type.currentIndex()
-        
+
         crs = self.converter_crs.crs()
         if not crs.isValid():
             crs = QgsProject.instance().crs()
@@ -682,19 +724,21 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         try:
             is_kmz = idx == 1 and has_extension(src, ".kmz")
             is_temp = self.chk_conv_temporary.isChecked()
-            
+
             # Initialize GisConverterEngine
             self.gis_converter = GisConverterEngine(src, dst, crs)
-            
+
             self.progress_conv.setValue(40)
             if is_temp:
-                self.progress_conv.setFormat("Creating temporary scratch layers...")
+                self.progress_conv.setFormat(
+                    "Creating temporary scratch layers...")
                 loaded_layers = self.gis_converter.convert_to_memory(
                     is_kmz=is_kmz,
                     html_expansion=self.chk_conv_kml_expand.isChecked()
                 )
             else:
-                self.progress_conv.setFormat("Converting vector layers to GeoPackage...")
+                self.progress_conv.setFormat(
+                    "Converting vector layers to GeoPackage...")
                 loaded_layers = self.gis_converter.convert(
                     is_kmz=is_kmz,
                     html_expansion=self.chk_conv_kml_expand.isChecked()
@@ -703,23 +747,27 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
             # GroundOverlay Extraction
             if self.chk_conv_raster.isChecked() and idx == 1:
                 self.progress_conv.setValue(60)
-                self.progress_conv.setFormat("Extracting KML GroundOverlays (kmltools feyz)...")
-                raster_layers = self.gis_converter.extract_ground_overlays(is_kmz=is_kmz)
+                self.progress_conv.setFormat(
+                    "Extracting KML GroundOverlays (kmltools feyz)...")
+                raster_layers = self.gis_converter.extract_ground_overlays(
+                    is_kmz=is_kmz)
                 for rl in raster_layers:
                     QgsProject.instance().addMapLayer(rl)
-            
+
             self.progress_conv.setValue(80)
             self.progress_conv.setFormat("Adding vector layers to canvas...")
-            
+
             if self.chk_conv_load.isChecked() and loaded_layers:
                 root = QgsProject.instance().layerTreeRoot()
                 suffix = "TEMP" if self.chk_conv_temporary.isChecked() else "GPKG"
-                group_name = f"{self._sanitize_name(os.path.basename(src))}_{suffix}"
-                
+                group_name = f"{
+                    self._sanitize_name(
+                        os.path.basename(src))}_{suffix}"
+
                 existing = root.findGroup(group_name)
                 if existing:
                     root.removeChildNode(existing)
-                    
+
                 group = root.addGroup(group_name)
                 for cl in loaded_layers:
                     QgsProject.instance().addMapLayer(cl, False)
@@ -727,7 +775,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
 
             self.progress_conv.setValue(100)
             self.progress_conv.setVisible(False)
-            
+
             # Refresh exporter layer combo list
             self._populate_layers_combo()
 
@@ -742,46 +790,50 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                 message += "\n\nNotes:\n- " + "\n- ".join(notes)
 
             QMessageBox.information(self, "Success", message)
-            
+
         except Exception as exc:
             self.progress_conv.setVisible(False)
-            QMessageBox.critical(self, "Conversion Error", f"Failed to execute GIS engine conversion:\n{exc}")
+            QMessageBox.critical(
+                self,
+                "Conversion Error",
+                f"Failed to execute GIS engine conversion:\n{exc}")
 
-    # ───────────────────────── TAB 2: NETCAD NCZ IMPORTER CONTROLS ─────────────────────────
+    # ───────────────────────── TAB 2: NETCAD NCZ IMPORTER CONTROLS ──────────
 
     def _select_ncz_file(self) -> None:
         file_paths, _ = QFileDialog.getOpenFileNames(
-            self, "Select Netcad NCZ/NCA Drawing File(s)", "", "Netcad Drawing Files (*.ncz *.nca);;All Files (*.*)"
-        )
+            self, "Select Netcad NCZ/NCA Drawing File(s)", "", "Netcad Drawing Files (*.ncz *.nca);;All Files (*.*)")
         if not file_paths:
             return
-            
+
         self.current_netcad_paths = file_paths
         if len(file_paths) == 1:
             self.txt_ncz_path.setText(file_paths[0])
         else:
             self.txt_ncz_path.setText(f"{len(file_paths)} files selected")
-        
+
         self.parsed_netcad_results = {}
         total_entities = 0
         total_tables = 0
         versions = set()
         projections = set()
         epsg_codes = set()
-        
+
         self.progress_ncz.setVisible(True)
         self.progress_ncz.setValue(10)
         self.progress_ncz.setFormat("Parsing selected Netcad drawings...")
-        
+
         try:
             for idx, file_path in enumerate(file_paths):
-                self.progress_ncz.setValue(10 + int((idx / len(file_paths)) * 50))
-                self.progress_ncz.setFormat(f"Parsing {os.path.basename(file_path)}...")
-                
+                self.progress_ncz.setValue(
+                    10 + int((idx / len(file_paths)) * 50))
+                self.progress_ncz.setFormat(
+                    f"Parsing {os.path.basename(file_path)}...")
+
                 reader = NetcadBinaryReader(file_path)
                 res = reader.parse()
                 self.parsed_netcad_results[file_path] = res
-                
+
                 total_entities += len(res.entities)
                 total_tables += len(res.attribute_tables)
                 if res.version_name:
@@ -793,94 +845,109 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
 
             self.progress_ncz.setValue(60)
             self.progress_ncz.setFormat("Building layer catalog...")
-            
+
             # Guess target CRS from first valid EPSG found
             for epsg in epsg_codes:
-                try:
-                    clean_epsg = epsg.replace("EPSG:", "").strip()
-                    crs = QgsCoordinateReferenceSystem(f"EPSG:{clean_epsg}")
-                    if crs.isValid():
-                        self.ncz_crs_selector.setCrs(crs)
-                        break
-                except Exception:
-                    pass
+                clean_epsg = epsg.replace("EPSG:", "").strip()
+                crs = QgsCoordinateReferenceSystem(f"EPSG:{clean_epsg}")
+                if crs.isValid():
+                    self.ncz_crs_selector.setCrs(crs)
+                    break
 
             # Populate card
-            self.lbl_ncz_version.setText(", ".join(versions) or "Standard / Older version")
-            self.lbl_ncz_projection.setText(", ".join(projections) or "Undefined")
+            self.lbl_ncz_version.setText(
+                ", ".join(versions) or "Standard / Older version")
+            self.lbl_ncz_projection.setText(
+                ", ".join(projections) or "Undefined")
             self.lbl_ncz_epsg.setText(", ".join(epsg_codes) or "Not defined")
-            self.lbl_ncz_counts.setText(f"{total_entities} features / {total_tables} attribute tables across {len(file_paths)} files")
-            
+            self.lbl_ncz_counts.setText(
+                f"{total_entities} features / {total_tables} attribute tables across {len(file_paths)} files")
+
             # Fill Tree Widget
             self._fill_ncz_layer_tree()
-            
+
             self.progress_ncz.setValue(100)
             self.progress_ncz.setVisible(False)
             self.btn_convert_ncz.setEnabled(True)
-            
+
         except Exception as exc:
             self.progress_ncz.setVisible(False)
             self.btn_convert_ncz.setEnabled(False)
-            QMessageBox.critical(self, "Netcad Parse Error", f"Could not parse binary Netcad drawings:\n{exc}")
+            QMessageBox.critical(
+                self,
+                "Netcad Parse Error",
+                f"Could not parse binary Netcad drawings:\n{exc}")
 
     def _fill_ncz_layer_tree(self) -> None:
         self.ncz_layer_tree.clear()
         if not self.parsed_netcad_results:
             return
-            
+
         for file_path, parsed in sorted(self.parsed_netcad_results.items()):
             file_name = os.path.basename(file_path)
-            
+
             # 1. File Root Item
             file_item = QTreeWidgetItem(self.ncz_layer_tree)
             file_item.setText(0, file_name)
             file_item.setData(0, Qt.ItemDataRole.UserRole, file_path)
-            file_item.setFlags(file_item.flags() | Qt.ItemFlag.ItemIsAutoTristate | Qt.ItemFlag.ItemIsUserCheckable)
+            file_item.setFlags(file_item.flags(
+            ) | Qt.ItemFlag.ItemIsAutoTristate | Qt.ItemFlag.ItemIsUserCheckable)
             file_item.setCheckState(0, Qt.CheckState.Checked)
             file_item.setExpanded(True)
-            
+
             # Group entities
             layer_stats = {}
             for entity in parsed.entities:
                 family, _ = self._geometry_family(entity.geometry_kind)
                 if not family:
                     continue
-                key = (entity.layer_code, entity.layer_name or f"LAYER_{entity.layer_code}", family)
+                key = (
+                    entity.layer_code,
+                    entity.layer_name or f"LAYER_{
+                        entity.layer_code}",
+                    family)
                 layer_stats[key] = layer_stats.get(key, 0) + 1
-                
+
             # CAD Layers subroot
             if layer_stats:
                 cad_root = QTreeWidgetItem(file_item)
                 cad_root.setText(0, "CAD Layers")
-                cad_root.setFlags(cad_root.flags() | Qt.ItemFlag.ItemIsAutoTristate | Qt.ItemFlag.ItemIsUserCheckable)
+                cad_root.setFlags(
+                    cad_root.flags() | Qt.ItemFlag.ItemIsAutoTristate | Qt.ItemFlag.ItemIsUserCheckable)
                 cad_root.setCheckState(0, Qt.CheckState.Checked)
                 cad_root.setExpanded(True)
-                
-                for (code, name, family), count in sorted(layer_stats.items(), key=lambda x: x[0][1]):
+
+                for (code, name, family), count in sorted(
+                        layer_stats.items(), key=lambda x: x[0][1]):
                     item = QTreeWidgetItem(cad_root)
                     item.setText(0, name)
                     item.setText(1, family)
                     item.setText(2, str(count))
-                    item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
+                    item.setFlags(
+                        item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
                     item.setCheckState(0, Qt.CheckState.Checked)
-                    item.setData(0, Qt.ItemDataRole.UserRole, (code, name, family))
-                    
+                    item.setData(
+                        0, Qt.ItemDataRole.UserRole, (code, name, family))
+
             # Attribute Tables subroot
             if parsed.attribute_tables:
                 table_root = QTreeWidgetItem(file_item)
                 table_root.setText(0, "Attribute Tables (@TAB)")
-                table_root.setFlags(table_root.flags() | Qt.ItemFlag.ItemIsAutoTristate | Qt.ItemFlag.ItemIsUserCheckable)
+                table_root.setFlags(table_root.flags(
+                ) | Qt.ItemFlag.ItemIsAutoTristate | Qt.ItemFlag.ItemIsUserCheckable)
                 table_root.setCheckState(0, Qt.CheckState.Checked)
                 table_root.setExpanded(True)
-                
+
                 for table in parsed.attribute_tables:
                     item = QTreeWidgetItem(table_root)
                     item.setText(0, table.table_ref)
                     item.setText(1, "Attribute Data")
                     item.setText(2, f"{len(table.rows)} rows")
-                    item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
+                    item.setFlags(
+                        item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
                     item.setCheckState(0, Qt.CheckState.Checked)
-                    item.setData(0, Qt.ItemDataRole.UserRole, ("TABLE", table.table_ref, "TABLE"))
+                    item.setData(0, Qt.ItemDataRole.UserRole,
+                                 ("TABLE", table.table_ref, "TABLE"))
 
     def _select_all_ncz_layers(self) -> None:
         self._set_ncz_tree_checked_state(Qt.CheckState.Checked)
@@ -898,27 +965,35 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                 for g_child_idx in range(sub.childCount()):
                     sub.child(g_child_idx).setCheckState(0, state)
 
-    def _geometry_family(self, geometry_kind: str) -> tuple[str, str] | tuple[None, None]:
+    def _geometry_family(
+            self, geometry_kind: str) -> tuple[str, str] | tuple[None, None]:
         if geometry_kind in ("Point", "Text", "Symbol", "Block"):
             return "POINT/TEXT", "Point"
         if geometry_kind in ("Line", "Polyline", "Arc"):
             return "LINE", "LineString"
-        if geometry_kind in ("Polygon", "Box", "Circle", "Triangle", "MapSheet", "SmartObject"):
+        if geometry_kind in (
+            "Polygon",
+            "Box",
+            "Circle",
+            "Triangle",
+            "MapSheet",
+                "SmartObject"):
             return "POLYGON", "Polygon"
         return None, None
 
     def _sanitize_name(self, value: str) -> str:
         text = re.sub(r"\W+", "_", str(value).strip(), flags=re.UNICODE)
         return text.strip("_").upper() or "LAYER"
+
     def _import_netcad_dataset(self) -> None:
         if not self.parsed_netcad_results:
             return
-            
+
         try:
             self.progress_ncz.setVisible(True)
             self.progress_ncz.setValue(10)
             self.progress_ncz.setFormat("Filtering selected layers...")
-            
+
             selected_by_file = {}
             root_count = self.ncz_layer_tree.topLevelItemCount()
             for idx_file in range(root_count):
@@ -926,7 +1001,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                 file_path = file_item.data(0, Qt.ItemDataRole.UserRole)
                 if not file_path:
                     continue
-                    
+
                 selected_by_file[file_path] = {"layers": [], "tables": []}
                 for idx_sub in range(file_item.childCount()):
                     sub_item = file_item.child(idx_sub)
@@ -936,77 +1011,94 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                             data = child.data(0, Qt.ItemDataRole.UserRole)
                             if data:
                                 if data[0] == "TABLE":
-                                    selected_by_file[file_path]["tables"].append(data[1])
+                                    selected_by_file[file_path]["tables"].append(
+                                        data[1])
                                 else:
-                                    selected_by_file[file_path]["layers"].append(data)
-                                    
-            has_selection = any(len(v["layers"]) > 0 or len(v["tables"]) > 0 for v in selected_by_file.values())
+                                    selected_by_file[file_path]["layers"].append(
+                                        data)
+
+            has_selection = any(len(v["layers"]) > 0 or len(
+                v["tables"]) > 0 for v in selected_by_file.values())
             if not has_selection:
-                QMessageBox.warning(self, "Warning", "Please select at least one layer or table to import.")
+                QMessageBox.warning(
+                    self, "Warning", "Please select at least one layer or table to import.")
                 self.progress_ncz.setVisible(False)
                 return
-                
+
             self.progress_ncz.setValue(30)
             self.progress_ncz.setFormat("Creating GeoPackage layers...")
-            
+
             gpkg_path = ""
             is_temp = self.chk_ncz_temporary.isChecked()
-            first_file = os.path.splitext(os.path.basename(list(self.parsed_netcad_results.keys())[0]))[0]
-            base_name = self._sanitize_name(f"{first_file}_BATCH") if len(self.parsed_netcad_results) > 1 else self._sanitize_name(first_file)
-            
+            first_file = os.path.splitext(os.path.basename(
+                list(self.parsed_netcad_results.keys())[0]))[0]
+            base_name = self._sanitize_name(f"{first_file}_BATCH") if len(
+                self.parsed_netcad_results) > 1 else self._sanitize_name(first_file)
+
             if is_temp:
                 gpkg_path = ""
             else:
                 gpkg_path, _ = QFileDialog.getSaveFileName(
-                    self, "Select Output GeoPackage for Netcad Data", "", "GeoPackage (*.gpkg)"
-                )
+                    self, "Select Output GeoPackage for Netcad Data", "", "GeoPackage (*.gpkg)")
                 if not gpkg_path:
                     self.progress_ncz.setVisible(False)
                     return
                 gpkg_path = ensure_extension(gpkg_path, ".gpkg")
-            
+
             target_crs = self.ncz_crs_selector.crs()
             if not target_crs.isValid():
                 target_crs = QgsProject.instance().crs()
-                
+
             layer_groups = []
             transform_context = QgsProject.instance().transformContext()
-            
+
             for file_path, selection in selected_by_file.items():
                 selected_keys = selection["layers"]
                 selected_tables = selection["tables"]
                 if not selected_keys and not selected_tables:
                     continue
-                    
+
                 parsed = self.parsed_netcad_results[file_path]
-                source_file_name = os.path.splitext(os.path.basename(file_path))[0]
+                source_file_name = os.path.splitext(
+                    os.path.basename(file_path))[0]
                 file_base_name = self._sanitize_name(source_file_name)
-                
+
                 # Group entities
                 grouped_entities = {}
                 for entity in parsed.entities:
-                    family, geometry_type = self._geometry_family(entity.geometry_kind)
+                    family, geometry_type = self._geometry_family(
+                        entity.geometry_kind)
                     if not family:
                         continue
-                    
-                    key = (entity.layer_code, entity.layer_name or f"LAYER_{entity.layer_code}", family)
+
+                    key = (
+                        entity.layer_code,
+                        entity.layer_name or f"LAYER_{
+                            entity.layer_code}",
+                        family)
                     if key not in selected_keys:
                         continue
-                        
-                    display_name = f"{file_base_name}_{self._sanitize_name(key[1])}_{key[2]}"
+
+                    display_name = f"{file_base_name}_{
+                        self._sanitize_name(
+                            key[1])}_{
+                        key[2]}"
                     group_name = f"{file_base_name}_{key[2]}"
-                    
-                    grouped_entities.setdefault(group_name, {}).setdefault(
+
+                    grouped_entities.setdefault(
+                        group_name,
+                        {}).setdefault(
                         key,
-                        LayerBucket(display_name=display_name, geometry_type=geometry_type)
-                    ).entities.append(entity)
-                    
+                        LayerBucket(
+                            display_name=display_name,
+                            geometry_type=geometry_type)).entities.append(entity)
+
                 # 1. Geometries
                 for group_name in sorted(grouped_entities.keys()):
                     layers = []
                     for key in sorted(grouped_entities[group_name].keys()):
                         bucket = grouped_entities[group_name][key]
-                        
+
                         temp_layer = self._create_temp_vector_layer(
                             bucket.display_name,
                             bucket.geometry_type,
@@ -1014,25 +1106,32 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                             target_crs,
                             source_file_name
                         )
-                        
+
                         if temp_layer:
                             processed_layer = temp_layer
                             if self.chk_ncz_augment.isChecked():
-                                processed_layer = CadFeatureAugmenter.augment_layer(temp_layer)
+                                processed_layer = CadFeatureAugmenter.augment_layer(
+                                    temp_layer)
 
                             if self.chk_ncz_style.isChecked():
-                                CadStylingEngine.apply_argb_renderer(processed_layer, bucket.geometry_type)
-                                
+                                CadStylingEngine.apply_argb_renderer(
+                                    processed_layer, bucket.geometry_type)
+
                             if self.chk_ncz_label.isChecked() and bucket.geometry_type == "Point":
-                                has_texts = any(e.geometry_kind == "Text" for e in bucket.entities)
+                                has_texts = any(
+                                    e.geometry_kind == "Text" for e in bucket.entities)
                                 if has_texts:
-                                    CadStylingEngine.apply_buffered_labels(processed_layer)
-                                    
+                                    CadStylingEngine.apply_buffered_labels(
+                                        processed_layer)
+
                             layers.append(processed_layer)
-                                
+
                     if layers:
-                        layer_groups.append(LayerGroup(name=group_name, layers=layers))
-                        
+                        layer_groups.append(
+                            LayerGroup(
+                                name=group_name,
+                                layers=layers))
+
                 # 2. Attribute Tables
                 if parsed.attribute_tables and selected_tables:
                     attribute_group_name = f"{file_base_name}_ATTRIBUTES"
@@ -1041,50 +1140,59 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                         if table.table_ref not in selected_tables:
                             continue
                         table_name = self._sanitize_name(table.table_ref)
-                        
-                        temp_attr = self._create_temp_attribute_layer(table_name, table, source_file_name)
+
+                        temp_attr = self._create_temp_attribute_layer(
+                            table_name, table, source_file_name)
                         if temp_attr:
-                            temp_attr.setName(f"{file_base_name}_{table_name}_TABLE")
+                            temp_attr.setName(
+                                f"{file_base_name}_{table_name}_TABLE")
                             attribute_layers.append(temp_attr)
-                                    
+
                     if attribute_layers:
-                        layer_groups.append(LayerGroup(name=attribute_group_name, layers=attribute_layers))
-                    
+                        layer_groups.append(
+                            LayerGroup(
+                                name=attribute_group_name,
+                                layers=attribute_layers))
+
             if not layer_groups:
-                raise ValueError("Selected Netcad data did not produce any valid layers.")
+                raise ValueError(
+                    "Selected Netcad data did not produce any valid layers.")
 
             if not is_temp:
-                # Write each layer to a separate temp GPKG file, then merge, to avoid SQLite update locks.
+                # Write each layer to a separate temp GPKG file, then merge, to
+                # avoid SQLite update locks.
                 import tempfile
                 temp_gpkg_files = []
                 try:
                     for group in layer_groups:
                         for layer in group.layers:
-                            fd, temp_gpkg = tempfile.mkstemp(suffix=".gpkg", prefix=f"ncz_l_{self._sanitize_name(layer.name())}_")
+                            fd, temp_gpkg = tempfile.mkstemp(
+                                suffix=".gpkg", prefix=f"ncz_l_{
+                                    self._sanitize_name(
+                                        layer.name())}_")
                             os.close(fd)
                             try:
                                 os.remove(temp_gpkg)
                             except OSError:
                                 pass
-                                
+
                             options = QgsVectorFileWriter.SaveVectorOptions()
                             options.driverName = "GPKG"
                             options.layerName = layer.name()
                             options.actionOnExistingFile = QgsVectorFileWriter.ActionOnExistingFile.CreateOrOverwriteFile
-                            
+
                             err, err_msg, _, _ = QgsVectorFileWriter.writeAsVectorFormatV3(
-                                layer,
-                                temp_gpkg,
-                                transform_context,
-                                options
-                            )
+                                layer, temp_gpkg, transform_context, options)
                             if err != QgsVectorFileWriter.WriterError.NoError:
-                                raise ValueError(f"Failed to write layer '{layer.name()}' to GPKG: {err_msg}")
-                                
+                                raise ValueError(
+                                    f"Failed to write layer '{
+                                        layer.name()}' to GPKG: {err_msg}")
+
                             temp_gpkg_files.append(temp_gpkg)
 
                     if not temp_gpkg_files:
-                        raise ValueError("No temporary GeoPackage layers were created.")
+                        raise ValueError(
+                            "No temporary GeoPackage layers were created.")
 
                     if os.path.exists(gpkg_path):
                         try:
@@ -1096,9 +1204,12 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                     first = True
                     for temp_gpkg in temp_gpkg_files:
                         mode = "overwrite" if first else "update"
-                        result = gdal.VectorTranslate(gpkg_path, temp_gpkg, format="GPKG", accessMode=mode)
+                        result = gdal.VectorTranslate(
+                            gpkg_path, temp_gpkg, format="GPKG", accessMode=mode)
                         if result is None:
-                            raise ValueError(f"GDAL could not merge temporary layer {os.path.basename(temp_gpkg)}.")
+                            raise ValueError(
+                                f"GDAL could not merge temporary layer {
+                                    os.path.basename(temp_gpkg)}.")
                         result = None
                         first = False
                 finally:
@@ -1113,27 +1224,29 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                     gpkg_layers = []
                     for layer in group.layers:
                         gpkg_uri = f"{gpkg_path}|layername={layer.name()}"
-                        gpkg_layer = QgsVectorLayer(gpkg_uri, layer.name(), "ogr")
+                        gpkg_layer = QgsVectorLayer(
+                            gpkg_uri, layer.name(), "ogr")
                         if gpkg_layer.isValid():
                             gpkg_layers.append(gpkg_layer)
                     if gpkg_layers:
-                        final_layer_groups.append(LayerGroup(name=group.name, layers=gpkg_layers))
+                        final_layer_groups.append(LayerGroup(
+                            name=group.name, layers=gpkg_layers))
                 layer_groups = final_layer_groups
-            
+
             self.progress_ncz.setValue(80)
             self.progress_ncz.setFormat("Adding layers to QGIS layout...")
-            
+
             # Add GPKG layers to project
             self._add_groups_to_project(layer_groups)
-            
+
             # Apply Join
             any_tables = any(v["tables"] for v in selected_by_file.values())
             if self.chk_ncz_join.isChecked() and any_tables:
                 self._join_attributes_to_layers(layer_groups, base_name)
-                
+
             self.progress_ncz.setValue(100)
             self.progress_ncz.setVisible(False)
-            
+
             # Refresh exporter layer combo list
             self._populate_layers_combo()
 
@@ -1142,10 +1255,13 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
             else:
                 message = f"Netcad drawing converted to GeoPackage and loaded successfully!\nOutput path: {gpkg_path}"
             QMessageBox.information(self, "Success", message)
-            
+
         except Exception as exc:
             self.progress_ncz.setVisible(False)
-            QMessageBox.critical(self, "Import Error", f"Failed to import Netcad dataset:\n{exc}")
+            QMessageBox.critical(
+                self,
+                "Import Error",
+                f"Failed to import Netcad dataset:\n{exc}")
 
     def _create_temp_vector_layer(
         self,
@@ -1155,26 +1271,26 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         crs: QgsCoordinateReferenceSystem,
         source_file_name: str
     ) -> QgsVectorLayer | None:
-        
+
         uri = f"{geometry_type}?crs={crs.authid()}"
         layer = QgsVectorLayer(uri, layer_name, "memory")
         if not layer.isValid():
             return None
-            
+
         provider = layer.dataProvider()
         provider.addAttributes(self.FIELD_DEFINITIONS)
         layer.updateFields()
-        
+
         features = []
         for entity in entities:
             coords = entity.coordinates
-            
+
             if self.chk_ncz_clean.isChecked():
                 coords = CadCleanupEngine.clean_duplicates(coords)
-                
+
             if self.chk_ncz_simplify.isChecked() and len(coords) > 3:
                 coords = CadCleanupEngine.simplify_collinear(coords)
-                
+
             geom = self._coords_to_geometry(
                 entity.geometry_kind,
                 geometry_type,
@@ -1186,7 +1302,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
             )
             if not geom or geom.isEmpty():
                 continue
-                
+
             feature = QgsFeature(layer.fields())
             feature.setGeometry(geom)
             feature.setAttributes([
@@ -1209,18 +1325,22 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                 entity.grid_y,
             ])
             features.append(feature)
-            
+
         provider.addFeatures(features)
         layer.updateExtents()
         return layer
 
-    def _create_temp_attribute_layer(self, table_name: str, table: NetcadAttributeTable, source_file_name: str) -> QgsVectorLayer | None:
+    def _create_temp_attribute_layer(
+            self,
+            table_name: str,
+            table: NetcadAttributeTable,
+            source_file_name: str) -> QgsVectorLayer | None:
         layer = QgsVectorLayer("None", f"{table_name}_TABLE", "memory")
         if not layer.isValid():
             return None
-            
+
         provider = layer.dataProvider()
-        
+
         # Collect dynamic attributes
         field_names = {"source_file", "table_ref", "row_index"}
         column_types = {}
@@ -1233,20 +1353,27 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                     column_types.setdefault(key, QVariant.Double)
                 else:
                     column_types.setdefault(key, QVariant.String)
-                    
-        ordered_dynamic_names = sorted(name for name in field_names if name not in {"source_file", "table_ref", "row_index"})
-        
+
+        ordered_dynamic_names = sorted(
+            name for name in field_names if name not in {
+                "source_file", "table_ref", "row_index"})
+
         fields = [
             QgsField("source_file", QVariant.String),
             QgsField("table_ref", QVariant.String),
             QgsField("row_index", QVariant.Int),
         ]
         for name in ordered_dynamic_names:
-            fields.append(QgsField(name, column_types.get(name, QVariant.String)))
-            
+            fields.append(
+                QgsField(
+                    name,
+                    column_types.get(
+                        name,
+                        QVariant.String)))
+
         provider.addAttributes(fields)
         layer.updateFields()
-        
+
         features = []
         for row in table.rows:
             feature = QgsFeature(layer.fields())
@@ -1260,7 +1387,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                 *values
             ])
             features.append(feature)
-            
+
         provider.addFeatures(features)
         layer.updateExtents()
         return layer
@@ -1268,13 +1395,13 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
     def _add_groups_to_project(self, layer_groups: list[LayerGroup]) -> None:
         project = QgsProject.instance()
         root = project.layerTreeRoot()
-        
+
         for item in layer_groups:
             existing_group = root.findGroup(item.name)
             if existing_group is not None:
                 parent = existing_group.parent() or root
                 parent.removeChildNode(existing_group)
-                
+
             group = root.addGroup(item.name)
             for layer in item.layers:
                 project.addMapLayer(layer, False)
@@ -1295,44 +1422,51 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                 return None
             pt = coords[0]
             return QgsGeometry.fromPointXY(QgsPointXY(pt.x, pt.y))
-            
+
         if geometry_type == "LineString":
             if geometry_kind == "Arc":
                 if not coords:
                     return None
-                arc_points = self._approximate_arc(coords[0], radius, start_angle, end_angle)
+                arc_points = self._approximate_arc(
+                    coords[0], radius, start_angle, end_angle)
                 if len(arc_points) < 2:
                     return None
                 return QgsGeometry.fromPolylineXY(arc_points)
             if len(coords) < 2:
                 return None
-            return QgsGeometry.fromPolylineXY([QgsPointXY(c.x, c.y) for c in coords])
-            
+            return QgsGeometry.fromPolylineXY(
+                [QgsPointXY(c.x, c.y) for c in coords])
+
         if geometry_type == "Polygon":
             if geometry_kind == "Circle":
                 if not coords:
                     return None
                 ring = self._approximate_circle(coords[0], radius)
                 return QgsGeometry.fromPolygonXY([ring])
-                
+
             ring = [QgsPointXY(c.x, c.y) for c in coords]
             if len(ring) < 3:
                 return None
-                
-            force_close = is_closed or geometry_kind in {"Box", "Triangle", "MapSheet", "SmartObject"}
+
+            force_close = is_closed or geometry_kind in {
+                "Box", "Triangle", "MapSheet", "SmartObject"}
             ring = CadCleanupEngine.close_polyline(
                 ring,
                 self.spin_ncz_tolerance.value(),
                 force=force_close,
             )
-                    
+
             if len(ring) < 4:
                 return None
             return QgsGeometry.fromPolygonXY([ring])
-            
+
         return None
 
-    def _approximate_circle(self, center, radius, segments=72) -> list[QgsPointXY]:
+    def _approximate_circle(
+            self,
+            center,
+            radius,
+            segments=72) -> list[QgsPointXY]:
         if radius <= 0:
             return []
         points = []
@@ -1347,7 +1481,12 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         points.append(QgsPointXY(points[0]))
         return points
 
-    def _approximate_arc(self, center, radius, start_angle, end_angle) -> list[QgsPointXY]:
+    def _approximate_arc(
+            self,
+            center,
+            radius,
+            start_angle,
+            end_angle) -> list[QgsPointXY]:
         if radius <= 0:
             return []
 
@@ -1374,55 +1513,66 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         return math.radians(angle)
 
     # ───────────────────────── Join Relations ─────────────────────────
-    
-    def _join_attributes_to_layers(self, layer_groups: list[LayerGroup], base_name: str) -> None:
+
+    def _join_attributes_to_layers(
+            self,
+            layer_groups: list[LayerGroup],
+            base_name: str) -> None:
         all_layers = {}
         for group in layer_groups:
             for layer in group.layers:
                 all_layers[layer.name()] = layer
-                
-        tables = {name: layer for name, layer in all_layers.items() if "_TABLE" in name}
-        geom_layers = {name: layer for name, layer in all_layers.items() if "_TABLE" not in name}
-        
+
+        tables = {
+            name: layer for name,
+            layer in all_layers.items() if "_TABLE" in name}
+        geom_layers = {
+            name: layer for name,
+            layer in all_layers.items() if "_TABLE" not in name}
+
         for tab_name, tab_layer in tables.items():
-            ref_name = tab_name.replace("_TABLE", "").replace(f"{base_name}_", "")
-            
+            ref_name = tab_name.replace(
+                "_TABLE", "").replace(
+                f"{base_name}_", "")
+
             for geom_name, geom_layer in geom_layers.items():
                 from qgis.core import QgsVectorLayerJoinInfo
-                
+
                 join_info = QgsVectorLayerJoinInfo()
                 join_info.setJoinLayerId(tab_layer.id())
-                
+
                 tab_fields = [f.name() for f in tab_layer.fields()]
                 geom_fields = [f.name() for f in geom_layer.fields()]
-                
+
                 join_field = None
                 target_field = None
-                
+
                 if "label" in tab_fields:
                     join_field = "label"
                 elif "name" in tab_fields:
                     join_field = "name"
                 elif tab_fields:
-                    dynamic = [f for f in tab_fields if f not in ("source_file", "table_ref", "row_index")]
+                    dynamic = [
+                        f for f in tab_fields if f not in (
+                            "source_file", "table_ref", "row_index")]
                     if dynamic:
                         join_field = dynamic[0]
-                        
+
                 if "label" in geom_fields:
                     target_field = "label"
                 elif "name" in geom_fields:
                     target_field = "name"
-                    
+
                 if join_field and target_field:
                     join_info.setJoinFieldName(join_field)
                     join_info.setTargetFieldName(target_field)
                     join_info.setUsingMemoryCache(True)
                     join_info.setPrefix(f"{ref_name}_")
-                    
+
                     geom_layer.addJoin(join_info)
                     geom_layer.triggerRepaint()
 
-    # ───────────────────────── TAB 3: EXPORTER CONTROLS ─────────────────────────
+    # ───────────────────────── TAB 3: EXPORTER CONTROLS ─────────────────────
 
     def _populate_layers_combo(self) -> None:
         """Fills vector layers into exporter combobox."""
@@ -1468,20 +1618,26 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         layer_id = self.cmb_exp_layer.currentData()
         output_path = self.txt_exp_path.text()
         format_idx = self.cmb_exp_format.currentIndex()
-        
+
         layer = QgsProject.instance().mapLayer(layer_id)
         if not layer or not isinstance(layer, QgsVectorLayer):
-            QMessageBox.warning(self, "Export Warning", "Source layer is no longer valid.")
+            QMessageBox.warning(
+                self,
+                "Export Warning",
+                "Source layer is no longer valid.")
             return
 
         try:
             success = False
-            if format_idx == 0: # DXF
-                success = CadExportEngine.export_layer_to_dxf(layer, output_path)
-            elif format_idx == 1: # KML
-                success = GisConverterEngine.export_layer_to_gis(layer, output_path, "KML")
-            else: # KMZ
-                success = GisConverterEngine.export_layer_to_gis(layer, output_path, "KMZ")
+            if format_idx == 0:  # DXF
+                success = CadExportEngine.export_layer_to_dxf(
+                    layer, output_path)
+            elif format_idx == 1:  # KML
+                success = GisConverterEngine.export_layer_to_gis(
+                    layer, output_path, "KML")
+            else:  # KMZ
+                success = GisConverterEngine.export_layer_to_gis(
+                    layer, output_path, "KMZ")
 
             if success:
                 QMessageBox.information(
@@ -1490,7 +1646,11 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
                     f"Successfully exported layer to drawing format!\nPath: {output_path}"
                 )
             else:
-                raise ValueError("Engine reported export failure (check coordinate compatibility).")
+                raise ValueError(
+                    "Engine reported export failure (check coordinate compatibility).")
 
         except Exception as exc:
-            QMessageBox.critical(self, "Export Error", f"Failed exporting QGIS layer:\n{exc}")
+            QMessageBox.critical(
+                self,
+                "Export Error",
+                f"Failed exporting QGIS layer:\n{exc}")

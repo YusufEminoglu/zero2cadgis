@@ -6,9 +6,6 @@ from __future__ import annotations
 
 import math
 import struct
-import json
-import os
-import subprocess
 from dataclasses import dataclass, field
 from typing import Optional
 
@@ -83,7 +80,7 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
     unsupported = {}
 
     def read_int32(offset):
-        return int.from_bytes(data[offset : offset + 4], "little", signed=False)
+        return int.from_bytes(data[offset: offset + 4], "little", signed=False)
 
     def read_double(offset):
         return struct.unpack_from("<d", data, offset)[0]
@@ -143,12 +140,7 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
 
     def is_valid_coordinate(x, y):
         return (
-            not math.isnan(x)
-            and not math.isnan(y)
-            and not math.isinf(x)
-            and not math.isinf(y)
-            and abs(x) <= 100000000
-            and abs(y) <= 100000000
+            not math.isnan(x) and not math.isnan(y) and not math.isinf(x) and not math.isinf(y) and abs(x) <= 100000000 and abs(y) <= 100000000
         )
 
     def create_map_coordinate(raw_x, raw_y, z):
@@ -162,9 +154,7 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
 
     def coordinates_equal(a, b):
         return (
-            abs(a["x"] - b["x"]) < 0.001
-            and abs(a["y"] - b["y"]) < 0.001
-            and abs(a["z"] - b["z"]) < 0.001
+            abs(a["x"] - b["x"]) < 0.001 and abs(a["y"] - b["y"]) < 0.001 and abs(a["z"] - b["z"]) < 0.001
         )
 
     def nearly_equal(a, b):
@@ -172,7 +162,8 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
         return abs(a - b) <= tolerance
 
     def is_nearly_orthogonal(a, b, a_length, b_length):
-        normalized_dot = abs(((a[0] * b[0]) + (a[1] * b[1])) / (a_length * b_length))
+        normalized_dot = abs(
+            ((a[0] * b[0]) + (a[1] * b[1])) / (a_length * b_length))
         return normalized_dot <= 0.03
 
     def simplify_collinear_points(points):
@@ -260,48 +251,75 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
         if any(item < 0.001 for item in lengths):
             return False, 0.0, 0.0, 0.0, coordinates
 
-        opposite_equal = nearly_equal(lengths[0], lengths[2]) and nearly_equal(lengths[1], lengths[3])
+        opposite_equal = nearly_equal(
+            lengths[0], lengths[2]) and nearly_equal(
+            lengths[1], lengths[3])
         right_angles = (
-            is_nearly_orthogonal(edges[0], edges[1], lengths[0], lengths[1])
-            and is_nearly_orthogonal(edges[1], edges[2], lengths[1], lengths[2])
-            and is_nearly_orthogonal(edges[2], edges[3], lengths[2], lengths[3])
-            and is_nearly_orthogonal(edges[3], edges[0], lengths[3], lengths[0])
-        )
+            is_nearly_orthogonal(
+                edges[0],
+                edges[1],
+                lengths[0],
+                lengths[1]) and is_nearly_orthogonal(
+                edges[1],
+                edges[2],
+                lengths[1],
+                lengths[2]) and is_nearly_orthogonal(
+                edges[2],
+                edges[3],
+                lengths[2],
+                lengths[3]) and is_nearly_orthogonal(
+                    edges[3],
+                    edges[0],
+                    lengths[3],
+                lengths[0]))
         if not opposite_equal or not right_angles:
             return False, 0.0, 0.0, 0.0, coordinates
 
-        rotation_degrees = (math.degrees(math.atan2(edges[0][1], edges[0][0])) % 360.0)
+        rotation_degrees = (
+            math.degrees(
+                math.atan2(
+                    edges[0][1],
+                    edges[0][0])) %
+            360.0)
         return True, lengths[0], lengths[1], rotation_degrees, coordinates
 
     def read_epsg(offset, max_length):
         for index in range(max_length - 3):
             if offset + index + 2 >= len(data):
                 break
-            if data[offset + index : offset + index + 3] == b"SRS":
+            if data[offset + index: offset + index + 3] == b"SRS":
                 chars = []
                 cursor = 0
-                while offset + index + cursor < len(data) and data[offset + index + cursor] != 62:
-                    chars.append(convert_turkish_char(data[offset + index + cursor]))
+                while offset + index + \
+                        cursor < len(data) and data[offset + index + cursor] != 62:
+                    chars.append(convert_turkish_char(
+                        data[offset + index + cursor]))
                     cursor += 1
                 return "".join(chars).replace("SRS:", "").replace('"', "")
         return ""
 
     def read_length_prefixed_text(length_offset, text_offset):
-        if length_offset < 0 or length_offset >= len(data) or text_offset < 0 or text_offset >= len(data):
+        if length_offset < 0 or length_offset >= len(
+                data) or text_offset < 0 or text_offset >= len(data):
             return ""
 
         text_length = data[length_offset]
-        if text_length <= 0 or text_length > 240 or text_offset + text_length > len(data):
+        if text_length <= 0 or text_length > 240 or text_offset + \
+                text_length > len(data):
             return ""
 
         return read_turkish_string(text_offset, text_length).strip("\0 ")
 
     def read_text_payload(offset, gis_difference):
-        text = read_length_prefixed_text(offset + gis_difference + 97, offset + gis_difference + 98)
+        text = read_length_prefixed_text(
+            offset + gis_difference + 97,
+            offset + gis_difference + 98)
         if text:
             return text
 
-        text = read_length_prefixed_text(offset + gis_difference + 86, offset + gis_difference + 87)
+        text = read_length_prefixed_text(
+            offset + gis_difference + 86,
+            offset + gis_difference + 87)
         if text:
             return text
 
@@ -322,10 +340,7 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
 
     def is_plan_name_character(value):
         return (
-            48 <= value <= 57
-            or 65 <= value <= 90
-            or 97 <= value <= 122
-            or value in (45, 95)
+            48 <= value <= 57 or 65 <= value <= 90 or 97 <= value <= 122 or value in (45, 95)
         )
 
     def read_plan_box_name(offset, block_size):
@@ -333,17 +348,19 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
         for index in range(offset, max(offset, end - 4)):
             if index + 4 > end:
                 break
-            if data[index : index + 4].lower() != b"plan":
+            if data[index: index + 4].lower() != b"plan":
                 continue
 
             cursor = index + 4
-            while cursor < end and cursor - index < 32 and is_plan_name_character(data[cursor]):
+            while cursor < end and cursor - \
+                    index < 32 and is_plan_name_character(data[cursor]):
                 cursor += 1
 
             if cursor <= index + 4:
                 continue
 
-            name = data[index:cursor].decode("ascii", errors="ignore").strip("\0 ")
+            name = data[index:cursor].decode(
+                "ascii", errors="ignore").strip("\0 ")
             if len(name) > 4 and name[4:].isdigit():
                 return name
         return ""
@@ -369,10 +386,12 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
                 continue
 
             token_start = cursor
-            while cursor < bounded_end and is_plan_name_character(data[cursor]):
+            while cursor < bounded_end and is_plan_name_character(
+                    data[cursor]):
                 cursor += 1
             if cursor - token_start >= 3:
-                return data[token_start:cursor].decode("ascii", errors="ignore")
+                return data[token_start:cursor].decode(
+                    "ascii", errors="ignore")
         return ""
 
     def collect_length_prefixed_ascii_fields(chunk):
@@ -380,11 +399,13 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
         seen = set()
         for index in range(max(0, len(chunk) - 1)):
             value_length = chunk[index]
-            if value_length <= 0 or value_length > 64 or index + 1 + value_length > len(chunk):
+            if value_length <= 0 or value_length > 64 or index + \
+                    1 + value_length > len(chunk):
                 continue
 
-            raw_value = chunk[index + 1 : index + 1 + value_length]
-            if not raw_value or not all(32 <= item < 127 for item in raw_value):
+            raw_value = chunk[index + 1: index + 1 + value_length]
+            if not raw_value or not all(
+                    32 <= item < 127 for item in raw_value):
                 continue
 
             value = raw_value.decode("ascii", errors="ignore").strip("\0 ")
@@ -401,12 +422,14 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
     def read_uint16_from(chunk, offset):
         if offset < 0 or offset + 2 > len(chunk):
             return 0
-        return int.from_bytes(chunk[offset : offset + 2], "little", signed=False)
+        return int.from_bytes(
+            chunk[offset: offset + 2], "little", signed=False)
 
     def read_uint32_from(chunk, offset):
         if offset < 0 or offset + 4 > len(chunk):
             return 0
-        return int.from_bytes(chunk[offset : offset + 4], "little", signed=False)
+        return int.from_bytes(
+            chunk[offset: offset + 4], "little", signed=False)
 
     def read_float_from(chunk, offset):
         if offset < 0 or offset + 4 > len(chunk):
@@ -427,13 +450,7 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
 
     def looks_like_coordinate_pair(x, y):
         return (
-            x is not None
-            and y is not None
-            and math.isfinite(x)
-            and math.isfinite(y)
-            and abs(x) <= 100000000
-            and abs(y) <= 100000000
-            and (abs(x) >= 1000 or abs(y) >= 1000)
+            x is not None and y is not None and math.isfinite(x) and math.isfinite(y) and abs(x) <= 100000000 and abs(y) <= 100000000 and (abs(x) >= 1000 or abs(y) >= 1000)
         )
 
     def parse_attribute_row(record_bytes, table_ref, row_index):
@@ -446,14 +463,17 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
         }
 
         if len(record_bytes) >= 11:
-            row["columns"]["table_ref_inline"] = record_bytes[1:11].decode("ascii", errors="ignore").strip("\0 ")
+            row["columns"]["table_ref_inline"] = record_bytes[1:11].decode(
+                "ascii", errors="ignore").strip("\0 ")
 
         label_length = record_bytes[28] if len(record_bytes) > 28 else 0
-        has_label = 1 <= label_length <= 64 and 29 + label_length <= len(record_bytes)
+        has_label = 1 <= label_length <= 64 and 29 + \
+            label_length <= len(record_bytes)
         if has_label:
-            label_bytes = record_bytes[29 : 29 + label_length]
+            label_bytes = record_bytes[29: 29 + label_length]
             if all(32 <= item < 127 for item in label_bytes):
-                label_text = label_bytes.decode("ascii", errors="ignore").strip("\0 ")
+                label_text = label_bytes.decode(
+                    "ascii", errors="ignore").strip("\0 ")
             else:
                 label_text = ""
         else:
@@ -461,27 +481,65 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
 
         if label_text:
             sep_offset = 29 + label_length
-            coord_1_x = safe_round(read_double_from(record_bytes, sep_offset + 8))
-            coord_1_y = safe_round(read_double_from(record_bytes, sep_offset + 16))
-            coord_2_x = safe_round(read_double_from(record_bytes, sep_offset + 50))
-            coord_2_y = safe_round(read_double_from(record_bytes, sep_offset + 58))
-            coord_3_x = safe_round(read_double_from(record_bytes, sep_offset + 66))
-            coord_3_y = safe_round(read_double_from(record_bytes, sep_offset + 74))
+            coord_1_x = safe_round(
+                read_double_from(
+                    record_bytes,
+                    sep_offset + 8))
+            coord_1_y = safe_round(
+                read_double_from(
+                    record_bytes,
+                    sep_offset + 16))
+            coord_2_x = safe_round(
+                read_double_from(
+                    record_bytes,
+                    sep_offset + 50))
+            coord_2_y = safe_round(
+                read_double_from(
+                    record_bytes,
+                    sep_offset + 58))
+            coord_3_x = safe_round(
+                read_double_from(
+                    record_bytes,
+                    sep_offset + 66))
+            coord_3_y = safe_round(
+                read_double_from(
+                    record_bytes,
+                    sep_offset + 74))
 
             row["columns"]["row_variant"] = "label"
             row["columns"]["label"] = label_text
             row["columns"]["label_length"] = label_length
-            row["columns"]["prefix_float"] = safe_round(read_float_from(record_bytes, 17))
+            row["columns"]["prefix_float"] = safe_round(
+                read_float_from(record_bytes, 17))
             row["columns"]["code_u16"] = read_uint16_from(record_bytes, 25)
-            row["columns"]["separator_1"] = record_bytes[sep_offset] if sep_offset < len(record_bytes) else 0
-            row["columns"]["style_code"] = read_uint32_from(record_bytes, sep_offset + 1)
-            row["columns"]["flag_1"] = record_bytes[sep_offset + 5] if sep_offset + 5 < len(record_bytes) else 0
-            row["columns"]["flag_2"] = record_bytes[sep_offset + 6] if sep_offset + 6 < len(record_bytes) else 0
-            row["columns"]["flag_3"] = record_bytes[sep_offset + 7] if sep_offset + 7 < len(record_bytes) else 0
+            row["columns"]["separator_1"] = record_bytes[sep_offset] if sep_offset < len(
+                record_bytes) else 0
+            row["columns"]["style_code"] = read_uint32_from(
+                record_bytes, sep_offset + 1)
+            row["columns"]["flag_1"] = (
+                record_bytes[sep_offset + 5]
+                if sep_offset + 5 < len(record_bytes)
+                else 0
+            )
+            row["columns"]["flag_2"] = (
+                record_bytes[sep_offset + 6]
+                if sep_offset + 6 < len(record_bytes)
+                else 0
+            )
+            row["columns"]["flag_3"] = (
+                record_bytes[sep_offset + 7]
+                if sep_offset + 7 < len(record_bytes)
+                else 0
+            )
             row["columns"]["coord_1_x"] = coord_1_x
             row["columns"]["coord_1_y"] = coord_1_y
-            row["columns"]["separator_2"] = record_bytes[sep_offset + 35] if sep_offset + 35 < len(record_bytes) else 0
-            row["columns"]["scale_float"] = safe_round(read_float_from(record_bytes, sep_offset + 46))
+            row["columns"]["separator_2"] = (
+                record_bytes[sep_offset + 35]
+                if sep_offset + 35 < len(record_bytes)
+                else 0
+            )
+            row["columns"]["scale_float"] = safe_round(
+                read_float_from(record_bytes, sep_offset + 46))
             row["columns"]["coord_2_x"] = coord_2_x
             row["columns"]["coord_2_y"] = coord_2_y
             row["columns"]["coord_3_x"] = coord_3_x
@@ -499,25 +557,29 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
             coord_3_y = safe_round(read_double_from(record_bytes, 111))
 
             if not (
-                looks_like_coordinate_pair(coord_0_x, coord_0_y)
-                and looks_like_coordinate_pair(coord_1_x, coord_1_y)
-                and looks_like_coordinate_pair(coord_2_x, coord_2_y)
+                looks_like_coordinate_pair(coord_0_x, coord_0_y) and looks_like_coordinate_pair(coord_1_x, coord_1_y) and looks_like_coordinate_pair(coord_2_x, coord_2_y)
             ):
                 values = collect_length_prefixed_ascii_fields(record_bytes)
-                row["columns"]["ascii_values"] = " | ".join(item for item in values if item != table_ref)
+                row["columns"]["ascii_values"] = " | ".join(
+                    item for item in values if item != table_ref)
                 return row
 
             row["columns"]["row_variant"] = "segment"
             row["columns"]["coord_0_x"] = coord_0_x
             row["columns"]["coord_0_y"] = coord_0_y
             row["columns"]["style_code"] = read_uint32_from(record_bytes, 37)
-            row["columns"]["flag_1"] = record_bytes[41] if 41 < len(record_bytes) else 0
-            row["columns"]["flag_2"] = record_bytes[42] if 42 < len(record_bytes) else 0
-            row["columns"]["flag_3"] = record_bytes[43] if 43 < len(record_bytes) else 0
-            row["columns"]["flag_4"] = record_bytes[44] if 44 < len(record_bytes) else 0
+            row["columns"]["flag_1"] = record_bytes[41] if 41 < len(
+                record_bytes) else 0
+            row["columns"]["flag_2"] = record_bytes[42] if 42 < len(
+                record_bytes) else 0
+            row["columns"]["flag_3"] = record_bytes[43] if 43 < len(
+                record_bytes) else 0
+            row["columns"]["flag_4"] = record_bytes[44] if 44 < len(
+                record_bytes) else 0
             row["columns"]["coord_1_x"] = coord_1_x
             row["columns"]["coord_1_y"] = coord_1_y
-            row["columns"]["separator_2"] = record_bytes[72] if 72 < len(record_bytes) else 0
+            row["columns"]["separator_2"] = record_bytes[72] if 72 < len(
+                record_bytes) else 0
             row["columns"]["coord_2_x"] = coord_2_x
             row["columns"]["coord_2_y"] = coord_2_y
             row["columns"]["coord_3_x"] = coord_3_x
@@ -525,7 +587,8 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
             return row
 
         values = collect_length_prefixed_ascii_fields(record_bytes)
-        row["columns"]["ascii_values"] = " | ".join(item for item in values if item != table_ref)
+        row["columns"]["ascii_values"] = " | ".join(
+            item for item in values if item != table_ref)
         return row
 
     def extract_attribute_tables():
@@ -541,7 +604,8 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
             while end_offset < len(data) and 48 <= data[end_offset] <= 57:
                 end_offset += 1
 
-            table_ref = data[marker_offset:end_offset].decode("ascii", errors="ignore")
+            table_ref = data[marker_offset:end_offset].decode(
+                "ascii", errors="ignore")
             record_start = marker_offset
             ref_length = end_offset - marker_offset
             if marker_offset > 0 and data[marker_offset - 1] == ref_length:
@@ -570,9 +634,13 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
             if record_end <= marker["record_start"]:
                 continue
 
-            record_bytes = data[marker["record_start"] : record_end]
+            record_bytes = data[marker["record_start"]: record_end]
             rows = tables.setdefault(marker["table_ref"], [])
-            rows.append(parse_attribute_row(record_bytes, marker["table_ref"], len(rows) + 1))
+            rows.append(
+                parse_attribute_row(
+                    record_bytes,
+                    marker["table_ref"],
+                    len(rows) + 1))
 
         return [
             {
@@ -583,7 +651,12 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
             if rows
         ]
 
-    def append_entity(geometry_kind, layer_code, color_code, coordinates, **extra):
+    def append_entity(
+            geometry_kind,
+            layer_code,
+            color_code,
+            coordinates,
+            **extra):
         entity = {
             "geometry_kind": geometry_kind,
             "layer_code": layer_code,
@@ -632,7 +705,11 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
         raw_x2 = read_double(offset + block_size - 19)
         raw_y2 = read_double(offset + block_size - 11)
         z2 = read_float(offset + block_size - 3)
-        if not is_valid_coordinate(raw_x1, raw_y1) or not is_valid_coordinate(raw_x2, raw_y2):
+        if not is_valid_coordinate(
+                raw_x1,
+                raw_y1) or not is_valid_coordinate(
+                raw_x2,
+                raw_y2):
             return
         append_entity(
             "Line",
@@ -678,7 +755,8 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
         symbol_offset = offset + gis_difference + 94
         if symbol_offset < offset or symbol_offset >= len(data):
             symbol_offset = offset + 94
-        symbol_code = data[symbol_offset] if 0 <= symbol_offset < len(data) else 0
+        symbol_code = data[symbol_offset] if 0 <= symbol_offset < len(
+            data) else 0
         symbol_size = try_read_positive_float(offset + gis_difference + 86)
         if symbol_size is None:
             symbol_size = try_read_positive_float(offset + 86)
@@ -717,11 +795,14 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
             return
 
         is_closed = is_approximately_closed(coordinates)
-        if is_closed and not coordinates_equal(coordinates[0], coordinates[-1]):
+        if is_closed and not coordinates_equal(
+                coordinates[0], coordinates[-1]):
             first = coordinates[0]
-            coordinates.append({"x": first["x"], "y": first["y"], "z": first["z"]})
+            coordinates.append(
+                {"x": first["x"], "y": first["y"], "z": first["z"]})
 
-        is_box, box_width, box_height, box_rotation, coordinates = try_get_box_metrics(coordinates)
+        is_box, box_width, box_height, box_rotation, coordinates = try_get_box_metrics(
+            coordinates)
         append_entity(
             "Polygon" if is_closed else "Polyline",
             layer_code,
@@ -741,7 +822,11 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
         raw_x2 = read_double(offset + gis_difference + 104)
         raw_y2 = read_double(offset + gis_difference + 112)
         rotation_radians = read_float(offset + gis_difference + 120)
-        if not is_valid_coordinate(raw_x1, raw_y1) or not is_valid_coordinate(raw_x2, raw_y2):
+        if not is_valid_coordinate(
+                raw_x1,
+                raw_y1) or not is_valid_coordinate(
+                raw_x2,
+                raw_y2):
             return
         width = abs(raw_x2 - raw_x1)
         height = abs(raw_y2 - raw_y1)
@@ -786,7 +871,11 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
         raw_y1 = read_double(offset + 58)
         raw_x2 = read_double(offset + 66)
         raw_y2 = read_double(offset + 74)
-        if not is_valid_coordinate(raw_x1, raw_y1) or not is_valid_coordinate(raw_x2, raw_y2):
+        if not is_valid_coordinate(
+                raw_x1,
+                raw_y1) or not is_valid_coordinate(
+                raw_x2,
+                raw_y2):
             return
 
         min_x = min(raw_x1, raw_x2)
@@ -796,7 +885,8 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
         if abs(max_x - min_x) < 0.001 or abs(max_y - min_y) < 0.001:
             return
 
-        sheet_name = read_length_prefixed_name(offset + 86, offset + block_size + 1)
+        sheet_name = read_length_prefixed_name(
+            offset + 86, offset + block_size + 1)
         append_entity(
             "MapSheet",
             layer_code,
@@ -870,9 +960,12 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
             return
 
         width = read_double(offset + 169) if offset + 177 <= len(data) else 0.0
-        height = read_double(offset + 177) if offset + 185 <= len(data) else 0.0
-        grid_x = read_double(offset + 185) if offset + 193 <= len(data) else 0.0
-        grid_y = read_double(offset + 193) if offset + 201 <= len(data) else 0.0
+        height = read_double(offset + 177) if offset + \
+            185 <= len(data) else 0.0
+        grid_x = read_double(offset + 185) if offset + \
+            193 <= len(data) else 0.0
+        grid_y = read_double(offset + 193) if offset + \
+            201 <= len(data) else 0.0
         raw_x2 = read_double(offset + 66)
         raw_y2 = read_double(offset + 74)
         if width <= 0.0 or height <= 0.0:
@@ -884,7 +977,8 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
             return
 
         angle_grads = read_float(offset + 82)
-        rotation_degrees = (angle_grads * 0.9) % 360.0 if math.isfinite(angle_grads) else 0.0
+        rotation_degrees = (
+            angle_grads * 0.9) % 360.0 if math.isfinite(angle_grads) else 0.0
         scale = read_float(offset + 86)
         if not math.isfinite(scale):
             scale = 0.0
@@ -904,7 +998,8 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
         p3y = p0y + (side_y * height)
         end = offset + block_size + 1
         smart_payload = data[offset:end]
-        label = "BASIC" if b"BASIC" in smart_payload else read_ascii_token(offset + 145, end)
+        label = "BASIC" if b"BASIC" in smart_payload else read_ascii_token(
+            offset + 145, end)
         append_entity(
             "SmartObject",
             layer_code,
@@ -927,11 +1022,13 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
         )
 
     def read_triangle_vertex(offset, x_offset, y_offset, z_offset=None):
-        if offset + x_offset + 8 > len(data) or offset + y_offset + 8 > len(data):
+        if offset + x_offset + \
+                8 > len(data) or offset + y_offset + 8 > len(data):
             return None
         x = read_double(offset + x_offset)
         y = read_double(offset + y_offset)
-        z = read_float(offset + z_offset) if z_offset is not None and offset + z_offset + 4 <= len(data) else 0.0
+        z = read_float(offset + z_offset) if z_offset is not None and offset + \
+            z_offset + 4 <= len(data) else 0.0
         if not is_valid_coordinate(x, y):
             return None
         return create_map_coordinate(x, y, z)
@@ -943,7 +1040,7 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
         if a is None or b is None or c is None:
             return
 
-        area2 = abs((b["x"] - a["x"]) * (c["y"] - a["y"]) - (b["y"] - a["y"]) * (c["x"] - a["x"]))
+        area2 = abs(((b["x"] - a["x"]) * (c["y"] - a["y"])) - ((b["y"] - a["y"]) * (c["x"] - a["x"])))
         if area2 <= 0.0001:
             return
 
@@ -962,7 +1059,8 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
         if not is_valid_coordinate(raw_x, raw_y):
             return
 
-        block_name = read_length_prefixed_name(offset + gis_difference + 86, offset + block_size + 1)
+        block_name = read_length_prefixed_name(
+            offset + gis_difference + 86, offset + block_size + 1)
         append_entity(
             "Block",
             data[offset + 7],
@@ -1043,7 +1141,9 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
         cursor = offset + 5
         end = offset + block_size
         while cursor + 6 < end:
-            if (data[cursor] not in (21, 22)) or data[cursor + 5] != data[cursor + 6]:
+            if (
+                data[cursor] not in (21, 22) or data[cursor + 5] != data[cursor + 6]
+            ):
                 cursor += 1
                 continue
             inner_block_size = read_int32(cursor + 1) + 4
@@ -1051,7 +1151,10 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
             if inner_block_size < 7 or cursor + total_inner > end:
                 cursor += 1
                 continue
-            read_geometry(cursor, inner_block_size, 28 if data[cursor] == 22 else 0)
+            read_geometry(
+                cursor,
+                inner_block_size,
+                28 if data[cursor] == 22 else 0)
             cursor += total_inner
 
     cursor = 0
@@ -1068,27 +1171,31 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
         elif block_type == 28:
             block_name = read_turkish_string(cursor + 6, data[cursor + 5])
             if block_name == "MPROJ":
-                projection = {1: "Geographic", 2: "6", 3: "3"}.get(data[cursor + 16], "Undefined")
-                datum = {0: "WGS-84", 1: "ITRF", 4: "ED50", 254: "ED50-HGK"}.get(
-                    data[cursor + 17], "Undefined"
-                )
+                projection = {1: "Geographic", 2: "6", 3: "3"}.get(
+                    data[cursor + 16], "Undefined")
+                datum = {0: "WGS-84", 1: "ITRF", 4: "ED50",
+                         254: "ED50-HGK"}.get(data[cursor + 17], "Undefined")
                 projection_text = f"{datum} / {projection} / Zone {data[cursor + 21]}"
             elif block_name == "TILED_XML":
-                epsg = read_epsg(cursor, min(block_size + 1, len(data) - cursor))
+                epsg = read_epsg(
+                    cursor, min(
+                        block_size + 1, len(data) - cursor))
             elif block_name == "LEX.ST2":
                 layer_count = data[cursor + 20]
                 for index in range(layer_count):
                     item_offset = cursor + 23 + (index * 256) + 56
                     if item_offset + 2 >= len(data):
                         break
-                    layer_colors.append(to_argb(data[item_offset], data[item_offset + 1], data[item_offset + 2]))
+                    layer_colors.append(
+                        to_argb(data[item_offset], data[item_offset + 1], data[item_offset + 2]))
         elif block_type == 6:
             layer_count = data[cursor + 16] + data[cursor + 17] * 256
             for index in range(layer_count):
                 item_offset = cursor + 18 + (index * 29)
                 if item_offset + 29 > len(data):
                     break
-                layer_name = read_turkish_string(item_offset + 5, data[item_offset + 4])
+                layer_name = read_turkish_string(
+                    item_offset + 5, data[item_offset + 4])
                 if layer_name.strip():
                     layer_names.append(layer_name)
         elif block_type in (21, 22) and block_size >= 7:
@@ -1103,9 +1210,7 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
             entity
             for entity in entities
             if not (
-                entity["geometry_kind"] == "Symbol"
-                and entity["layer_code"] == 0
-                and entity.get("label_text") == "S0"
+                entity["geometry_kind"] == "Symbol" and entity["layer_code"] == 0 and entity.get("label_text") == "S0"
             )
         ]
 
@@ -1113,7 +1218,8 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
         if not entity["layer_name"]:
             entity["layer_name"] = get_layer_name(entity["layer_code"])
         if entity["color_argb"] is None:
-            entity["color_argb"] = resolve_geometry_color(entity["layer_code"], 0)
+            entity["color_argb"] = resolve_geometry_color(
+                entity["layer_code"], 0)
 
     attribute_tables = extract_attribute_tables()
 
@@ -1139,19 +1245,18 @@ class NetcadBinaryReader:
 
         # If pure-python succeeds, return NetcadParseResult structure
         return NetcadParseResult(
-            entities=[self._entity_from_dict(item) for item in payload["entities"]],
-            attribute_tables=[self._attribute_table_from_dict(item) for item in payload.get("attribute_tables", [])],
-            layer_names=list(payload["layer_names"]),
-            layer_colors=list(payload["layer_colors"]),
-            parser_backend=backend,
-            version_name=payload.get("version_name", ""),
-            epsg=payload.get("epsg", ""),
-            projection_text=payload.get("projection_text", ""),
-            unsupported_geometry_types={
-                int(key): value
-                for key, value in dict(payload.get("unsupported_geometry_types", {})).items()
-            },
-        )
+            entities=[
+                self._entity_from_dict(item) for item in payload["entities"]], attribute_tables=[
+                self._attribute_table_from_dict(item) for item in payload.get(
+                    "attribute_tables", [])], layer_names=list(
+                    payload["layer_names"]), layer_colors=list(
+                        payload["layer_colors"]), parser_backend=backend, version_name=payload.get(
+                            "version_name", ""), epsg=payload.get(
+                                "epsg", ""), projection_text=payload.get(
+                                    "projection_text", ""), unsupported_geometry_types={
+                                        int(key): value for key, value in dict(
+                                            payload.get(
+                                                "unsupported_geometry_types", {})).items()}, )
 
     def _entity_from_dict(self, payload) -> NetcadEntity:
         return NetcadEntity(
