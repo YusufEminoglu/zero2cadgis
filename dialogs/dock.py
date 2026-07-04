@@ -9,6 +9,7 @@ import os
 import re
 import math
 import shutil
+from dataclasses import dataclass, field
 
 from qgis.PyQt.QtCore import Qt, QVariant, pyqtSignal
 from qgis.PyQt.QtGui import QIcon, QColor, QFont
