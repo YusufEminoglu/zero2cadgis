@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.idea/
+.vscode/
+*.zip
+*.tif
+*.tiff
+*_georef.*
+*.gpkg
+*.log
