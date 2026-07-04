@@ -2,6 +2,10 @@
 
 ## [0.1.1] - 2026-07-04
 
+- Fix NameError
+
+## [0.1.1] - 2026-07-04
+
 - Bump version for metadata updates
 
 ## [0.1.0] - 2026-07-04

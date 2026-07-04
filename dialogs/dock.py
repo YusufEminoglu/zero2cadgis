@@ -434,7 +434,6 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         exp_form.setContentsMargins(8, 12, 8, 8)
 
         self.cmb_exp_layer = QComboBox()
-        self._populate_layers_combo()
         exp_form.addRow("Select Source Layer:", self.cmb_exp_layer)
 
         self.cmb_exp_format = QComboBox()
@@ -474,6 +473,9 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         central_widget = QWidget()
         central_widget.setLayout(main_layout)
         self.setWidget(central_widget)
+        
+        # Populate layers after UI elements are fully constructed
+        self._populate_layers_combo()
 
     # ───────────────────────── TAB 1: GIS/CAD CONVERTER CONTROLS ─────────────────────────
 
