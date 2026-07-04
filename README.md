@@ -1,6 +1,6 @@
 <div align="center">
-  <img src="icons/icon.png" width="148" height="148" alt="02gpkg icon">
-  <h1>02gpkg</h1>
+  <img src="icons/icon.png" width="148" height="148" alt="02CadGis icon">
+  <h1>02CadGis</h1>
   <p><strong>CAD, KML, GDB and Netcad conversion studio for QGIS</strong></p>
   <p>
     <a href="https://plugins.qgis.org/"><img alt="QGIS" src="https://img.shields.io/badge/QGIS-3.22%2B-589632?style=for-the-badge"></a>
@@ -10,7 +10,7 @@
   </p>
 </div>
 
-**02gpkg** is a professional QGIS dock plugin for turning CAD and GIS exchange files into clean GeoPackage layers. It is built for planning, cadastral, municipal, and urban analytics workflows where DXF, KML/KMZ, DGN, FileGDB, and Netcad files need to become usable QGIS data quickly.
+**02CadGis** is a professional QGIS dock plugin for turning CAD and GIS exchange files into clean GeoPackage layers. It is built for planning, cadastral, municipal, and urban analytics workflows where DXF, KML/KMZ, DGN, FileGDB, and Netcad files need to become usable QGIS data quickly.
 
 <table>
   <tr>
@@ -78,7 +78,7 @@ flowchart LR
 
 The Netcad panel is intentionally detailed because these drawings often contain mixed geometry, text, colors and table data.
 
-- **Batch import:** select several files; 02gpkg keeps file groups separate by default, or merges matching layer names inside geometry-type groups when **Merge geometry types** is enabled.
+- **Batch import:** select several files; 02CadGis keeps file groups separate by default, or merges matching layer names inside geometry-type groups when **Merge geometry types** is enabled.
 - **Metadata review:** version, projection text, EPSG hints, feature counts and table counts are shown before conversion.
 - **Layer filtering:** uncheck unnecessary CAD layers or `@TAB` tables before import.
 - **Closure tolerance:** keeps cadastral polygon creation controlled; use small values unless the drawing has known snap gaps.
@@ -93,7 +93,7 @@ If a file does not parse as expected, retry with cleanup disabled and inspect th
 Development path in this plugin workspace:
 
 ```powershell
-C:\Users\YE\PyCharmMiscProject\qgis_plugins\zero2gpkg_converter
+C:\Users\YE\PyCharmMiscProject\qgis_plugins\zero2cadgis
 ```
 
 Optional test environment variable:
@@ -102,20 +102,20 @@ Optional test environment variable:
 $env:QGIS_PLUGINPATH = "C:\Users\YE\PyCharmMiscProject\qgis_plugins"
 ```
 
-Restart QGIS, then enable **02gpkg - Import and Convert CAD/KML/GDB Files** from **Plugins > Manage and Install Plugins**.
+Restart QGIS, then enable **02CadGis Universal CAD/GIS Importer** from **Plugins > Manage and Install Plugins**.
 
 ## Build and Validate
 
 ```powershell
-python -m unittest zero2gpkg_converter.tests.test_e2e_converter
-python packaging\validate_plugin.py zero2gpkg_converter --strict
-.\packaging\Build-PluginZip.ps1 -PluginDir zero2gpkg_converter
+python -m unittest zero2cadgis.tests.test_e2e_converter
+python packaging\validate_plugin.py zero2cadgis --strict
+.\packaging\Build-PluginZip.ps1 -PluginDir zero2cadgis
 ```
 
 The release zip is written to:
 
 ```powershell
-QGIS_Plugin_Releases\zero2gpkg_converter.zip
+QGIS_Plugin_Releases\zero2cadgis.zip
 ```
 
 ## Troubleshooting
@@ -123,7 +123,7 @@ QGIS_Plugin_Releases\zero2gpkg_converter.zip
 | Symptom | Likely cause | Fix |
 | --- | --- | --- |
 | Plugin does not appear | QGIS is not scanning this folder | Set `QGIS_PLUGINPATH` and restart QGIS. |
-| DWG does not open | DWG is currently a future enhancement; this QGIS/GDAL build only exposes limited libopencad support | Convert to DXF first, then run 02gpkg. |
+| DWG does not open | DWG is currently a future enhancement; this QGIS/GDAL build only exposes limited libopencad support | Convert to DXF first, then run 02CadGis. |
 | KML overlay is missing | No valid `GroundOverlay` or image path | Check the KML/KMZ structure and referenced image files. |
 | Netcad layers are missing | Unsupported entity block or aggressive cleanup | Retry with cleanup disabled and lower closure tolerance. |
 | Hub icon is missing | Metadata icon path mismatch | Keep `icon=icons/icon.png` and package with the provided build script. |
@@ -132,5 +132,5 @@ QGIS_Plugin_Releases\zero2gpkg_converter.zip
 
 - Developer: Yusuf Eminoglu
 - Email: yusuf.eminoglu@deu.edu.tr
-- Repository: <https://github.com/YusufEminoglu/zero2gpkg_converter>
+- Repository: <https://github.com/YusufEminoglu/zero2cadgis>
 - License: GNU General Public License v2.0 or later

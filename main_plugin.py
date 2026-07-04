@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""zero2gpkg_converter — Main plugin entry class.
+"""zero2cadgis — Main plugin entry class.
 100% English, fully compatible with PlanX menu structure.
 """
 from __future__ import annotations
@@ -11,9 +11,9 @@ from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QMenu, QToolBar, QMessageBox
 
 
-class Zero2GpkgConverter:
+class Zero2CadGis:
     MENU_NAME = "PlanX"
-    TOOLBAR_NAME = "02gpkg CAD/GIS Importer & Converter"
+    TOOLBAR_NAME = "02CadGis Universal CAD/GIS Importer"
 
     def __init__(self, iface):
         self.iface = iface
@@ -43,7 +43,7 @@ class Zero2GpkgConverter:
             menu_bar.addMenu(self.menu)
 
         self.toolbar = QToolBar(self.TOOLBAR_NAME)
-        self.toolbar.setObjectName("Zero2GpkgConverterToolbar")
+        self.toolbar.setObjectName("Zero2CadGisToolbar")
         self.iface.addToolBar(self.toolbar)
 
         icon_path = os.path.join(self.icon_dir, "icon.png")
@@ -52,10 +52,10 @@ class Zero2GpkgConverter:
 
         self.panel_action = self._add_action(
             icon_path,
-            "02gpkg - CAD & GIS Converter",
+            "02CadGis - Universal CAD/GIS Importer",
             self._toggle_dock,
             checkable=True,
-            status_tip="Toggle 02gpkg CAD and GIS Converter panel",
+            status_tip="Toggle 02CadGis Universal CAD and GIS Importer panel",
         )
 
     def unload(self) -> None:
@@ -81,11 +81,11 @@ class Zero2GpkgConverter:
         created = False
         if self._dock is None:
             try:
-                from .dialogs.dock import Zero2GpkgConverterDockWidget
+                from .dialogs.dock import Zero2CadGisDockWidget
 
-                self._dock = Zero2GpkgConverterDockWidget(
+                self._dock = Zero2CadGisDockWidget(
                     self.iface, self.icon_dir, self.iface.mainWindow())
-                self._dock.setObjectName("Zero2GpkgConverterDock")
+                self._dock.setObjectName("Zero2CadGisDock")
                 self._dock.visibilityChanged.connect(
                     self.panel_action.setChecked)
                 self.iface.addDockWidget(

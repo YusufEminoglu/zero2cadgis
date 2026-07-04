@@ -22,14 +22,14 @@ import qgis.core  # noqa: E402
 qgis.core.QgsField = MagicMock
 qgis.core.QgsFields = MagicMock
 
-from zero2gpkg_converter.core.cad_engine import CadCleanupEngine  # noqa: E402
-from zero2gpkg_converter.core.gis_engine import parse_kml_html_table  # noqa: E402
-from zero2gpkg_converter.core.netcad_parser import NetcadCoordinate  # noqa: E402
-from zero2gpkg_converter.core.path_utils import ensure_extension, has_extension  # noqa: E402
-from zero2gpkg_converter.core.qgis_compat import memory_geometry_type_name  # noqa: E402
+from zero2cadgis.core.cad_engine import CadCleanupEngine  # noqa: E402
+from zero2cadgis.core.gis_engine import parse_kml_html_table  # noqa: E402
+from zero2cadgis.core.netcad_parser import NetcadCoordinate  # noqa: E402
+from zero2cadgis.core.path_utils import ensure_extension, has_extension  # noqa: E402
+from zero2cadgis.core.qgis_compat import memory_geometry_type_name  # noqa: E402
 
 
-class TestZero2GpkgConverter(unittest.TestCase):
+class TestZero2CadGis(unittest.TestCase):
 
     def test_path_extension_helpers_are_case_insensitive(self):
         self.assertTrue(has_extension(r"C:\data\PARCELS.GPKG", ".gpkg"))
@@ -107,7 +107,7 @@ class TestZero2GpkgConverter(unittest.TestCase):
                 return EnumLike()
 
         with patch(
-            "zero2gpkg_converter.core.qgis_compat.QgsWkbTypes.displayString",
+            "zero2cadgis.core.qgis_compat.QgsWkbTypes.displayString",
             side_effect=Exception("no display string"),
         ):
             self.assertEqual(memory_geometry_type_name(FakeLayer()), "LineString")
@@ -150,7 +150,7 @@ class TestZero2GpkgConverter(unittest.TestCase):
         self.assertEqual(forced[-1].y(), 0.0)
 
     def test_get_geom_type_str_with_mocks(self):
-        from zero2gpkg_converter.core.gis_engine import _get_geom_type_str
+        from zero2cadgis.core.gis_engine import _get_geom_type_str
 
         # Mock geometry with no object
         self.assertEqual(_get_geom_type_str(None), "NoGeometry")
@@ -165,11 +165,11 @@ class TestZero2GpkgConverter(unittest.TestCase):
         mock_point_geom.isEmpty.return_value = False
         mock_point_geom.type.return_value = 0
         mock_point_geom.wkbType.return_value = 1  # Point
-        with patch("zero2gpkg_converter.core.gis_engine.QgsWkbTypes.isMultiType", return_value=False):
+        with patch("zero2cadgis.core.gis_engine.QgsWkbTypes.isMultiType", return_value=False):
             self.assertEqual(_get_geom_type_str(mock_point_geom), "Point")
 
         # Mock MultiPoint geometry (type 0, multi type wkb)
-        with patch("zero2gpkg_converter.core.gis_engine.QgsWkbTypes.isMultiType", return_value=True):
+        with patch("zero2cadgis.core.gis_engine.QgsWkbTypes.isMultiType", return_value=True):
             self.assertEqual(_get_geom_type_str(mock_point_geom), "MultiPoint")
 
 

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""zero2gpkg_converter — Tabbed DockWidget Controller.
+"""zero2cadgis — Tabbed DockWidget Controller.
 100% English, fully integrated with core CAD/GIS engines.
 Includes dynamic Exporter module and GroundOverlay extraction.
 """
@@ -388,7 +388,7 @@ class LayerGroup:
     layers: list[QgsVectorLayer] = field(default_factory=list)
 
 
-class Zero2GpkgConverterDockWidget(QDockWidget):
+class Zero2CadGisDockWidget(QDockWidget):
     """100% English controller managing GIS/CAD converter, exporter, and NCZ imports."""
 
     FIELD_DEFINITIONS = [
@@ -412,7 +412,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
     ]
 
     def __init__(self, iface, icon_dir: str, parent=None):
-        super().__init__("02gpkg - Import and Convert CAD/KML/GDB Files", parent)
+        super().__init__("02CadGis - Universal CAD/GIS Importer", parent)
         self.iface = iface
         self.icon_dir = icon_dir
 
@@ -805,7 +805,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         title_layout.setContentsMargins(0, 0, 0, 0)
         title_layout.setSpacing(0)
 
-        title = QLabel("02gpkg")
+        title = QLabel("02CadGis")
         title.setObjectName("dock_title")
         subtitle = QLabel("CAD, KML, DGN and GDB conversion studio")
         subtitle.setObjectName("dock_subtitle")
@@ -822,7 +822,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
 
     def _show_guide(self) -> None:
         dialog = QDialog(self)
-        dialog.setWindowTitle("02gpkg Guide")
+        dialog.setWindowTitle("02CadGis Guide")
         dialog.resize(560, 520)
 
         layout = QVBoxLayout(dialog)
@@ -833,8 +833,8 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
         guide.setObjectName("guide_body")
         guide.setOpenExternalLinks(True)
         guide.setHtml("""
-        <h2>02gpkg Quick Start</h2>
-        <p>Use 02gpkg when you need QGIS-ready GeoPackage layers from CAD, KML/KMZ, DGN, GDB, or Netcad drawing data.</p>
+        <h2>02CadGis Quick Start</h2>
+        <p>Use 02CadGis when you need QGIS-ready GeoPackage layers from CAD, KML/KMZ, DGN, GDB, or Netcad drawing data.</p>
 
         <h3>1. Convert CAD or GIS to GeoPackage</h3>
         <ol>
@@ -853,7 +853,7 @@ class Zero2GpkgConverterDockWidget(QDockWidget):
           <li>Select one or more `.ncz` or compatible `.nca` drawing files. Batch import keeps files separate by default; enable <b>Merge geometry types</b> to group by geometry type and merge matching layer names across files.</li>
           <li>Check the metadata card before importing. Version, projection text, detected EPSG, feature count, and table count help you catch wrong files early.</li>
           <li>Use the layer tree to import only the CAD layers and `@TAB` tables you need. Parent checkboxes select or clear whole groups.</li>
-          <li>Set the destination CRS. If an EPSG code is detected, 02gpkg preselects it; otherwise it falls back to the project CRS.</li>
+          <li>Set the destination CRS. If an EPSG code is detected, 02CadGis preselects it; otherwise it falls back to the project CRS.</li>
           <li>Use <b>Simplify collinear vertices</b> to reduce heavy CAD linework while preserving shape.</li>
           <li>Use <b>Clean duplicate nodes</b> to remove repeated adjacent vertices that can break topology tools.</li>
           <li>Set <b>Polyline Closure Tolerance</b> for small endpoint gaps. Keep it low for cadastral work; increase only when the source drawing has known snap gaps.</li>

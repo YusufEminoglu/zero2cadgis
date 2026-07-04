@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.2.0] - 2026-07-04
+
+- Rename plugin package to zero2cadgis and update display name to 02CadGis Universal CAD/GIS Importer
+
 ## [0.1.9] - 2026-07-04
 
 - Fix DXF export failure by skipping attribute table creation
@@ -30,7 +34,7 @@
 - Add visible checkbox indicator borders in the Netcad optimization panel.
 - Add optional NCZ batch geometry merging by geometry type and CAD layer name while preserving the `source_file` attribute.
 
-All notable changes to 02gpkg are documented here.
+All notable changes to 02CadGis are documented here.
 
 ## [0.1.2] - 2026-07-04
 
@@ -51,7 +55,7 @@ All notable changes to 02gpkg are documented here.
 - Built-in dock Guide button with an expanded quick-start workflow reference, including detailed Netcad NCZ/NCA import guidance.
 
 ### Changed
-- Replaced the plugin icon system with a new premium 02gpkg main icon and distinct workflow-specific panel icons.
+- Replaced the plugin icon system with a new premium 02CadGis main icon and distinct workflow-specific panel icons.
 - Updated metadata to use the canonical `icons/icon.png` path.
 - Redesigned the GitHub README with workflow icon cards, clearer format support, installation, Netcad notes, and troubleshooting sections.
 - Consolidated repeated 0.1.1 release notes into one coherent entry.

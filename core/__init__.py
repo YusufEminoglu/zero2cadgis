@@ -1,4 +1,4 @@
 # -*- coding: utf-8 -*-
-"""zero2gpkg_converter core engine package.
+"""zero2cadgis core engine package.
 100% English.
 """

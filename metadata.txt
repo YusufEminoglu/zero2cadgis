@@ -1,15 +1,15 @@
 [general]
-name=02gpkg - Import and Convert CAD/KML/GDB Files
+name=02CadGis Universal CAD/GIS Importer
 qgisMinimumVersion=3.22
 qgisMaximumVersion=4.99
-description=Convert DXF, Netcad NCZ/NCA, KML/KMZ, DGN and GDB datasets directly into optimized GeoPackage layers with QGIS styling.
-about=An advanced CAD and GIS dataset converter utility for the PlanX ecosystem. Supports DXF, Netcad NCZ/NCA, KML, KMZ, DGN, and GDB formats, with CAD collinear simplification, coordinate transformation, automatic labeling, and database joins. DWG import is tracked as a future enhancement because current QGIS/GDAL builds only read limited DWG versions via libopencad.
-version=0.1.9
+description=Convert Netcad NCZ/NCA drawings, DXF CAD, KML/KMZ, DGN, and GDB datasets directly into optimized GeoPackage layers with QGIS styling.
+about=An advanced CAD and GIS dataset converter utility for the PlanX ecosystem, with native support for Netcad NCZ/NCA drawings. Easily import DXF, Netcad NCZ/NCA, KML, KMZ, DGN, and GDB formats directly, with CAD collinear simplification, coordinate transformation, automatic labeling, and database joins. DWG import is tracked as a future enhancement.
+version=0.2.0
 author=Yusuf Eminoglu
 email=yusuf.eminoglu@deu.edu.tr
-repository=https://github.com/YusufEminoglu/zero2gpkg_converter
-tracker=https://github.com/YusufEminoglu/zero2gpkg_converter/issues
-homepage=https://github.com/YusufEminoglu/zero2gpkg_converter
+repository=https://github.com/YusufEminoglu/zero2cadgis
+tracker=https://github.com/YusufEminoglu/zero2cadgis/issues
+homepage=https://github.com/YusufEminoglu/zero2cadgis
 category=Vector
 icon=icons/icon.png
 tags=cad,gpkg,kml,dxf,ncz,nca,gdb,dgn,converter,importer
