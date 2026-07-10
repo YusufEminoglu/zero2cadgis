@@ -892,9 +892,10 @@ class Zero2CadGisDockWidget(QDockWidget):
 
     def _browse_src_dataset(self) -> None:
         idx = self.cmb_src_type.currentIndex()
+        start_dir = self._last_import_dir()
         if idx == 0:
             file_path, _ = QFileDialog.getOpenFileName(
-                self, "Select DXF File", "", "AutoCAD DXF (*.dxf)")
+                self, "Select DXF File", start_dir, "AutoCAD DXF (*.dxf)")
             if file_path and not has_extension(file_path, ".dxf"):
                 QMessageBox.warning(
                     self,
@@ -903,15 +904,15 @@ class Zero2CadGisDockWidget(QDockWidget):
                 return
         elif idx == 1:
             file_path, _ = QFileDialog.getOpenFileName(
-                self, "Select KML or KMZ File", "", "Keyhole Markup Language (*.kml *.kmz)")
+                self, "Select KML or KMZ File", start_dir, "Keyhole Markup Language (*.kml *.kmz)")
         elif idx == 2:
             file_path, _ = QFileDialog.getOpenFileName(
-                self, "Select Microstation DGN File", "", "Design Files (*.dgn)")
+                self, "Select Microstation DGN File", start_dir, "Design Files (*.dgn)")
         elif idx == 3:
             file_path = QFileDialog.getExistingDirectory(
                 self,
                 "Select ArcGIS File Geodatabase Directory",
-                "",
+                start_dir,
                 QFileDialog.Option.ShowDirsOnly)
             if file_path and not has_extension(file_path, ".gdb"):
                 QMessageBox.warning(
@@ -921,7 +922,7 @@ class Zero2CadGisDockWidget(QDockWidget):
                 return
         elif idx == 4:
             file_path, _ = QFileDialog.getOpenFileName(
-                self, "Select ArcGIS Personal Geodatabase File", "", "ArcGIS Personal Geodatabase (*.mdb)")
+                self, "Select ArcGIS Personal Geodatabase File", start_dir, "ArcGIS Personal Geodatabase (*.mdb)")
         else:
             QMessageBox.information(
                 self,
@@ -931,6 +932,7 @@ class Zero2CadGisDockWidget(QDockWidget):
 
         if file_path:
             self.txt_src_path.setText(file_path)
+            self._remember_import_dir(file_path)
             self._update_convert_gis_button_state()
 
     def _browse_gpkg_destination(self) -> None:
@@ -1058,10 +1060,12 @@ class Zero2CadGisDockWidget(QDockWidget):
 
     def _select_ncz_file(self) -> None:
         file_paths, _ = QFileDialog.getOpenFileNames(
-            self, "Select Netcad NCZ/NCA Drawing File(s)", "", "Netcad Drawing Files (*.ncz *.nca);;All Files (*.*)")
+            self, "Select Netcad NCZ/NCA Drawing File(s)", self._last_import_dir(),
+            "Netcad Drawing Files (*.ncz *.nca);;All Files (*.*)")
         if not file_paths:
             return
 
+        self._remember_import_dir(file_paths[0])
         self.current_netcad_paths = file_paths
         if len(file_paths) == 1:
             self.txt_ncz_path.setText(file_paths[0])
@@ -1893,6 +1897,16 @@ class Zero2CadGisDockWidget(QDockWidget):
         """Return the last export folder, falling back to the user home."""
         value = QSettings().value("zero2cadgis/last_export_dir", "")
         return value if isinstance(value, str) and os.path.isdir(value) else os.path.expanduser("~")
+
+    def _last_import_dir(self) -> str:
+        """Return the last import (source dataset) folder, falling back to the user home."""
+        value = QSettings().value("zero2cadgis/last_import_dir", "")
+        return value if isinstance(value, str) and os.path.isdir(value) else os.path.expanduser("~")
+
+    def _remember_import_dir(self, file_path: str) -> None:
+        folder = file_path if os.path.isdir(file_path) else os.path.dirname(file_path)
+        if folder and os.path.isdir(folder):
+            QSettings().setValue("zero2cadgis/last_import_dir", folder)
 
     def _browse_export_destination(self) -> None:
         idx = self.cmb_exp_format.currentIndex()

@@ -2,6 +2,11 @@
 
 All notable changes to **02CadGis** are documented here.
 
+## [0.2.2] - 2026-07-10
+
+- Remove the shared top-level "PlanX" QGIS menu registration; the plugin now only adds its dockable-panel toggle icon to its own toolbar, so it no longer piles up in a menu shared with other plugins.
+- Remember the last import folder (DXF, KML/KMZ, DGN, GDB, personal geodatabase, Netcad NCZ/NCA) between QGIS sessions, symmetric with the existing remembered export folder.
+
 ## [0.2.1] - 2026-07-10
 
 - Remember the last DXF, KML, or KMZ export folder between QGIS sessions.
