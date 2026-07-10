@@ -1,5 +1,12 @@
 # Changelog
 
+All notable changes to **02CadGis** are documented here.
+
+## [0.2.1] - 2026-07-10
+
+- Remember the last DXF, KML, or KMZ export folder between QGIS sessions.
+- Replace opaque white icon padding with a transparent background for clean display on QGIS themes.
+
 ## [0.2.0] - 2026-07-04
 
 - Rename plugin package to zero2cadgis and update display name to 02CadGis Universal CAD/GIS Importer

@@ -10,7 +10,7 @@ import re
 import math
 from dataclasses import dataclass, field
 
-from qgis.PyQt.QtCore import Qt, QVariant
+from qgis.PyQt.QtCore import Qt, QVariant, QSettings
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import (
     QDockWidget,
@@ -1889,26 +1889,32 @@ class Zero2CadGisDockWidget(QDockWidget):
         self.txt_exp_path.clear()
         self._update_export_button_state()
 
+    def _last_export_dir(self) -> str:
+        """Return the last export folder, falling back to the user home."""
+        value = QSettings().value("zero2cadgis/last_export_dir", "")
+        return value if isinstance(value, str) and os.path.isdir(value) else os.path.expanduser("~")
+
     def _browse_export_destination(self) -> None:
         idx = self.cmb_exp_format.currentIndex()
         if idx == 0:
             file_path, _ = QFileDialog.getSaveFileName(
-                self, "Export to DXF Drawing", "", "AutoCAD DXF (*.dxf)"
+                self, "Export to DXF Drawing", self._last_export_dir(), "AutoCAD DXF (*.dxf)"
             )
             file_path = ensure_extension(file_path, ".dxf")
         elif idx == 1:
             file_path, _ = QFileDialog.getSaveFileName(
-                self, "Export to KML File", "", "Google Earth KML (*.kml)"
+                self, "Export to KML File", self._last_export_dir(), "Google Earth KML (*.kml)"
             )
             file_path = ensure_extension(file_path, ".kml")
         else:
             file_path, _ = QFileDialog.getSaveFileName(
-                self, "Export to KMZ Package", "", "Google Earth KMZ (*.kmz)"
+                self, "Export to KMZ Package", self._last_export_dir(), "Google Earth KMZ (*.kmz)"
             )
             file_path = ensure_extension(file_path, ".kmz")
 
         if file_path:
             self.txt_exp_path.setText(file_path)
+            QSettings().setValue("zero2cadgis/last_export_dir", os.path.dirname(file_path))
             self._update_export_button_state()
 
     def _update_export_button_state(self) -> None:
