@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """zero2cadgis — Main plugin entry class.
-100% English, fully compatible with PlanX menu structure.
+
+Toolbar-only integration: a single dockable-panel toggle icon, no
+top-level QGIS menu.
 """
 from __future__ import annotations
 
@@ -8,11 +10,10 @@ import os
 
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction, QMenu, QToolBar, QMessageBox
+from qgis.PyQt.QtWidgets import QAction, QToolBar, QMessageBox
 
 
 class Zero2CadGis:
-    MENU_NAME = "PlanX"
     TOOLBAR_NAME = "02CadGis Universal CAD/GIS Importer"
 
     def __init__(self, iface):
@@ -23,25 +24,12 @@ class Zero2CadGis:
             os.makedirs(self.icon_dir)
 
         self.actions: list[QAction] = []
-        self.menu: QMenu | None = None
         self.toolbar: QToolBar | None = None
         self._dock = None
 
     # ───────────────────────── QGIS lifecycle ─────────────────────────
 
     def initGui(self) -> None:
-        # Find or create PlanX main menu
-        menu_bar = self.iface.mainWindow().menuBar()
-        self.menu = None
-        for action in menu_bar.actions():
-            if action.text() == self.MENU_NAME:
-                self.menu = action.menu()
-                break
-
-        if self.menu is None:
-            self.menu = QMenu(self.MENU_NAME, self.iface.mainWindow())
-            menu_bar.addMenu(self.menu)
-
         self.toolbar = QToolBar(self.TOOLBAR_NAME)
         self.toolbar.setObjectName("Zero2CadGisToolbar")
         self.iface.addToolBar(self.toolbar)
@@ -65,8 +53,6 @@ class Zero2CadGis:
             self._dock = None
 
         for action in self.actions:
-            if self.menu:
-                self.menu.removeAction(action)
             if self.toolbar:
                 self.toolbar.removeAction(action)
 
@@ -116,7 +102,6 @@ class Zero2CadGis:
             callback,
             *,
             add_to_toolbar=True,
-            add_to_menu=True,
             checkable=False,
             status_tip=None) -> QAction:
         icon = QIcon(icon_path) if os.path.exists(icon_path) else QIcon()
@@ -127,7 +112,5 @@ class Zero2CadGis:
             action.setStatusTip(status_tip)
         if add_to_toolbar and self.toolbar:
             self.toolbar.addAction(action)
-        if add_to_menu and self.menu:
-            self.menu.addAction(action)
         self.actions.append(action)
         return action
