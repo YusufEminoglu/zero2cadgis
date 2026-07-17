@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.2.4] - 2026-07-16
+
+- Restore the upstream copyright, source, and GPL-2.0-or-later notices for
+  the NCZ implementation derived from Jeomatik NCZ Reader by
+  Erdinç Örsan ÜNAL.
+- Document the NCZ engine's historical lineage and component scope in the
+  README and `THIRD_PARTY_NOTICES.md`.
+- Guard short Layer, MPROJ, and LEX.ST2 blocks against out-of-bounds reads.
+- Add NCZ parser contract and malformed-input regression tests.
+- Add a deterministic NCZ benchmark harness and measurable Engine v2 roadmap.
+- Extract the NCZ result model into a modular engine package while preserving
+  the existing public imports used by the QGIS dock.
+
+## [0.2.3] - 2026-07-10
+
+- Security hotfix: exclude pytest cache artifacts and resolve Hub-reported Flake8 findings
+
 All notable changes to **02CadGis** are documented here.
 
 ## [0.2.2] - 2026-07-10

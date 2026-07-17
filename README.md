@@ -88,6 +88,20 @@ The Netcad panel is intentionally detailed because these drawings often contain 
 
 If a file does not parse as expected, retry with cleanup disabled and inspect the raw layer selection before increasing tolerance.
 
+### NCZ Engine Provenance
+
+The built-in NCZ decoding engine incorporates code derived from
+[Jeomatik NCZ Reader](https://github.com/erdincunal/Jeomatik-NCZ-Reader),
+Copyright (C) 2026 Erdinç Örsan ÜNAL, under GPL-2.0-or-later. It was adapted
+and subsequently extended for 02CadGis by Yusuf Eminoğlu beginning in July
+2026. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for the component
+scope, historical distribution note, source link, and license details.
+The measurable modernization plan is documented in
+[docs/NCZ_ENGINE_V2.md](docs/NCZ_ENGINE_V2.md).
+
+02CadGis is an independent project and is not endorsed by or affiliated
+with Jeomatik.
+
 ## Installation
 
 Development path in this plugin workspace:
@@ -130,7 +144,8 @@ QGIS_Plugin_Releases\zero2cadgis.zip
 
 ## Ownership and License
 
-- Developer: Yusuf Eminoglu
+- 02CadGis developer and maintainer: Yusuf Eminoğlu
 - Email: yusuf.eminoglu@deu.edu.tr
 - Repository: <https://github.com/YusufEminoglu/zero2cadgis>
 - License: GNU General Public License v2.0 or later
+- Third-party code: see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)

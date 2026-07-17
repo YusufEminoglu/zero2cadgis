@@ -1,4 +1,13 @@
 # -*- coding: utf-8 -*-
+# NCZ-specific layer-building and geometry-conversion portions of this file
+# are derived from Jeomatik NCZ Reader.
+# Copyright (C) 2026 Erdinç Örsan ÜNAL
+# Original source: https://github.com/erdincunal/Jeomatik-NCZ-Reader
+#
+# Modified and extended for 02CadGis beginning 2026-07-04.
+# Modifications Copyright (C) 2026 Yusuf Eminoğlu
+# See THIRD_PARTY_NOTICES.md and LICENSE for details.
+# SPDX-License-Identifier: GPL-2.0-or-later
 """zero2cadgis — Tabbed DockWidget Controller.
 100% English, fully integrated with core CAD/GIS engines.
 Includes dynamic Exporter module and GroundOverlay extraction.
@@ -29,7 +38,6 @@ from qgis.PyQt.QtWidgets import (
     QProgressBar,
     QMessageBox,
     QFileDialog,
-    QSplitter,
     QTabWidget,
     QComboBox,
     QDialog,
@@ -1314,10 +1322,9 @@ class Zero2CadGisDockWidget(QDockWidget):
             if not target_crs.isValid():
                 target_crs = QgsProject.instance().crs()
 
-            merge_geometry_types = (
-                self.chk_ncz_merge_geometry.isChecked()
-                and len(self.parsed_netcad_results) > 1
-            )
+            merge_enabled = self.chk_ncz_merge_geometry.isChecked()
+            has_multiple_results = len(self.parsed_netcad_results) > 1
+            merge_geometry_types = merge_enabled and has_multiple_results
             layer_groups = []
             merged_entity_groups = {}
             transform_context = QgsProject.instance().transformContext()

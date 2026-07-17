@@ -1,4 +1,25 @@
 # -*- coding: utf-8 -*-
+# NCZ decoding implementation derived from Jeomatik NCZ Reader.
+# Copyright (C) 2026 Erdinç Örsan ÜNAL
+# Original source: https://github.com/erdincunal/Jeomatik-NCZ-Reader
+#
+# Modified and extended for 02CadGis beginning 2026-07-04.
+# Modifications Copyright (C) 2026 Yusuf Eminoğlu
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <https://www.gnu.org/licenses/>.
+#
+# SPDX-License-Identifier: GPL-2.0-or-later
 """netcad_parser — Binary Netcad .ncz drawing stream parser.
 100% English code definitions.
 """
@@ -6,64 +27,16 @@ from __future__ import annotations
 
 import math
 import struct
-from dataclasses import dataclass, field
-from typing import Optional
+
+from .ncz_engine.model import (
+    NetcadAttributeRow,
+    NetcadAttributeTable,
+    NetcadCoordinate,
+    NetcadEntity,
+    NetcadParseResult,
+)
 
 EMBEDDED_GEOMETRY_CONTAINER_TYPES = {0, 5, 14, 48, 108, 111, 132, 150, 180}
-
-
-@dataclass
-class NetcadCoordinate:
-    x: float
-    y: float
-    z: float = 0.0
-
-
-@dataclass
-class NetcadEntity:
-    geometry_kind: str
-    layer_code: int
-    layer_name: str = ""
-    color_argb: Optional[int] = None
-    name: str = ""
-    label_text: str = ""
-    text_height: float = 0.0
-    rotation_degrees: float = 0.0
-    box_width: float = 0.0
-    box_height: float = 0.0
-    scale: float = 0.0
-    grid_x: float = 0.0
-    grid_y: float = 0.0
-    radius: float = 0.0
-    start_angle: float = 0.0
-    end_angle: float = 0.0
-    is_closed: bool = False
-    coordinates: list[NetcadCoordinate] = field(default_factory=list)
-
-
-@dataclass
-class NetcadAttributeRow:
-    row_index: int
-    columns: dict[str, object] = field(default_factory=dict)
-
-
-@dataclass
-class NetcadAttributeTable:
-    table_ref: str
-    rows: list[NetcadAttributeRow] = field(default_factory=list)
-
-
-@dataclass
-class NetcadParseResult:
-    entities: list[NetcadEntity] = field(default_factory=list)
-    attribute_tables: list[NetcadAttributeTable] = field(default_factory=list)
-    layer_names: list[str] = field(default_factory=list)
-    layer_colors: list[int] = field(default_factory=list)
-    parser_backend: str = ""
-    version_name: str = ""
-    epsg: str = ""
-    projection_text: str = ""
-    unsupported_geometry_types: dict[int, int] = field(default_factory=dict)
 
 
 def parse_netcad_binary_stream(file_path: str) -> dict:
@@ -1171,24 +1144,38 @@ def parse_netcad_binary_stream(file_path: str) -> dict:
         elif block_type == 28:
             block_name = read_turkish_string(cursor + 6, data[cursor + 5])
             if block_name == "MPROJ":
-                projection = {1: "Geographic", 2: "6", 3: "3"}.get(
-                    data[cursor + 16], "Undefined")
-                datum = {0: "WGS-84", 1: "ITRF", 4: "ED50",
-                         254: "ED50-HGK"}.get(data[cursor + 17], "Undefined")
-                projection_text = f"{datum} / {projection} / Zone {data[cursor + 21]}"
+                if cursor + 21 < len(data):
+                    projection = {1: "Geographic", 2: "6", 3: "3"}.get(
+                        data[cursor + 16], "Undefined")
+                    datum = {
+                        0: "WGS-84",
+                        1: "ITRF",
+                        4: "ED50",
+                        254: "ED50-HGK",
+                    }.get(data[cursor + 17], "Undefined")
+                    projection_text = (
+                        f"{datum} / {projection} / Zone "
+                        f"{data[cursor + 21]}"
+                    )
             elif block_name == "TILED_XML":
                 epsg = read_epsg(
                     cursor, min(
                         block_size + 1, len(data) - cursor))
             elif block_name == "LEX.ST2":
-                layer_count = data[cursor + 20]
-                for index in range(layer_count):
-                    item_offset = cursor + 23 + (index * 256) + 56
-                    if item_offset + 2 >= len(data):
-                        break
-                    layer_colors.append(
-                        to_argb(data[item_offset], data[item_offset + 1], data[item_offset + 2]))
-        elif block_type == 6:
+                if cursor + 20 < len(data):
+                    layer_count = data[cursor + 20]
+                    for index in range(layer_count):
+                        item_offset = cursor + 23 + (index * 256) + 56
+                        if item_offset + 2 >= len(data):
+                            break
+                        layer_colors.append(
+                            to_argb(
+                                data[item_offset],
+                                data[item_offset + 1],
+                                data[item_offset + 2],
+                            )
+                        )
+        elif block_type == 6 and cursor + 17 < len(data):
             layer_count = data[cursor + 16] + data[cursor + 17] * 256
             for index in range(layer_count):
                 item_offset = cursor + 18 + (index * 29)
