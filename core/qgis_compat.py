@@ -51,7 +51,7 @@ def memory_geometry_type_name(layer) -> str:
         if geometry_name:
             return geometry_name
     except Exception:
-        pass
+        geometry_name = None
 
     try:
         geometry_type = layer.geometryType()

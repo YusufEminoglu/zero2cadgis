@@ -17,6 +17,7 @@ from __future__ import annotations
 import os
 import re
 import math
+from contextlib import suppress
 from dataclasses import dataclass, field
 
 from qgis.PyQt.QtCore import Qt, QVariant, QSettings
@@ -1535,30 +1536,24 @@ class Zero2CadGisDockWidget(QDockWidget):
                 if temp_layer:
                     processed_layer = temp_layer
                     if self.chk_ncz_augment.isChecked():
-                        try:
+                        with suppress(Exception):
                             augmented_layer = CadFeatureAugmenter.augment_layer(
                                 temp_layer)
                             if augmented_layer.featureCount() == temp_layer.featureCount():
                                 processed_layer = augmented_layer
-                        except Exception:
-                            processed_layer = temp_layer
 
                     if self.chk_ncz_style.isChecked():
-                        try:
+                        with suppress(Exception):
                             CadStylingEngine.apply_argb_renderer(
                                 processed_layer, bucket.geometry_type)
-                        except Exception:
-                            pass
 
                     if self.chk_ncz_label.isChecked() and bucket.geometry_type == "Point":
                         has_texts = any(
                             e.geometry_kind == "Text" for e in bucket.entities)
                         if has_texts:
-                            try:
+                            with suppress(Exception):
                                 CadStylingEngine.apply_buffered_labels(
                                     processed_layer)
-                            except Exception:
-                                pass
 
                     layers.append(processed_layer)
 

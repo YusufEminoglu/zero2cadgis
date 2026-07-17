@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.4.1] - 2026-07-17
+
+- Remove the developer-supplied `.bandit` configuration so QGIS Plugin Hub
+  scans use the standard security rules without overrides.
+- Replace all silent `except/pass` blocks reported by Bandit B110 while
+  preserving the existing best-effort QGIS compatibility behavior.
+
 ## [0.2.4] - 2026-07-16
 
 - Restore the upstream copyright, source, and GPL-2.0-or-later notices for

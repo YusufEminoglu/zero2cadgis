@@ -93,7 +93,7 @@ def _get_geom_type_str(geom) -> str:
     try:
         is_multi = QgsWkbTypes.isMultiType(wkb)
     except Exception:
-        pass
+        is_multi = False
 
     if t_val == 0:
         return "MultiPoint" if is_multi else "Point"
