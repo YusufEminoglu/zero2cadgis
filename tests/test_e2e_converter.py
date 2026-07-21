@@ -173,5 +173,123 @@ class TestZero2CadGis(unittest.TestCase):
             self.assertEqual(_get_geom_type_str(mock_point_geom), "MultiPoint")
 
 
+class TestCsvSniffer(unittest.TestCase):
+    """Pure-Python tests for the delimited-text geometry sniffer."""
+
+    def _write_temp(self, content: str, suffix: str = ".csv") -> str:
+        import tempfile
+        import os
+        fd, path = tempfile.mkstemp(suffix=suffix)
+        with os.fdopen(fd, "w", encoding="utf-8", newline="") as handle:
+            handle.write(content)
+        self.addCleanup(lambda: os.path.exists(path) and os.remove(path))
+        return path
+
+    def test_detects_lonlat_point_geometry_and_wgs84(self):
+        from zero2cadgis.core.csv_sniffer import sniff_delimited_dataset
+
+        path = self._write_temp(
+            "id,name,lon,lat\n1,A,32.85,39.93\n2,B,29.02,41.01\n")
+        profile = sniff_delimited_dataset(path)
+        self.assertEqual(profile.delimiter, ",")
+        self.assertEqual(profile.x_field, "lon")
+        self.assertEqual(profile.y_field, "lat")
+        self.assertEqual(profile.crs_authid, "EPSG:4326")
+        self.assertTrue(profile.has_point_geometry)
+        self.assertEqual(profile.row_count, 2)
+
+    def test_detects_semicolon_delimiter_and_xy(self):
+        from zero2cadgis.core.csv_sniffer import sniff_delimited_dataset
+
+        path = self._write_temp(
+            "parcel;x;y\nP1;500123.4;4432100.9\nP2;500200.0;4432155.5\n")
+        profile = sniff_delimited_dataset(path)
+        self.assertEqual(profile.delimiter, ";")
+        self.assertEqual(profile.x_field, "x")
+        self.assertEqual(profile.y_field, "y")
+        self.assertEqual(profile.crs_authid, "")
+
+    def test_wkt_column_overrides_xy(self):
+        from zero2cadgis.core.csv_sniffer import sniff_delimited_dataset
+
+        path = self._write_temp(
+            "id,wkt,x,y\n1,POINT (1 2),1,2\n")
+        profile = sniff_delimited_dataset(path)
+        self.assertEqual(profile.wkt_field, "wkt")
+        self.assertTrue(profile.has_wkt_geometry)
+        self.assertEqual(profile.x_field, "")
+
+    def test_attribute_only_table_has_no_geometry(self):
+        from zero2cadgis.core.csv_sniffer import sniff_delimited_dataset
+
+        path = self._write_temp("id,name,owner\n1,Parcel,PlanX\n")
+        profile = sniff_delimited_dataset(path)
+        self.assertFalse(profile.has_point_geometry)
+        self.assertFalse(profile.has_wkt_geometry)
+        self.assertIn("No geometry", profile.geometry_summary)
+
+    def test_non_numeric_xy_candidates_are_rejected(self):
+        from zero2cadgis.core.csv_sniffer import sniff_delimited_dataset
+
+        path = self._write_temp("x,y,z\nleft,up,1\nright,down,2\n")
+        profile = sniff_delimited_dataset(path)
+        self.assertFalse(profile.has_point_geometry)
+
+    def test_tsv_uses_tab_delimiter(self):
+        from zero2cadgis.core.csv_sniffer import sniff_delimited_dataset
+
+        path = self._write_temp(
+            "id\tlongitude\tlatitude\n1\t27.14\t38.42\n", suffix=".tsv")
+        profile = sniff_delimited_dataset(path)
+        self.assertEqual(profile.delimiter, "\t")
+        self.assertEqual(profile.x_field, "longitude")
+        self.assertEqual(profile.y_field, "latitude")
+
+    def test_delimitedtext_uri_point_fields(self):
+        from zero2cadgis.core.csv_sniffer import (
+            CsvGeometryProfile, build_delimitedtext_uri)
+
+        profile = CsvGeometryProfile(
+            delimiter=";", fields=["a", "x", "y"],
+            x_field="x", y_field="y", crs_authid="EPSG:5254")
+        uri = build_delimitedtext_uri(r"C:\data\pts.csv", profile)
+        self.assertTrue(uri.startswith("file:///"))
+        self.assertIn("xField=x", uri)
+        self.assertIn("yField=y", uri)
+        # provider does not percent-decode values: keep them raw
+        self.assertIn("crs=EPSG:5254", uri)
+        self.assertIn("delimiter=;", uri)
+
+    def test_delimitedtext_uri_tab_token(self):
+        from zero2cadgis.core.csv_sniffer import (
+            CsvGeometryProfile, build_delimitedtext_uri)
+
+        profile = CsvGeometryProfile(
+            delimiter="\t", x_field="lon", y_field="lat")
+        uri = build_delimitedtext_uri("/tmp/a.tsv", profile)
+        self.assertIn("delimiter=\\t", uri)
+
+    def test_delimitedtext_uri_wkt_and_none(self):
+        from zero2cadgis.core.csv_sniffer import (
+            CsvGeometryProfile, build_delimitedtext_uri)
+
+        wkt_profile = CsvGeometryProfile(wkt_field="geom")
+        uri = build_delimitedtext_uri("/tmp/a.csv", wkt_profile)
+        self.assertIn("wktField=geom", uri)
+        self.assertNotIn("xField", uri)
+
+        table_profile = CsvGeometryProfile()
+        uri = build_delimitedtext_uri("/tmp/b.csv", table_profile)
+        self.assertIn("geomType=none", uri)
+
+    def test_is_delimited_dataset(self):
+        from zero2cadgis.core.csv_sniffer import is_delimited_dataset
+
+        self.assertTrue(is_delimited_dataset(r"C:\d\points.CSV"))
+        self.assertTrue(is_delimited_dataset("data.tsv"))
+        self.assertTrue(is_delimited_dataset("data.txt"))
+        self.assertFalse(is_delimited_dataset("drawing.dxf"))
+
+
 if __name__ == "__main__":
     unittest.main()

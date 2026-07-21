@@ -24,13 +24,30 @@ from qgis.core import (
     QgsFields,
     QgsWkbTypes
 )
-from qgis.PyQt.QtCore import QVariant
+from qgis.PyQt.QtCore import QMetaType
 from qgis.PyQt.QtXml import QDomDocument
 
 from .qgis_compat import add_features_or_raise, memory_geometry_type_name
+from .csv_sniffer import (
+    CsvGeometryProfile,
+    build_delimitedtext_uri,
+    is_delimited_dataset,
+    sniff_delimited_dataset,
+)
 
 
 MAX_KML_XML_BYTES = 64 * 1024 * 1024
+
+
+class SourceLayerInfo:
+    """Lightweight description of one discoverable source layer."""
+
+    __slots__ = ("name", "geometry", "feature_count")
+
+    def __init__(self, name: str, geometry: str, feature_count: int):
+        self.name = name
+        self.geometry = geometry
+        self.feature_count = feature_count
 
 
 def parse_kml_html_table(html_content: str) -> dict[str, str]:
@@ -109,12 +126,119 @@ class GisConverterEngine:
     """Core GIS conversion service with HTML parser and GroundOverlay extraction."""
 
     def __init__(self, source_path: str, target_gpkg: str,
-                 target_crs: QgsCoordinateReferenceSystem):
+                 target_crs: QgsCoordinateReferenceSystem,
+                 csv_profile: CsvGeometryProfile | None = None,
+                 csv_source_crs: str = ""):
         self.source_path = source_path
         self.target_gpkg = target_gpkg
         self.target_crs = target_crs
         self.temp_dirs = []
         self.last_warnings: list[str] = []
+        self.csv_profile = csv_profile
+        self.csv_source_crs = csv_source_crs
+        self._resolved_src: str | None = None
+
+    # ── source resolution & discovery ────────────────────────────────
+
+    @property
+    def is_delimited(self) -> bool:
+        return is_delimited_dataset(self.source_path)
+
+    def _resolve_source(self, is_kmz: bool) -> str:
+        """Return the readable source path, extracting KMZ only once."""
+        if self._resolved_src is None:
+            self._resolved_src = (
+                self.extract_kmz() if is_kmz else self.source_path)
+        return self._resolved_src
+
+    def _ensure_csv_profile(self) -> CsvGeometryProfile:
+        if self.csv_profile is None:
+            self.csv_profile = sniff_delimited_dataset(self.source_path)
+        return self.csv_profile
+
+    def discover_layers(self, is_kmz: bool = False) -> list[SourceLayerInfo]:
+        """List source layers with geometry type and feature counts."""
+        if self.is_delimited:
+            profile = self._ensure_csv_profile()
+            stem = os.path.splitext(os.path.basename(self.source_path))[0]
+            geometry = ("Point" if profile.has_point_geometry
+                        else "WKT" if profile.has_wkt_geometry
+                        else "Table")
+            return [SourceLayerInfo(stem, geometry, profile.row_count)]
+
+        src = self._resolve_source(is_kmz)
+        ogr_ds = ogr.Open(src)
+        if ogr_ds is None:
+            raise ValueError(self._open_error_message(src))
+
+        infos = []
+        for i in range(ogr_ds.GetLayerCount()):
+            ogr_layer = ogr_ds.GetLayerByIndex(i)
+            try:
+                geometry = ogr.GeometryTypeToName(ogr_layer.GetGeomType())
+            except Exception:
+                geometry = "Unknown"
+            try:
+                count = ogr_layer.GetFeatureCount()
+            except Exception:
+                count = -1
+            infos.append(
+                SourceLayerInfo(ogr_layer.GetName(), geometry, count))
+        ogr_ds = None
+        return infos
+
+    def _open_error_message(self, src: str) -> str:
+        if src.lower().endswith(".mdb"):
+            return (
+                f"Unable to open source dataset with GDAL/OGR provider: {src}\n\n"
+                "Note: Reading ArcGIS Personal Geodatabases (.mdb) requires the 64-bit "
+                "Microsoft Access Database Engine (ODBC driver) to be installed on Windows. "
+                "Make sure it matches your QGIS bitness (usually 64-bit)."
+            )
+        return f"Unable to open source dataset with GDAL/OGR provider: {src}"
+
+    def _iter_source_layers(self, is_kmz: bool,
+                            selected_layers: list[str] | None):
+        """Yield ``(layer_name, QgsVectorLayer)`` for each requested layer."""
+        if self.is_delimited:
+            profile = self._ensure_csv_profile()
+            stem = os.path.splitext(os.path.basename(self.source_path))[0]
+            if selected_layers is not None and stem not in selected_layers:
+                return
+            uri = build_delimitedtext_uri(
+                self.source_path, profile, self.csv_source_crs)
+            vlayer = QgsVectorLayer(uri, stem, "delimitedtext")
+            if not vlayer.isValid():
+                raise ValueError(
+                    "Could not read the delimited text dataset. Check the "
+                    "detected delimiter and geometry columns.")
+            yield stem, vlayer
+            return
+
+        src = self._resolve_source(is_kmz)
+        ogr_ds = ogr.Open(src)
+        if ogr_ds is None:
+            raise ValueError(self._open_error_message(src))
+
+        layer_names = [ogr_ds.GetLayerByIndex(i).GetName()
+                       for i in range(ogr_ds.GetLayerCount())]
+        ogr_ds = None
+
+        if not layer_names:
+            raise ValueError(
+                "No layers discovered inside the source GIS dataset.")
+
+        for layer_name in layer_names:
+            if selected_layers is not None \
+                    and layer_name not in selected_layers:
+                continue
+            uri = f"{src}|layername={layer_name}"
+            vlayer = QgsVectorLayer(uri, layer_name, "ogr")
+            if not vlayer.isValid():
+                self.last_warnings.append(
+                    f"Layer '{layer_name}' could not be read and was skipped.")
+                continue
+            yield layer_name, vlayer
 
     def cleanup(self):
         for temp_dir in self.temp_dirs:
@@ -137,35 +261,10 @@ class GisConverterEngine:
     def convert(
             self,
             is_kmz: bool = False,
-            html_expansion: bool = True) -> list[QgsVectorLayer]:
+            html_expansion: bool = True,
+            selected_layers: list[str] | None = None,
+            progress_cb=None) -> list[QgsVectorLayer]:
         """Converts GIS layers to GPKG and returns list of loaded vector layers."""
-        src = self.source_path
-        if is_kmz:
-            src = self.extract_kmz()
-
-        # Open source OGR dataset
-        from osgeo import ogr
-        ogr_ds = ogr.Open(src)
-        if ogr_ds is None:
-            if src.lower().endswith(".mdb"):
-                raise ValueError(
-                    f"Unable to open source dataset with GDAL/OGR provider: {src}\n\n"
-                    "Note: Reading ArcGIS Personal Geodatabases (.mdb) requires the 64-bit "
-                    "Microsoft Access Database Engine (ODBC driver) to be installed on Windows. "
-                    "Make sure it matches your QGIS bitness (usually 64-bit)."
-                )
-            raise ValueError(
-                f"Unable to open source dataset with GDAL/OGR provider: {src}")
-
-        layer_names = []
-        for i in range(ogr_ds.GetLayerCount()):
-            layer_names.append(ogr_ds.GetLayerByIndex(i).GetName())
-        ogr_ds = None
-
-        if not layer_names:
-            raise ValueError(
-                "No layers discovered inside the source GIS dataset.")
-
         # Re-create target GPKG
         if os.path.exists(self.target_gpkg):
             try:
@@ -177,11 +276,10 @@ class GisConverterEngine:
         transform_context = QgsProject.instance().transformContext()
         wrote_any = False
 
-        for layer_name in layer_names:
-            uri = f"{src}|layername={layer_name}"
-            vlayer = QgsVectorLayer(uri, layer_name, "ogr")
-            if not vlayer.isValid():
-                continue
+        for layer_name, vlayer in self._iter_source_layers(
+                is_kmz, selected_layers):
+            if progress_cb:
+                progress_cb(layer_name)
 
             processed_layer = vlayer
             if html_expansion and "description" in [
@@ -192,6 +290,19 @@ class GisConverterEngine:
             options = QgsVectorFileWriter.SaveVectorOptions()
             options.driverName = "GPKG"
             options.layerName = self._sanitize_column_name(layer_name)
+
+            # GML/GeoJSON sources may carry a non-integer "fid" attribute;
+            # GPKG reserves fid for its integer primary key, so move the
+            # primary key to another column in that case.
+            fid_index = processed_layer.fields().lookupField("fid")
+            if fid_index >= 0:
+                fid_type = processed_layer.fields()[fid_index] \
+                    .typeName().lower()
+                if fid_type not in (
+                        "integer", "integer64", "int", "int2", "int4",
+                        "int8", "int16", "int32", "int64", "long",
+                        "longlong"):
+                    options.layerOptions = ["FID=cadgis_fid"]
             options.actionOnExistingFile = (
                 QgsVectorFileWriter.ActionOnExistingFile.CreateOrOverwriteLayer
                 if wrote_any
@@ -218,6 +329,9 @@ class GisConverterEngine:
             if gpkg_layer.isValid():
                 loaded_layers.append(gpkg_layer)
 
+        if not wrote_any:
+            raise ValueError(
+                "No readable layers were selected for conversion.")
         return loaded_layers
 
     def extract_ground_overlays(
@@ -226,22 +340,11 @@ class GisConverterEngine:
         Feyz taken from kmltools.
         """
         loaded_rasters = []
-        self.last_warnings = []
-        src = self.source_path
-        extracted_dir = None
-
-        if is_kmz:
-            extracted_dir = tempfile.mkdtemp(prefix="kmz_raster_")
-            self.temp_dirs.append(extracted_dir)
-            with zipfile.ZipFile(self.source_path, 'r') as zip_ref:
-                kml_files = [
-                    n for n in zip_ref.namelist() if n.lower().endswith(".kml")]
-                if not kml_files:
-                    self.last_warnings.append(
-                        "No KML document was found inside the KMZ package.")
-                    return loaded_rasters
-                zip_ref.extractall(extracted_dir)
-                src = os.path.join(extracted_dir, kml_files[0])
+        try:
+            src = self._resolve_source(is_kmz)
+        except ValueError as exc:
+            self.last_warnings.append(str(exc))
+            return loaded_rasters
 
         if not os.path.exists(src):
             return loaded_rasters
@@ -431,7 +534,7 @@ class GisConverterEngine:
             if desc:
                 attrs = parse_kml_html_table(str(desc))
                 for k in attrs.keys():
-                    new_field_definitions[k] = QVariant.String
+                    new_field_definitions[k] = QMetaType.Type.QString
 
         fields = QgsFields()
         for field in layer.fields():
@@ -474,40 +577,15 @@ class GisConverterEngine:
     def convert_to_memory(
             self,
             is_kmz: bool = False,
-            html_expansion: bool = True) -> list[QgsVectorLayer]:
+            html_expansion: bool = True,
+            selected_layers: list[str] | None = None,
+            progress_cb=None) -> list[QgsVectorLayer]:
         """Converts GIS layers directly to memory layers without writing a GPKG file."""
-        src = self.source_path
-        if is_kmz:
-            src = self.extract_kmz()
-
-        # Open source OGR dataset
-        ogr_ds = ogr.Open(src)
-        if ogr_ds is None:
-            if src.lower().endswith(".mdb"):
-                raise ValueError(
-                    f"Unable to open source dataset with GDAL/OGR provider: {src}\n\n"
-                    "Note: Reading ArcGIS Personal Geodatabases (.mdb) requires the 64-bit "
-                    "Microsoft Access Database Engine (ODBC driver) to be installed on Windows. "
-                    "Make sure it matches your QGIS bitness (usually 64-bit)."
-                )
-            raise ValueError(
-                f"Unable to open source dataset with GDAL/OGR provider: {src}")
-
-        layer_names = []
-        for i in range(ogr_ds.GetLayerCount()):
-            layer_names.append(ogr_ds.GetLayerByIndex(i).GetName())
-        ogr_ds = None
-
-        if not layer_names:
-            raise ValueError(
-                "No layers discovered inside the source GIS dataset.")
-
         loaded_layers = []
-        for layer_name in layer_names:
-            uri = f"{src}|layername={layer_name}"
-            vlayer = QgsVectorLayer(uri, layer_name, "ogr")
-            if not vlayer.isValid():
-                continue
+        for layer_name, vlayer in self._iter_source_layers(
+                is_kmz, selected_layers):
+            if progress_cb:
+                progress_cb(layer_name)
 
             processed_layer = vlayer
             if html_expansion and "description" in [
@@ -562,4 +640,7 @@ class GisConverterEngine:
                     mem_layer, features, "GIS scratch layer clone")
                 loaded_layers.append(mem_layer)
 
+        if not loaded_layers:
+            raise ValueError(
+                "No readable layers were selected for conversion.")
         return loaded_layers

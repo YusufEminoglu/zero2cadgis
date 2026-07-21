@@ -1,7 +1,7 @@
 <div align="center">
   <img src="icons/icon.png" width="148" height="148" alt="02CadGis icon">
   <h1>02CadGis</h1>
-  <p><strong>CAD, KML, GDB and Netcad conversion studio for QGIS</strong></p>
+  <p><strong>CAD, KML, GML, CSV, GDB and Netcad conversion studio for QGIS</strong></p>
   <p>
     <a href="https://plugins.qgis.org/"><img alt="QGIS" src="https://img.shields.io/badge/QGIS-3.22%2B-589632?style=for-the-badge"></a>
     <img alt="License" src="https://img.shields.io/badge/GPL--2.0--or--later-blue?style=for-the-badge">
@@ -10,7 +10,7 @@
   </p>
 </div>
 
-**02CadGis** is a professional QGIS dock plugin for turning CAD and GIS exchange files into clean GeoPackage layers. It is built for planning, cadastral, municipal, and urban analytics workflows where DXF, KML/KMZ, DGN, FileGDB, and Netcad files need to become usable QGIS data quickly.
+**02CadGis** is a professional QGIS dock plugin for turning CAD and GIS exchange files into clean GeoPackage layers. It is built for planning, cadastral, municipal, and urban analytics workflows where DXF, KML/KMZ, GML, GeoJSON, CSV, SpatiaLite, GPX, DGN, FileGDB, and Netcad files need to become usable QGIS data quickly.
 
 <table>
   <tr>
@@ -22,7 +22,10 @@
 
 ## What It Does
 
-- Converts **DXF, KML, KMZ, DGN, FileGDB, NCZ and compatible NCA** files into `.gpkg` layers.
+- Converts **DXF, KML, KMZ, GML, GeoJSON, CSV/TSV, SpatiaLite/SQLite, GPX, DGN, FileGDB, Personal GDB, NCZ and compatible NCA** files into `.gpkg` layers.
+- Accepts **drag & drop**: drop any supported file onto the dock and the dataset type is detected automatically (Netcad files jump to the NCZ tab).
+- Shows a **pre-conversion layer preview** with geometry types and feature counts, so you convert only the layers you check.
+- Reads **delimited text with automatic geometry detection**: delimiter, X/Y or lon/lat columns (WGS84 auto-suggested), or a WKT column, all overridable before import.
 - Imports multiple Netcad drawings at once with selectable CAD layers and `@TAB` attribute tables.
 - Expands KML balloon HTML tables and list descriptions into real attribute fields.
 - Extracts KML/KMZ `GroundOverlay` images as georeferenced GeoTIFF layers.
@@ -35,7 +38,8 @@
 
 | Workflow | Input / Output | Engine | Best for |
 | --- | --- | --- | --- |
-| CAD/GIS import | `.dxf`, `.dgn`, `.kml`, `.kmz`, `.gdb` to `.gpkg` or scratch layers | QGIS GDAL/OGR | Standard exchange files and planning datasets |
+| CAD/GIS import | `.dxf`, `.dgn`, `.kml`, `.kmz`, `.gml`, `.geojson`, `.sqlite`, `.gpx`, `.gdb`, `.mdb` to `.gpkg` or scratch layers | QGIS GDAL/OGR | Standard exchange files and planning datasets |
+| Delimited text import | `.csv`, `.tsv`, `.txt` with auto-detected X/Y or WKT geometry | QGIS delimited text provider | Survey point lists, exports from spreadsheets and databases |
 | Future enhancement | `.dwg` | Planned external/newer CAD reader path | DWG versions beyond GDAL libopencad support |
 | Netcad import | `.ncz`, compatible `.nca` | Built-in parser | Netcad drawings with layers, colors, labels and `@TAB` tables |
 | KML overlay extraction | KML/KMZ GroundOverlay to GeoTIFF | GDAL | Georeferenced image overlays |
@@ -46,7 +50,7 @@
 The plugin opens as one compact dock with three focused panels:
 
 1. **CAD & GIS Converter**
-   Select source type, source path, target GeoPackage, CRS, cleanup options, KML expansion and GroundOverlay extraction.
+   Select source type (or drop a file), review the discovered layer list, set target GeoPackage, CRS, cleanup options, KML expansion, GroundOverlay extraction, and delimited-text geometry columns. A target GPKG name is pre-suggested from the source file, options persist across sessions, and results are announced in the QGIS message bar without blocking dialogs.
 
 2. **Netcad NCZ/NCA Importer**
    Select one or more Netcad drawings, review metadata, choose CAD layers and `@TAB` tables, set closure tolerance, generate geometry metrics, apply colors/labels, and load to QGIS.
@@ -61,10 +65,12 @@ Use **temporary scratch layers** for quick inspection. Use **GeoPackage output**
 ```mermaid
 flowchart LR
   A[CAD / GIS / Netcad source] --> B{Input type}
-  B -->|DXF DGN KML KMZ GDB| C[QGIS OGR reader]
+  B -->|DXF DGN KML KMZ GML GeoJSON SQLite GPX GDB| C[QGIS OGR reader]
+  B -->|CSV TSV TXT| T[Delimited text sniffer]
   B -->|DWG| X[Future enhancement]
   B -->|NCZ / NCA| D[Netcad parser]
   C --> E[CRS + cleanup + attributes]
+  T --> E
   D --> E
   E --> F{Output mode}
   F -->|GeoPackage| G[(.gpkg)]

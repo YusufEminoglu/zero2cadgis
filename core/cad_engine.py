@@ -21,7 +21,7 @@ from qgis.core import (
     QgsVectorFileWriter,
     QgsFields
 )
-from qgis.PyQt.QtCore import QVariant
+from qgis.PyQt.QtCore import QMetaType
 from qgis.PyQt.QtGui import QColor, QFont
 
 from .qgis_compat import add_features_or_raise, memory_geometry_type_name
@@ -111,10 +111,10 @@ class CadFeatureAugmenter:
             fields.append(field)
 
         # Add new geo-statistical columns
-        fields.append(QgsField("geom_len", QVariant.Double))
-        fields.append(QgsField("geom_area", QVariant.Double))
-        fields.append(QgsField("cent_x", QVariant.Double))
-        fields.append(QgsField("cent_y", QVariant.Double))
+        fields.append(QgsField("geom_len", QMetaType.Type.Double))
+        fields.append(QgsField("geom_area", QMetaType.Type.Double))
+        fields.append(QgsField("cent_x", QMetaType.Type.Double))
+        fields.append(QgsField("cent_y", QMetaType.Type.Double))
 
         geom_type_str = memory_geometry_type_name(layer)
 

@@ -20,9 +20,10 @@ import math
 from contextlib import suppress
 from dataclasses import dataclass, field
 
-from qgis.PyQt.QtCore import Qt, QVariant, QSettings
+from qgis.PyQt.QtCore import QMetaType, Qt, QSettings
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import (
+    QApplication,
     QDockWidget,
     QWidget,
     QVBoxLayout,
@@ -47,6 +48,7 @@ from qgis.PyQt.QtWidgets import (
     QScrollArea,
 )
 from qgis.core import (
+    Qgis,
     QgsProject,
     QgsVectorLayer,
     QgsFeature,
@@ -61,6 +63,10 @@ from qgis.gui import QgsProjectionSelectionWidget
 # Core services imports
 from ..core.netcad_parser import NetcadBinaryReader, NetcadEntity, NetcadAttributeTable
 from ..core.gis_engine import GisConverterEngine
+from ..core.csv_sniffer import (
+    CsvGeometryProfile,
+    sniff_delimited_dataset,
+)
 from ..core.cad_engine import CadCleanupEngine, CadStylingEngine, CadFeatureAugmenter, CadExportEngine
 from ..core.path_utils import ensure_extension, has_extension
 from ..core.qgis_compat import add_features_or_raise
@@ -383,6 +389,66 @@ QSplitter::handle:hover {
 """
 
 
+@dataclass(frozen=True)
+class SourceFormat:
+    """One selectable source dataset family in the converter tab."""
+    key: str
+    label: str
+    dialog_title: str
+    file_filter: str
+    extensions: tuple[str, ...]
+    is_dir: bool = False
+
+
+SOURCE_FORMATS: list[SourceFormat] = [
+    SourceFormat("dxf", "DXF (*.dxf)", "Select DXF File",
+                 "AutoCAD DXF (*.dxf)", (".dxf",)),
+    SourceFormat("kml", "KML / KMZ (*.kml, *.kmz)", "Select KML or KMZ File",
+                 "Keyhole Markup Language (*.kml *.kmz)", (".kml", ".kmz")),
+    SourceFormat("gml", "GML (*.gml)", "Select GML File",
+                 "Geography Markup Language (*.gml)", (".gml",)),
+    SourceFormat("geojson", "GeoJSON (*.geojson, *.json)",
+                 "Select GeoJSON File",
+                 "GeoJSON (*.geojson *.json)", (".geojson", ".json")),
+    SourceFormat("csv", "Delimited Text / CSV (*.csv, *.tsv, *.txt)",
+                 "Select Delimited Text File",
+                 "Delimited Text (*.csv *.tsv *.txt)",
+                 (".csv", ".tsv", ".txt")),
+    SourceFormat("sqlite", "SpatiaLite / SQLite (*.sqlite, *.db)",
+                 "Select SpatiaLite or SQLite Database",
+                 "SpatiaLite / SQLite (*.sqlite *.db)", (".sqlite", ".db")),
+    SourceFormat("gpx", "GPS Exchange GPX (*.gpx)", "Select GPX File",
+                 "GPS Exchange Format (*.gpx)", (".gpx",)),
+    SourceFormat("dgn", "Microstation DGN (*.dgn)",
+                 "Select Microstation DGN File",
+                 "Design Files (*.dgn)", (".dgn",)),
+    SourceFormat("gdb", "ArcGIS File Geodatabase (*.gdb)",
+                 "Select ArcGIS File Geodatabase Directory",
+                 "", (".gdb",), is_dir=True),
+    SourceFormat("mdb", "ArcGIS Personal Geodatabase (*.mdb)",
+                 "Select ArcGIS Personal Geodatabase File",
+                 "ArcGIS Personal Geodatabase (*.mdb)", (".mdb",)),
+]
+
+NCZ_EXTENSIONS = (".ncz", ".nca")
+
+
+def format_for_path(path: str) -> SourceFormat | None:
+    """Return the SourceFormat matching *path*'s extension, if any."""
+    lower = path.lower().rstrip("\\/")
+    for fmt in SOURCE_FORMATS:
+        if any(lower.endswith(ext) for ext in fmt.extensions):
+            return fmt
+    return None
+
+
+def all_supported_filter() -> str:
+    exts = " ".join(
+        f"*{ext}" for fmt in SOURCE_FORMATS if not fmt.is_dir
+        for ext in fmt.extensions)
+    return f"All supported ({exts})"
+
+
 @dataclass
 class LayerBucket:
     display_name: str
@@ -401,23 +467,23 @@ class Zero2CadGisDockWidget(QDockWidget):
     """100% English controller managing GIS/CAD converter, exporter, and NCZ imports."""
 
     FIELD_DEFINITIONS = [
-        QgsField("source_file", QVariant.String),
-        QgsField("layer_code", QVariant.Int),
-        QgsField("layer_name", QVariant.String),
-        QgsField("entity_type", QVariant.String),
-        QgsField("name", QVariant.String),
-        QgsField("label", QVariant.String),
-        QgsField("color_argb", QVariant.String),
-        QgsField("radius", QVariant.Double),
-        QgsField("start_ang", QVariant.Double),
-        QgsField("end_ang", QVariant.Double),
-        QgsField("text_h", QVariant.Double),
-        QgsField("rotation", QVariant.Double),
-        QgsField("box_width", QVariant.Double),
-        QgsField("box_height", QVariant.Double),
-        QgsField("scale", QVariant.Double),
-        QgsField("grid_x", QVariant.Double),
-        QgsField("grid_y", QVariant.Double),
+        QgsField("source_file", QMetaType.Type.QString),
+        QgsField("layer_code", QMetaType.Type.Int),
+        QgsField("layer_name", QMetaType.Type.QString),
+        QgsField("entity_type", QMetaType.Type.QString),
+        QgsField("name", QMetaType.Type.QString),
+        QgsField("label", QMetaType.Type.QString),
+        QgsField("color_argb", QMetaType.Type.QString),
+        QgsField("radius", QMetaType.Type.Double),
+        QgsField("start_ang", QMetaType.Type.Double),
+        QgsField("end_ang", QMetaType.Type.Double),
+        QgsField("text_h", QMetaType.Type.Double),
+        QgsField("rotation", QMetaType.Type.Double),
+        QgsField("box_width", QMetaType.Type.Double),
+        QgsField("box_height", QMetaType.Type.Double),
+        QgsField("scale", QMetaType.Type.Double),
+        QgsField("grid_x", QMetaType.Type.Double),
+        QgsField("grid_y", QMetaType.Type.Double),
     ]
 
     def __init__(self, iface, icon_dir: str, parent=None):
@@ -435,16 +501,95 @@ class Zero2CadGisDockWidget(QDockWidget):
         self.current_netcad_paths: list[str] = []
         self.parsed_netcad_results = {}
         self.gis_converter = None
+        self.src_csv_profile: CsvGeometryProfile | None = None
 
         self._build_ui()
+        self._restore_persistent_options()
+        self.setAcceptDrops(True)
+
+        project = QgsProject.instance()
+        with suppress(Exception):
+            project.layersAdded.connect(self._populate_layers_combo)
+            project.layersRemoved.connect(self._populate_layers_combo)
 
     def closeEvent(self, event):
         if self.gis_converter:
             self.gis_converter.cleanup()
         super().closeEvent(event)
 
+    # ───────────────────────── Drag & drop ─────────────────────────
+
+    def dragEnterEvent(self, event):
+        if self._droppable_paths(event):
+            event.acceptProposedAction()
+        else:
+            event.ignore()
+
+    def dropEvent(self, event):
+        paths = self._droppable_paths(event)
+        if not paths:
+            event.ignore()
+            return
+        event.acceptProposedAction()
+
+        ncz_paths = [p for p in paths
+                     if p.lower().endswith(NCZ_EXTENSIONS)]
+        if ncz_paths:
+            self.main_tab.setCurrentIndex(1)
+            self._load_ncz_paths(ncz_paths)
+            return
+
+        fmt = format_for_path(paths[0])
+        if fmt is None:
+            return
+        self.main_tab.setCurrentIndex(0)
+        self._apply_source_path(paths[0], fmt)
+
+    def _droppable_paths(self, event) -> list[str]:
+        mime = event.mimeData()
+        if not mime.hasUrls():
+            return []
+        paths = []
+        for url in mime.urls():
+            local = url.toLocalFile()
+            if not local:
+                continue
+            if local.lower().endswith(NCZ_EXTENSIONS) \
+                    or format_for_path(local) is not None:
+                paths.append(local)
+        return paths
+
+    # ───────────────────────── Option persistence ─────────────────────────
+
+    _PERSISTENT_CHECKBOXES = (
+        "chk_conv_simplify", "chk_conv_clean", "chk_conv_kml_expand",
+        "chk_conv_raster", "chk_conv_load", "chk_ncz_simplify",
+        "chk_ncz_clean", "chk_ncz_augment", "chk_ncz_style",
+        "chk_ncz_label", "chk_ncz_join",
+    )
+
+    def _restore_persistent_options(self) -> None:
+        settings = QSettings()
+        for name in self._PERSISTENT_CHECKBOXES:
+            widget = getattr(self, name, None)
+            if widget is None:
+                continue
+            stored = settings.value(f"zero2cadgis/opts/{name}")
+            if stored is not None:
+                widget.setChecked(str(stored).lower() in ("true", "1"))
+            widget.toggled.connect(
+                lambda checked, key=name: QSettings().setValue(
+                    f"zero2cadgis/opts/{key}", checked))
+        stored_tol = settings.value("zero2cadgis/opts/ncz_tolerance")
+        if stored_tol is not None:
+            with suppress(TypeError, ValueError):
+                self.spin_ncz_tolerance.setValue(float(stored_tol))
+        self.spin_ncz_tolerance.valueChanged.connect(
+            lambda value: QSettings().setValue(
+                "zero2cadgis/opts/ncz_tolerance", value))
+
     def _build_ui(self) -> None:
-        main_tab = QTabWidget()
+        self.main_tab = main_tab = QTabWidget()
 
         # ───────────────────────── TAB 1: CAD & GIS Converter ────────────────
         tab1_inner = QWidget()
@@ -461,12 +606,9 @@ class Zero2CadGisDockWidget(QDockWidget):
         type_layout = QHBoxLayout()
         type_layout.addWidget(QLabel("Dataset Type:"))
         self.cmb_src_type = QComboBox()
-        self.cmb_src_type.addItems(["DXF (*.dxf)",
-                                    "KML / KMZ (*.kml, *.kmz)",
-                                    "Microstation DGN (*.dgn)",
-                                    "ArcGIS File Geodatabase (*.gdb)",
-                                    "ArcGIS Personal Geodatabase (*.mdb)"])
-        self.cmb_src_type.insertSeparator(5)
+        for fmt in SOURCE_FORMATS:
+            self.cmb_src_type.addItem(fmt.label, fmt.key)
+        self.cmb_src_type.insertSeparator(self.cmb_src_type.count())
         self.cmb_src_type.addItem(
             "Future enhancement: DWG (*.dwg)")
         future_dwg_index = self.cmb_src_type.count() - 1
@@ -486,7 +628,7 @@ class Zero2CadGisDockWidget(QDockWidget):
         self.txt_src_path = QLineEdit()
         self.txt_src_path.setReadOnly(True)
         self.txt_src_path.setPlaceholderText(
-            "Select drawing or GIS dataset...")
+            "Select or drop a drawing / GIS dataset...")
         path_layout.addWidget(self.txt_src_path)
 
         self.btn_browse_src = QPushButton("Browse...")
@@ -494,7 +636,70 @@ class Zero2CadGisDockWidget(QDockWidget):
         self.btn_browse_src.clicked.connect(self._browse_src_dataset)
         path_layout.addWidget(self.btn_browse_src)
         src_layout.addLayout(path_layout)
+
+        self.lbl_src_status = QLabel(
+            "Tip: drag && drop any supported file onto this panel.")
+        self.lbl_src_status.setObjectName("dock_subtitle")
+        self.lbl_src_status.setWordWrap(True)
+        src_layout.addWidget(self.lbl_src_status)
         cad_gis_layout.addWidget(src_group)
+
+        # Delimited text geometry (visible only for CSV/TSV/TXT sources)
+        self.csv_group = QGroupBox("Delimited Text Geometry")
+        csv_form = QFormLayout(self.csv_group)
+        csv_form.setContentsMargins(6, 10, 6, 6)
+        csv_form.setSpacing(3)
+
+        self.lbl_csv_summary = QLabel("-")
+        self.lbl_csv_summary.setWordWrap(True)
+        csv_form.addRow("Detected:", self.lbl_csv_summary)
+
+        self.cmb_csv_x = QComboBox()
+        csv_form.addRow("X / Longitude Field:", self.cmb_csv_x)
+        self.cmb_csv_y = QComboBox()
+        csv_form.addRow("Y / Latitude Field:", self.cmb_csv_y)
+        self.cmb_csv_wkt = QComboBox()
+        self.cmb_csv_wkt.setToolTip(
+            "When a WKT column is chosen it overrides the X/Y fields.")
+        csv_form.addRow("WKT Geometry Field:", self.cmb_csv_wkt)
+
+        self.csv_src_crs = QgsProjectionSelectionWidget()
+        self.csv_src_crs.setOptionVisible(
+            QgsProjectionSelectionWidget.CrsOption.ProjectCrs, True)
+        csv_form.addRow("Source CRS:", self.csv_src_crs)
+
+        self.csv_group.setVisible(False)
+        cad_gis_layout.addWidget(self.csv_group)
+
+        # Source layer preview (populated after a dataset is chosen)
+        self.src_preview_group = QGroupBox("Layers Found in Source")
+        src_preview_layout = QVBoxLayout(self.src_preview_group)
+        src_preview_layout.setContentsMargins(4, 8, 4, 4)
+        src_preview_layout.setSpacing(2)
+
+        self.src_layer_tree = QTreeWidget()
+        self.src_layer_tree.setHeaderLabels(
+            ["Layer Name", "Geometry", "Features"])
+        self.src_layer_tree.setColumnWidth(0, 150)
+        self.src_layer_tree.setColumnWidth(1, 90)
+        self.src_layer_tree.setRootIsDecorated(False)
+        self.src_layer_tree.setMinimumHeight(90)
+        src_preview_layout.addWidget(self.src_layer_tree)
+
+        src_sel_layout = QHBoxLayout()
+        src_sel_layout.setSpacing(4)
+        btn_src_all = QPushButton("Select All")
+        btn_src_all.clicked.connect(
+            lambda: self._set_src_tree_checked(Qt.CheckState.Checked))
+        btn_src_none = QPushButton("Deselect All")
+        btn_src_none.clicked.connect(
+            lambda: self._set_src_tree_checked(Qt.CheckState.Unchecked))
+        src_sel_layout.addWidget(btn_src_all)
+        src_sel_layout.addWidget(btn_src_none)
+        src_preview_layout.addLayout(src_sel_layout)
+
+        self.src_preview_group.setVisible(False)
+        cad_gis_layout.addWidget(self.src_preview_group)
 
         # Destination GPKG Selection
         dst_group = QGroupBox("Target GeoPackage (.gpkg)")
@@ -816,7 +1021,7 @@ class Zero2CadGisDockWidget(QDockWidget):
 
         title = QLabel("02CadGis")
         title.setObjectName("dock_title")
-        subtitle = QLabel("CAD, KML, DGN and GDB conversion studio")
+        subtitle = QLabel("CAD, KML, GML, CSV, DGN and GDB conversion studio")
         subtitle.setObjectName("dock_subtitle")
         title_layout.addWidget(title)
         title_layout.addWidget(subtitle)
@@ -843,13 +1048,16 @@ class Zero2CadGisDockWidget(QDockWidget):
         guide.setOpenExternalLinks(True)
         guide.setHtml("""
         <h2>02CadGis Quick Start</h2>
-        <p>Use 02CadGis when you need QGIS-ready GeoPackage layers from CAD, KML/KMZ, DGN, GDB, or Netcad drawing data.</p>
+        <p>Use 02CadGis when you need QGIS-ready GeoPackage layers from CAD, KML/KMZ, GML, GeoJSON, CSV, SpatiaLite, GPX, DGN, GDB, or Netcad drawing data.</p>
+        <p><b>Fastest path:</b> drag &amp; drop any supported file onto the dock. The dataset type is detected from the extension, source layers are listed for review, and Netcad files jump straight to the NCZ tab.</p>
 
         <h3>1. Convert CAD or GIS to GeoPackage</h3>
         <ol>
-          <li>Choose the source family: DXF, KML/KMZ, DGN, or FileGDB. DWG is listed as a future enhancement because current QGIS/GDAL builds only read limited DWG versions.</li>
-          <li>Select the source file or `.gdb` folder.</li>
-          <li>Choose a target `.gpkg`, or enable temporary scratch layers when you only want to inspect the result.</li>
+          <li>Choose the source family: DXF, KML/KMZ, GML, GeoJSON, CSV/TSV, SpatiaLite/SQLite, GPX, DGN, FileGDB, or Personal GDB. DWG is listed as a future enhancement because current QGIS/GDAL builds only read limited DWG versions.</li>
+          <li>Select the source file or `.gdb` folder — or just drop the file on the panel.</li>
+          <li>Review <b>Layers Found in Source</b> and uncheck anything you do not need.</li>
+          <li>For delimited text, check the <b>Delimited Text Geometry</b> card: the delimiter and X/Y or WKT columns are auto-detected and can be overridden, and the source CRS defaults to EPSG:4326 for lon/lat columns.</li>
+          <li>Choose a target `.gpkg` (a name is pre-suggested from the source), or enable temporary scratch layers when you only want to inspect the result.</li>
           <li>Confirm the target CRS. The project CRS is used when the selector is not changed.</li>
           <li>Keep cleanup enabled for typical CAD drawings; disable it only when auditing raw geometry.</li>
           <li>For KML/KMZ, enable balloon expansion for structured attributes and GroundOverlay extraction for raster overlays.</li>
@@ -892,36 +1100,40 @@ class Zero2CadGisDockWidget(QDockWidget):
 
     # ───────────────────────── TAB 1: GIS/CAD CONVERTER CONTROLS ────────────
 
+    def _current_source_format(self) -> SourceFormat | None:
+        key = self.cmb_src_type.currentData()
+        for fmt in SOURCE_FORMATS:
+            if fmt.key == key:
+                return fmt
+        return None
+
     def _on_source_type_changed(self, index: int) -> None:
         self.txt_src_path.clear()
         self.btn_convert_gis.setEnabled(False)
-        is_kml = index == 1
+        fmt = self._current_source_format()
+        is_kml = fmt is not None and fmt.key == "kml"
         self.chk_conv_kml_expand.setEnabled(is_kml)
         self.chk_conv_raster.setEnabled(is_kml)
+        self.csv_group.setVisible(fmt is not None and fmt.key == "csv")
+        self.src_layer_tree.clear()
+        self.src_preview_group.setVisible(False)
+        self.src_csv_profile = None
+        self.lbl_src_status.setText(
+            "Tip: drag && drop any supported file onto this panel.")
 
     def _browse_src_dataset(self) -> None:
-        idx = self.cmb_src_type.currentIndex()
+        fmt = self._current_source_format()
         start_dir = self._last_import_dir()
-        if idx == 0:
-            file_path, _ = QFileDialog.getOpenFileName(
-                self, "Select DXF File", start_dir, "AutoCAD DXF (*.dxf)")
-            if file_path and not has_extension(file_path, ".dxf"):
-                QMessageBox.warning(
-                    self,
-                    "Unsupported Drawing Version",
-                    "DWG import is a future enhancement in this QGIS/GDAL build. Convert DWG to DXF first, then import the DXF file.")
-                return
-        elif idx == 1:
-            file_path, _ = QFileDialog.getOpenFileName(
-                self, "Select KML or KMZ File", start_dir, "Keyhole Markup Language (*.kml *.kmz)")
-        elif idx == 2:
-            file_path, _ = QFileDialog.getOpenFileName(
-                self, "Select Microstation DGN File", start_dir, "Design Files (*.dgn)")
-        elif idx == 3:
-            file_path = QFileDialog.getExistingDirectory(
+        if fmt is None:
+            QMessageBox.information(
                 self,
-                "Select ArcGIS File Geodatabase Directory",
-                start_dir,
+                "Future Enhancement",
+                "DWG import needs broader CAD reader support than the current QGIS/GDAL libopencad driver provides. Convert DWG to DXF first.")
+            return
+
+        if fmt.is_dir:
+            file_path = QFileDialog.getExistingDirectory(
+                self, fmt.dialog_title, start_dir,
                 QFileDialog.Option.ShowDirsOnly)
             if file_path and not has_extension(file_path, ".gdb"):
                 QMessageBox.warning(
@@ -929,28 +1141,159 @@ class Zero2CadGisDockWidget(QDockWidget):
                     "Invalid Folder",
                     "Please select a directory ending with '.gdb'.")
                 return
-        elif idx == 4:
-            file_path, _ = QFileDialog.getOpenFileName(
-                self, "Select ArcGIS Personal Geodatabase File", start_dir, "ArcGIS Personal Geodatabase (*.mdb)")
         else:
-            QMessageBox.information(
-                self,
-                "Future Enhancement",
-                "DWG import needs broader CAD reader support than the current QGIS/GDAL libopencad driver provides. Convert DWG to DXF first.")
+            dialog_filter = (
+                f"{fmt.file_filter};;{all_supported_filter()};;All Files (*.*)")
+            file_path, _ = QFileDialog.getOpenFileName(
+                self, fmt.dialog_title, start_dir, dialog_filter)
+            if file_path and format_for_path(file_path) is None:
+                if file_path.lower().endswith(".dwg"):
+                    QMessageBox.warning(
+                        self,
+                        "Unsupported Drawing Version",
+                        "DWG import is a future enhancement in this QGIS/GDAL build. Convert DWG to DXF first, then import the DXF file.")
+                    return
+
+        if not file_path:
+            return
+        detected = format_for_path(file_path) or fmt
+        self._apply_source_path(file_path, detected)
+
+    def _apply_source_path(self, file_path: str, fmt: SourceFormat) -> None:
+        """Set the source path/type and refresh the layer preview."""
+        target_index = self.cmb_src_type.findData(fmt.key)
+        if target_index >= 0 and target_index != self.cmb_src_type.currentIndex():
+            self.cmb_src_type.blockSignals(True)
+            self.cmb_src_type.setCurrentIndex(target_index)
+            self.cmb_src_type.blockSignals(False)
+            is_kml = fmt.key == "kml"
+            self.chk_conv_kml_expand.setEnabled(is_kml)
+            self.chk_conv_raster.setEnabled(is_kml)
+            self.csv_group.setVisible(fmt.key == "csv")
+
+        self.txt_src_path.setText(file_path)
+        self._remember_import_dir(file_path)
+        self._suggest_gpkg_destination(file_path)
+        self._refresh_source_preview(file_path, fmt)
+        self._update_convert_gis_button_state()
+
+    def _suggest_gpkg_destination(self, source_path: str) -> None:
+        """Prefill the target GPKG from the source name when still empty."""
+        if self.txt_gpkg_path.text().strip() \
+                or self.chk_conv_temporary.isChecked():
+            return
+        stem = os.path.splitext(os.path.basename(
+            source_path.rstrip("\\/")))[0] or "converted"
+        suggestion = os.path.join(self._last_export_dir(), f"{stem}.gpkg")
+        self.txt_gpkg_path.setText(suggestion)
+
+    def _refresh_source_preview(self, file_path: str,
+                                fmt: SourceFormat) -> None:
+        self.src_layer_tree.clear()
+        self.src_csv_profile = None
+        try:
+            if fmt.key == "csv":
+                self.src_csv_profile = sniff_delimited_dataset(file_path)
+                self._populate_csv_controls(self.src_csv_profile)
+
+            probe = GisConverterEngine(
+                file_path, "", QgsProject.instance().crs(),
+                csv_profile=self.src_csv_profile)
+            infos = probe.discover_layers(
+                is_kmz=has_extension(file_path, ".kmz"))
+            probe.cleanup()
+        except Exception as exc:
+            self.src_preview_group.setVisible(False)
+            self.lbl_src_status.setText(f"Could not inspect dataset: {exc}")
             return
 
-        if file_path:
-            self.txt_src_path.setText(file_path)
-            self._remember_import_dir(file_path)
-            self._update_convert_gis_button_state()
+        for info in infos:
+            item = QTreeWidgetItem(self.src_layer_tree)
+            item.setText(0, info.name)
+            item.setText(1, info.geometry)
+            item.setText(2, "?" if info.feature_count < 0
+                         else str(info.feature_count))
+            item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
+            item.setCheckState(0, Qt.CheckState.Checked)
+            item.setData(0, Qt.ItemDataRole.UserRole, info.name)
+
+        self.src_preview_group.setVisible(bool(infos))
+        total = sum(max(info.feature_count, 0) for info in infos)
+        self.lbl_src_status.setText(
+            f"{len(infos)} layer(s) discovered, ~{total} features. "
+            "Uncheck layers you do not need before converting.")
+
+    def _populate_csv_controls(self, profile: CsvGeometryProfile) -> None:
+        for combo in (self.cmb_csv_x, self.cmb_csv_y, self.cmb_csv_wkt):
+            combo.blockSignals(True)
+            combo.clear()
+            combo.addItem("(none)", "")
+            for name in profile.fields:
+                combo.addItem(name, name)
+            combo.blockSignals(False)
+
+        def select(combo: QComboBox, value: str) -> None:
+            index = combo.findData(value)
+            combo.setCurrentIndex(index if index >= 0 else 0)
+
+        select(self.cmb_csv_x, profile.x_field)
+        select(self.cmb_csv_y, profile.y_field)
+        select(self.cmb_csv_wkt, profile.wkt_field)
+
+        if profile.crs_authid:
+            crs = QgsCoordinateReferenceSystem(profile.crs_authid)
+            if crs.isValid():
+                self.csv_src_crs.setCrs(crs)
+        elif not self.csv_src_crs.crs().isValid():
+            self.csv_src_crs.setCrs(QgsProject.instance().crs())
+
+        self.lbl_csv_summary.setText(
+            f"Delimiter '{profile.delimiter}' — {profile.geometry_summary}")
+
+    def _effective_csv_profile(self) -> CsvGeometryProfile | None:
+        """CSV profile with the user's current field overrides applied."""
+        if self.src_csv_profile is None:
+            return None
+        profile = CsvGeometryProfile(
+            delimiter=self.src_csv_profile.delimiter,
+            fields=list(self.src_csv_profile.fields),
+            x_field=self.cmb_csv_x.currentData() or "",
+            y_field=self.cmb_csv_y.currentData() or "",
+            wkt_field=self.cmb_csv_wkt.currentData() or "",
+            crs_authid=self.src_csv_profile.crs_authid,
+            row_count=self.src_csv_profile.row_count,
+        )
+        if profile.wkt_field:
+            profile.x_field = ""
+            profile.y_field = ""
+        return profile
+
+    def _selected_source_layers(self) -> list[str] | None:
+        """Checked layer names from the preview tree; None = everything."""
+        count = self.src_layer_tree.topLevelItemCount()
+        if count == 0:
+            return None
+        selected = []
+        for index in range(count):
+            item = self.src_layer_tree.topLevelItem(index)
+            if item.checkState(0) == Qt.CheckState.Checked:
+                selected.append(item.data(0, Qt.ItemDataRole.UserRole))
+        return selected
+
+    def _set_src_tree_checked(self, state: Qt.CheckState) -> None:
+        for index in range(self.src_layer_tree.topLevelItemCount()):
+            self.src_layer_tree.topLevelItem(index).setCheckState(0, state)
 
     def _browse_gpkg_destination(self) -> None:
+        start = self.txt_gpkg_path.text().strip() or self._last_export_dir()
         file_path, _ = QFileDialog.getSaveFileName(
-            self, "Select Output GeoPackage", "", "GeoPackage (*.gpkg)"
+            self, "Select Output GeoPackage", start, "GeoPackage (*.gpkg)"
         )
         if file_path:
             file_path = ensure_extension(file_path, ".gpkg")
             self.txt_gpkg_path.setText(file_path)
+            QSettings().setValue(
+                "zero2cadgis/last_export_dir", os.path.dirname(file_path))
             self._update_convert_gis_button_state()
 
     def _on_conv_temporary_changed(self, state: int) -> None:
@@ -972,12 +1315,19 @@ class Zero2CadGisDockWidget(QDockWidget):
     def _convert_gis_dataset(self) -> None:
         src = self.txt_src_path.text()
         dst = self.txt_gpkg_path.text()
-        idx = self.cmb_src_type.currentIndex()
-        if idx == self.cmb_src_type.count() - 1:
+        fmt = self._current_source_format()
+        if fmt is None:
             QMessageBox.information(
                 self,
                 "Future Enhancement",
                 "DWG import is planned for a future enhancement. Convert DWG to DXF first.")
+            return
+
+        selected_layers = self._selected_source_layers()
+        if selected_layers is not None and not selected_layers:
+            QMessageBox.warning(
+                self, "Warning",
+                "Please check at least one source layer to convert.")
             return
 
         crs = self.converter_crs.crs()
@@ -985,44 +1335,66 @@ class Zero2CadGisDockWidget(QDockWidget):
             crs = QgsProject.instance().crs()
 
         self.progress_conv.setVisible(True)
-        self.progress_conv.setValue(10)
+        self.progress_conv.setValue(5)
         self.progress_conv.setFormat("Initializing GIS Converter...")
+        QApplication.processEvents()
 
         try:
-            is_kmz = idx == 1 and has_extension(src, ".kmz")
+            is_kml = fmt.key == "kml"
+            is_kmz = is_kml and has_extension(src, ".kmz")
             is_temp = self.chk_conv_temporary.isChecked()
 
-            # Initialize GisConverterEngine
-            self.gis_converter = GisConverterEngine(src, dst, crs)
+            csv_profile = None
+            csv_crs = ""
+            if fmt.key == "csv":
+                csv_profile = self._effective_csv_profile()
+                if self.csv_src_crs.crs().isValid():
+                    csv_crs = self.csv_src_crs.crs().authid()
 
-            self.progress_conv.setValue(40)
+            self.gis_converter = GisConverterEngine(
+                src, dst, crs,
+                csv_profile=csv_profile, csv_source_crs=csv_crs)
+
+            layer_total = max(
+                len(selected_layers) if selected_layers is not None else 1, 1)
+            progress_state = {"done": 0}
+
+            def layer_progress(layer_name: str) -> None:
+                progress_state["done"] += 1
+                share = min(progress_state["done"] / layer_total, 1.0)
+                self.progress_conv.setValue(10 + int(share * 55))
+                self.progress_conv.setFormat(f"Converting {layer_name}...")
+                QApplication.processEvents()
+
             if is_temp:
-                self.progress_conv.setFormat(
-                    "Creating temporary scratch layers...")
                 loaded_layers = self.gis_converter.convert_to_memory(
                     is_kmz=is_kmz,
-                    html_expansion=self.chk_conv_kml_expand.isChecked()
+                    html_expansion=self.chk_conv_kml_expand.isChecked(),
+                    selected_layers=selected_layers,
+                    progress_cb=layer_progress,
                 )
             else:
-                self.progress_conv.setFormat(
-                    "Converting vector layers to GeoPackage...")
                 loaded_layers = self.gis_converter.convert(
                     is_kmz=is_kmz,
-                    html_expansion=self.chk_conv_kml_expand.isChecked()
+                    html_expansion=self.chk_conv_kml_expand.isChecked(),
+                    selected_layers=selected_layers,
+                    progress_cb=layer_progress,
                 )
 
             # GroundOverlay Extraction
-            if self.chk_conv_raster.isChecked() and idx == 1:
-                self.progress_conv.setValue(60)
+            if self.chk_conv_raster.isChecked() and is_kml:
+                self.progress_conv.setValue(70)
                 self.progress_conv.setFormat(
                     "Extracting KML GroundOverlays (kmltools feyz)...")
+                QApplication.processEvents()
                 raster_layers = self.gis_converter.extract_ground_overlays(
                     is_kmz=is_kmz)
                 for rl in raster_layers:
                     QgsProject.instance().addMapLayer(rl)
 
-            self.progress_conv.setValue(80)
+            self.progress_conv.setValue(85)
             self.progress_conv.setFormat("Adding vector layers to canvas...")
+            QApplication.processEvents()
 
             if self.chk_conv_load.isChecked() and loaded_layers:
                 root = QgsProject.instance().layerTreeRoot()
@@ -1046,17 +1418,18 @@ class Zero2CadGisDockWidget(QDockWidget):
             # Refresh exporter layer combo list
             self._populate_layers_combo()
 
-            message = "Conversion completed successfully!"
-            if is_temp:
-                message += "\nOutput: temporary scratch layers loaded in the current QGIS project."
-            else:
-                message += f"\nTarget path: {dst}"
+            destination = ("temporary scratch layers" if is_temp
+                           else os.path.basename(dst))
+            self.iface.messageBar().pushMessage(
+                "02CadGis",
+                f"Converted {len(loaded_layers)} layer(s) from "
+                f"{os.path.basename(src.rstrip(chr(92) + '/'))} to {destination}.",
+                Qgis.MessageLevel.Success, 7)
 
             notes = getattr(self.gis_converter, "last_warnings", [])
-            if notes:
-                message += "\n\nNotes:\n- " + "\n- ".join(notes)
-
-            QMessageBox.information(self, "Success", message)
+            for note in notes:
+                self.iface.messageBar().pushMessage(
+                    "02CadGis", note, Qgis.MessageLevel.Warning, 10)
 
         except Exception as exc:
             self.progress_conv.setVisible(False)
@@ -1073,7 +1446,9 @@ class Zero2CadGisDockWidget(QDockWidget):
             "Netcad Drawing Files (*.ncz *.nca);;All Files (*.*)")
         if not file_paths:
             return
+        self._load_ncz_paths(file_paths)
 
+    def _load_ncz_paths(self, file_paths: list[str]) -> None:
         self._remember_import_dir(file_paths[0])
         self.current_netcad_paths = file_paths
         if len(file_paths) == 1:
@@ -1103,6 +1478,7 @@ class Zero2CadGisDockWidget(QDockWidget):
                     10 + int((idx / len(file_paths)) * 50))
                 self.progress_ncz.setFormat(
                     f"Parsing {os.path.basename(file_path)}...")
+                QApplication.processEvents()
 
                 reader = NetcadBinaryReader(file_path)
                 res = reader.parse()
@@ -1312,12 +1688,17 @@ class Zero2CadGisDockWidget(QDockWidget):
             if is_temp:
                 gpkg_path = ""
             else:
+                suggested = os.path.join(
+                    self._last_export_dir(), f"{base_name.lower()}.gpkg")
                 gpkg_path, _ = QFileDialog.getSaveFileName(
-                    self, "Select Output GeoPackage for Netcad Data", "", "GeoPackage (*.gpkg)")
+                    self, "Select Output GeoPackage for Netcad Data",
+                    suggested, "GeoPackage (*.gpkg)")
                 if not gpkg_path:
                     self.progress_ncz.setVisible(False)
                     return
                 gpkg_path = ensure_extension(gpkg_path, ".gpkg")
+                QSettings().setValue(
+                    "zero2cadgis/last_export_dir", os.path.dirname(gpkg_path))
 
             target_crs = self.ncz_crs_selector.crs()
             if not target_crs.isValid():
@@ -1501,10 +1882,12 @@ class Zero2CadGisDockWidget(QDockWidget):
             self._populate_layers_combo()
 
             if is_temp:
-                message = "Netcad drawing imported as temporary scratch layers and loaded successfully."
+                message = "Netcad drawing imported as temporary scratch layers."
             else:
-                message = f"Netcad drawing converted to GeoPackage and loaded successfully!\nOutput path: {gpkg_path}"
-            QMessageBox.information(self, "Success", message)
+                message = ("Netcad drawing converted to "
+                           f"{os.path.basename(gpkg_path)} and loaded.")
+            self.iface.messageBar().pushMessage(
+                "02CadGis", message, Qgis.MessageLevel.Success, 7)
 
         except Exception as exc:
             self.progress_ncz.setVisible(False)
@@ -1656,20 +2039,20 @@ class Zero2CadGisDockWidget(QDockWidget):
             for key, value in row.columns.items():
                 field_names.add(key)
                 if isinstance(value, int) and not isinstance(value, bool):
-                    column_types.setdefault(key, QVariant.Int)
+                    column_types.setdefault(key, QMetaType.Type.Int)
                 elif isinstance(value, float):
-                    column_types.setdefault(key, QVariant.Double)
+                    column_types.setdefault(key, QMetaType.Type.Double)
                 else:
-                    column_types.setdefault(key, QVariant.String)
+                    column_types.setdefault(key, QMetaType.Type.QString)
 
         ordered_dynamic_names = sorted(
             name for name in field_names if name not in {
                 "source_file", "table_ref", "row_index"})
 
         fields = [
-            QgsField("source_file", QVariant.String),
-            QgsField("table_ref", QVariant.String),
-            QgsField("row_index", QVariant.Int),
+            QgsField("source_file", QMetaType.Type.QString),
+            QgsField("table_ref", QMetaType.Type.QString),
+            QgsField("row_index", QMetaType.Type.Int),
         ]
         for name in ordered_dynamic_names:
             fields.append(
@@ -1677,7 +2060,7 @@ class Zero2CadGisDockWidget(QDockWidget):
                     name,
                     column_types.get(
                         name,
-                        QVariant.String)))
+                        QMetaType.Type.QString)))
 
         provider.addAttributes(fields)
         layer.updateFields()

@@ -1,5 +1,38 @@
 # Changelog
 
+## [0.3.0] - 2026-07-21
+
+### Added
+
+- New import formats in the CAD & GIS Converter: **GML**, **GeoJSON**,
+  **SpatiaLite/SQLite**, **GPX**, and **delimited text (CSV/TSV/TXT)**.
+- Delimited-text geometry sniffer: delimiter, X/Y (or lon/lat) columns and
+  WKT columns are auto-detected, WGS84 is pre-selected for lon/lat data, and
+  every detection can be overridden in the new **Delimited Text Geometry**
+  card before import.
+- **Drag & drop**: drop any supported file onto the dock; the dataset type is
+  detected from the extension and Netcad NCZ/NCA files route straight to the
+  NCZ importer tab.
+- **Pre-conversion layer preview**: after choosing a source, its layers are
+  listed with geometry type and feature count, and only checked layers are
+  converted.
+- Target GeoPackage name is pre-suggested from the source file name, and the
+  file dialogs now start from the remembered import/export folders.
+- Conversion and cleanup options are remembered across QGIS sessions.
+
+### Changed
+
+- Success and warning notifications moved from blocking pop-ups to the QGIS
+  message bar; progress bars now update live per converted layer.
+- The converter engine opens each source dataset once, converts only the
+  selected layer subset, and reports per-layer progress.
+- GML/GeoJSON sources that carry a non-integer `fid` attribute no longer fail
+  GeoPackage writing (the primary key is moved to a separate column).
+- Field type constants migrated from `QVariant` to `QMetaType.Type` for
+  QGIS 4 / Qt6 (PyQt6) compatibility, verified on QGIS 3.44 LTR and QGIS 4.
+- The exporter's layer list refreshes automatically when project layers are
+  added or removed.
+
 ## [0.2.4.1] - 2026-07-17
 
 - Remove the developer-supplied `.bandit` configuration so QGIS Plugin Hub
