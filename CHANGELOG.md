@@ -1,5 +1,32 @@
 # Changelog
 
+## [1.0.0] - 2026-07-22
+
+First stable release. 02CadGis has been validated in QGIS 3.44 LTR and
+QGIS 4 on real municipal datasets, and the import pipeline is now consistent
+across its CAD, GIS, and Netcad tools.
+
+### Highlights of the 1.0 baseline
+
+- **Netcad NCZ/NCA** — the independent, block-oriented NCZ Engine v2
+  (bounds-checked reader, geometry-decoder registry, lazy layer catalog),
+  verified byte-identical to the previous engine on a real 8163-entity
+  drawing, with selective per-layer decode and a fingerprinted index cache
+  for near-instant reopening.
+- **CAD (DXF / DGN)** — split into selectable CAD layers by `Layer` / `Level`,
+  with collinear simplification, duplicate removal, and closure tolerance.
+- **GIS** — DXF, KML/KMZ (all documents), GML, GeoJSON, delimited CSV/TSV
+  with geometry detection, SpatiaLite/SQLite, GPX, FileGDB, and Personal GDB,
+  each with a pre-conversion layer preview and a fingerprinted catalog cache.
+- **Three output modes** — GeoPackage, temporary scratch layers, or live
+  zero-copy references for browsing large databases without conversion.
+- **Quality gates** — unit tests, a pure-Python cache test suite, real-QGIS
+  smoke tests on two QGIS majors, a clean Hub security scan, and a clean
+  Qt6 enum audit.
+
+No functional change from 0.8.0; this release marks the API and behavior as
+stable.
+
 ## [0.8.0] - 2026-07-22
 
 ### Added
