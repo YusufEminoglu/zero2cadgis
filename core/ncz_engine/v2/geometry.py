@@ -94,8 +94,10 @@ def _z_with_fallback(record: GeometryRecord) -> float:
 # ── vector helpers ──────────────────────────────────────────────────
 
 def _dist(a: dict, b: dict) -> float:
-    return math.sqrt((a["x"] - b["x"]) ** 2 + (a["y"] - b["y"]) ** 2
-                     + (a["z"] - b["z"]) ** 2)
+    dx = a["x"] - b["x"]
+    dy = a["y"] - b["y"]
+    dz = a["z"] - b["z"]
+    return math.sqrt(dx * dx + dy * dy + dz * dz)
 
 
 def _points_equal(a: dict, b: dict) -> bool:
@@ -117,8 +119,8 @@ def _drop_collinear(points: list[dict]) -> list[dict]:
             after = ring[(index + 1) % len(ring)]
             ax, ay = here["x"] - before["x"], here["y"] - before["y"]
             bx, by = after["x"] - here["x"], after["y"] - here["y"]
-            len_a = math.hypot(ax, ay)
-            len_b = math.hypot(bx, by)
+            len_a = math.sqrt(ax * ax + ay * ay)
+            len_b = math.sqrt(bx * bx + by * by)
             if len_a < 0.001 or len_b < 0.001:
                 ring.pop(index)
                 changed = True
@@ -166,7 +168,7 @@ def _rectangle_metrics(points: list[dict]) \
         a, b = ring[index], ring[(index + 1) % 4]
         edge = (b["x"] - a["x"], b["y"] - a["y"])
         edges.append(edge)
-        lengths.append(math.hypot(*edge))
+        lengths.append(math.sqrt(edge[0] * edge[0] + edge[1] * edge[1]))
     if any(value < 0.001 for value in lengths):
         return False, 0.0, 0.0, 0.0
 
@@ -201,8 +203,12 @@ def _corner_ring(origin_first: float, origin_second: float,
 def _rotated_rectangle(origin_first: float, origin_second: float,
                        width: float, height: float,
                        rotation_degrees: float) -> list[dict]:
-    """Box corner ring (bottom = cos/-sin, side = sin/cos axes)."""
-    angle = math.radians(rotation_degrees)
+    """Box corner ring (bottom = cos/-sin, side = sin/cos axes).
+
+    Uses ``deg * (pi/180)`` rather than ``math.radians`` to reproduce the
+    v1 box computation bit for bit.
+    """
+    angle = rotation_degrees * (math.pi / 180.0)
     return _corner_ring(
         origin_first, origin_second, width, height,
         (math.cos(angle), -math.sin(angle)),

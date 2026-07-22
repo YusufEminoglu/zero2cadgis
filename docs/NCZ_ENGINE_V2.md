@@ -35,6 +35,12 @@ Verified parity: `tests/test_ncz_engine_v2.py` builds synthetic NCZ streams
 (`tests/ncz_fixtures.py`) exercising every decoder path, both block layouts
 (kind 21 and the GIS-shifted kind 22), embedded containers, metadata, and
 `@TAB` tables, and asserts field-by-field equality between v1 and v2 output.
+An opt-in test additionally asserts bit-exact (`.17g`) parity against a real
+drawing named by `ZERO2CADGIS_NCZ_FIXTURE`; this was validated on a
+1.2 MiB / 8163-entity municipal Netcad file (60 layers, ITRF/3 zone 42),
+which exposed and fixed two v1 behaviours the synthetic corpus missed: a
+colour fallback for non-standard per-feature colour codes, and matching v1's
+exact `deg * (pi/180)` / `sqrt(x*x + y*y)` float forms in the box decoder.
 
 Measured on a synthetic 1.5 MiB, ~10k-record drawing (CPython, one machine):
 

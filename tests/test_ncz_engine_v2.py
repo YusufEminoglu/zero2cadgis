@@ -146,6 +146,42 @@ class TestNczCatalogSelectiveDecode(unittest.TestCase):
         self.assertEqual(catalog.decode_layers([]), [])
 
 
+class TestNczEngineV2RealFileParity(unittest.TestCase):
+    """Opt-in v1<->v2 parity on a real drawing named by an env var.
+
+    No third-party drawing is committed. Point ``ZERO2CADGIS_NCZ_FIXTURE``
+    at a real ``.ncz``/``.nca`` file to run this bit-exact parity check.
+    """
+
+    def test_real_file_bit_exact_parity(self):
+        path = os.environ.get("ZERO2CADGIS_NCZ_FIXTURE")
+        if not path or not os.path.isfile(path):
+            self.skipTest("set ZERO2CADGIS_NCZ_FIXTURE to a real .ncz file")
+
+        with open(path, "rb") as handle:
+            data = handle.read()
+        v1 = sorted(_digest_entity(e)
+                    for e in parse_netcad_binary_stream(path)["entities"])
+        v2 = sorted(_digest_entity(e) for e in parse_bytes(data)["entities"])
+        self.assertEqual(v1, v2)
+
+
+def _digest_entity(entity: dict) -> tuple:
+    """Full-precision (.17g) comparison key for bit-exact parity."""
+    coords = tuple(
+        (format(c["x"], ".17g"), format(c["y"], ".17g"),
+         format(c["z"], ".17g"))
+        for c in entity["coordinates"])
+    scalar = tuple(
+        format(entity[name], ".17g") for name in (
+            "text_height", "rotation_degrees", "box_width", "box_height",
+            "scale", "radius", "start_angle", "end_angle"))
+    return (
+        entity["geometry_kind"], entity["layer_code"], entity["layer_name"],
+        entity["color_argb"], entity["name"], entity["label_text"],
+        scalar, entity["is_closed"], coords)
+
+
 class TestNczEngineV2Safety(unittest.TestCase):
     """Malformed input must never raise or read past the buffer."""
 

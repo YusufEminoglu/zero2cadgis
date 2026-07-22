@@ -159,9 +159,14 @@ class NczCatalog:
     @staticmethod
     def _finalize(payload: dict, metadata: DrawingMetadata) -> None:
         color_code = payload.pop("_color_code", 0)
-        payload["layer_name"] = metadata.layer_name(payload["layer_code"])
-        payload["color_argb"] = metadata.resolve_color(
-            payload["layer_code"], color_code)
+        layer_code = payload["layer_code"]
+        payload["layer_name"] = metadata.layer_name(layer_code)
+        color = metadata.resolve_color(layer_code, color_code)
+        if color is None:
+            # v1 post-pass: an unresolved colour (e.g. a non-standard colour
+            # code) falls back to the layer's own colour.
+            color = metadata.resolve_color(layer_code, 0)
+        payload["color_argb"] = color
 
     # ── attribute tables ──────────────────────────────────────────
 

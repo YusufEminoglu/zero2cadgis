@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.4.1] - 2026-07-22
+
+### Fixed
+
+- NCZ Engine v2 now reproduces the v1 decoder bit for bit on real municipal
+  drawings, validated against a 1.2 MiB / 8163-entity Netcad file:
+  - An entity whose per-feature colour code is non-standard (does not resolve
+    directly) now falls back to its layer's colour, matching the v1 post-pass,
+    instead of being left without a colour.
+  - Box rotation and rectangle-edge math use the same `deg * (pi/180)` and
+    `sqrt(x*x + y*y)` forms as v1, removing last-bit floating-point drift in
+    box corner coordinates and box height.
+
+### Added
+
+- Opt-in real-file parity test: set `ZERO2CADGIS_NCZ_FIXTURE` to a real
+  `.ncz`/`.nca` path to run a bit-exact v1-vs-v2 comparison. No third-party
+  drawing is committed.
+
 ## [0.4.0] - 2026-07-22
 
 ### Added
