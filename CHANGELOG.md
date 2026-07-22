@@ -1,5 +1,35 @@
 # Changelog
 
+## [0.8.0] - 2026-07-22
+
+### Added
+
+- **Layer-catalog cache for Geodatabase and database sources.** The first
+  time a `.gdb`, `.mdb`, or other multi-layer OGR source is inspected, its
+  layer catalog (names, geometry types, feature counts) is cached by a
+  content fingerprint. Reopening the same unchanged source lists its layers
+  with no driver reopen — on a real FileGDB about 118x faster, and on a
+  1.1 GB Personal Geodatabase (whose PGeo/ODBC open dominated) over 2000x
+  faster. The cache invalidates automatically when a source changes; a new
+  **Clear catalog cache** button and the `ZERO2CADGIS_OGR_CACHE_DISABLE`
+  environment variable control it.
+- **DXF / DGN split into CAD layers.** DXF and DGN files store every entity
+  in a single table tagged with a CAD layer name (DXF `Layer`) or level
+  (DGN `Level`). The converter now offers **Split into CAD layers**, which
+  lists each CAD layer with its geometry families and feature count so you
+  can select exactly the ones you want; each becomes its own QGIS layer
+  (split further by geometry type when writing a GeoPackage) instead of one
+  merged blob.
+- **Full multi-document KMZ import.** Every KML document inside a KMZ is now
+  read, not just the first, so archives with several KML files import all of
+  their layers (and GroundOverlays), with `doc.kml` treated as the primary.
+
+### Changed
+
+- The three output destinations (GeoPackage, temporary scratch, live) are now
+  a clear **Output Mode** radio group instead of stacked checkboxes, and the
+  source panel shows when a layer list was served from the catalog cache.
+
 ## [0.7.0] - 2026-07-22
 
 ### Added

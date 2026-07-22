@@ -34,20 +34,34 @@ from .csv_sniffer import (
     is_delimited_dataset,
     sniff_delimited_dataset,
 )
+from . import ogr_catalog_cache
+
+# CAD source families whose OGR "entities"/"elements" layer carries an
+# embedded per-CAD-layer field (DXF ``Layer`` name, DGN ``Level`` number).
+CAD_LAYER_FIELDS = ("Layer", "Level")
 
 
 MAX_KML_XML_BYTES = 64 * 1024 * 1024
 
 
 class SourceLayerInfo:
-    """Lightweight description of one discoverable source layer."""
+    """Lightweight description of one discoverable source layer.
 
-    __slots__ = ("name", "geometry", "feature_count")
+    ``name`` is the display label; ``key`` is the value used to select the
+    layer for conversion (the OGR layer name, or a CAD-layer value when a DXF
+    or DGN source is split by its ``Layer`` / ``Level`` field). They are equal
+    except for the CAD split, where the display may differ (e.g. "(no layer)"
+    for an empty CAD-layer value whose key is the empty string).
+    """
 
-    def __init__(self, name: str, geometry: str, feature_count: int):
+    __slots__ = ("name", "geometry", "feature_count", "key")
+
+    def __init__(self, name: str, geometry: str, feature_count: int,
+                 key: str | None = None):
         self.name = name
         self.geometry = geometry
         self.feature_count = feature_count
+        self.key = name if key is None else key
 
 
 def parse_kml_html_table(html_content: str) -> dict[str, str]:
@@ -137,6 +151,10 @@ class GisConverterEngine:
         self.csv_profile = csv_profile
         self.csv_source_crs = csv_source_crs
         self._resolved_src: str | None = None
+        self.catalog_from_cache = False
+        # When set (to "Layer"/"Level"), the single CAD entities layer is
+        # split into one output layer per distinct CAD-layer value.
+        self.cad_split_field: str = ""
 
     # ── source resolution & discovery ────────────────────────────────
 
@@ -156,8 +174,14 @@ class GisConverterEngine:
             self.csv_profile = sniff_delimited_dataset(self.source_path)
         return self.csv_profile
 
-    def discover_layers(self, is_kmz: bool = False) -> list[SourceLayerInfo]:
-        """List source layers with geometry type and feature counts."""
+    def discover_layers(self, is_kmz: bool = False,
+                         use_cache: bool = True) -> list[SourceLayerInfo]:
+        """List source layers with geometry type and feature counts.
+
+        Multi-layer OGR sources are cached by a content fingerprint (see
+        :mod:`ogr_catalog_cache`), so reopening an unchanged Geodatabase or
+        database returns its catalog without reopening the driver.
+        """
         if self.is_delimited:
             profile = self._ensure_csv_profile()
             stem = os.path.splitext(os.path.basename(self.source_path))[0]
@@ -166,26 +190,140 @@ class GisConverterEngine:
                         else "Table")
             return [SourceLayerInfo(stem, geometry, profile.row_count)]
 
+        if use_cache:
+            cached = ogr_catalog_cache.load(self.source_path)
+            if cached is not None:
+                self.catalog_from_cache = True
+                return [SourceLayerInfo(
+                    row.get("name", ""), row.get("geometry", "Unknown"),
+                    int(row.get("feature_count", -1))) for row in cached]
+
+        infos = []
+        for prefix, src in self._ogr_sources(is_kmz):
+            ogr_ds = ogr.Open(src)
+            if ogr_ds is None:
+                raise ValueError(self._open_error_message(src))
+            for i in range(ogr_ds.GetLayerCount()):
+                ogr_layer = ogr_ds.GetLayerByIndex(i)
+                try:
+                    geometry = ogr.GeometryTypeToName(ogr_layer.GetGeomType())
+                except Exception:
+                    geometry = "Unknown"
+                try:
+                    count = ogr_layer.GetFeatureCount()
+                except Exception:
+                    count = -1
+                infos.append(SourceLayerInfo(
+                    f"{prefix}{ogr_layer.GetName()}", geometry, count))
+            ogr_ds = None
+
+        if use_cache:
+            ogr_catalog_cache.save(self.source_path, [
+                {"name": i.name, "geometry": i.geometry,
+                 "feature_count": i.feature_count} for i in infos])
+        return infos
+
+    @staticmethod
+    def _ogr_geom_family(geom_name: str) -> str:
+        name = (geom_name or "").upper()
+        if "POINT" in name:
+            return "Point"
+        if "POLYGON" in name:
+            return "Polygon"
+        if "LINE" in name or "CURVE" in name:
+            return "LineString"
+        return "Other"
+
+    def discover_cad_layers(
+            self, is_kmz: bool = False) -> tuple[list[SourceLayerInfo], str]:
+        """Group a CAD entities layer by its embedded CAD-layer field.
+
+        DXF and DGN files expose a single OGR layer whose features each carry
+        a CAD-layer name (DXF ``Layer``) or level number (DGN ``Level``). This
+        returns one :class:`SourceLayerInfo` per distinct CAD-layer value,
+        with its geometry families and feature count, plus the field name that
+        was used (empty string if the source has no such field). The field is
+        remembered so a later :meth:`convert` splits by it.
+        """
         src = self._resolve_source(is_kmz)
         ogr_ds = ogr.Open(src)
         if ogr_ds is None:
             raise ValueError(self._open_error_message(src))
+        if ogr_ds.GetLayerCount() == 0:
+            ogr_ds = None
+            return [], ""
 
-        infos = []
-        for i in range(ogr_ds.GetLayerCount()):
-            ogr_layer = ogr_ds.GetLayerByIndex(i)
-            try:
-                geometry = ogr.GeometryTypeToName(ogr_layer.GetGeomType())
-            except Exception:
-                geometry = "Unknown"
-            try:
-                count = ogr_layer.GetFeatureCount()
-            except Exception:
-                count = -1
-            infos.append(
-                SourceLayerInfo(ogr_layer.GetName(), geometry, count))
+        layer = ogr_ds.GetLayerByIndex(0)
+        defn = layer.GetLayerDefn()
+        field_names = [defn.GetFieldDefn(i).GetName()
+                       for i in range(defn.GetFieldCount())]
+        field = next((f for f in CAD_LAYER_FIELDS if f in field_names), "")
+        if not field:
+            ogr_ds = None
+            return [], ""
+
+        groups: dict[str, dict] = {}
+        layer.ResetReading()
+        for feat in layer:
+            value = feat.GetField(field)
+            key = "" if value is None else str(value)
+            geom = feat.GetGeometryRef()
+            gname = geom.GetGeometryName() if geom else "NONE"
+            rec = groups.setdefault(key, {"count": 0, "families": set()})
+            rec["count"] += 1
+            rec["families"].add(self._ogr_geom_family(gname))
         ogr_ds = None
-        return infos
+
+        self.cad_split_field = field
+        infos = []
+        for key in sorted(groups):
+            rec = groups[key]
+            infos.append(SourceLayerInfo(
+                key or "(no layer)",
+                "/".join(sorted(rec["families"])),
+                rec["count"],
+                key=key))
+        return infos, field
+
+    def _iter_cad_layers(self, src: str,
+                         selected_values: list[str] | None):
+        """Yield ``(cad_layer_value, QgsVectorLayer)`` per CAD-layer subset."""
+        field = self.cad_split_field
+        ogr_ds = ogr.Open(src)
+        if ogr_ds is None or ogr_ds.GetLayerCount() == 0:
+            raise ValueError(self._open_error_message(src))
+        base_layer = ogr_ds.GetLayerByIndex(0)
+        entities_name = base_layer.GetName()
+        defn = base_layer.GetLayerDefn()
+        is_numeric = False
+        for i in range(defn.GetFieldCount()):
+            fd = defn.GetFieldDefn(i)
+            if fd.GetName() == field:
+                is_numeric = fd.GetType() in (
+                    ogr.OFTInteger, ogr.OFTInteger64, ogr.OFTReal)
+                break
+        ogr_ds = None
+
+        values = selected_values if selected_values is not None else [None]
+        for value in values:
+            uri = f"{src}|layername={entities_name}"
+            display = str(value) if value not in (None, "") else "NO_LAYER"
+            vlayer = QgsVectorLayer(uri, display, "ogr")
+            if not vlayer.isValid():
+                self.last_warnings.append(
+                    f"CAD layer '{display}' could not be read and was skipped.")
+                continue
+            if value is None:
+                pass
+            elif value == "":
+                vlayer.setSubsetString(
+                    f'"{field}" IS NULL')
+            elif is_numeric:
+                vlayer.setSubsetString(f'"{field}" = {value}')
+            else:
+                escaped = str(value).replace("'", "''")
+                vlayer.setSubsetString(f"\"{field}\" = '{escaped}'")
+            yield display, vlayer
 
     def _open_error_message(self, src: str) -> str:
         if src.lower().endswith(".mdb"):
@@ -215,30 +353,37 @@ class GisConverterEngine:
             yield stem, vlayer
             return
 
-        src = self._resolve_source(is_kmz)
-        ogr_ds = ogr.Open(src)
-        if ogr_ds is None:
-            raise ValueError(self._open_error_message(src))
+        if self.cad_split_field:
+            yield from self._iter_cad_layers(
+                self._resolve_source(is_kmz), selected_layers)
+            return
 
-        layer_names = [ogr_ds.GetLayerByIndex(i).GetName()
-                       for i in range(ogr_ds.GetLayerCount())]
-        ogr_ds = None
+        found_any = False
+        for prefix, src in self._ogr_sources(is_kmz):
+            ogr_ds = ogr.Open(src)
+            if ogr_ds is None:
+                raise ValueError(self._open_error_message(src))
+            layer_names = [ogr_ds.GetLayerByIndex(i).GetName()
+                           for i in range(ogr_ds.GetLayerCount())]
+            ogr_ds = None
 
-        if not layer_names:
+            for layer_name in layer_names:
+                found_any = True
+                display = f"{prefix}{layer_name}"
+                if selected_layers is not None \
+                        and display not in selected_layers:
+                    continue
+                uri = f"{src}|layername={layer_name}"
+                vlayer = QgsVectorLayer(uri, display, "ogr")
+                if not vlayer.isValid():
+                    self.last_warnings.append(
+                        f"Layer '{display}' could not be read and was skipped.")
+                    continue
+                yield display, vlayer
+
+        if not found_any:
             raise ValueError(
                 "No layers discovered inside the source GIS dataset.")
-
-        for layer_name in layer_names:
-            if selected_layers is not None \
-                    and layer_name not in selected_layers:
-                continue
-            uri = f"{src}|layername={layer_name}"
-            vlayer = QgsVectorLayer(uri, layer_name, "ogr")
-            if not vlayer.isValid():
-                self.last_warnings.append(
-                    f"Layer '{layer_name}' could not be read and was skipped.")
-                continue
-            yield layer_name, vlayer
 
     def cleanup(self):
         for temp_dir in self.temp_dirs:
@@ -246,7 +391,12 @@ class GisConverterEngine:
                 shutil.rmtree(temp_dir, ignore_errors=True)
 
     def extract_kmz(self) -> str:
-        """Extracts KMZ zip archive and returns the path to doc.kml."""
+        """Extract a KMZ archive and return the primary KML path.
+
+        ``doc.kml`` is the KMZ convention for the main document, so it is
+        preferred; otherwise the first KML in sorted order is used. All KML
+        documents are extracted, so :meth:`_kml_docs` can enumerate the rest.
+        """
         temp_dir = tempfile.mkdtemp(prefix="gis_kmz_")
         self.temp_dirs.append(temp_dir)
 
@@ -256,7 +406,49 @@ class GisConverterEngine:
             if not kml_files:
                 raise ValueError("KML file not found in the KMZ package.")
             zip_ref.extractall(temp_dir)
-            return os.path.join(temp_dir, kml_files[0])
+
+        doc = next((n for n in kml_files
+                    if os.path.basename(n).lower() == "doc.kml"), None)
+        primary = doc if doc is not None else sorted(kml_files)[0]
+        return os.path.join(temp_dir, primary)
+
+    def _kml_docs(self, is_kmz: bool) -> list[str]:
+        """Return every KML document to read for the current source.
+
+        For a plain KML this is just the file; for a KMZ it is every extracted
+        ``.kml`` with the primary document first, so additional KML documents
+        inside a multi-document KMZ are not silently dropped.
+        """
+        primary = self._resolve_source(is_kmz)
+        if not is_kmz:
+            return [primary]
+        folder = os.path.dirname(primary)
+        docs = []
+        for root, _dirs, files in os.walk(folder):
+            for name in sorted(files):
+                if name.lower().endswith(".kml"):
+                    docs.append(os.path.join(root, name))
+        ordered = [primary] + [d for d in docs if d != primary]
+        return ordered or [primary]
+
+    def _ogr_sources(self, is_kmz: bool) -> list[tuple[str, str]]:
+        """Yield ``(name_prefix, dataset_path)`` for each OGR source to open.
+
+        A single dataset yields one entry with an empty prefix. A
+        multi-document KMZ yields one entry per KML document, each prefixed
+        with its document stem so layers from different documents stay
+        distinct.
+        """
+        if is_kmz:
+            docs = self._kml_docs(is_kmz)
+            multi = len(docs) > 1
+            sources = []
+            for path in docs:
+                stem = os.path.splitext(os.path.basename(path))[0]
+                prefix = f"{stem}_" if multi else ""
+                sources.append((prefix, path))
+            return sources
+        return [("", self._resolve_source(is_kmz))]
 
     def convert(
             self,
@@ -285,6 +477,14 @@ class GisConverterEngine:
             if html_expansion and "description" in [
                     f.name() for f in vlayer.fields()]:
                 processed_layer = self._expand_html_descriptions(vlayer)
+
+            # CAD layer subsets can mix geometry types; a GeoPackage layer
+            # holds one geometry type, so split them before writing.
+            if self.cad_split_field:
+                wrote_any = self._write_cad_layer_gpkg(
+                    processed_layer, layer_name, wrote_any,
+                    transform_context, loaded_layers)
+                continue
 
             # Define writer options
             options = QgsVectorFileWriter.SaveVectorOptions()
@@ -334,6 +534,67 @@ class GisConverterEngine:
                 "No readable layers were selected for conversion.")
         return loaded_layers
 
+    def _write_cad_layer_gpkg(self, processed_layer, layer_name, wrote_any,
+                              transform_context, loaded_layers) -> bool:
+        """Write one CAD-layer subset to GPKG, split by geometry type."""
+        transform = None
+        src_crs = processed_layer.crs()
+        if src_crs.isValid() and src_crs != self.target_crs:
+            transform = QgsCoordinateTransform(
+                src_crs, self.target_crs, QgsProject.instance())
+
+        groups: dict[str, list] = {}
+        for feat in processed_layer.getFeatures():
+            geom = feat.geometry()
+            if geom and not geom.isEmpty() and transform:
+                geom.transform(transform)
+            geom_type_str = _get_geom_type_str(geom)
+            if geom_type_str == "NoGeometry":
+                continue
+            groups.setdefault(geom_type_str, []).append((geom, feat))
+
+        for geom_type_str, type_data in sorted(groups.items()):
+            mem_uri = f"{geom_type_str}?crs={self.target_crs.authid()}"
+            mem_layer = QgsVectorLayer(mem_uri, layer_name, "memory")
+            prov = mem_layer.dataProvider()
+            prov.addAttributes(processed_layer.fields())
+            mem_layer.updateFields()
+
+            features = []
+            for geom, original_feat in type_data:
+                new_feat = QgsFeature(mem_layer.fields())
+                new_feat.setGeometry(geom)
+                new_feat.setAttributes(original_feat.attributes())
+                features.append(new_feat)
+            add_features_or_raise(mem_layer, features, "CAD layer split")
+
+            base = self._sanitize_column_name(layer_name)
+            gpkg_layer_name = (
+                base if len(groups) == 1
+                else f"{base}_{geom_type_str.upper()}")
+
+            options = QgsVectorFileWriter.SaveVectorOptions()
+            options.driverName = "GPKG"
+            options.layerName = gpkg_layer_name
+            options.actionOnExistingFile = (
+                QgsVectorFileWriter.ActionOnExistingFile.CreateOrOverwriteLayer
+                if wrote_any
+                else QgsVectorFileWriter.ActionOnExistingFile.CreateOrOverwriteFile
+            )
+            err, err_msg, _, _ = QgsVectorFileWriter.writeAsVectorFormatV3(
+                mem_layer, self.target_gpkg, transform_context, options)
+            if err != QgsVectorFileWriter.WriterError.NoError:
+                raise ValueError(
+                    f"Failed writing CAD layer '{layer_name}' to GPKG: "
+                    f"{err_msg}")
+            wrote_any = True
+
+            gpkg_uri = f"{self.target_gpkg}|layername={gpkg_layer_name}"
+            gpkg_layer = QgsVectorLayer(gpkg_uri, gpkg_layer_name, "ogr")
+            if gpkg_layer.isValid():
+                loaded_layers.append(gpkg_layer)
+        return wrote_any
+
     def load_layers_live(
             self,
             is_kmz: bool = False,
@@ -368,14 +629,19 @@ class GisConverterEngine:
         """
         loaded_rasters = []
         try:
-            src = self._resolve_source(is_kmz)
+            docs = self._kml_docs(is_kmz)
         except ValueError as exc:
             self.last_warnings.append(str(exc))
             return loaded_rasters
 
-        if not os.path.exists(src):
-            return loaded_rasters
+        for src in docs:
+            if os.path.exists(src):
+                self._scan_ground_overlays(src, loaded_rasters)
+        return loaded_rasters
 
+    def _scan_ground_overlays(self, src: str,
+                              loaded_rasters: list) -> None:
+        """Georeference every GroundOverlay in one KML document."""
         try:
             root = self._read_kml_dom(src)
             overlays = self._dom_descendants(root, "GroundOverlay")
@@ -451,8 +717,6 @@ class GisConverterEngine:
         except Exception as exc:
             self.last_warnings.append(
                 f"GroundOverlay extraction skipped: {exc}")
-
-        return loaded_rasters
 
     def _read_kml_dom(self, path: str):
         with open(path, "rb") as handle:

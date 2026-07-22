@@ -36,6 +36,8 @@ from qgis.PyQt.QtWidgets import (
     QTreeWidget,
     QTreeWidgetItem,
     QCheckBox,
+    QRadioButton,
+    QButtonGroup,
     QDoubleSpinBox,
     QProgressBar,
     QMessageBox,
@@ -506,6 +508,7 @@ class Zero2CadGisDockWidget(QDockWidget):
         self.ncz_readers: dict[str, NetcadLazyReader] = {}
         self.gis_converter = None
         self.src_csv_profile: CsvGeometryProfile | None = None
+        self._cad_split_field: str = ""
 
         self._build_ui()
         self._restore_persistent_options()
@@ -646,6 +649,29 @@ class Zero2CadGisDockWidget(QDockWidget):
         self.lbl_src_status.setObjectName("dock_subtitle")
         self.lbl_src_status.setWordWrap(True)
         src_layout.addWidget(self.lbl_src_status)
+
+        cad_row = QHBoxLayout()
+        cad_row.setSpacing(4)
+        self.chk_cad_split = QCheckBox("Split into CAD layers (by Layer/Level)")
+        self.chk_cad_split.setToolTip(
+            "DXF and DGN files store every entity in one table tagged with a "
+            "CAD layer name (DXF) or level (DGN). When enabled, each CAD layer "
+            "becomes its own selectable QGIS layer instead of one merged blob.")
+        self.chk_cad_split.setChecked(True)
+        self.chk_cad_split.setVisible(False)
+        self.chk_cad_split.toggled.connect(self._on_cad_split_toggled)
+        cad_row.addWidget(self.chk_cad_split)
+
+        self.btn_clear_ogr_cache = QPushButton("Clear catalog cache")
+        self.btn_clear_ogr_cache.setToolTip(
+            "Delete the cached layer catalogs used to reopen Geodatabase and "
+            "database sources instantly. The cache also rebuilds automatically "
+            "whenever a source file changes.")
+        self.btn_clear_ogr_cache.clicked.connect(self._clear_ogr_cache)
+        cad_row.addStretch(1)
+        cad_row.addWidget(self.btn_clear_ogr_cache)
+        src_layout.addLayout(cad_row)
+
         cad_gis_layout.addWidget(src_group)
 
         # Delimited text geometry (visible only for CSV/TSV/TXT sources)
@@ -757,23 +783,34 @@ class Zero2CadGisDockWidget(QDockWidget):
         self.chk_conv_load.setChecked(True)
         opt_form.addRow(self.chk_conv_load)
 
-        self.chk_conv_temporary = QCheckBox(
-            "Import directly as temporary scratch layers (no GPKG)")
-        self.chk_conv_temporary.stateChanged.connect(
-            self._on_conv_temporary_changed)
-        opt_form.addRow(self.chk_conv_temporary)
+        cad_gis_layout.addWidget(opt_group)
 
-        self.chk_conv_live = QCheckBox(
-            "Load selected layers live (no conversion, zero-copy)")
-        self.chk_conv_live.setToolTip(
+        # Output mode — three mutually exclusive destinations
+        out_group = QGroupBox("Output Mode")
+        out_layout = QVBoxLayout(out_group)
+        out_layout.setContentsMargins(6, 10, 6, 6)
+        out_layout.setSpacing(2)
+
+        self.rb_out_gpkg = QRadioButton("GeoPackage file (durable, transformed)")
+        self.rb_out_gpkg.setChecked(True)
+        self.rb_out_scratch = QRadioButton(
+            "Temporary scratch layers (in memory, no file)")
+        self.rb_out_live = QRadioButton(
+            "Live — no conversion, zero-copy references")
+        self.rb_out_live.setToolTip(
             "Add the checked layers straight to QGIS as live references to the "
             "source file. Nothing is written or copied, so even huge FileGDB / "
             "Personal GDB layers open in milliseconds. QGIS reads features on "
             "demand and reprojects on the fly using each layer's own CRS.")
-        self.chk_conv_live.stateChanged.connect(self._on_conv_live_changed)
-        opt_form.addRow(self.chk_conv_live)
 
-        cad_gis_layout.addWidget(opt_group)
+        self.output_mode_group = QButtonGroup(self)
+        for rb in (self.rb_out_gpkg, self.rb_out_scratch, self.rb_out_live):
+            self.output_mode_group.addButton(rb)
+            out_layout.addWidget(rb)
+        self.output_mode_group.buttonToggled.connect(
+            lambda *_: self._sync_output_mode())
+
+        cad_gis_layout.addWidget(out_group)
 
         # Progress Bar & Trigger
         self.progress_conv = QProgressBar()
@@ -1018,6 +1055,7 @@ class Zero2CadGisDockWidget(QDockWidget):
 
         # Populate layers after UI elements are fully constructed
         self._populate_layers_combo()
+        self._sync_output_mode()
 
     @staticmethod
     def _make_scroll_tab(inner_widget: QWidget) -> QScrollArea:
@@ -1076,7 +1114,9 @@ class Zero2CadGisDockWidget(QDockWidget):
         <ol>
           <li>Choose the source family: DXF, KML/KMZ, GML, GeoJSON, CSV/TSV, SpatiaLite/SQLite, GPX, DGN, FileGDB, or Personal GDB. DWG is listed as a future enhancement because current QGIS/GDAL builds only read limited DWG versions.</li>
           <li>Select the source file or `.gdb` folder — or just drop the file on the panel.</li>
-          <li>Review <b>Layers Found in Source</b> and uncheck anything you do not need.</li>
+          <li>Review <b>Layers Found in Source</b> and uncheck anything you do not need. For Geodatabase and database sources the layer catalog is cached, so reopening the same unchanged file lists its layers instantly; use <b>Clear catalog cache</b> to reset it.</li>
+          <li>For <b>DXF / DGN</b>, keep <b>Split into CAD layers</b> enabled to turn each CAD layer (DXF <i>Layer</i>) or level (DGN <i>Level</i>) into its own selectable QGIS layer instead of one merged table.</li>
+          <li>Pick an <b>Output Mode</b>: GeoPackage file, temporary scratch layers, or live (no conversion).</li>
           <li>For delimited text, check the <b>Delimited Text Geometry</b> card: the delimiter and X/Y or WKT columns are auto-detected and can be overridden, and the source CRS defaults to EPSG:4326 for lon/lat columns.</li>
           <li>Choose a target `.gpkg` (a name is pre-suggested from the source), enable temporary scratch layers when you only want to inspect the result, or enable <b>Load selected layers live</b> to add them straight to QGIS with no conversion at all.</li>
           <li><b>Live loading (FileGDB / Personal GDB):</b> live mode adds the checked layers as zero-copy references to the source, so even multi-million-feature Geodatabase layers open in a fraction of a second. QGIS reads features on demand and reprojects on the fly; use GeoPackage output later if you need a standalone, transformed copy.</li>
@@ -1129,6 +1169,10 @@ class Zero2CadGisDockWidget(QDockWidget):
                 return fmt
         return None
 
+    @staticmethod
+    def _is_cad_format(fmt: SourceFormat | None) -> bool:
+        return fmt is not None and fmt.key in ("dxf", "dgn")
+
     def _on_source_type_changed(self, index: int) -> None:
         self.txt_src_path.clear()
         self.btn_convert_gis.setEnabled(False)
@@ -1137,11 +1181,28 @@ class Zero2CadGisDockWidget(QDockWidget):
         self.chk_conv_kml_expand.setEnabled(is_kml)
         self.chk_conv_raster.setEnabled(is_kml)
         self.csv_group.setVisible(fmt is not None and fmt.key == "csv")
+        self.chk_cad_split.setVisible(self._is_cad_format(fmt))
         self.src_layer_tree.clear()
         self.src_preview_group.setVisible(False)
         self.src_csv_profile = None
+        self._cad_split_field = ""
         self.lbl_src_status.setText(
             "Tip: drag && drop any supported file onto this panel.")
+
+    def _on_cad_split_toggled(self, _checked: bool) -> None:
+        path = self.txt_src_path.text().strip()
+        fmt = self._current_source_format()
+        if path and fmt is not None:
+            self._refresh_source_preview(path, fmt)
+            self._update_convert_gis_button_state()
+
+    def _clear_ogr_cache(self) -> None:
+        from ..core import ogr_catalog_cache
+        removed = ogr_catalog_cache.clear()
+        self.iface.messageBar().pushMessage(
+            "02CadGis",
+            f"Cleared {removed} cached source catalog(s).",
+            Qgis.MessageLevel.Info, 5)
 
     def _browse_src_dataset(self) -> None:
         fmt = self._current_source_format()
@@ -1192,6 +1253,7 @@ class Zero2CadGisDockWidget(QDockWidget):
             self.chk_conv_kml_expand.setEnabled(is_kml)
             self.chk_conv_raster.setEnabled(is_kml)
             self.csv_group.setVisible(fmt.key == "csv")
+        self.chk_cad_split.setVisible(self._is_cad_format(fmt))
 
         self.txt_src_path.setText(file_path)
         self._remember_import_dir(file_path)
@@ -1202,8 +1264,8 @@ class Zero2CadGisDockWidget(QDockWidget):
     def _suggest_gpkg_destination(self, source_path: str) -> None:
         """Prefill the target GPKG from the source name when still empty."""
         if self.txt_gpkg_path.text().strip() \
-                or self.chk_conv_temporary.isChecked() \
-                or self.chk_conv_live.isChecked():
+                or self.rb_out_scratch.isChecked() \
+                or self.rb_out_live.isChecked():
             return
         stem = os.path.splitext(os.path.basename(
             source_path.rstrip("\\/")))[0] or "converted"
@@ -1214,6 +1276,8 @@ class Zero2CadGisDockWidget(QDockWidget):
                                 fmt: SourceFormat) -> None:
         self.src_layer_tree.clear()
         self.src_csv_profile = None
+        self._cad_split_field = ""
+        cad_split = self._is_cad_format(fmt) and self.chk_cad_split.isChecked()
         try:
             if fmt.key == "csv":
                 self.src_csv_profile = sniff_delimited_dataset(file_path)
@@ -1222,14 +1286,24 @@ class Zero2CadGisDockWidget(QDockWidget):
             probe = GisConverterEngine(
                 file_path, "", QgsProject.instance().crs(),
                 csv_profile=self.src_csv_profile)
-            infos = probe.discover_layers(
-                is_kmz=has_extension(file_path, ".kmz"))
+            if cad_split:
+                infos, field = probe.discover_cad_layers()
+                self._cad_split_field = field
+                if not field:
+                    # Source had no CAD-layer field; fall back to plain view.
+                    infos = probe.discover_layers()
+            else:
+                infos = probe.discover_layers(
+                    is_kmz=has_extension(file_path, ".kmz"))
+            from_cache = probe.catalog_from_cache
             probe.cleanup()
         except Exception as exc:
             self.src_preview_group.setVisible(False)
             self.lbl_src_status.setText(f"Could not inspect dataset: {exc}")
             return
 
+        header = ("CAD Layer" if self._cad_split_field else "Layer Name")
+        self.src_layer_tree.setHeaderLabels([header, "Geometry", "Features"])
         for info in infos:
             item = QTreeWidgetItem(self.src_layer_tree)
             item.setText(0, info.name)
@@ -1238,13 +1312,15 @@ class Zero2CadGisDockWidget(QDockWidget):
                          else str(info.feature_count))
             item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
             item.setCheckState(0, Qt.CheckState.Checked)
-            item.setData(0, Qt.ItemDataRole.UserRole, info.name)
+            item.setData(0, Qt.ItemDataRole.UserRole, info.key)
 
         self.src_preview_group.setVisible(bool(infos))
         total = sum(max(info.feature_count, 0) for info in infos)
+        unit = "CAD layer(s)" if self._cad_split_field else "layer(s)"
+        cache_note = " (from cache)" if from_cache else ""
         self.lbl_src_status.setText(
-            f"{len(infos)} layer(s) discovered, ~{total} features. "
-            "Uncheck layers you do not need before converting.")
+            f"{len(infos)} {unit} discovered, ~{total} features{cache_note}. "
+            "Uncheck anything you do not need before converting.")
 
     def _populate_csv_controls(self, profile: CsvGeometryProfile) -> None:
         for combo in (self.cmb_csv_x, self.cmb_csv_y, self.cmb_csv_wkt):
@@ -1319,25 +1395,11 @@ class Zero2CadGisDockWidget(QDockWidget):
                 "zero2cadgis/last_export_dir", os.path.dirname(file_path))
             self._update_convert_gis_button_state()
 
-    def _on_conv_temporary_changed(self, state: int) -> None:
-        if self.chk_conv_temporary.isChecked() and self.chk_conv_live.isChecked():
-            self.chk_conv_live.blockSignals(True)
-            self.chk_conv_live.setChecked(False)
-            self.chk_conv_live.blockSignals(False)
-        self._sync_output_mode()
-
-    def _on_conv_live_changed(self, state: int) -> None:
-        if self.chk_conv_live.isChecked() and self.chk_conv_temporary.isChecked():
-            self.chk_conv_temporary.blockSignals(True)
-            self.chk_conv_temporary.setChecked(False)
-            self.chk_conv_temporary.blockSignals(False)
-        self._sync_output_mode()
-
     def _sync_output_mode(self) -> None:
         """Keep the destination widgets and button label in sync with the
         selected output mode (GeoPackage / scratch / live)."""
-        is_temp = self.chk_conv_temporary.isChecked()
-        is_live = self.chk_conv_live.isChecked()
+        is_temp = self.rb_out_scratch.isChecked()
+        is_live = self.rb_out_live.isChecked()
         writes_gpkg = not (is_temp or is_live)
 
         self.txt_gpkg_path.setEnabled(writes_gpkg)
@@ -1357,8 +1419,8 @@ class Zero2CadGisDockWidget(QDockWidget):
 
     def _update_convert_gis_button_state(self) -> None:
         has_src = bool(self.txt_src_path.text().strip())
-        is_temp = self.chk_conv_temporary.isChecked()
-        is_live = self.chk_conv_live.isChecked()
+        is_temp = self.rb_out_scratch.isChecked()
+        is_live = self.rb_out_live.isChecked()
         has_dst = bool(self.txt_gpkg_path.text().strip())
         self.btn_convert_gis.setEnabled(
             has_src and (is_temp or is_live or has_dst))
@@ -1393,8 +1455,8 @@ class Zero2CadGisDockWidget(QDockWidget):
         try:
             is_kml = fmt.key == "kml"
             is_kmz = is_kml and has_extension(src, ".kmz")
-            is_temp = self.chk_conv_temporary.isChecked()
-            is_live = self.chk_conv_live.isChecked()
+            is_temp = self.rb_out_scratch.isChecked()
+            is_live = self.rb_out_live.isChecked()
 
             csv_profile = None
             csv_crs = ""
@@ -1406,6 +1468,8 @@ class Zero2CadGisDockWidget(QDockWidget):
             self.gis_converter = GisConverterEngine(
                 src, dst, crs,
                 csv_profile=csv_profile, csv_source_crs=csv_crs)
+            if self._cad_split_field and self._is_cad_format(fmt):
+                self.gis_converter.cad_split_field = self._cad_split_field
 
             layer_total = max(
                 len(selected_layers) if selected_layers is not None else 1, 1)

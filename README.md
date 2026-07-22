@@ -25,7 +25,10 @@
 - Converts **DXF, KML, KMZ, GML, GeoJSON, CSV/TSV, SpatiaLite/SQLite, GPX, DGN, FileGDB, Personal GDB, NCZ and compatible NCA** files into `.gpkg` layers.
 - Accepts **drag & drop**: drop any supported file onto the dock and the dataset type is detected automatically (Netcad files jump to the NCZ tab).
 - Shows a **pre-conversion layer preview** with geometry types and feature counts, so you convert only the layers you check.
+- **Caches the layer catalog** of Geodatabase and database sources by a content fingerprint, so reopening the same unchanged `.gdb`/`.mdb` lists its layers instantly (over 100x faster) without reopening the driver.
 - Loads selected layers **live, with no conversion**: for FileGDB / Personal GDB (and any multi-layer OGR source) the checked layers are added straight to QGIS as zero-copy references, so even multi-million-feature Geodatabase layers open in a fraction of a second.
+- **Splits DXF and DGN by CAD layer**: each CAD layer name (DXF `Layer`) or level (DGN `Level`) becomes its own selectable QGIS layer instead of a single merged table.
+- Reads **every KML document inside a KMZ**, not just the first, so multi-document archives are imported in full.
 - Reads **delimited text with automatic geometry detection**: delimiter, X/Y or lon/lat columns (WGS84 auto-suggested), or a WKT column, all overridable before import.
 - Imports multiple Netcad drawings at once with selectable CAD layers and `@TAB` attribute tables.
 - Expands KML balloon HTML tables and list descriptions into real attribute fields.
@@ -51,7 +54,7 @@
 The plugin opens as one compact dock with three focused panels:
 
 1. **CAD & GIS Converter**
-   Select source type (or drop a file), review the discovered layer list, set target GeoPackage, CRS, cleanup options, KML expansion, GroundOverlay extraction, and delimited-text geometry columns. A target GPKG name is pre-suggested from the source file, options persist across sessions, and results are announced in the QGIS message bar without blocking dialogs. Three output modes are available: convert to **GeoPackage** (durable, transformed), import as **temporary scratch** layers, or **live load** the checked layers with no conversion at all — ideal for browsing large FileGDB / Personal GDB databases.
+   Select source type (or drop a file), review the discovered layer list, set target GeoPackage, CRS, cleanup options, KML expansion, GroundOverlay extraction, and delimited-text geometry columns. A target GPKG name is pre-suggested from the source file, options persist across sessions, and results are announced in the QGIS message bar without blocking dialogs. Pick one of three **output modes**: convert to **GeoPackage** (durable, transformed), import as **temporary scratch** layers, or **live** — add the checked layers with no conversion at all, ideal for browsing large FileGDB / Personal GDB databases. DXF/DGN sources can be **split into their CAD layers** for selection, and the Geodatabase/database layer catalog is cached for instant reopening.
 
 2. **Netcad NCZ/NCA Importer**
    Select one or more Netcad drawings, review metadata, choose CAD layers and `@TAB` tables, set closure tolerance, generate geometry metrics, apply colors/labels, and load to QGIS.
