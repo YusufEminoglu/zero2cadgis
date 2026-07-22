@@ -334,6 +334,33 @@ class GisConverterEngine:
                 "No readable layers were selected for conversion.")
         return loaded_layers
 
+    def load_layers_live(
+            self,
+            is_kmz: bool = False,
+            selected_layers: list[str] | None = None,
+            progress_cb=None) -> list[QgsVectorLayer]:
+        """Return the selected source layers as live, zero-copy references.
+
+        Unlike :meth:`convert` (which writes a GeoPackage) and
+        :meth:`convert_to_memory` (which copies every feature into RAM), this
+        hands back the source-referencing ``QgsVectorLayer`` objects directly.
+        No geometry is read, copied, or reprojected, so even a multi-million
+        feature Geodatabase layer becomes usable in milliseconds; QGIS reads
+        features lazily from the source and reprojects on the fly using each
+        layer's own CRS.
+        """
+        loaded_layers = []
+        for layer_name, vlayer in self._iter_source_layers(
+                is_kmz, selected_layers):
+            if progress_cb:
+                progress_cb(layer_name)
+            loaded_layers.append(vlayer)
+
+        if not loaded_layers:
+            raise ValueError(
+                "No readable layers were selected for live loading.")
+        return loaded_layers
+
     def extract_ground_overlays(
             self, is_kmz: bool = False) -> list[QgsRasterLayer]:
         """Discovers GroundOverlay elements from KML/KMZ, georeferences images as GeoTiff layers.

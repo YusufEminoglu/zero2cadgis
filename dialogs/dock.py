@@ -763,6 +763,16 @@ class Zero2CadGisDockWidget(QDockWidget):
             self._on_conv_temporary_changed)
         opt_form.addRow(self.chk_conv_temporary)
 
+        self.chk_conv_live = QCheckBox(
+            "Load selected layers live (no conversion, zero-copy)")
+        self.chk_conv_live.setToolTip(
+            "Add the checked layers straight to QGIS as live references to the "
+            "source file. Nothing is written or copied, so even huge FileGDB / "
+            "Personal GDB layers open in milliseconds. QGIS reads features on "
+            "demand and reprojects on the fly using each layer's own CRS.")
+        self.chk_conv_live.stateChanged.connect(self._on_conv_live_changed)
+        opt_form.addRow(self.chk_conv_live)
+
         cad_gis_layout.addWidget(opt_group)
 
         # Progress Bar & Trigger
@@ -1068,7 +1078,8 @@ class Zero2CadGisDockWidget(QDockWidget):
           <li>Select the source file or `.gdb` folder — or just drop the file on the panel.</li>
           <li>Review <b>Layers Found in Source</b> and uncheck anything you do not need.</li>
           <li>For delimited text, check the <b>Delimited Text Geometry</b> card: the delimiter and X/Y or WKT columns are auto-detected and can be overridden, and the source CRS defaults to EPSG:4326 for lon/lat columns.</li>
-          <li>Choose a target `.gpkg` (a name is pre-suggested from the source), or enable temporary scratch layers when you only want to inspect the result.</li>
+          <li>Choose a target `.gpkg` (a name is pre-suggested from the source), enable temporary scratch layers when you only want to inspect the result, or enable <b>Load selected layers live</b> to add them straight to QGIS with no conversion at all.</li>
+          <li><b>Live loading (FileGDB / Personal GDB):</b> live mode adds the checked layers as zero-copy references to the source, so even multi-million-feature Geodatabase layers open in a fraction of a second. QGIS reads features on demand and reprojects on the fly; use GeoPackage output later if you need a standalone, transformed copy.</li>
           <li>Confirm the target CRS. The project CRS is used when the selector is not changed.</li>
           <li>Keep cleanup enabled for typical CAD drawings; disable it only when auditing raw geometry.</li>
           <li>For KML/KMZ, enable balloon expansion for structured attributes and GroundOverlay extraction for raster overlays.</li>
@@ -1191,7 +1202,8 @@ class Zero2CadGisDockWidget(QDockWidget):
     def _suggest_gpkg_destination(self, source_path: str) -> None:
         """Prefill the target GPKG from the source name when still empty."""
         if self.txt_gpkg_path.text().strip() \
-                or self.chk_conv_temporary.isChecked():
+                or self.chk_conv_temporary.isChecked() \
+                or self.chk_conv_live.isChecked():
             return
         stem = os.path.splitext(os.path.basename(
             source_path.rstrip("\\/")))[0] or "converted"
@@ -1308,20 +1320,48 @@ class Zero2CadGisDockWidget(QDockWidget):
             self._update_convert_gis_button_state()
 
     def _on_conv_temporary_changed(self, state: int) -> None:
+        if self.chk_conv_temporary.isChecked() and self.chk_conv_live.isChecked():
+            self.chk_conv_live.blockSignals(True)
+            self.chk_conv_live.setChecked(False)
+            self.chk_conv_live.blockSignals(False)
+        self._sync_output_mode()
+
+    def _on_conv_live_changed(self, state: int) -> None:
+        if self.chk_conv_live.isChecked() and self.chk_conv_temporary.isChecked():
+            self.chk_conv_temporary.blockSignals(True)
+            self.chk_conv_temporary.setChecked(False)
+            self.chk_conv_temporary.blockSignals(False)
+        self._sync_output_mode()
+
+    def _sync_output_mode(self) -> None:
+        """Keep the destination widgets and button label in sync with the
+        selected output mode (GeoPackage / scratch / live)."""
         is_temp = self.chk_conv_temporary.isChecked()
-        self.txt_gpkg_path.setEnabled(not is_temp)
-        self.btn_browse_gpkg.setEnabled(not is_temp)
-        if is_temp:
+        is_live = self.chk_conv_live.isChecked()
+        writes_gpkg = not (is_temp or is_live)
+
+        self.txt_gpkg_path.setEnabled(writes_gpkg)
+        self.btn_browse_gpkg.setEnabled(writes_gpkg)
+        if not writes_gpkg:
             self.txt_gpkg_path.clear()
             self.chk_conv_load.setChecked(True)
-        self.chk_conv_load.setEnabled(not is_temp)
+        self.chk_conv_load.setEnabled(writes_gpkg)
+
+        if is_live:
+            self.btn_convert_gis.setText("Add Live Layers to Canvas")
+        elif is_temp:
+            self.btn_convert_gis.setText("Import as Scratch Layers")
+        else:
+            self.btn_convert_gis.setText("Convert to GeoPackage")
         self._update_convert_gis_button_state()
 
     def _update_convert_gis_button_state(self) -> None:
         has_src = bool(self.txt_src_path.text().strip())
         is_temp = self.chk_conv_temporary.isChecked()
+        is_live = self.chk_conv_live.isChecked()
         has_dst = bool(self.txt_gpkg_path.text().strip())
-        self.btn_convert_gis.setEnabled(has_src and (is_temp or has_dst))
+        self.btn_convert_gis.setEnabled(
+            has_src and (is_temp or is_live or has_dst))
 
     def _convert_gis_dataset(self) -> None:
         src = self.txt_src_path.text()
@@ -1354,6 +1394,7 @@ class Zero2CadGisDockWidget(QDockWidget):
             is_kml = fmt.key == "kml"
             is_kmz = is_kml and has_extension(src, ".kmz")
             is_temp = self.chk_conv_temporary.isChecked()
+            is_live = self.chk_conv_live.isChecked()
 
             csv_profile = None
             csv_crs = ""
@@ -1370,14 +1411,22 @@ class Zero2CadGisDockWidget(QDockWidget):
                 len(selected_layers) if selected_layers is not None else 1, 1)
             progress_state = {"done": 0}
 
+            verb = "Adding" if is_live else "Converting"
+
             def layer_progress(layer_name: str) -> None:
                 progress_state["done"] += 1
                 share = min(progress_state["done"] / layer_total, 1.0)
                 self.progress_conv.setValue(10 + int(share * 55))
-                self.progress_conv.setFormat(f"Converting {layer_name}...")
+                self.progress_conv.setFormat(f"{verb} {layer_name}...")
                 QApplication.processEvents()
 
-            if is_temp:
+            if is_live:
+                loaded_layers = self.gis_converter.load_layers_live(
+                    is_kmz=is_kmz,
+                    selected_layers=selected_layers,
+                    progress_cb=layer_progress,
+                )
+            elif is_temp:
                 loaded_layers = self.gis_converter.convert_to_memory(
                     is_kmz=is_kmz,
                     html_expansion=self.chk_conv_kml_expand.isChecked(),
@@ -1407,9 +1456,10 @@ class Zero2CadGisDockWidget(QDockWidget):
             self.progress_conv.setFormat("Adding vector layers to canvas...")
             QApplication.processEvents()
 
-            if self.chk_conv_load.isChecked() and loaded_layers:
+            if (is_live or self.chk_conv_load.isChecked()) and loaded_layers:
                 root = QgsProject.instance().layerTreeRoot()
-                suffix = "TEMP" if self.chk_conv_temporary.isChecked() else "GPKG"
+                suffix = ("LIVE" if is_live
+                          else "TEMP" if is_temp else "GPKG")
                 group_name = f"{
                     self._sanitize_name(
                         os.path.basename(src))}_{suffix}"
@@ -1429,13 +1479,19 @@ class Zero2CadGisDockWidget(QDockWidget):
             # Refresh exporter layer combo list
             self._populate_layers_combo()
 
-            destination = ("temporary scratch layers" if is_temp
-                           else os.path.basename(dst))
+            src_label = os.path.basename(src.rstrip(chr(92) + '/'))
+            if is_live:
+                message = (
+                    f"Added {len(loaded_layers)} live layer(s) from "
+                    f"{src_label} without conversion (zero-copy references).")
+            else:
+                destination = ("temporary scratch layers" if is_temp
+                               else os.path.basename(dst))
+                message = (
+                    f"Converted {len(loaded_layers)} layer(s) from "
+                    f"{src_label} to {destination}.")
             self.iface.messageBar().pushMessage(
-                "02CadGis",
-                f"Converted {len(loaded_layers)} layer(s) from "
-                f"{os.path.basename(src.rstrip(chr(92) + '/'))} to {destination}.",
-                Qgis.MessageLevel.Success, 7)
+                "02CadGis", message, Qgis.MessageLevel.Success, 7)
 
             notes = getattr(self.gis_converter, "last_warnings", [])
             for note in notes:

@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.7.0] - 2026-07-22
+
+### Added
+
+- **Live layer loading (no conversion).** The CAD & GIS Converter gained a
+  third output mode: **Load selected layers live**. Instead of writing a
+  GeoPackage or copying features into memory, the checked layers are added
+  straight to QGIS as zero-copy references to the source file. Nothing is
+  read, copied, or reprojected up front, so even very large multi-layer
+  databases open almost instantly — on a real municipal FileGDB, two layers
+  totalling 4.27 million features loaded live in about 0.27 s, versus a full
+  GeoPackage conversion that would copy every feature. QGIS reads features on
+  demand and reprojects on the fly using each layer's own CRS.
+- Live loading is aimed at browsing **ArcGIS FileGDB (`.gdb`)** and
+  **Personal Geodatabase (`.mdb`)** files without converting the whole
+  dataset, and works for any multi-layer OGR source. Use GeoPackage output
+  later when you need a standalone, transformed copy.
+
+### Changed
+
+- The convert button now relabels itself to match the selected output mode
+  (Convert to GeoPackage / Import as Scratch Layers / Add Live Layers to
+  Canvas), and the scratch and live modes are mutually exclusive.
+
 ## [0.6.0] - 2026-07-22
 
 ### Added
