@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.5.0] - 2026-07-22
+
+### Changed
+
+- The Netcad NCZ/NCA importer now uses the v2 engine's lazy catalog. Selecting
+  a drawing only indexes its layers and metadata (no geometry decoding), so the
+  layer tree appears almost instantly even for large municipal drawings; on a
+  real 8163-entity file this dropped the on-selection cost from a full decode
+  (~160 ms) to an index (~15 ms).
+- Geometry is now decoded only for the layers you actually check at import
+  time, via the catalog's selective `decode_layers`, instead of decoding the
+  whole drawing up front.
+- The metadata card reports record and table counts from the catalog and notes
+  that layers are decoded on import. The layer tree lists one row per CAD layer
+  (with a geometry-family hint) rather than one row per geometry family.
+
 ## [0.4.1] - 2026-07-22
 
 ### Fixed

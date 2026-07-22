@@ -182,6 +182,97 @@ def _digest_entity(entity: dict) -> tuple:
         scalar, entity["is_closed"], coords)
 
 
+class TestNetcadLazyReader(unittest.TestCase):
+    """The dock-facing lazy reader indexes cheaply and decodes per layer."""
+
+    def _write(self, data: bytes) -> str:
+        fd, path = tempfile.mkstemp(suffix=".ncz",
+                                    dir=Path(__file__).resolve().parent)
+        os.close(fd)
+        self.addCleanup(lambda: os.path.exists(path) and os.remove(path))
+        with open(path, "wb") as handle:
+            handle.write(data)
+        return path
+
+    def test_index_exposes_metadata_and_summaries(self):
+        from zero2cadgis.core.netcad_parser import (
+            NetcadLazyReader, PARSER_BACKEND_V2)
+
+        path = self._write(fx.full_drawing())
+        reader = NetcadLazyReader(path).index()
+        self.assertEqual(reader.backend, PARSER_BACKEND_V2)
+        self.assertEqual(reader.version_name, "NCZ-TEST-1.0")
+        self.assertEqual(reader.epsg, "EPSG:5254")
+        summaries = reader.layer_summaries()
+        self.assertTrue(summaries)
+        self.assertTrue(all(s.record_count > 0 for s in summaries))
+
+    def test_decode_layers_returns_netcad_entities_for_subset(self):
+        from zero2cadgis.core.netcad_parser import NetcadLazyReader
+
+        path = self._write(fx.full_drawing())
+        reader = NetcadLazyReader(path).index()
+        codes = {s.layer_code for s in reader.layer_summaries()}
+        self.assertIn(1, codes)
+
+        subset = reader.decode_layers([1])
+        self.assertTrue(subset)
+        # entities are NetcadEntity dataclasses, not dicts
+        self.assertTrue(all(e.layer_code == 1 for e in subset))
+        self.assertTrue(hasattr(subset[0], "coordinates"))
+
+        everything = reader.decode_layers(codes)
+        self.assertLess(len(subset), len(everything))
+
+    def test_decode_matches_full_parse_for_selected_layer(self):
+        from zero2cadgis.core.netcad_parser import (
+            NetcadBinaryReader, NetcadLazyReader)
+
+        path = self._write(fx.full_drawing())
+        full = NetcadBinaryReader(path).parse()
+        expected = sorted(
+            _digest_entity(_entity_to_dict(e))
+            for e in full.entities if e.layer_code == 1)
+
+        reader = NetcadLazyReader(path).index()
+        got = sorted(
+            _digest_entity(_entity_to_dict(e))
+            for e in reader.decode_layers([1]))
+        self.assertEqual(expected, got)
+
+    def test_attribute_tables_available_from_index(self):
+        from zero2cadgis.core.netcad_parser import NetcadLazyReader
+
+        data = fx.full_drawing() + fx.attribute_table_block(b"@TAB2", b"X")
+        path = self._write(data)
+        reader = NetcadLazyReader(path).index()
+        tables = reader.attribute_tables()
+        self.assertTrue(tables)
+        self.assertTrue(all(hasattr(t, "table_ref") for t in tables))
+
+
+def _entity_to_dict(entity) -> dict:
+    return {
+        "geometry_kind": entity.geometry_kind,
+        "layer_code": entity.layer_code,
+        "layer_name": entity.layer_name,
+        "color_argb": entity.color_argb,
+        "name": entity.name,
+        "label_text": entity.label_text,
+        "text_height": entity.text_height,
+        "rotation_degrees": entity.rotation_degrees,
+        "box_width": entity.box_width,
+        "box_height": entity.box_height,
+        "scale": entity.scale,
+        "radius": entity.radius,
+        "start_angle": entity.start_angle,
+        "end_angle": entity.end_angle,
+        "is_closed": entity.is_closed,
+        "coordinates": [
+            {"x": c.x, "y": c.y, "z": c.z} for c in entity.coordinates],
+    }
+
+
 class TestNczEngineV2Safety(unittest.TestCase):
     """Malformed input must never raise or read past the buffer."""
 

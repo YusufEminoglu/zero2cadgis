@@ -83,10 +83,12 @@ the existing public names.
    - Separate result models, bounded binary reads, block iteration, geometry
      decoders, attribute-table decoders, and parser orchestration.
    - Compare normalized v1 and v2 output after every extraction.
-3. **Lazy catalog and selective decode** — *engine done (v0.4.0); dock wiring
-   outstanding*
+3. **Lazy catalog and selective decode** — *done (v0.5.0)*
    - Index layer and record locations without fully materializing geometry.
-   - Decode only the layers selected in the dock.
+   - Decode only the layers selected in the dock. The NCZ importer indexes on
+     selection (via `NetcadLazyReader`) and calls `decode_layers` for the
+     checked layers only; on a real 8163-entity drawing the on-selection cost
+     dropped from a full decode (~160 ms) to an index (~15 ms).
 4. **Cache and throughput optimization** — *not started*
    - Add a fingerprinted local index cache with explicit invalidation.
    - Reduce duplicate dictionaries, coordinate copies, and full-file scans.

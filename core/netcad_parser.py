@@ -35,7 +35,8 @@ from .ncz_engine.model import (
     NetcadEntity,
     NetcadParseResult,
 )
-from .ncz_engine.v2 import PARSER_BACKEND_V2, parse_file as parse_file_v2
+from .ncz_engine.v2 import PARSER_BACKEND_V2, NczCatalog
+from .ncz_engine.v2 import parse_file as parse_file_v2
 
 # Backend used when the v2 engine raises unexpectedly on a real drawing and
 # the legacy v1 decoder is used as a safety net.
@@ -1294,3 +1295,118 @@ class NetcadBinaryReader:
                 for item in payload.get("rows", [])
             ],
         )
+
+
+class NczLayerSummary:
+    """One CAD layer as seen before geometry is decoded."""
+
+    __slots__ = ("layer_code", "layer_name", "record_count", "families")
+
+    def __init__(self, layer_code: int, layer_name: str,
+                 record_count: int, families):
+        self.layer_code = layer_code
+        self.layer_name = layer_name
+        self.record_count = record_count
+        self.families = set(families)
+
+
+def _coarse_family(geometry_kind: str) -> str:
+    if geometry_kind in ("Point", "Text", "Symbol", "Block"):
+        return "POINT"
+    if geometry_kind in ("Line", "Polyline", "Arc"):
+        return "LINE"
+    return "POLYGON"
+
+
+class NetcadLazyReader:
+    """Catalog-backed reader for selective, layer-by-layer NCZ decoding.
+
+    ``index()`` scans the drawing once and records metadata, a per-layer
+    catalog, and attribute-table markers without decoding geometry.
+    ``decode_layers()`` then materializes only the requested layers. If the
+    v2 catalog raises on a real drawing, the reader falls back to a full v1
+    decode and serves the same interface from the decoded result.
+    """
+
+    def __init__(self, file_path: str):
+        self.file_path = file_path
+        self.backend = ""
+        self._reader = NetcadBinaryReader(file_path)
+        self._catalog: NczCatalog | None = None
+        self._fallback: NetcadParseResult | None = None
+
+    def index(self) -> "NetcadLazyReader":
+        try:
+            with open(self.file_path, "rb") as handle:
+                data = handle.read()
+            self._catalog = NczCatalog(data).index()
+            self.backend = PARSER_BACKEND_V2
+        except Exception:
+            self._catalog = None
+            self._fallback = self._reader.parse()
+            self.backend = PARSER_BACKEND_V1_FALLBACK
+        return self
+
+    @property
+    def version_name(self) -> str:
+        if self._catalog is not None:
+            return self._catalog.metadata.version_name
+        return self._fallback.version_name if self._fallback else ""
+
+    @property
+    def epsg(self) -> str:
+        if self._catalog is not None:
+            return self._catalog.metadata.epsg
+        return self._fallback.epsg if self._fallback else ""
+
+    @property
+    def projection_text(self) -> str:
+        if self._catalog is not None:
+            return self._catalog.metadata.projection_text
+        return self._fallback.projection_text if self._fallback else ""
+
+    def layer_summaries(self) -> list[NczLayerSummary]:
+        if self._catalog is not None:
+            return [
+                NczLayerSummary(s.layer_code, s.layer_name,
+                                s.record_count, s.families)
+                for s in self._catalog.layer_catalog()
+            ]
+        return self._summaries_from_entities(
+            self._fallback.entities if self._fallback else [])
+
+    @staticmethod
+    def _summaries_from_entities(entities) -> list[NczLayerSummary]:
+        by_code: dict[int, NczLayerSummary] = {}
+        for entity in entities:
+            summary = by_code.get(entity.layer_code)
+            if summary is None:
+                name = entity.layer_name or f"LAYER_{entity.layer_code}"
+                summary = NczLayerSummary(entity.layer_code, name, 0, set())
+                by_code[entity.layer_code] = summary
+            summary.record_count += 1
+            summary.families.add(_coarse_family(entity.geometry_kind))
+        return [by_code[key] for key in sorted(by_code)]
+
+    def attribute_tables(self) -> list[NetcadAttributeTable]:
+        if self._catalog is not None:
+            return [
+                self._reader._attribute_table_from_dict(table)
+                for table in self._catalog.decode_attribute_tables()
+            ]
+        return list(self._fallback.attribute_tables) if self._fallback else []
+
+    def decode_layers(self, layer_codes) -> list[NetcadEntity]:
+        """Decode only the geometry records in *layer_codes*."""
+        wanted = set(layer_codes)
+        if self._catalog is not None:
+            return [
+                self._reader._entity_from_dict(payload)
+                for payload in self._catalog.decode_layers(wanted)
+            ]
+        if not self._fallback:
+            return []
+        return [
+            entity for entity in self._fallback.entities
+            if entity.layer_code in wanted
+        ]

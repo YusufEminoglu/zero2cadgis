@@ -61,7 +61,11 @@ from qgis.core import (
 from qgis.gui import QgsProjectionSelectionWidget
 
 # Core services imports
-from ..core.netcad_parser import NetcadBinaryReader, NetcadEntity, NetcadAttributeTable
+from ..core.netcad_parser import (
+    NetcadAttributeTable,
+    NetcadEntity,
+    NetcadLazyReader,
+)
 from ..core.gis_engine import GisConverterEngine
 from ..core.csv_sniffer import (
     CsvGeometryProfile,
@@ -499,7 +503,7 @@ class Zero2CadGisDockWidget(QDockWidget):
             DOCK_STYLE.replace("__CHECKBOX_CHECKED_ICON__", checkbox_icon))
 
         self.current_netcad_paths: list[str] = []
-        self.parsed_netcad_results = {}
+        self.ncz_readers: dict[str, NetcadLazyReader] = {}
         self.gis_converter = None
         self.src_csv_profile: CsvGeometryProfile | None = None
 
@@ -1461,8 +1465,8 @@ class Zero2CadGisDockWidget(QDockWidget):
         if not is_batch_import:
             self.chk_ncz_merge_geometry.setChecked(False)
 
-        self.parsed_netcad_results = {}
-        total_entities = 0
+        self.ncz_readers = {}
+        total_records = 0
         total_tables = 0
         versions = set()
         projections = set()
@@ -1470,28 +1474,29 @@ class Zero2CadGisDockWidget(QDockWidget):
 
         self.progress_ncz.setVisible(True)
         self.progress_ncz.setValue(10)
-        self.progress_ncz.setFormat("Parsing selected Netcad drawings...")
+        self.progress_ncz.setFormat("Indexing selected Netcad drawings...")
 
         try:
             for idx, file_path in enumerate(file_paths):
                 self.progress_ncz.setValue(
                     10 + int((idx / len(file_paths)) * 50))
                 self.progress_ncz.setFormat(
-                    f"Parsing {os.path.basename(file_path)}...")
+                    f"Indexing {os.path.basename(file_path)}...")
                 QApplication.processEvents()
 
-                reader = NetcadBinaryReader(file_path)
-                res = reader.parse()
-                self.parsed_netcad_results[file_path] = res
+                # Index only: metadata + layer catalog, no geometry decode.
+                reader = NetcadLazyReader(file_path).index()
+                self.ncz_readers[file_path] = reader
 
-                total_entities += len(res.entities)
-                total_tables += len(res.attribute_tables)
-                if res.version_name:
-                    versions.add(res.version_name)
-                if res.projection_text:
-                    projections.add(res.projection_text)
-                if res.epsg:
-                    epsg_codes.add(res.epsg)
+                total_records += sum(
+                    s.record_count for s in reader.layer_summaries())
+                total_tables += len(reader.attribute_tables())
+                if reader.version_name:
+                    versions.add(reader.version_name)
+                if reader.projection_text:
+                    projections.add(reader.projection_text)
+                if reader.epsg:
+                    epsg_codes.add(reader.epsg)
 
             self.progress_ncz.setValue(60)
             self.progress_ncz.setFormat("Building layer catalog...")
@@ -1511,7 +1516,8 @@ class Zero2CadGisDockWidget(QDockWidget):
                 ", ".join(projections) or "Undefined")
             self.lbl_ncz_epsg.setText(", ".join(epsg_codes) or "Not defined")
             self.lbl_ncz_counts.setText(
-                f"{total_entities} features / {total_tables} attribute tables across {len(file_paths)} files")
+                f"{total_records} records / {total_tables} attribute tables "
+                f"across {len(file_paths)} files (layers decoded on import)")
 
             # Fill Tree Widget
             self._fill_ncz_layer_tree()
@@ -1530,10 +1536,10 @@ class Zero2CadGisDockWidget(QDockWidget):
 
     def _fill_ncz_layer_tree(self) -> None:
         self.ncz_layer_tree.clear()
-        if not self.parsed_netcad_results:
+        if not self.ncz_readers:
             return
 
-        for file_path, parsed in sorted(self.parsed_netcad_results.items()):
+        for file_path, reader in sorted(self.ncz_readers.items()):
             file_name = os.path.basename(file_path)
 
             # 1. File Root Item
@@ -1545,21 +1551,9 @@ class Zero2CadGisDockWidget(QDockWidget):
             file_item.setCheckState(0, Qt.CheckState.Checked)
             file_item.setExpanded(True)
 
-            # Group entities
-            layer_stats = {}
-            for entity in parsed.entities:
-                family, _ = self._geometry_family(entity.geometry_kind)
-                if not family:
-                    continue
-                key = (
-                    entity.layer_code,
-                    entity.layer_name or f"LAYER_{
-                        entity.layer_code}",
-                    family)
-                layer_stats[key] = layer_stats.get(key, 0) + 1
-
-            # CAD Layers subroot
-            if layer_stats:
+            # CAD Layers subroot — one leaf per layer, from the catalog
+            summaries = reader.layer_summaries()
+            if summaries:
                 cad_root = QTreeWidgetItem(file_item)
                 cad_root.setText(0, "CAD Layers")
                 cad_root.setFlags(
@@ -1567,20 +1561,21 @@ class Zero2CadGisDockWidget(QDockWidget):
                 cad_root.setCheckState(0, Qt.CheckState.Checked)
                 cad_root.setExpanded(True)
 
-                for (code, name, family), count in sorted(
-                        layer_stats.items(), key=lambda x: x[0][1]):
+                for summary in sorted(summaries, key=lambda s: s.layer_name):
                     item = QTreeWidgetItem(cad_root)
-                    item.setText(0, name)
-                    item.setText(1, family)
-                    item.setText(2, str(count))
+                    item.setText(0, summary.layer_name)
+                    item.setText(1, "/".join(sorted(summary.families)))
+                    item.setText(2, str(summary.record_count))
                     item.setFlags(
                         item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
                     item.setCheckState(0, Qt.CheckState.Checked)
-                    item.setData(
-                        0, Qt.ItemDataRole.UserRole, (code, name, family))
+                    item.setData(0, Qt.ItemDataRole.UserRole,
+                                 ("LAYER", summary.layer_code,
+                                  summary.layer_name))
 
             # Attribute Tables subroot
-            if parsed.attribute_tables:
+            tables = reader.attribute_tables()
+            if tables:
                 table_root = QTreeWidgetItem(file_item)
                 table_root.setText(0, "Attribute Tables (@TAB)")
                 table_root.setFlags(table_root.flags(
@@ -1588,7 +1583,7 @@ class Zero2CadGisDockWidget(QDockWidget):
                 table_root.setCheckState(0, Qt.CheckState.Checked)
                 table_root.setExpanded(True)
 
-                for table in parsed.attribute_tables:
+                for table in tables:
                     item = QTreeWidgetItem(table_root)
                     item.setText(0, table.table_ref)
                     item.setText(1, "Attribute Data")
@@ -1636,13 +1631,14 @@ class Zero2CadGisDockWidget(QDockWidget):
         return text.strip("_").upper() or "LAYER"
 
     def _import_netcad_dataset(self) -> None:
-        if not self.parsed_netcad_results:
+        if not self.ncz_readers:
             return
 
         try:
             self.progress_ncz.setVisible(True)
             self.progress_ncz.setValue(10)
             self.progress_ncz.setFormat("Filtering selected layers...")
+            QApplication.processEvents()
 
             selected_by_file = {}
             root_count = self.ncz_layer_tree.topLevelItemCount()
@@ -1659,13 +1655,15 @@ class Zero2CadGisDockWidget(QDockWidget):
                         child = sub_item.child(idx_child)
                         if child.checkState(0) == Qt.CheckState.Checked:
                             data = child.data(0, Qt.ItemDataRole.UserRole)
-                            if data:
-                                if data[0] == "TABLE":
-                                    selected_by_file[file_path]["tables"].append(
-                                        data[1])
-                                else:
-                                    selected_by_file[file_path]["layers"].append(
-                                        data)
+                            if not data:
+                                continue
+                            if data[0] == "TABLE":
+                                selected_by_file[file_path]["tables"].append(
+                                    data[1])
+                            elif data[0] == "LAYER":
+                                # (code, name)
+                                selected_by_file[file_path]["layers"].append(
+                                    (data[1], data[2]))
 
             has_selection = any(len(v["layers"]) > 0 or len(
                 v["tables"]) > 0 for v in selected_by_file.values())
@@ -1681,9 +1679,9 @@ class Zero2CadGisDockWidget(QDockWidget):
             gpkg_path = ""
             is_temp = self.chk_ncz_temporary.isChecked()
             first_file = os.path.splitext(os.path.basename(
-                list(self.parsed_netcad_results.keys())[0]))[0]
+                list(self.ncz_readers.keys())[0]))[0]
             base_name = self._sanitize_name(f"{first_file}_BATCH") if len(
-                self.parsed_netcad_results) > 1 else self._sanitize_name(first_file)
+                self.ncz_readers) > 1 else self._sanitize_name(first_file)
 
             if is_temp:
                 gpkg_path = ""
@@ -1705,36 +1703,46 @@ class Zero2CadGisDockWidget(QDockWidget):
                 target_crs = QgsProject.instance().crs()
 
             merge_enabled = self.chk_ncz_merge_geometry.isChecked()
-            has_multiple_results = len(self.parsed_netcad_results) > 1
+            has_multiple_results = len(self.ncz_readers) > 1
             merge_geometry_types = merge_enabled and has_multiple_results
             layer_groups = []
             merged_entity_groups = {}
             transform_context = QgsProject.instance().transformContext()
 
-            for file_path, selection in selected_by_file.items():
-                selected_keys = set(selection["layers"])
+            file_count = max(len(selected_by_file), 1)
+            for file_index, (file_path, selection) in enumerate(
+                    selected_by_file.items()):
+                selected_layers = selection["layers"]
+                selected_codes = {code for code, _name in selected_layers}
                 selected_tables = selection["tables"]
-                if not selected_keys and not selected_tables:
+                if not selected_codes and not selected_tables:
                     continue
 
-                parsed = self.parsed_netcad_results[file_path]
+                reader = self.ncz_readers[file_path]
                 source_file_name = os.path.splitext(
                     os.path.basename(file_path))[0]
                 file_base_name = self._sanitize_name(source_file_name)
 
+                self.progress_ncz.setValue(
+                    30 + int((file_index / file_count) * 45))
+                self.progress_ncz.setFormat(
+                    f"Decoding {len(selected_codes)} layer(s) of "
+                    f"{os.path.basename(file_path)}...")
+                QApplication.processEvents()
+
+                # Selective decode: only the checked layers are materialized.
+                decoded_entities = reader.decode_layers(selected_codes)
+
                 grouped_entities = (
                     merged_entity_groups if merge_geometry_types else {})
 
-                for entity in parsed.entities:
+                for entity in decoded_entities:
                     family, geometry_type = self._geometry_family(
                         entity.geometry_kind)
                     if not family:
                         continue
 
                     layer_name = entity.layer_name or f"LAYER_{entity.layer_code}"
-                    selection_key = (entity.layer_code, layer_name, family)
-                    if selection_key not in selected_keys:
-                        continue
 
                     if merge_geometry_types:
                         family_token = self._sanitize_name(family)
@@ -1745,7 +1753,7 @@ class Zero2CadGisDockWidget(QDockWidget):
                     else:
                         display_name = f"{file_base_name}_{self._sanitize_name(layer_name)}_{family}"
                         group_name = f"{file_base_name}_{family}"
-                        bucket_key = selection_key
+                        bucket_key = (entity.layer_code, layer_name, family)
 
                     bucket = grouped_entities.setdefault(
                         group_name,
@@ -1763,10 +1771,10 @@ class Zero2CadGisDockWidget(QDockWidget):
                             grouped_entities, target_crs))
 
                 # 2. Attribute Tables
-                if parsed.attribute_tables and selected_tables:
+                if selected_tables:
                     attribute_group_name = f"{file_base_name}_ATTRIBUTES"
                     attribute_layers = []
-                    for table in parsed.attribute_tables:
+                    for table in reader.attribute_tables():
                         if table.table_ref not in selected_tables:
                             continue
                         table_name = self._sanitize_name(table.table_ref)
