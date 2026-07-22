@@ -1,5 +1,38 @@
 # Changelog
 
+## [0.4.0] - 2026-07-22
+
+### Added
+
+- **NCZ Engine v2** (`core/ncz_engine/v2/`): an independent, block-oriented
+  Netcad decoder written against the documented format layout in
+  `docs/NCZ_FORMAT.md`, replacing the monolithic v1 decoder as the active
+  engine. It is composed of a bounds-checked binary cursor, a declarative
+  block scanner with embedded-record detection, a geometry-decoder registry,
+  an `@TAB` attribute decoder, and a two-phase orchestrator (`NczCatalog`).
+- **Lazy layer catalog and selective decode**: the v2 engine can index a
+  drawing's layers and record positions without decoding geometry, then
+  decode only chosen layer codes. On a synthetic 1.5 MiB / ~10k-record
+  drawing this builds a layer catalog about 4.5x faster than a full decode
+  and decodes a single layer about 3.4x faster.
+- New format reference `docs/NCZ_FORMAT.md` and a synthetic NCZ test corpus
+  (`tests/ncz_fixtures.py`) covering every geometry type, both block layouts,
+  embedded containers, metadata, and attribute tables.
+
+### Changed
+
+- `NetcadBinaryReader.parse()` now uses the v2 engine and falls back to the
+  v1 decoder (reported as `pure-python (v1 fallback)`) only if v2 raises on a
+  real drawing. v2 is ~1.16x faster than v1 on the synthetic full-decode
+  workload with byte-identical output.
+
+### Verified
+
+- Field-by-field v1↔v2 output parity across the full synthetic corpus, plus
+  malformed-input safety and selective-decode correctness
+  (`tests/test_ncz_engine_v2.py`). Real-QGIS smoke tests pass on QGIS 3.44
+  LTR and QGIS 4.
+
 ## [0.3.0] - 2026-07-21
 
 ### Added

@@ -96,13 +96,18 @@ If a file does not parse as expected, retry with cleanup disabled and inspect th
 
 ### NCZ Engine Provenance
 
-The built-in NCZ decoding engine incorporates code derived from
+02CadGis reads Netcad NCZ/NCA drawings with its **v2 engine**
+(`core/ncz_engine/v2/`), an independent, block-oriented decoder written
+against the documented format layout in [docs/NCZ_FORMAT.md](docs/NCZ_FORMAT.md)
+rather than by adapting upstream source line by line. Because that format
+knowledge ultimately traces back to
 [Jeomatik NCZ Reader](https://github.com/erdincunal/Jeomatik-NCZ-Reader),
-Copyright (C) 2026 Erdinç Örsan ÜNAL, under GPL-2.0-or-later. It was adapted
-and subsequently extended for 02CadGis by Yusuf Eminoğlu beginning in July
-2026. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for the component
-scope, historical distribution note, source link, and license details.
-The measurable modernization plan is documented in
+Copyright (C) 2026 Erdinç Örsan ÜNAL, under GPL-2.0-or-later, the upstream
+copyright, source link, and license are retained in
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). The legacy v1 decoder is
+kept as a validated reference and safety fallback; the v2 engine is verified
+to produce byte-identical output to it across the synthetic NCZ corpus in
+`tests/`. The engine architecture and roadmap are in
 [docs/NCZ_ENGINE_V2.md](docs/NCZ_ENGINE_V2.md).
 
 02CadGis is an independent project and is not endorsed by or affiliated

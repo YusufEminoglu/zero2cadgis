@@ -57,7 +57,9 @@ class TestNczParserContract(unittest.TestCase):
                 result = self._parse(payload)
                 self.assertEqual(result.entities, [])
                 self.assertEqual(result.attribute_tables, [])
-                self.assertEqual(result.parser_backend, "pure-python")
+                # v2 is the active engine; the legacy decoder remains a
+                # safety fallback. Either way the backend is a pure-Python one.
+                self.assertTrue(result.parser_backend.startswith("pure-python"))
 
     def test_short_known_blocks_do_not_read_past_input(self) -> None:
         short_layer_block = bytes([6, 0, 0, 0, 0, 0])

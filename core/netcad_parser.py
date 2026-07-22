@@ -35,6 +35,11 @@ from .ncz_engine.model import (
     NetcadEntity,
     NetcadParseResult,
 )
+from .ncz_engine.v2 import PARSER_BACKEND_V2, parse_file as parse_file_v2
+
+# Backend used when the v2 engine raises unexpectedly on a real drawing and
+# the legacy v1 decoder is used as a safety net.
+PARSER_BACKEND_V1_FALLBACK = "pure-python (v1 fallback)"
 
 EMBEDDED_GEOMETRY_CONTAINER_TYPES = {0, 5, 14, 48, 108, 111, 132, 150, 180}
 
@@ -1227,10 +1232,18 @@ class NetcadBinaryReader:
         self.file_path = file_path
 
     def parse(self) -> NetcadParseResult:
-        payload = parse_netcad_binary_stream(self.file_path)
-        backend = "pure-python"
+        """Decode the drawing with the v2 engine (v1 as a safety fallback)."""
+        try:
+            payload = parse_file_v2(self.file_path)
+            backend = payload.get("parser_backend", PARSER_BACKEND_V2)
+        except Exception:
+            payload = parse_netcad_binary_stream(self.file_path)
+            backend = PARSER_BACKEND_V1_FALLBACK
 
-        # If pure-python succeeds, return NetcadParseResult structure
+        return self._result_from_payload(payload, backend)
+
+    def _result_from_payload(
+            self, payload: dict, backend: str) -> NetcadParseResult:
         return NetcadParseResult(
             entities=[
                 self._entity_from_dict(item) for item in payload["entities"]], attribute_tables=[

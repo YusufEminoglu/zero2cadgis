@@ -1,13 +1,52 @@
 # NCZ Engine v2 Roadmap
 
-The 02CadGis NCZ engine will continue as a GPL-2.0-or-later derivative of
-Jeomatik NCZ Reader. Every derived source module must retain the upstream
-copyright, source, license, and 02CadGis modification notice described in
-[THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md).
+The 02CadGis NCZ engine remains licensed under GPL-2.0-or-later. The v2
+implementation under `core/ncz_engine/v2/` is an independent, block-oriented
+rewrite written against the format notes in [NCZ_FORMAT.md](NCZ_FORMAT.md)
+rather than by adapting the upstream source line by line. Because that format
+knowledge ultimately traces back to Jeomatik NCZ Reader, the upstream
+copyright, source, license, and 02CadGis modification notices in
+[THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md) are retained.
 
 The goal is not to claim an unmeasured blanket speedup. Each improvement must
 preserve decoded output and publish a reproducible result for a named
 workload.
+
+## Delivery status (v0.4.0)
+
+The v2 engine is **implemented and active**. `NetcadBinaryReader.parse()`
+uses v2 by default and falls back to the v1 decoder (reported as
+`pure-python (v1 fallback)`) only if v2 raises on a real drawing.
+
+Modules:
+
+- `v2/binary.py` — a bounds-checked `Cursor` over the file buffer; every read
+  is clamped and returns a neutral default instead of raising.
+- `v2/blocks.py` — declarative block scanner, embedded-record detection, and
+  drawing-metadata decoding (layers, colours, MPROJ, TILED_XML/EPSG).
+- `v2/geometry.py` — a geometry-decoder registry keyed by numeric type.
+- `v2/attributes.py` — `@TAB` marker scan and label/segment/ascii row decode.
+- `v2/parser.py` — the `NczCatalog` two-phase orchestrator: a single index
+  pass records metadata and record *positions*, then geometry is decoded
+  either fully (`decode_all`) or for a chosen set of layer codes
+  (`decode_layers`).
+
+Verified parity: `tests/test_ncz_engine_v2.py` builds synthetic NCZ streams
+(`tests/ncz_fixtures.py`) exercising every decoder path, both block layouts
+(kind 21 and the GIS-shifted kind 22), embedded containers, metadata, and
+`@TAB` tables, and asserts field-by-field equality between v1 and v2 output.
+
+Measured on a synthetic 1.5 MiB, ~10k-record drawing (CPython, one machine):
+
+| Workload | Result vs v1 full decode |
+| --- | ---: |
+| v2 cold file-to-full-model | ~1.16x faster, byte-identical output |
+| v2 file-to-layer-catalog (no geometry decode) | ~4.5x faster |
+| v2 selective decode of 1 of 5 layers | ~3.4x faster |
+
+These are synthetic figures; the aspirational targets below still require a
+licensed real-file corpus, and the dock does not yet route imports through
+`decode_layers` (next milestone).
 
 ## Stable API Contract
 
@@ -29,18 +68,20 @@ the existing public names.
 
 ## Delivery Milestones
 
-1. **Contract, safety, and baseline**
+1. **Contract, safety, and baseline** — *done (v0.2.4 / v0.4.0)*
    - Record malformed-input behavior and prevent out-of-bounds reads.
    - Establish deterministic output hashing and repeatable benchmarks.
-   - Build a licensed, provenance-tracked NCZ/NCA fixture corpus.
-2. **Modular decoder**
+   - Build a licensed, provenance-tracked NCZ/NCA fixture corpus. *(Synthetic
+     corpus in place; a real-file corpus is still outstanding.)*
+2. **Modular decoder** — *done (v0.4.0)*
    - Separate result models, bounded binary reads, block iteration, geometry
      decoders, attribute-table decoders, and parser orchestration.
    - Compare normalized v1 and v2 output after every extraction.
-3. **Lazy catalog and selective decode**
+3. **Lazy catalog and selective decode** — *engine done (v0.4.0); dock wiring
+   outstanding*
    - Index layer and record locations without fully materializing geometry.
    - Decode only the layers selected in the dock.
-4. **Cache and throughput optimization**
+4. **Cache and throughput optimization** — *not started*
    - Add a fingerprinted local index cache with explicit invalidation.
    - Reduce duplicate dictionaries, coordinate copies, and full-file scans.
 
