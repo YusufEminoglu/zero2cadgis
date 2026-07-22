@@ -89,9 +89,17 @@ the existing public names.
      selection (via `NetcadLazyReader`) and calls `decode_layers` for the
      checked layers only; on a real 8163-entity drawing the on-selection cost
      dropped from a full decode (~160 ms) to an index (~15 ms).
-4. **Cache and throughput optimization** — *not started*
+4. **Cache and throughput optimization** — *index cache done (v0.6.0)*
    - Add a fingerprinted local index cache with explicit invalidation.
-   - Reduce duplicate dictionaries, coordinate copies, and full-file scans.
+     `core/ncz_engine/v2/cache.py` stores a drawing's metadata, layer
+     catalog, and attribute tables as per-user JSON keyed by a
+     `(size, mtime_ns)` fingerprint and `CACHE_VERSION`. Reopening an
+     unchanged drawing serves the catalog with no file read or block scan
+     (~160x faster on a real 1.2 MiB file). Invalidation is automatic on
+     file change, plus a dock **Clear cache** button and the
+     `ZERO2CADGIS_NCZ_CACHE_DISABLE` env var.
+   - Further throughput work (duplicate dictionaries, coordinate copies)
+     remains open.
 
 ## Performance Gates
 

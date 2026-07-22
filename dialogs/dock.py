@@ -808,6 +808,13 @@ class Zero2CadGisDockWidget(QDockWidget):
         self.btn_browse_ncz.setObjectName("browse_btn")
         self.btn_browse_ncz.clicked.connect(self._select_ncz_file)
         ncz_file_layout.addWidget(self.btn_browse_ncz)
+
+        self.btn_clear_ncz_cache = QPushButton("Clear cache")
+        self.btn_clear_ncz_cache.setToolTip(
+            "Delete the local NCZ index cache. The cache also rebuilds "
+            "automatically whenever a drawing file changes.")
+        self.btn_clear_ncz_cache.clicked.connect(self._clear_ncz_cache)
+        ncz_file_layout.addWidget(self.btn_clear_ncz_cache)
         ncz_layout.addWidget(ncz_file_group)
 
         # Metadata Card
@@ -1451,6 +1458,14 @@ class Zero2CadGisDockWidget(QDockWidget):
         if not file_paths:
             return
         self._load_ncz_paths(file_paths)
+
+    def _clear_ncz_cache(self) -> None:
+        from ..core.ncz_engine.v2 import cache as ncz_cache
+        removed = ncz_cache.clear()
+        self.iface.messageBar().pushMessage(
+            "02CadGis",
+            f"Cleared {removed} cached NCZ index file(s).",
+            Qgis.MessageLevel.Info, 5)
 
     def _load_ncz_paths(self, file_paths: list[str]) -> None:
         self._remember_import_dir(file_paths[0])

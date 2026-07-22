@@ -88,6 +88,10 @@ The Netcad panel is intentionally detailed because these drawings often contain 
   layers and metadata, so the layer tree appears almost immediately even for
   large municipal files; geometry is decoded only for the layers you keep
   checked at import time.
+- **Index cache:** the layer catalog of each drawing is cached locally and
+  keyed to the file's size and modification time, so reopening an unchanged
+  drawing is near-instant. The cache rebuilds automatically when a file
+  changes; use **Clear cache** on the Netcad tab to reset it manually.
 - **Batch import:** select several files; 02CadGis keeps file groups separate by default, or merges matching layer names inside geometry-type groups when **Merge geometry types** is enabled.
 - **Metadata review:** version, projection text, EPSG hints, feature counts and table counts are shown before conversion.
 - **Layer filtering:** uncheck unnecessary CAD layers or `@TAB` tables before import.

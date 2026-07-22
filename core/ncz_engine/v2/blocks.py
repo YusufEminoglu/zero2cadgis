@@ -100,6 +100,25 @@ class DrawingMetadata:
             return None
         return self.layer_color(layer_code)
 
+    def to_dict(self) -> dict:
+        return {
+            "layer_names": list(self.layer_names),
+            "layer_colors": list(self.layer_colors),
+            "version_name": self.version_name,
+            "projection_text": self.projection_text,
+            "epsg": self.epsg,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "DrawingMetadata":
+        return cls(
+            layer_names=list(data.get("layer_names", [])),
+            layer_colors=list(data.get("layer_colors", [])),
+            version_name=data.get("version_name", ""),
+            projection_text=data.get("projection_text", ""),
+            epsg=data.get("epsg", ""),
+        )
+
 
 def _argb(red: int, green: int, blue: int) -> int:
     return (255 << 24) | (red << 16) | (green << 8) | blue

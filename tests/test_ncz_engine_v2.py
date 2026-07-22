@@ -273,6 +273,92 @@ def _entity_to_dict(entity) -> dict:
     }
 
 
+class TestNczIndexCache(unittest.TestCase):
+    """The fingerprinted index cache serves reopens without re-scanning."""
+
+    def setUp(self):
+        import tempfile as _tempfile
+        from unittest import mock
+        from zero2cadgis.core.ncz_engine.v2 import cache as ncz_cache
+
+        self.ncz_cache = ncz_cache
+        self._cache_dir = Path(_tempfile.mkdtemp(prefix="ncz_cache_test_"))
+        patcher = mock.patch.object(
+            ncz_cache, "_cache_root", return_value=self._cache_dir)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+        import shutil
+        self.addCleanup(
+            lambda: shutil.rmtree(self._cache_dir, ignore_errors=True))
+
+    def _write(self, data: bytes) -> str:
+        fd, path = tempfile.mkstemp(suffix=".ncz")
+        os.close(fd)
+        self.addCleanup(lambda: os.path.exists(path) and os.remove(path))
+        with open(path, "wb") as handle:
+            handle.write(data)
+        return path
+
+    def test_second_open_is_served_from_cache(self):
+        from zero2cadgis.core.netcad_parser import NetcadLazyReader
+
+        path = self._write(fx.full_drawing())
+        first = NetcadLazyReader(path).index()
+        self.assertFalse(first.from_cache)
+
+        second = NetcadLazyReader(path).index()
+        self.assertTrue(second.from_cache)
+
+        # identical catalog and decode results from the cached index
+        self.assertEqual(
+            [(s.layer_code, s.layer_name, s.record_count)
+             for s in first.layer_summaries()],
+            [(s.layer_code, s.layer_name, s.record_count)
+             for s in second.layer_summaries()])
+        codes = [s.layer_code for s in second.layer_summaries()]
+        d1 = sorted(_digest_entity(_entity_to_dict(e))
+                    for e in first.decode_layers(codes))
+        d2 = sorted(_digest_entity(_entity_to_dict(e))
+                    for e in second.decode_layers(codes))
+        self.assertEqual(d1, d2)
+
+    def test_cache_invalidated_when_content_changes(self):
+        from zero2cadgis.core.netcad_parser import NetcadLazyReader
+
+        path = self._write(fx.full_drawing())
+        NetcadLazyReader(path).index()  # writes cache
+
+        # rewrite with different content and a moved mtime
+        with open(path, "wb") as handle:
+            handle.write(fx.full_drawing() + fx.point_block(layer=4))
+        os.utime(path, ns=(0, 0))
+
+        reopened = NetcadLazyReader(path).index()
+        self.assertFalse(reopened.from_cache)
+
+    def test_cache_can_be_disabled_by_env(self):
+        from unittest import mock
+        from zero2cadgis.core.netcad_parser import NetcadLazyReader
+
+        path = self._write(fx.full_drawing())
+        with mock.patch.dict(
+                os.environ,
+                {"ZERO2CADGIS_NCZ_CACHE_DISABLE": "1"}):
+            NetcadLazyReader(path).index()
+            again = NetcadLazyReader(path).index()
+            self.assertFalse(again.from_cache)
+
+    def test_clear_removes_cache_entries(self):
+        from zero2cadgis.core.netcad_parser import NetcadLazyReader
+
+        path = self._write(fx.full_drawing())
+        NetcadLazyReader(path).index()
+        self.assertGreaterEqual(self.ncz_cache.clear(), 1)
+        reopened = NetcadLazyReader(path).index()
+        self.assertFalse(reopened.from_cache)
+
+
 class TestNczEngineV2Safety(unittest.TestCase):
     """Malformed input must never raise or read past the buffer."""
 

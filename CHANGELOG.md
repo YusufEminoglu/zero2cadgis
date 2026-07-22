@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.6.0] - 2026-07-22
+
+### Added
+
+- Fingerprinted local index cache for Netcad drawings. The first time a
+  drawing is opened, its metadata, layer catalog, and attribute tables are
+  written to a small per-user JSON cache; reopening the same unchanged file
+  shows its layer tree with no file read and no block scan. On a real
+  1.2 MiB drawing this made reopening the catalog about 160x faster
+  (~27 ms to ~0.2 ms). Geometry is still decoded from the file on import.
+- The cache is keyed by a `(size, mtime_ns)` fingerprint and a cache-format
+  version, so it invalidates automatically when a file changes. A new
+  **Clear cache** button on the Netcad tab clears it on demand, and the
+  `ZERO2CADGIS_NCZ_CACHE_DISABLE` environment variable turns it off.
+
 ## [0.5.0] - 2026-07-22
 
 ### Changed

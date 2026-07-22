@@ -37,6 +37,7 @@ from .ncz_engine.model import (
 )
 from .ncz_engine.v2 import PARSER_BACKEND_V2, NczCatalog
 from .ncz_engine.v2 import parse_file as parse_file_v2
+from .ncz_engine.v2 import cache as ncz_cache
 
 # Backend used when the v2 engine raises unexpectedly on a real drawing and
 # the legacy v1 decoder is used as a safety net.
@@ -1309,6 +1310,20 @@ class NczLayerSummary:
         self.record_count = record_count
         self.families = set(families)
 
+    def to_dict(self) -> dict:
+        return {
+            "layer_code": self.layer_code,
+            "layer_name": self.layer_name,
+            "record_count": self.record_count,
+            "families": sorted(self.families),
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "NczLayerSummary":
+        return cls(
+            data["layer_code"], data["layer_name"],
+            data["record_count"], data.get("families", []))
+
 
 def _coarse_family(geometry_kind: str) -> str:
     if geometry_kind in ("Point", "Text", "Symbol", "Block"):
@@ -1331,47 +1346,72 @@ class NetcadLazyReader:
     def __init__(self, file_path: str):
         self.file_path = file_path
         self.backend = ""
+        self.from_cache = False
         self._reader = NetcadBinaryReader(file_path)
-        self._catalog: NczCatalog | None = None
+        self._is_v2 = False
+        self._metadata = None       # DrawingMetadata (v2 paths)
+        self._summaries: list[NczLayerSummary] = []
+        self._attr_dicts: list[dict] = []
+        self._catalog: NczCatalog | None = None  # kept on a fresh decode
         self._fallback: NetcadParseResult | None = None
 
     def index(self) -> "NetcadLazyReader":
         try:
+            cached = ncz_cache.load(self.file_path)
+            if cached is not None:
+                # Cache hit: show the catalog with no file read or block scan.
+                self._metadata = cached["metadata"]
+                self._summaries = [
+                    NczLayerSummary.from_dict(s) for s in cached["summaries"]]
+                self._attr_dicts = cached["attribute_tables"]
+                self._is_v2 = True
+                self.from_cache = True
+                self.backend = PARSER_BACKEND_V2
+                return self
+
             with open(self.file_path, "rb") as handle:
                 data = handle.read()
-            self._catalog = NczCatalog(data).index()
+            catalog = NczCatalog(data).index()
+            self._catalog = catalog
+            self._metadata = catalog.metadata
+            self._summaries = [
+                NczLayerSummary(s.layer_code, s.layer_name,
+                                s.record_count, s.families)
+                for s in catalog.layer_catalog()
+            ]
+            self._attr_dicts = catalog.decode_attribute_tables()
+            self._is_v2 = True
             self.backend = PARSER_BACKEND_V2
+            ncz_cache.save(
+                self.file_path, self._metadata,
+                [s.to_dict() for s in self._summaries], self._attr_dicts)
         except Exception:
-            self._catalog = None
+            self._is_v2 = False
             self._fallback = self._reader.parse()
             self.backend = PARSER_BACKEND_V1_FALLBACK
         return self
 
     @property
     def version_name(self) -> str:
-        if self._catalog is not None:
-            return self._catalog.metadata.version_name
+        if self._is_v2:
+            return self._metadata.version_name
         return self._fallback.version_name if self._fallback else ""
 
     @property
     def epsg(self) -> str:
-        if self._catalog is not None:
-            return self._catalog.metadata.epsg
+        if self._is_v2:
+            return self._metadata.epsg
         return self._fallback.epsg if self._fallback else ""
 
     @property
     def projection_text(self) -> str:
-        if self._catalog is not None:
-            return self._catalog.metadata.projection_text
+        if self._is_v2:
+            return self._metadata.projection_text
         return self._fallback.projection_text if self._fallback else ""
 
     def layer_summaries(self) -> list[NczLayerSummary]:
-        if self._catalog is not None:
-            return [
-                NczLayerSummary(s.layer_code, s.layer_name,
-                                s.record_count, s.families)
-                for s in self._catalog.layer_catalog()
-            ]
+        if self._is_v2:
+            return list(self._summaries)
         return self._summaries_from_entities(
             self._fallback.entities if self._fallback else [])
 
@@ -1389,17 +1429,22 @@ class NetcadLazyReader:
         return [by_code[key] for key in sorted(by_code)]
 
     def attribute_tables(self) -> list[NetcadAttributeTable]:
-        if self._catalog is not None:
+        if self._is_v2:
             return [
                 self._reader._attribute_table_from_dict(table)
-                for table in self._catalog.decode_attribute_tables()
+                for table in self._attr_dicts
             ]
         return list(self._fallback.attribute_tables) if self._fallback else []
 
     def decode_layers(self, layer_codes) -> list[NetcadEntity]:
         """Decode only the geometry records in *layer_codes*."""
         wanted = set(layer_codes)
-        if self._catalog is not None:
+        if self._is_v2:
+            # On a cache hit the block scan was skipped; read and index the
+            # file now (the bytes are needed to decode geometry regardless).
+            if self._catalog is None:
+                with open(self.file_path, "rb") as handle:
+                    self._catalog = NczCatalog(handle.read()).index()
             return [
                 self._reader._entity_from_dict(payload)
                 for payload in self._catalog.decode_layers(wanted)
