@@ -67,7 +67,7 @@ PLAN_SYMBOLOGY_CATALOG: List[PlanStyleRule] = [
         fill_opacity=0.75,
         stroke_color="#666600",
         stroke_width=0.3,
-        keywords=["KONUT", "MESKEN", "KONUT_ALANI", "RESIDENTIAL", "AK_KONUT"],
+        keywords=["KONUT", "KNT", "MESKEN", "KONUT_ALANI", "RESIDENTIAL", "AK_KONUT"],
     ),
     PlanStyleRule(
         category_id="COMMERCIAL_RESIDENTIAL",
@@ -336,8 +336,8 @@ class PlanSymbologyMatcher:
         if not val:
             return ""
         s = val.strip().upper()
-        # Strip common prefixes
-        s = re.sub(r"^(UIP_|NIP_|KDP_|PL_|PLAN_|NCZ_LAYER_|LAYER_)", "", s, flags=re.IGNORECASE)
+        # Strip common prefixes including scale numbers e.g. 1000_UIP_, 5000_NIP_
+        s = re.sub(r"^(\d+[\._-]*)?(UIP_|NIP_|KDP_|PL_|PLAN_|NCZ_LAYER_|LAYER_)", "", s, flags=re.IGNORECASE)
         # Turkish character translation
         tr_map = str.maketrans({
             "Ç": "C", "Ğ": "G", "I": "I", "İ": "I", "Ö": "O", "Ş": "S", "Ü": "U"

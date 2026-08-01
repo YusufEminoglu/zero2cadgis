@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.2] - 2026-08-01
+
+- Expand symbology matcher rules and scale prefix stripping
+
 ## [1.1.1] - 2026-08-01
 
 - Ensure auto-apply plan symbology is enabled by default across NCZ and Converter tabs
