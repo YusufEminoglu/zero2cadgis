@@ -1,102 +1,59 @@
 # Changelog
 
-## [2.1.2] - 2026-08-01
+## [2.2.0] - 2026-08-01
 
-- Record the provenance of the official planning symbology. The gösterim shipped since 2.1.0 — the 131 tarama tiles redistributed byte for byte, and the colors, stroke widths, dash arrays and rule names in the generated catalog — comes from the plan gösterimleri style set published by the Çevre, Şehircilik ve İklim Değişikliği Bakanlığı on eplan.csb.gov.tr, and is the official standard of Ek-2 of the Mekânsal Planlar Yapım Yönetmeliği rather than 02CadGis artwork. `THIRD_PARTY_NOTICES.md` now states the source, what is reproduced, what is deliberately left out, and which parts are original work; the generated catalog header and the tarama folder carry the same note. No code or rendering behavior changes.
+Spatial planning release: an imar plan imported from CAD is now drawn with the
+official Turkish planning symbology instead of approximate stand-ins.
 
-## [2.1.1] - 2026-08-01
+### PlanGML spatial planning mode
 
-- Tell yerleşik and gelişme konut apart from the tabaka name. The official set draws them differently (brown against yellow at 1/1000, distinct tarama patterns at 1/5000 and 1/25.000+) but the distinction lives in a PlanGML attribute a CAD drawing does not carry, so the layer name is the only signal available. `YERLESIK`, `MESKUN`, `MEVCUT` and `GELISME` are now read in every spelling, before or after `KONUT`. A layer named only `KONUT` still gets the gelişme yellow.
-- Stop the Quality workflow failing on the offline catalog compiler. The workflow exists to mirror what the QGIS Hub scans, and the Hub only ever sees the files inside the zip, but the workflow was scanning the whole repository — including `tools/`, which `.zipignore` keeps out of every release. `tools/` is now excluded from all three static checks, matching the treatment `tests`, `e2e` and `scratch` already had.
+- New **PlanGML spatial planning mode** for the Netcad panel, **off by
+  default**. Non-planning drawings — topographic surveys, utility networks,
+  cadastral and civil engineering files — keep their raw tabaka names, their
+  CAD attributes and their original ARGB colors, exactly as before.
+- Turned on, tabaka are grouped into the official PlanGML upper groups
+  (`KONUT ALANLARI`, `AÇIK VE YEŞİL ALANLAR`,
+  `SOSYAL VE TEKNİK ALTYAPI ALANLARI`, …), one layer per upper group and
+  geometry type, and the PlanGML schema columns (`UST_GRUP_ADI`,
+  `ALT_GRUP_ADI`, `PLAN_KODU`, `FONKSIYON_KODU`, `TAM_ADI`, `GISTERIM`,
+  `uip_tabaka`, …) are populated, with the original tabaka name kept in
+  `uip_tabaka`.
 
-## [2.1.0] - 2026-08-01
+### Official e-Plan symbology
 
-- Match imported plan layers against the official e-Plan plan gösterimleri style set, so a Netcad or CAD imar plan is drawn with the Ministry's own colors, tarama patterns and line types instead of approximate stand-ins. 323 tabaka rules covering uygulama imar (1/1000), nazım imar (1/5000) and çevre düzeni (1/25.000+) plans ship inside the plugin, together with the 131 official tarama tiles they reference — no download, no server, no external style file.
-- Add a plan type selector to the Netcad panel. Auto mode reads the scale from the file name (1000 to uygulama imar, 5000 to nazım imar, 25000 and above to çevre düzeni) and can be overridden per import; the plan type also drives the PLAN_KODU attribute.
-- Fix plan symbology producing random QGIS colors on QGIS 4: unscoped Qt pen and brush enum members raise AttributeError under PyQt6, and the failure was being swallowed by the import-time exception guard. Verified on QGIS 3.44 LTR and QGIS 4.2 against a real 1/1000 municipal drawing, with a static guard test so it cannot regress unnoticed.
-- Enable unified upper-group layers for a single drawing when PlanGML mode is on. Grouping tabaka into official upper groups is what the mode is for, but it was previously reachable only when importing several files at once, so single-plan imports never produced categorized upper-group layers.
-- Remove the hardcoded local path to a downloaded Ministry SLD archive. Styling no longer depends on a file in one machine's Downloads folder, and applying an SLD whose rules filter on PlanGML attribute fields that CAD layers do not have no longer leaves layers unstyled.
-- Draw CAD text-anchor and symbol points with a discreet marker so labels stay readable instead of being buried under oversized dots.
+- Each tabaka is matched against the **official plan gösterimleri style set**
+  and drawn with its own official color, tarama pattern and line type. 350
+  tabaka rules covering uygulama imar (1/1000), nazım imar (1/5000) and çevre
+  düzeni (1/25.000+) plans are compiled into the plugin together with the 131
+  tarama tiles they reference — nothing is downloaded and no style server is
+  involved.
+- Merged upper-group layers use a categorized renderer over `uip_tabaka`, so
+  every land use inside a layer keeps its own gösterim rather than collapsing
+  into one flat color.
+- Yerleşik and gelişme konut are told apart from the tabaka name. The official
+  set keys this off a PlanGML attribute a CAD drawing does not carry, so the
+  layer name is the only signal there is: `YERLESIK`, `MESKUN` and `MEVCUT`
+  resolve to yerleşik konut and `GELISME` to gelişme konut, in every spelling
+  and on either side of `KONUT`. A layer named only `KONUT` keeps the gelişme
+  reading.
+- Tabaka the official set does not cover — CAD helper layers such as symbol,
+  text-anchor or rölöve layers — fall back to a neutral style and are never
+  given a planning meaning they do not have.
+- New **plan type** selector. Auto reads the scale from the file name (1000
+  uses uygulama imar, 5000 nazım imar, 25000 and above çevre düzeni) and can
+  be overridden per import; the plan type also drives `PLAN_KODU`.
+- Verified on QGIS 3.44 LTR and QGIS 4.2 against a real 1/1000 municipal
+  drawing, producing identical renderers on both.
 
-## [2.0.0] - 2026-08-01
+### Provenance
 
-- Fix categorized renderer category_field selection and sub-rule matching for PlanGML Upper Group layers
-
-## [1.9.0] - 2026-08-01
-
-- Add dedicated PlanGML Spatial Planning Mode checkbox (disabled by default) to preserve raw CAD layers and attributes unless PlanGML mode is explicitly enabled
-
-## [1.8.0] - 2026-08-01
-
-- Group CAD dataset layers strictly by PlanGML Upper Group (UST_GRUP_ADI) e.g. KONUT ALANLARI, AÇIK VE YEŞİL ALANLAR, SOSYAL VE TEKNİK ALTYAPI ALANLARI
-
-## [1.7.0] - 2026-08-01
-
-- Implement Unified Geometry Layer grouping (Polygon, Line, Point) with categorized PlanGML symbology trees
-
-## [1.6.0] - 2026-08-01
-
-- Auto-detect and extract matching official Ministry SLDs from E-Plan SLD.zip directly onto vector layers
-
-## [1.5.1] - 2026-08-01
-
-- Prioritize PlanGML symbology engine during NCZ import and trigger map canvas repaint
-
-## [1.5.0] - 2026-08-01
-
-- Add explicit PlanGML text hierarchy columns (UST_GRUP_ADI, ALT_GRUP_ADI) for spatial planning categorization
-
-## [1.4.0] - 2026-08-01
-
-- Auto-generate official PlanGML schema columns (UST_GRUP_ID, ALT_GRUP_ID, PLAN_KODU, FONKSIYON_KODU, TAM_ADI, GISTERIM, uip_tabaka) on CAD import
-
-## [1.3.4] - 2026-08-01
-
-- Fix exact matching order and add Bahçesaray NCZ tabaka symbology rules
-
-## [1.3.3] - 2026-08-01
-
-- Implement 2-Stage Hybrid Symbology Pipeline for NCZ CAD tabaka layers
-
-## [1.3.2] - 2026-08-01
-
-- Fix QGIS expression syntax for QgsRuleBasedRenderer (replace ILIKE with valid lower LIKE expressions)
-
-## [1.3.1] - 2026-08-01
-
-- Implement QgsRuleBasedRenderer with SQL-like expression fallback rules over PlanGML schema attributes
-
-## [1.3.0] - 2026-08-01
-
-- Incorporate official PlanGML upper/sub-group ID hierarchy codes (100-700) and schema attributes into CategorizedSymbolRenderer
-
-## [1.2.3] - 2026-08-01
-
-- Categorize by layer_name and uip_tabaka attribute values for PL_ tabaka e-Plan SLD translation
-
-## [1.2.2] - 2026-08-01
-
-- Token-based keyword search for prefixed UİP layer names
-
-## [1.2.1] - 2026-08-01
-
-- Fix polygon solid brush fill and point marker styling
-
-## [1.2.0] - 2026-08-01
-
-- A-to-Z unique PlanX Adaptive Symbology Engine with closed polyline polygon classification
-
-## [1.1.2] - 2026-08-01
-
-- Expand symbology matcher rules and scale prefix stripping
-
-## [1.1.1] - 2026-08-01
-
-- Ensure auto-apply plan symbology is enabled by default across NCZ and Converter tabs
-
-## [1.1.0] - 2026-08-01
-
-- Add PlanX Adaptive Symbology Engine (PASE) for automatic e-Plan zoning symbology
+- The gösterim is the **official standard, not 02CadGis artwork**.
+  `THIRD_PARTY_NOTICES.md` records the source (the e-Plan portal of the
+  Çevre, Şehircilik ve İklim Değişikliği Bakanlığı, Coğrafi Bilgi Sistemleri
+  Genel Müdürlüğü), the standard it carries (Ek-2 of the Mekânsal Planlar
+  Yapım Yönetmeliği), what is reproduced, what is deliberately left out — no
+  symbol font is redistributed — and which parts are original work. The
+  generated catalog header and the tarama folder carry the same note.
 
 ## [1.0.0] - 2026-07-22
 
