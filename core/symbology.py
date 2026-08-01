@@ -405,8 +405,9 @@ class PlanSymbologyMatcher:
         if not val:
             return ""
         s = val.strip().upper()
-        # Strip common scale numbers and prefixes e.g. 1000_UIP_, 5000_NIP_
+        # Strip common scale numbers and prefixes/suffixes e.g. 1000_UIP_, 5000_NIP_, _POLYGON, _LINE, _POINT
         s = re.sub(r"^(\d+[\._-]*)?(UIP_|NIP_|CDP_|MUIP_|MNIP_|KDP_|PL_|PLAN_|NCZ_LAYER_|LAYER_)", "", s, flags=re.IGNORECASE)
+        s = re.sub(r"(_POLYGON|_LINESTRING|_LINE|_POINT|_TEXT|_TABLE)$", "", s, flags=re.IGNORECASE)
         # Turkish character translation
         tr_map = str.maketrans({
             "Ç": "C", "Ğ": "G", "I": "I", "İ": "I", "Ö": "O", "Ş": "S", "Ü": "U"
@@ -476,10 +477,11 @@ def create_qgis_fill_symbol(rule: PlanStyleRule) -> Any:
     fill_qcolor.setAlphaF(rule.fill_opacity)
     stroke_qcolor = QColor(rule.stroke_color)
 
-    # 1. Base background fill layer
+    # 1. Base background fill layer with explicit SolidPattern brush
     if rule.fill_opacity > 0:
         bg_layer = QgsSimpleFillSymbolLayer()
         bg_layer.setColor(fill_qcolor)
+        bg_layer.setBrushStyle(Qt.SolidPattern)
         bg_layer.setStrokeStyle(Qt.NoPen if rule.hatch_pattern else Qt.SolidLine)
         bg_layer.setStrokeColor(stroke_qcolor)
         bg_layer.setStrokeWidth(rule.stroke_width)
@@ -567,8 +569,8 @@ def create_qgis_marker_symbol(rule: PlanStyleRule) -> Any:
     marker_layer = QgsSimpleMarkerSymbolLayer()
     marker_layer.setColor(QColor(rule.fill_color if rule.fill_color != "#E0E0E0" else "#333333"))
     marker_layer.setStrokeColor(QColor(rule.stroke_color))
-    marker_layer.setStrokeWidth(0.3)
-    marker_layer.setSize(3.0)
+    marker_layer.setStrokeWidth(0.4)
+    marker_layer.setSize(4.0)
 
     if rule.marker_shape == "square":
         marker_layer.setShape(QgsSimpleMarkerSymbolLayer.Square)
@@ -685,7 +687,7 @@ def apply_plan_symbology(
         layer_settings = QgsPalLayerSettings()
         layer_settings.fieldName = label_field
         text_format = QgsTextFormat()
-        text_format.setSize(9.0)
+        text_format.setSize(9.5)
         buffer_settings = QgsTextBufferSettings()
         buffer_settings.setEnabled(True)
         buffer_settings.setSize(1.2)

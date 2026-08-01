@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.2.1] - 2026-08-01
+
+- Fix polygon solid brush fill and point marker styling
+
 ## [1.2.0] - 2026-08-01
 
 - A-to-Z unique PlanX Adaptive Symbology Engine with closed polyline polygon classification
