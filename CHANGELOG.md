@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.3.1] - 2026-08-01
+
+- Implement QgsRuleBasedRenderer with SQL-like expression fallback rules over PlanGML schema attributes
+
 ## [1.3.0] - 2026-08-01
 
 - Incorporate official PlanGML upper/sub-group ID hierarchy codes (100-700) and schema attributes into CategorizedSymbolRenderer

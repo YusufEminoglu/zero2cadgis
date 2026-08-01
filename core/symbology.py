@@ -5,7 +5,9 @@ Provides automatic zoning legend and symbology matching for imported CAD & GIS p
 layers (NCZ, DXF, GML, KML, GeoJSON, FileGDB) based on Turkish Spatial Planning
 Regulations (Mekânsal Planlar Yapım Yönetmeliği e-Plan standards: 1/1000 UİP, 1/5000 NİP).
 
-Supports PlanGML official attribute schema and code hierarchy:
+Uses advanced QgsRuleBasedRenderer (Rule-Based Renderer) to evaluate SQL expressions
+over PlanGML official schema attributes, numerical code hierarchies (100 - 700),
+and CAD layer names:
   - UST_GRUP_ID, ALT_GRUP_ID, DETAY_GRUP_ID
   - PLAN_KODU, FONKSIYON_KODU, LEJANT_KODU, KOD
   - TAM_ADI, GISTERIM, GUSTERIM_ADI, LEJANT, FONKSIYON, KULLANIM
@@ -607,8 +609,9 @@ def apply_plan_symbology(
     plan_scale: str = "1/1000",
     override_rule: Optional[PlanStyleRule] = None,
 ) -> bool:
-    """Apply native QGIS style (fill color, hatch pattern, stroke width, labeling) to a QgsVectorLayer.
+    """Apply native QGIS Rule-Based style (fill color, hatch pattern, stroke width, labeling) to a QgsVectorLayer.
 
+    Builds an advanced QgsRuleBasedRenderer with multi-attribute fallback SQL expressions.
     Safely handles headless/testing environments where qgis.core might not be loaded.
     Returns True if styling was successfully applied, False otherwise.
     """
@@ -619,8 +622,7 @@ def apply_plan_symbology(
     try:
         from qgis.core import (  # type: ignore
             QgsSingleSymbolRenderer,
-            QgsCategorizedSymbolRenderer,
-            QgsRendererCategory,
+            QgsRuleBasedRenderer,
             QgsPalLayerSettings,
             QgsVectorLayerSimpleLabeling,
             QgsTextFormat,
@@ -646,56 +648,58 @@ def apply_plan_symbology(
             return create_qgis_marker_symbol(r)
         return None
 
-    # Comprehensive search for PlanGML official schema attribute fields
-    category_field = None
-    if hasattr(qgis_layer, "fields"):
-        fields = [f.name() for f in qgis_layer.fields()]
-        plangml_candidates = [
-            "UST_GRUP_ID", "ALT_GRUP_ID", "DETAY_GRUP_ID", "PLAN_KODU", "FONKSIYON_KODU",
-            "LEJANT_KODU", "TAM_ADI", "GISTERIM", "GUSTERIM_ADI", "KOD", "FONKSIYON",
-            "LEJANT", "KULLANIM", "layer_name", "layer", "uip_tabaka", "tabaka", "TYPE", "DETAY"
-        ]
-        for candidate in plangml_candidates:
-            if candidate in fields or candidate.lower() in [f.lower() for f in fields]:
-                for f in qgis_layer.fields():
-                    if f.name().upper() == candidate.upper():
-                        category_field = f.name()
-                        break
-                if category_field:
-                    break
+    field_names = [f.name() for f in qgis_layer.fields()] if hasattr(qgis_layer, "fields") else []
 
-    if category_field and hasattr(qgis_layer, "uniqueValues"):
-        unique_vals = qgis_layer.uniqueValues(qgis_layer.fields().indexOf(category_field))
-        if len(unique_vals) >= 1 and len(unique_vals) <= 300:
-            categories = []
-            for val in unique_vals:
-                val_str = str(val) if val is not None else ""
-                matched_rule = PlanSymbologyMatcher.match_rule(
-                    qgis_layer.name(),
-                    scale=plan_scale,
-                    attributes={category_field: val}
-                ) or rule
-                sym = build_symbol(matched_rule)
-                if sym:
-                    categories.append(QgsRendererCategory(val, sym, matched_rule.display_name))
-            if categories:
-                renderer = QgsCategorizedSymbolRenderer(category_field, categories)
-                qgis_layer.setRenderer(renderer)
-            else:
-                sym = build_symbol(rule)
-                if sym:
-                    qgis_layer.setRenderer(QgsSingleSymbolRenderer(sym))
-        else:
-            sym = build_symbol(rule)
+    # -------------------------------------------------------------------------
+    # Build QgsRuleBasedRenderer with SQL-like Filter Expressions for 100% Coverage
+    # -------------------------------------------------------------------------
+    root_rule = QgsRuleBasedRenderer.Rule(None)
+    rules_added = 0
+
+    for plan_rule in PLAN_SYMBOLOGY_CATALOG:
+        sub_exprs = []
+
+        # 1. Numeric code conditions e.g. "UST_GRUP_ID" IN (100, 101) or "PLAN_KODU" IN (100, 101)
+        numeric_codes = [k for k in plan_rule.keywords if k.isdigit()]
+        if numeric_codes:
+            codes_sql = ", ".join(numeric_codes)
+            for f_name in ["UST_GRUP_ID", "ALT_GRUP_ID", "DETAY_GRUP_ID", "PLAN_KODU", "FONKSIYON_KODU", "LEJANT_KODU", "KOD"]:
+                if f_name in field_names or f_name.lower() in [fn.lower() for fn in field_names]:
+                    exact_fn = next(fn for fn in field_names if fn.upper() == f_name.upper())
+                    sub_exprs.append(f'"{exact_fn}" IN ({codes_sql})')
+
+        # 2. Text keyword conditions e.g. "layer_name" ILIKE '%KONUT%' or "TAM_ADI" ILIKE '%KONUT%'
+        text_keywords = [k for k in plan_rule.keywords if not k.isdigit()]
+        for kw in text_keywords:
+            clean_kw = kw.replace("'", "''")
+            for f_name in ["TAM_ADI", "GISTERIM", "GUSTERIM_ADI", "LEJANT", "FONKSIYON", "KULLANIM", "layer_name", "layer", "uip_tabaka", "tabaka", "TYPE", "DETAY"]:
+                if f_name in field_names or f_name.lower() in [fn.lower() for fn in field_names]:
+                    exact_fn = next(fn for fn in field_names if fn.upper() == f_name.upper())
+                    sub_exprs.append(f'"{exact_fn}" ILIKE \'%{clean_kw}%\'')
+
+        if sub_exprs:
+            rule_sql = " OR ".join(sub_exprs)
+            sym = build_symbol(plan_rule)
             if sym:
-                qgis_layer.setRenderer(QgsSingleSymbolRenderer(sym))
+                r = QgsRuleBasedRenderer.Rule(sym, 0, 0, rule_sql, plan_rule.display_name)
+                root_rule.appendChild(r)
+                rules_added += 1
+
+    # 3. Add ELSE (Catch-All) rule for any unmatched features
+    fallback_sym = build_symbol(rule or PLAN_SYMBOLOGY_CATALOG[0])
+    if fallback_sym:
+        else_rule = QgsRuleBasedRenderer.Rule(fallback_sym, 0, 0, "ELSE", rule.display_name if rule else "Varsayılan Plan Katmanı")
+        root_rule.appendChild(else_rule)
+
+    if rules_added > 0:
+        renderer = QgsRuleBasedRenderer(root_rule)
+        qgis_layer.setRenderer(renderer)
     else:
-        sym = build_symbol(rule)
+        sym = build_symbol(rule or PLAN_SYMBOLOGY_CATALOG[0])
         if sym:
             qgis_layer.setRenderer(QgsSingleSymbolRenderer(sym))
 
     # Comprehensive candidate search for Text Annotations / Labeling
-    field_names = [f.name() for f in qgis_layer.fields()] if hasattr(qgis_layer, "fields") else []
     field_names_lower = [f.lower() for f in field_names]
 
     label_candidates = [
