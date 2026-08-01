@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.0] - 2026-08-01
+
+- Add PlanX Adaptive Symbology Engine (PASE) for automatic e-Plan zoning symbology
+
 ## [1.0.0] - 2026-07-22
 
 First stable release. 02CadGis has been validated in QGIS 3.44 LTR and

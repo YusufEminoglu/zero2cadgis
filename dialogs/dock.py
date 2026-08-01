@@ -783,6 +783,11 @@ class Zero2CadGisDockWidget(QDockWidget):
         self.chk_conv_load.setChecked(True)
         opt_form.addRow(self.chk_conv_load)
 
+        self.chk_conv_symbology = QCheckBox(
+            "Auto-apply plan symbology (e-Plan / Mevzuat Lejanti)")
+        self.chk_conv_symbology.setChecked(True)
+        opt_form.addRow(self.chk_conv_symbology)
+
         cad_gis_layout.addWidget(opt_group)
 
         # Output mode — three mutually exclusive destinations
@@ -1534,6 +1539,10 @@ class Zero2CadGisDockWidget(QDockWidget):
 
                 group = root.addGroup(group_name)
                 for cl in loaded_layers:
+                    if getattr(self, "chk_conv_symbology", None) and self.chk_conv_symbology.isChecked():
+                        with suppress(Exception):
+                            from ..core.symbology import apply_plan_symbology
+                            apply_plan_symbology(cl)
                     QgsProject.instance().addMapLayer(cl, False)
                     group.addLayer(cl)
 
@@ -2238,6 +2247,10 @@ class Zero2CadGisDockWidget(QDockWidget):
 
             group = root.addGroup(item.name)
             for layer in item.layers:
+                if getattr(self, "chk_conv_symbology", None) and self.chk_conv_symbology.isChecked():
+                    with suppress(Exception):
+                        from ..core.symbology import apply_plan_symbology
+                        apply_plan_symbology(layer)
                 project.addMapLayer(layer, False)
                 group.addLayer(layer)
 
