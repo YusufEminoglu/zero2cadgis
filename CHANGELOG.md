@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.3.4] - 2026-08-01
+
+- Fix exact matching order and add Bahçesaray NCZ tabaka symbology rules
+
 ## [1.3.3] - 2026-08-01
 
 - Implement 2-Stage Hybrid Symbology Pipeline for NCZ CAD tabaka layers
