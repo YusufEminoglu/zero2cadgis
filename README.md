@@ -127,9 +127,14 @@ Turn it on for an imar plan and 02CadGis will:
 - group tabaka into the official PlanGML upper groups (`KONUT ALANLARI`,
   `AÇIK VE YEŞİL ALANLAR`, `SOSYAL VE TEKNİK ALTYAPI ALANLARI`, …), one layer per
   upper group and geometry type;
-- add the PlanGML schema columns (`UST_GRUP_ADI`, `ALT_GRUP_ADI`, `PLAN_KODU`,
-  `FONKSIYON_KODU`, `TAM_ADI`, `GISTERIM`, `uip_tabaka`, …), keeping the original
-  tabaka name in `uip_tabaka`;
+- fill the PlanGML schema columns (`UST_GRUP_ID`, `UST_GRUP_ADI`,
+  `ALT_GRUP_ID`, `ALT_GRUP_ADI`, `PLAN_KODU`, `FONKSIYON_KODU`, `TAM_ADI`,
+  `GISTERIM`, `uip_tabaka`) with the **official codes** from the Ministry's UİP
+  tabaka catalog — `PL_KONUT` comes out as group `112000` "KONUT ALANLARI /
+  YERLEŞİM ALANLARI", function `112002` "YERLEŞİK KONUT ALANI" — keeping the
+  drawing's own tabaka name in `uip_tabaka`. A tabaka the catalog does not
+  define, such as a CAD symbol or text layer, gets empty code cells rather than
+  invented ones;
 - style each layer from the **official e-Plan style set** — a categorized renderer
   over `uip_tabaka`, so every land use inside a merged layer keeps its own official
   gösterim rather than a single flat color.

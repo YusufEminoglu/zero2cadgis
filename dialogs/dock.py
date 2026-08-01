@@ -75,6 +75,7 @@ from ..core.csv_sniffer import (
 )
 from ..core.cad_engine import CadCleanupEngine, CadStylingEngine, CadFeatureAugmenter, CadExportEngine
 from ..core.symbology import PlanSymbologyMatcher, apply_plan_symbology
+from ..core.plangml_schema import lookup_tabaka
 from ..core.path_utils import ensure_extension, has_extension
 from ..core.qgis_compat import add_features_or_raise
 
@@ -2320,18 +2321,31 @@ class Zero2CadGisDockWidget(QDockWidget):
                 plan_type = self._resolve_plan_type(source_file_name)
                 rule = PlanSymbologyMatcher.match_rule(
                     tabaka_name, plan_type=plan_type)
-                ust_grup_id = next((k for k in rule.keywords if k.isdigit()), "100")
-                alt_grup_id = next((k for k in rule.keywords[1:] if k.isdigit()), ust_grup_id)
-                ust_grup_adi = getattr(rule, "ust_grup_adi", "") or "AÇIK VE YEŞİL ALANLAR"
-                alt_grup_adi = getattr(rule, "alt_grup_adi", "") or rule.display_name
-                tam_adi = rule.display_name
-                gisterim = rule.display_name
-                fonksiyon_kodu = ust_grup_id
                 plan_kodu = {
                     "UIP": "UIP_1000",
                     "NIP": "NIP_5000",
                     "CDP": "CDP_25000",
                 }.get(plan_type, "UIP_1000")
+
+                # The codes are the Ministry's, taken from its own UİP tabaka
+                # catalog. A tabaka the catalog does not define — a CAD symbol
+                # or text layer, or a local name with no unambiguous official
+                # counterpart — gets empty code cells rather than invented ones.
+                identity = lookup_tabaka(tabaka_name)
+                if identity is not None:
+                    ust_grup_id = identity.ust_grup_id
+                    ust_grup_adi = identity.ust_grup_adi
+                    alt_grup_id = identity.fonksiyon_kodu
+                    alt_grup_adi = identity.fonksiyon_adi
+                    fonksiyon_kodu = identity.fonksiyon_kodu
+                    tam_adi = identity.fonksiyon_adi
+                else:
+                    ust_grup_id = ""
+                    ust_grup_adi = ""
+                    alt_grup_id = ""
+                    alt_grup_adi = ""
+                    fonksiyon_kodu = ""
+                    tam_adi = ""
 
                 attr_values.extend([
                     ust_grup_id,
@@ -2341,8 +2355,8 @@ class Zero2CadGisDockWidget(QDockWidget):
                     plan_kodu,
                     fonksiyon_kodu,
                     tam_adi,
-                    gisterim,
-                    tabaka_name, # uip_tabaka
+                    rule.display_name,   # GISTERIM: how it is drawn
+                    tabaka_name,         # uip_tabaka: the drawing's own name
                 ])
 
             feature = QgsFeature(layer.fields())

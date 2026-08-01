@@ -1,5 +1,30 @@
 # Changelog
 
+## [2.4.0] - 2026-08-02
+
+- Fill the PlanGML schema columns with the Ministry's own codes. They were
+  derived from the symbology engine's keyword lists, which hold no codes at
+  all, so every feature came out claiming upper group `100` — a value that
+  means nothing and that survives into an exported GeoPackage looking
+  authoritative. `PL_KONUT` now comes out as upper group `112000` "KONUT
+  ALANLARI / YERLEŞİM ALANLARI", function `112002` "YERLEŞİK KONUT ALANI".
+- The 256 tabaka and 25 upper groups of the official UİP tabaka catalog are
+  compiled into the plugin from the Mekânsal Planlar Yapım Yönetmeliği UİP
+  database. A short, documented alias list resolves local spellings a
+  municipality actually uses onto the official tabaka they are the same
+  function as, so `PL_BELEDIYE` reads as `110004` Belediye Hizmet Alanı and
+  `PL_SAGLIK_OCAGI` as `115001` Aile Sağlığı Merkezi.
+- A tabaka the catalog does not define gets **empty code cells**, not invented
+  ones. That covers CAD helper layers — symbol, text-anchor, rölöve — which
+  have no planning identity to claim, and the handful of local names with no
+  unambiguous official counterpart. A plausible-looking code in a column
+  reserved for the Ministry's codes is worse than an empty cell.
+- The drawing's own tabaka name is still kept in `uip_tabaka`, so layer
+  grouping, the categorised symbology and what you recognise on screen are
+  unchanged.
+- `THIRD_PARTY_NOTICES.md` records the catalog's source and what is reproduced
+  from it, alongside the plan gösterimleri already noted there.
+
 ## [2.3.2] - 2026-08-02
 
 - Draw `PL_KONUT` as yerleşik konut. The Ministry's own UİP tabaka catalog
