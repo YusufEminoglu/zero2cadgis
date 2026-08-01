@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.9.0] - 2026-08-01
+
+- Add dedicated PlanGML Spatial Planning Mode checkbox (disabled by default) to preserve raw CAD layers and attributes unless PlanGML mode is explicitly enabled
+
 ## [1.8.0] - 2026-08-01
 
 - Group CAD dataset layers strictly by PlanGML Upper Group (UST_GRUP_ADI) e.g. KONUT ALANLARI, AÇIK VE YEŞİL ALANLAR, SOSYAL VE TEKNİK ALTYAPI ALANLARI

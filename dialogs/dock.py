@@ -473,7 +473,7 @@ class LayerGroup:
 class Zero2CadGisDockWidget(QDockWidget):
     """100% English controller managing GIS/CAD converter, exporter, and NCZ imports."""
 
-    FIELD_DEFINITIONS = [
+    CAD_FIELD_DEFINITIONS = [
         QgsField("source_file", QMetaType.Type.QString),
         QgsField("layer_code", QMetaType.Type.Int),
         QgsField("layer_name", QMetaType.Type.QString),
@@ -491,7 +491,9 @@ class Zero2CadGisDockWidget(QDockWidget):
         QgsField("scale", QMetaType.Type.Double),
         QgsField("grid_x", QMetaType.Type.Double),
         QgsField("grid_y", QMetaType.Type.Double),
-        # Official PlanGML Schema Columns
+    ]
+
+    PLANGML_FIELD_DEFINITIONS = [
         QgsField("UST_GRUP_ID", QMetaType.Type.QString),
         QgsField("UST_GRUP_ADI", QMetaType.Type.QString),
         QgsField("ALT_GRUP_ID", QMetaType.Type.QString),
@@ -502,6 +504,8 @@ class Zero2CadGisDockWidget(QDockWidget):
         QgsField("GISTERIM", QMetaType.Type.QString),
         QgsField("uip_tabaka", QMetaType.Type.QString),
     ]
+
+    FIELD_DEFINITIONS = CAD_FIELD_DEFINITIONS + PLANGML_FIELD_DEFINITIONS
 
     def __init__(self, iface, icon_dir: str, parent=None):
         super().__init__("02CadGis - Universal CAD/GIS Importer", parent)
@@ -963,8 +967,12 @@ class Zero2CadGisDockWidget(QDockWidget):
         ncz_opt_form.addRow(self.chk_ncz_style)
 
         self.chk_ncz_plan_symbology = QCheckBox(
-            "Auto-apply plan symbology (e-Plan / Mevzuat Lejanti)")
-        self.chk_ncz_plan_symbology.setChecked(True)
+            "PlanGML İmar Dönüşüm Modunu Aktif Et (PlanGML Schema & Symbology)")
+        self.chk_ncz_plan_symbology.setToolTip(
+            "Sadece imar planı verilerinde aktif edin. Açıldığında katmanları PlanGML üst gruplarına dönüştürür, "
+            "9 adet resmi PlanGML sütununu ekler ve mevzuat lejant renklerini uygular. "
+            "Kapalıyken standart CAD katman ve renk yapısı korunur.")
+        self.chk_ncz_plan_symbology.setChecked(False)
         ncz_opt_form.addRow(self.chk_ncz_plan_symbology)
 
         self.chk_ncz_label = QCheckBox("Convert text elements to map labels")
@@ -1909,11 +1917,11 @@ class Zero2CadGisDockWidget(QDockWidget):
                         continue
 
                     layer_name = entity.layer_name or f"LAYER_{entity.layer_code}"
+                    is_plangml = getattr(self, "chk_ncz_plan_symbology", None) is not None and self.chk_ncz_plan_symbology.isChecked()
 
-                    rule = PlanSymbologyMatcher.match_rule(layer_name)
-                    ust_grup_adi = getattr(rule, "ust_grup_adi", "DİĞER PLAN ALANLARI") or "DİĞER PLAN ALANLARI"
-
-                    if merge_geometry_types:
+                    if merge_geometry_types and is_plangml:
+                        rule = PlanSymbologyMatcher.match_rule(layer_name)
+                        ust_grup_adi = getattr(rule, "ust_grup_adi", "DİĞER PLAN ALANLARI") or "DİĞER PLAN ALANLARI"
                         ust_token = self._sanitize_name(ust_grup_adi)
                         family_token = self._sanitize_name(family)
                         display_name = f"{file_base_name}_{ust_token}_{family_token}"
@@ -2146,8 +2154,13 @@ class Zero2CadGisDockWidget(QDockWidget):
         if not layer.isValid():
             return None
 
+        is_plangml = getattr(self, "chk_ncz_plan_symbology", None) is not None and self.chk_ncz_plan_symbology.isChecked()
+        field_defs = list(self.CAD_FIELD_DEFINITIONS)
+        if is_plangml:
+            field_defs.extend(self.PLANGML_FIELD_DEFINITIONS)
+
         provider = layer.dataProvider()
-        provider.addAttributes(self.FIELD_DEFINITIONS)
+        provider.addAttributes(field_defs)
         layer.updateFields()
 
         features = []
@@ -2178,20 +2191,8 @@ class Zero2CadGisDockWidget(QDockWidget):
                     id(entity), source_file_name)
 
             tabaka_name = entity.layer_name or f"LAYER_{entity.layer_code}"
-            rule = PlanSymbologyMatcher.match_rule(tabaka_name)
-            
-            ust_grup_id = next((k for k in rule.keywords if k.isdigit()), "100")
-            alt_grup_id = next((k for k in rule.keywords[1:] if k.isdigit()), ust_grup_id)
-            ust_grup_adi = getattr(rule, "ust_grup_adi", "") or "AÇIK VE YEŞİL ALANLAR"
-            alt_grup_adi = getattr(rule, "alt_grup_adi", "") or rule.display_name
-            tam_adi = rule.display_name
-            gisterim = rule.display_name
-            fonksiyon_kodu = ust_grup_id
-            plan_kodu = "UIP_1000"
 
-            feature = QgsFeature(layer.fields())
-            feature.setGeometry(geom)
-            feature.setAttributes([
+            attr_values = [
                 source_value,
                 entity.layer_code,
                 tabaka_name,
@@ -2209,17 +2210,34 @@ class Zero2CadGisDockWidget(QDockWidget):
                 entity.scale,
                 entity.grid_x,
                 entity.grid_y,
-                # Official PlanGML Schema Columns
-                ust_grup_id,
-                ust_grup_adi,
-                alt_grup_id,
-                alt_grup_adi,
-                plan_kodu,
-                fonksiyon_kodu,
-                tam_adi,
-                gisterim,
-                tabaka_name, # uip_tabaka
-            ])
+            ]
+
+            if is_plangml:
+                rule = PlanSymbologyMatcher.match_rule(tabaka_name)
+                ust_grup_id = next((k for k in rule.keywords if k.isdigit()), "100")
+                alt_grup_id = next((k for k in rule.keywords[1:] if k.isdigit()), ust_grup_id)
+                ust_grup_adi = getattr(rule, "ust_grup_adi", "") or "AÇIK VE YEŞİL ALANLAR"
+                alt_grup_adi = getattr(rule, "alt_grup_adi", "") or rule.display_name
+                tam_adi = rule.display_name
+                gisterim = rule.display_name
+                fonksiyon_kodu = ust_grup_id
+                plan_kodu = "UIP_1000"
+
+                attr_values.extend([
+                    ust_grup_id,
+                    ust_grup_adi,
+                    alt_grup_id,
+                    alt_grup_adi,
+                    plan_kodu,
+                    fonksiyon_kodu,
+                    tam_adi,
+                    gisterim,
+                    tabaka_name, # uip_tabaka
+                ])
+
+            feature = QgsFeature(layer.fields())
+            feature.setGeometry(geom)
+            feature.setAttributes(attr_values)
             features.append(feature)
 
         add_features_or_raise(
