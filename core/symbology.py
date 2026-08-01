@@ -18,7 +18,9 @@ SPDX-License-Identifier: GPL-2.0-or-later
 """
 from __future__ import annotations
 
+from contextlib import suppress
 from dataclasses import dataclass, field
+import os
 import re
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -724,6 +726,40 @@ def create_qgis_marker_symbol(rule: PlanStyleRule) -> Any:
     return symbol
 
 
+def apply_sld_from_zip(qgis_layer: Any, sld_zip_path: str = r"C:\Users\YE\Downloads\E-Plan SLD.zip") -> bool:
+    """Extract and apply matching official Ministry SLD style file directly onto a QgsVectorLayer."""
+    import tempfile, zipfile
+    if not os.path.exists(sld_zip_path) or not hasattr(qgis_layer, "name") or not hasattr(qgis_layer, "loadSldStyle"):
+        return False
+
+    layer_name = qgis_layer.name()
+    tr_map = str.maketrans({"Ç": "C", "Ğ": "G", "I": "I", "İ": "I", "Ö": "O", "Ş": "S", "Ü": "U"})
+    clean_layer = layer_name.upper().translate(tr_map)
+    clean_layer = re.sub(r"^(PL_|PLAN_|UIP_|MUIP_|NIP_|MNIP_)", "", clean_layer)
+    clean_layer = re.sub(r"(_POLYGON|_LINESTRING|_LINE|_POINT|_TEXT|_TABLE)$", "", clean_layer)
+
+    with zipfile.ZipFile(sld_zip_path, 'r') as z:
+        sld_entries = [n for n in z.namelist() if n.lower().endswith('.sld') and not os.path.basename(n).startswith('.')]
+        best_entry = None
+        for entry in sld_entries:
+            bname = os.path.splitext(os.path.basename(entry))[0].upper().translate(tr_map)
+            clean_bname = re.sub(r"^(PL_|PLAN_|UIP_|MUIP_|NIP_|MNIP_|CDP_|MCDP_)", "", bname)
+            if clean_layer == clean_bname or clean_layer in clean_bname:
+                best_entry = entry
+                break
+        
+        if best_entry:
+            tmp_dir = tempfile.gettempdir()
+            extracted_sld = z.extract(best_entry, tmp_dir)
+            res, _err = qgis_layer.loadSldStyle(extracted_sld)
+            try:
+                os.remove(extracted_sld)
+            except OSError:
+                pass
+            return res
+    return False
+
+
 def apply_plan_symbology(
     qgis_layer: Any,
     plan_scale: str = "1/1000",
@@ -738,6 +774,12 @@ def apply_plan_symbology(
     Safely handles headless/testing environments where qgis.core might not be loaded.
     Returns True if styling was successfully applied, False otherwise.
     """
+    # 0. Try loading matching official SLD from E-Plan SLD.zip if available on disk!
+    if os.path.exists(r"C:\Users\YE\Downloads\E-Plan SLD.zip"):
+        with suppress(Exception):
+            if apply_sld_from_zip(qgis_layer, r"C:\Users\YE\Downloads\E-Plan SLD.zip"):
+                return True
+
     rule = override_rule
     if rule is None and hasattr(qgis_layer, "name"):
         rule = PlanSymbologyMatcher.match_rule(qgis_layer.name(), scale=plan_scale)

@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.6.0] - 2026-08-01
+
+- Auto-detect and extract matching official Ministry SLDs from E-Plan SLD.zip directly onto vector layers
+
 ## [1.5.1] - 2026-08-01
 
 - Prioritize PlanGML symbology engine during NCZ import and trigger map canvas repaint
