@@ -951,6 +951,11 @@ class Zero2CadGisDockWidget(QDockWidget):
         self.chk_ncz_style.setChecked(True)
         ncz_opt_form.addRow(self.chk_ncz_style)
 
+        self.chk_ncz_plan_symbology = QCheckBox(
+            "Auto-apply plan symbology (e-Plan / Mevzuat Lejanti)")
+        self.chk_ncz_plan_symbology.setChecked(True)
+        ncz_opt_form.addRow(self.chk_ncz_plan_symbology)
+
         self.chk_ncz_label = QCheckBox("Convert text elements to map labels")
         self.chk_ncz_label.setChecked(True)
         ncz_opt_form.addRow(self.chk_ncz_label)
@@ -1539,7 +1544,7 @@ class Zero2CadGisDockWidget(QDockWidget):
 
                 group = root.addGroup(group_name)
                 for cl in loaded_layers:
-                    if getattr(self, "chk_conv_symbology", None) and self.chk_conv_symbology.isChecked():
+                    if getattr(self, "chk_conv_symbology", None) is None or self.chk_conv_symbology.isChecked():
                         with suppress(Exception):
                             from ..core.symbology import apply_plan_symbology
                             apply_plan_symbology(cl)
@@ -2247,7 +2252,7 @@ class Zero2CadGisDockWidget(QDockWidget):
 
             group = root.addGroup(item.name)
             for layer in item.layers:
-                if getattr(self, "chk_conv_symbology", None) and self.chk_conv_symbology.isChecked():
+                if getattr(self, "chk_ncz_plan_symbology", None) is None or self.chk_ncz_plan_symbology.isChecked():
                     with suppress(Exception):
                         from ..core.symbology import apply_plan_symbology
                         apply_plan_symbology(layer)

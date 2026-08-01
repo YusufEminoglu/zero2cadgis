@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.1] - 2026-08-01
+
+- Ensure auto-apply plan symbology is enabled by default across NCZ and Converter tabs
+
 ## [1.1.0] - 2026-08-01
 
 - Add PlanX Adaptive Symbology Engine (PASE) for automatic e-Plan zoning symbology
