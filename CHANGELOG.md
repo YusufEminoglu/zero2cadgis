@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.5.1] - 2026-08-01
+
+- Prioritize PlanGML symbology engine during NCZ import and trigger map canvas repaint
+
 ## [1.5.0] - 2026-08-01
 
 - Add explicit PlanGML text hierarchy columns (UST_GRUP_ADI, ALT_GRUP_ADI) for spatial planning categorization

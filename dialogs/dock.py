@@ -2045,6 +2045,9 @@ class Zero2CadGisDockWidget(QDockWidget):
 
             # Add GPKG layers to project
             self._add_groups_to_project(layer_groups)
+            with suppress(Exception):
+                if hasattr(self.iface, "mapCanvas") and self.iface.mapCanvas():
+                    self.iface.mapCanvas().refresh()
 
             # Apply Join
             any_tables = any(v["tables"] for v in selected_by_file.values())
@@ -2101,7 +2104,10 @@ class Zero2CadGisDockWidget(QDockWidget):
                             if augmented_layer.featureCount() == temp_layer.featureCount():
                                 processed_layer = augmented_layer
 
-                    if self.chk_ncz_style.isChecked():
+                    if getattr(self, "chk_ncz_plan_symbology", None) is None or self.chk_ncz_plan_symbology.isChecked():
+                        with suppress(Exception):
+                            apply_plan_symbology(processed_layer)
+                    elif self.chk_ncz_style.isChecked():
                         with suppress(Exception):
                             CadStylingEngine.apply_argb_renderer(
                                 processed_layer, bucket.geometry_type)
@@ -2295,10 +2301,11 @@ class Zero2CadGisDockWidget(QDockWidget):
             for layer in item.layers:
                 if getattr(self, "chk_ncz_plan_symbology", None) is None or self.chk_ncz_plan_symbology.isChecked():
                     with suppress(Exception):
-                        from ..core.symbology import apply_plan_symbology
                         apply_plan_symbology(layer)
                 project.addMapLayer(layer, False)
                 group.addLayer(layer)
+                with suppress(Exception):
+                    layer.triggerRepaint()
 
     def _coords_to_geometry(
         self,
