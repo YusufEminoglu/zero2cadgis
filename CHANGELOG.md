@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.3.1] - 2026-08-01
+
+- Show the drawing's own text again. Labels were being bound to the first
+  candidate column that merely *existed* rather than one that held anything: a
+  CAD point layer declares `name` on every feature but fills it on none, so
+  labelling latched onto it and drew nothing, while the `label` column holding
+  the real text — ada/parsel numbers, `h=6.50m`, area names — was never
+  reached. The label column is now chosen by looking for one that actually
+  contains text, and labelling is left off entirely when a layer carries none.
+- Shrink the marker on point layers that carry text to a 0.6 mm anchor. The
+  content of a CAD text point is the text drawn at it, so the marker should
+  mark the insertion point, not compete with it. Point layers without text keep
+  their normal marker.
+
 ## [2.3.0] - 2026-08-01
 
 - Work out a Netcad drawing's coordinate system automatically and preselect it.

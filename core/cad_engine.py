@@ -210,6 +210,12 @@ class CadStylingEngine:
 
     @staticmethod
     def apply_buffered_labels(layer: QgsVectorLayer) -> None:
+        from .symbology import pick_label_field
+
+        # Bind to the column that actually holds the drawing's text. Naming one
+        # outright is how this silently produced blank labels once already.
+        field = pick_label_field(layer) or "label"
+
         text_format = QgsTextFormat()
         text_format.setFont(QFont("Segoe UI", 9))
         text_format.setColor(QColor(0, 0, 0))
@@ -222,7 +228,7 @@ class CadStylingEngine:
 
         label_settings = QgsPalLayerSettings()
         label_settings.setFormat(text_format)
-        label_settings.fieldName = "label"
+        label_settings.fieldName = field
         label_settings.isExpression = False
         label_settings.placement = QgsPalLayerSettings.Placement.OverPoint
 

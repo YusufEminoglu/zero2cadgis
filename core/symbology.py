@@ -905,8 +905,48 @@ def create_qgis_line_symbol(rule: PlanStyleRule) -> Any:
     return symbol
 
 
-def create_qgis_marker_symbol(rule: PlanStyleRule) -> Any:
-    """Build a QgsMarkerSymbol for point features."""
+LABEL_FIELD_CANDIDATES = (
+    "label", "label_text", "text", "text_string", "string",
+    "yazi", "yazi_metni", "metin", "baslik", "name",
+    "kat_adedi", "emsal", "lejant", "fonksiyon", "val", "value",
+)
+
+
+def pick_label_field(qgis_layer: Any) -> Optional[str]:
+    """The field that actually carries the drawing's text, or None.
+
+    A field existing is not the same as a field holding anything. A CAD point
+    layer declares ``name`` on every feature but only fills ``label`` on the
+    text entities, so picking by name alone binds the labels to a column that
+    is empty everywhere and nothing is drawn. A candidate is therefore only
+    accepted once a non-empty value has actually been seen in it.
+    """
+    if not hasattr(qgis_layer, "fields") or not hasattr(qgis_layer, "uniqueValues"):
+        return None
+    try:
+        by_lower = {f.name().lower(): f.name() for f in qgis_layer.fields()}
+    except Exception:
+        return None
+
+    for candidate in LABEL_FIELD_CANDIDATES:
+        field = by_lower.get(candidate)
+        if field is None:
+            continue
+        with suppress(Exception):
+            index = qgis_layer.fields().indexOf(field)
+            for value in qgis_layer.uniqueValues(index, 25):
+                if value is not None and str(value).strip():
+                    return field
+    return None
+
+
+def create_qgis_marker_symbol(rule: PlanStyleRule, text_anchor: bool = False) -> Any:
+    """Build a QgsMarkerSymbol for point features.
+
+    ``text_anchor`` marks a point whose real content is the label drawn at it —
+    a CAD text insertion point. There the marker is only an anchor and must not
+    compete with the text it carries.
+    """
     from qgis.core import QgsMarkerSymbol, QgsSimpleMarkerSymbolLayer  # type: ignore
     from qgis.PyQt.QtGui import QColor  # type: ignore
 
@@ -917,11 +957,14 @@ def create_qgis_marker_symbol(rule: PlanStyleRule) -> Any:
     marker_layer = QgsSimpleMarkerSymbolLayer()
     marker_layer.setColor(QColor(rule.fill_color if rule.fill_color != "#E0E0E0" else "#333333"))
     marker_layer.setStrokeColor(QColor(rule.stroke_color))
-    marker_layer.setStrokeWidth(0.4)
-    # CAD text-anchor and symbol layers carry no official point gösterim; a
-    # chunky marker would bury the plan under dots, so they stay discreet and
-    # let the label do the talking.
-    marker_layer.setSize(2.6 if rule.category_id != "DEFAULT_PLAN" else 1.2)
+    if text_anchor:
+        marker_layer.setStrokeWidth(0.0)
+        marker_layer.setSize(0.6)
+    else:
+        marker_layer.setStrokeWidth(0.4)
+        # CAD symbol layers carry no official point gösterim; a chunky marker
+        # would bury the plan under dots, so they stay discreet.
+        marker_layer.setSize(2.6 if rule.category_id != "DEFAULT_PLAN" else 1.2)
 
     if rule.marker_shape == "square":
         marker_layer.setShape(QgsSimpleMarkerSymbolLayer.Square)
@@ -988,6 +1031,11 @@ def apply_plan_symbology(
 
     geom_type = qgis_layer.geometryType()  # 0: Point, 1: Line, 2: Polygon
 
+    # Decided before the symbols are built: on a point layer that carries text,
+    # the label is the content and the marker shrinks to an anchor.
+    label_field = pick_label_field(qgis_layer)
+    text_anchor = geom_type == 0 and label_field is not None
+
     # Helper builder for a rule & geom type
     def build_symbol(r: PlanStyleRule):
         if geom_type == 2:
@@ -995,7 +1043,7 @@ def apply_plan_symbology(
         elif geom_type == 1:
             return create_qgis_line_symbol(r)
         elif geom_type == 0:
-            return create_qgis_marker_symbol(r)
+            return create_qgis_marker_symbol(r, text_anchor=text_anchor)
         return None
 
     # Stage 1: Categorized Renderer Check on Attribute Fields
@@ -1058,29 +1106,19 @@ def apply_plan_symbology(
         if sym:
             qgis_layer.setRenderer(QgsSingleSymbolRenderer(sym))
 
-    # Text Annotations & Labeling Engine
-    field_names = [f.name() for f in qgis_layer.fields()] if hasattr(qgis_layer, "fields") else []
-    field_names_lower = [f.lower() for f in field_names]
-
-    label_candidates = [
-        "label_text", "text", "string", "name", "yazi", "metin", "label", "text_string",
-        "kat_adedi", "emsal", "lejant", "fonksiyon", "val", "value", "yazi_metni", "baslik"
-    ]
-    label_field = None
-    for candidate in label_candidates:
-        if candidate in field_names_lower:
-            idx = field_names_lower.index(candidate)
-            label_field = field_names[idx]
-            break
-
+    # Text annotations: the drawing's own text, drawn where the CAD put it.
     if label_field:
         layer_settings = QgsPalLayerSettings()
         layer_settings.fieldName = label_field
+        layer_settings.isExpression = False
+        with suppress(Exception):
+            layer_settings.placement = QgsPalLayerSettings.Placement.OverPoint
         text_format = QgsTextFormat()
         text_format.setSize(9.5)
+        text_format.setColor(QColor("#1A1A1A"))
         buffer_settings = QgsTextBufferSettings()
         buffer_settings.setEnabled(True)
-        buffer_settings.setSize(1.2)
+        buffer_settings.setSize(1.0)
         buffer_settings.setColor(QColor("#FFFFFF"))
         text_format.setBuffer(buffer_settings)
         layer_settings.setFormat(text_format)
