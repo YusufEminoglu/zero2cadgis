@@ -74,6 +74,7 @@ from ..core.csv_sniffer import (
     sniff_delimited_dataset,
 )
 from ..core.cad_engine import CadCleanupEngine, CadStylingEngine, CadFeatureAugmenter, CadExportEngine
+from ..core.symbology import PlanSymbologyMatcher, apply_plan_symbology
 from ..core.path_utils import ensure_extension, has_extension
 from ..core.qgis_compat import add_features_or_raise
 
@@ -490,6 +491,14 @@ class Zero2CadGisDockWidget(QDockWidget):
         QgsField("scale", QMetaType.Type.Double),
         QgsField("grid_x", QMetaType.Type.Double),
         QgsField("grid_y", QMetaType.Type.Double),
+        # Official PlanGML Schema Columns
+        QgsField("UST_GRUP_ID", QMetaType.Type.QString),
+        QgsField("ALT_GRUP_ID", QMetaType.Type.QString),
+        QgsField("PLAN_KODU", QMetaType.Type.QString),
+        QgsField("FONKSIYON_KODU", QMetaType.Type.QString),
+        QgsField("TAM_ADI", QMetaType.Type.QString),
+        QgsField("GISTERIM", QMetaType.Type.QString),
+        QgsField("uip_tabaka", QMetaType.Type.QString),
     ]
 
     def __init__(self, iface, icon_dir: str, parent=None):
@@ -2159,12 +2168,22 @@ class Zero2CadGisDockWidget(QDockWidget):
                 source_value = entity_source_files.get(
                     id(entity), source_file_name)
 
+            tabaka_name = entity.layer_name or f"LAYER_{entity.layer_code}"
+            rule = PlanSymbologyMatcher.match_rule(tabaka_name)
+            
+            ust_grup_id = next((k for k in rule.keywords if k.isdigit()), "100")
+            alt_grup_id = next((k for k in rule.keywords[1:] if k.isdigit()), ust_grup_id)
+            tam_adi = rule.display_name
+            gisterim = rule.display_name
+            fonksiyon_kodu = ust_grup_id
+            plan_kodu = "UIP_1000"
+
             feature = QgsFeature(layer.fields())
             feature.setGeometry(geom)
             feature.setAttributes([
                 source_value,
                 entity.layer_code,
-                entity.layer_name,
+                tabaka_name,
                 entity.geometry_kind,
                 entity.name,
                 entity.label_text,
@@ -2179,6 +2198,14 @@ class Zero2CadGisDockWidget(QDockWidget):
                 entity.scale,
                 entity.grid_x,
                 entity.grid_y,
+                # Official PlanGML Schema Columns
+                ust_grup_id,
+                alt_grup_id,
+                plan_kodu,
+                fonksiyon_kodu,
+                tam_adi,
+                gisterim,
+                tabaka_name, # uip_tabaka
             ])
             features.append(feature)
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.4.0] - 2026-08-01
+
+- Auto-generate official PlanGML schema columns (UST_GRUP_ID, ALT_GRUP_ID, PLAN_KODU, FONKSIYON_KODU, TAM_ADI, GISTERIM, uip_tabaka) on CAD import
+
 ## [1.3.4] - 2026-08-01
 
 - Fix exact matching order and add Bahçesaray NCZ tabaka symbology rules
