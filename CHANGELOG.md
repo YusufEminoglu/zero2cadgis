@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.2.3] - 2026-08-01
+
+- Categorize by layer_name and uip_tabaka attribute values for PL_ tabaka e-Plan SLD translation
+
 ## [1.2.2] - 2026-08-01
 
 - Token-based keyword search for prefixed UİP layer names

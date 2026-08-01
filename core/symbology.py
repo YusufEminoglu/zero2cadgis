@@ -635,22 +635,23 @@ def apply_plan_symbology(
     category_field = None
     if hasattr(qgis_layer, "fields"):
         fields = [f.name() for f in qgis_layer.fields()]
-        for candidate in ["FONKSIYON", "LEJANT", "KULLANIM", "TYPE", "DETAY", "LAYER", "PLAN_KODU"]:
+        for candidate in ["layer_name", "layer", "uip_tabaka", "tabaka", "FONKSIYON", "LEJANT", "KULLANIM", "TYPE", "DETAY", "PLAN_KODU"]:
             if candidate in fields or candidate.lower() in [f.lower() for f in fields]:
                 # Found a potential category field! Check if layer has unique values
                 for f in qgis_layer.fields():
                     if f.name().upper() == candidate.upper():
                         category_field = f.name()
                         break
-                break
+                if category_field:
+                    break
 
     if category_field and hasattr(qgis_layer, "uniqueValues"):
         unique_vals = qgis_layer.uniqueValues(qgis_layer.fields().indexOf(category_field))
-        if len(unique_vals) > 1 and len(unique_vals) <= 100:
+        if len(unique_vals) >= 1 and len(unique_vals) <= 200:
             categories = []
             for val in unique_vals:
                 val_str = str(val) if val is not None else ""
-                matched_rule = PlanSymbologyMatcher.match_rule(qgis_layer.name(), scale=plan_scale, attributes={category_field: val_str}) or rule
+                matched_rule = PlanSymbologyMatcher.match_rule(val_str, scale=plan_scale, attributes={category_field: val_str}) or rule
                 sym = build_symbol(matched_rule)
                 if sym:
                     categories.append(QgsRendererCategory(val, sym, matched_rule.display_name))
