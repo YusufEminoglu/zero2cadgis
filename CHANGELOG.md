@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.7.0] - 2026-08-01
+
+- Implement Unified Geometry Layer grouping (Polygon, Line, Point) with categorized PlanGML symbology trees
+
 ## [1.6.0] - 2026-08-01
 
 - Auto-detect and extract matching official Ministry SLDs from E-Plan SLD.zip directly onto vector layers

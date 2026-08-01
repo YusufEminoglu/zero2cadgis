@@ -977,11 +977,11 @@ class Zero2CadGisDockWidget(QDockWidget):
         ncz_opt_form.addRow(self.chk_ncz_join)
 
         self.chk_ncz_merge_geometry = QCheckBox(
-            "Merge geometry types across selected files")
+            "Birleştirilmiş Üst Katmanlar Oluştur (Polygon / Line / Point Unified Layers)")
         self.chk_ncz_merge_geometry.setToolTip(
-            "Batch NCZ import: group outputs by geometry type and merge "
-            "layers with the same geometry type and CAD layer name.")
-        self.chk_ncz_merge_geometry.setEnabled(False)
+            "Tüm CAD tabakalarını geometri türüne göre (Poligon, Çizgi, Nokta) birleştirerek tekil üst katmanlar altında kategorize eder.")
+        self.chk_ncz_merge_geometry.setChecked(True)
+        self.chk_ncz_merge_geometry.setEnabled(True)
         ncz_opt_form.addRow(self.chk_ncz_merge_geometry)
 
         self.chk_ncz_temporary = QCheckBox(
@@ -1870,9 +1870,7 @@ class Zero2CadGisDockWidget(QDockWidget):
             if not target_crs.isValid():
                 target_crs = QgsProject.instance().crs()
 
-            merge_enabled = self.chk_ncz_merge_geometry.isChecked()
-            has_multiple_results = len(self.ncz_readers) > 1
-            merge_geometry_types = merge_enabled and has_multiple_results
+            merge_geometry_types = self.chk_ncz_merge_geometry.isChecked()
             layer_groups = []
             merged_entity_groups = {}
             transform_context = QgsProject.instance().transformContext()
@@ -1914,10 +1912,9 @@ class Zero2CadGisDockWidget(QDockWidget):
 
                     if merge_geometry_types:
                         family_token = self._sanitize_name(family)
-                        layer_token = self._sanitize_name(layer_name)
-                        display_name = f"{base_name}_{layer_token}_{family_token}"
-                        group_name = f"{base_name}_{family_token}"
-                        bucket_key = (layer_token, family, geometry_type)
+                        display_name = f"{file_base_name}_{family_token}"
+                        group_name = file_base_name
+                        bucket_key = (family_token, geometry_type)
                     else:
                         display_name = f"{file_base_name}_{self._sanitize_name(layer_name)}_{family}"
                         group_name = f"{file_base_name}_{family}"
