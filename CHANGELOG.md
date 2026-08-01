@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.8.0] - 2026-08-01
+
+- Group CAD dataset layers strictly by PlanGML Upper Group (UST_GRUP_ADI) e.g. KONUT ALANLARI, AÇIK VE YEŞİL ALANLAR, SOSYAL VE TEKNİK ALTYAPI ALANLARI
+
 ## [1.7.0] - 2026-08-01
 
 - Implement Unified Geometry Layer grouping (Polygon, Line, Point) with categorized PlanGML symbology trees

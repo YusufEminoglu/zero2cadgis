@@ -1910,11 +1910,15 @@ class Zero2CadGisDockWidget(QDockWidget):
 
                     layer_name = entity.layer_name or f"LAYER_{entity.layer_code}"
 
+                    rule = PlanSymbologyMatcher.match_rule(layer_name)
+                    ust_grup_adi = getattr(rule, "ust_grup_adi", "DİĞER PLAN ALANLARI") or "DİĞER PLAN ALANLARI"
+
                     if merge_geometry_types:
+                        ust_token = self._sanitize_name(ust_grup_adi)
                         family_token = self._sanitize_name(family)
-                        display_name = f"{file_base_name}_{family_token}"
+                        display_name = f"{file_base_name}_{ust_token}_{family_token}"
                         group_name = file_base_name
-                        bucket_key = (family_token, geometry_type)
+                        bucket_key = (ust_token, family, geometry_type)
                     else:
                         display_name = f"{file_base_name}_{self._sanitize_name(layer_name)}_{family}"
                         group_name = f"{file_base_name}_{family}"
