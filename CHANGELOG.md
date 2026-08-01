@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.3.3] - 2026-08-01
+
+- Implement 2-Stage Hybrid Symbology Pipeline for NCZ CAD tabaka layers
+
 ## [1.3.2] - 2026-08-01
 
 - Fix QGIS expression syntax for QgsRuleBasedRenderer (replace ILIKE with valid lower LIKE expressions)
