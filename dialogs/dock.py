@@ -1760,19 +1760,27 @@ class Zero2CadGisDockWidget(QDockWidget):
                     sub.child(g_child_idx).setCheckState(0, state)
 
     def _geometry_family(
-            self, geometry_kind: str) -> tuple[str, str] | tuple[None, None]:
+            self,
+            geometry_kind: str,
+            is_closed: bool = False,
+            coords: list | None = None) -> tuple[str, str] | tuple[None, None]:
         if geometry_kind in ("Point", "Text", "Symbol", "Block"):
             return "POINT/TEXT", "Point"
-        if geometry_kind in ("Line", "Polyline", "Arc"):
-            return "LINE", "LineString"
         if geometry_kind in (
             "Polygon",
             "Box",
             "Circle",
             "Triangle",
             "MapSheet",
-                "SmartObject"):
+            "SmartObject"):
             return "POLYGON", "Polygon"
+        if geometry_kind in ("Line", "Polyline", "Arc"):
+            if geometry_kind == "Polyline":
+                if is_closed and coords and len(coords) >= 3:
+                    return "POLYGON", "Polygon"
+                if coords and len(coords) >= 4 and abs(coords[0].x - coords[-1].x) < 1e-4 and abs(coords[0].y - coords[-1].y) < 1e-4:
+                    return "POLYGON", "Polygon"
+            return "LINE", "LineString"
         return None, None
 
     def _sanitize_name(self, value: str) -> str:
@@ -1887,7 +1895,7 @@ class Zero2CadGisDockWidget(QDockWidget):
 
                 for entity in decoded_entities:
                     family, geometry_type = self._geometry_family(
-                        entity.geometry_kind)
+                        entity.geometry_kind, entity.is_closed, entity.coordinates)
                     if not family:
                         continue
 
@@ -2301,7 +2309,7 @@ class Zero2CadGisDockWidget(QDockWidget):
                 return None
 
             force_close = is_closed or geometry_kind in {
-                "Box", "Triangle", "MapSheet", "SmartObject"}
+                "Box", "Triangle", "MapSheet", "SmartObject", "Polyline"}
             ring = CadCleanupEngine.close_polyline(
                 ring,
                 self.spin_ncz_tolerance.value(),

@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.2.0] - 2026-08-01
+
+- A-to-Z unique PlanX Adaptive Symbology Engine with closed polyline polygon classification
+
 ## [1.1.2] - 2026-08-01
 
 - Expand symbology matcher rules and scale prefix stripping
