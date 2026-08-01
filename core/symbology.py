@@ -19,7 +19,7 @@ SPDX-License-Identifier: GPL-2.0-or-later
 from __future__ import annotations
 
 from contextlib import suppress
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 import os
 import re
 from typing import Any, Dict, List, Optional, Tuple
@@ -796,7 +796,7 @@ def create_qgis_fill_symbol(rule: PlanStyleRule) -> Any:
                 from qgis.core import QgsUnitTypes  # type: ignore
                 if rule.tarama_size:
                     raster_layer.setWidth(float(rule.tarama_size[0]))
-                    raster_layer.setWidthUnit(QgsUnitTypes.RenderPixels)
+                    raster_layer.setWidthUnit(QgsUnitTypes.RenderUnit.RenderPixels)
             symbol.appendSymbolLayer(raster_layer)
 
             outline_layer = QgsSimpleFillSymbolLayer()
@@ -967,13 +967,13 @@ def create_qgis_marker_symbol(rule: PlanStyleRule, text_anchor: bool = False) ->
         marker_layer.setSize(2.6 if rule.category_id != "DEFAULT_PLAN" else 1.2)
 
     if rule.marker_shape == "square":
-        marker_layer.setShape(QgsSimpleMarkerSymbolLayer.Square)
+        marker_layer.setShape(QgsSimpleMarkerSymbolLayer.Shape.Square)
     elif rule.marker_shape == "triangle":
-        marker_layer.setShape(QgsSimpleMarkerSymbolLayer.Triangle)
+        marker_layer.setShape(QgsSimpleMarkerSymbolLayer.Shape.Triangle)
     elif rule.marker_shape == "cross":
-        marker_layer.setShape(QgsSimpleMarkerSymbolLayer.Cross)
+        marker_layer.setShape(QgsSimpleMarkerSymbolLayer.Shape.Cross)
     else:
-        marker_layer.setShape(QgsSimpleMarkerSymbolLayer.Circle)
+        marker_layer.setShape(QgsSimpleMarkerSymbolLayer.Shape.Circle)
 
     symbol.appendSymbolLayer(marker_layer)
     return symbol

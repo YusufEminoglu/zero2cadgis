@@ -165,7 +165,7 @@ class TestOfficialMatching(unittest.TestCase):
         self.assertIsNotNone(rule)
         self.assertTrue(rule.official)
         self.assertEqual(rule.plan_type, "UIP")
-        self.assertEqual(rule.fill_color.upper(), "#FFFA26")
+        self.assertEqual(rule.fill_color.upper(), "#8C541A")
         self.assertEqual(rule.ust_grup_adi, "KONUT ALANLARI")
 
     def test_yerlesik_and_gelisme_konut_are_told_apart_by_tabaka_name(self):
@@ -182,9 +182,25 @@ class TestOfficialMatching(unittest.TestCase):
                 rule = match_official_rule(name, "UIP")
                 self.assertEqual(rule.fill_color.upper(), "#FFFA26")
 
-    def test_bare_konut_keeps_the_gelisme_default(self):
+    def test_pl_konut_is_yerlesik_konut(self):
+        # The Ministry's UİP tabaka catalog settles this, upper group 112000:
+        #   112001 GELİŞME KONUT ALANI  -> PL_GELISME_KONUT
+        #   112002 YERLEŞİK KONUT ALANI -> PL_KONUT
+        # so a bare PL_KONUT is not a generic konut needing a default.
         rule = match_official_rule("PL_KONUT", "UIP")
-        self.assertEqual(rule.fill_color.upper(), "#FFFA26")
+        self.assertEqual(rule.fill_color.upper(), "#8C541A")
+        self.assertEqual(rule.display_name, "Yerleşik Konut Alanı")
+        self.assertNotEqual(
+            rule.fill_color.upper(),
+            match_official_rule("PL_GELISME_KONUT", "UIP").fill_color.upper())
+
+    def test_plan_line_objects_are_hairlines(self):
+        # Their SLD widths are declared in metres of ground (kaldırım and refüj
+        # are 1 m wide); used as paper widths they draw several times too heavy.
+        for name in ("KALDIRIM", "REFUJ", "YAYA"):
+            with self.subTest(tabaka=name):
+                rule = match_official_rule(name, "UIP")
+                self.assertEqual(rule.stroke_width, 0.3)
 
     def test_konut_readings_stay_distinct_in_every_plan_type(self):
         def appearance(rule):

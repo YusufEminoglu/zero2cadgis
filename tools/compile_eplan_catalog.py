@@ -58,9 +58,18 @@ XLINK_HREF = "{http://www.w3.org/1999/xlink}href"
 U, N, C = "UIP", "NIP", "CDP"
 
 # Yerleşik vs gelişme konut is a real distinction in the official set
-# (UIP_KONUT konut_tip 0 = yerleşik #8C541A, 1 = gelişme #FFFA26). Tabaka spell
-# it many ways, so both readings are shared across every spelling below. A bare
-# KONUT carries no signal and keeps the gelişme yellow planners expect.
+# (UIP_KONUT konut_tip 0 = yerleşik #8C541A, 1 = gelişme #FFFA26).
+#
+# Which reading a bare `PL_KONUT` takes is settled by the Ministry's own UİP
+# tabaka catalog (Mekânsal Planlar Yapım Yönetmeliği UİP database), upper group
+# 112000 "KONUT ALANLARI / YERLEŞİM ALANLARI":
+#
+#     112001  GELİŞME KONUT ALANI    ->  PL_GELISME_KONUT
+#     112002  YERLEŞİK KONUT ALANI   ->  PL_KONUT
+#
+# So `PL_KONUT` is not a generic "konut" that needs a default — it is the
+# tabaka for yerleşik konut, and gelişme konut has a tabaka of its own.
+PLAN_HAIRLINE_MM = 0.3
 _YERLESIK_KONUT = ("Yerleşik Konut Alanı", {
     U: ("UIP_KONUT", "YERLESIK_KONUT"),
     N: ("NIP_MEVCUT_KONUT", "ORTA_151_300HA"),
@@ -105,14 +114,8 @@ MAPPING = {
     "GELISME": _GELISME_KONUT,
     "KENTSEL_GELISME": _GELISME_KONUT,
     "GELISME_ALANI": _GELISME_KONUT,
-    "KONUT": ("Konut Alanı", {
-        U: ("UIP_KONUT", "GELISME_KONUT"),
-        N: ("NIP_MEVCUT_KONUT", "ORTA_151_300HA"),
-        C: ("CDP_KENTSEL_YERLESIK", None)}),
-    "MESKEN": ("Konut Alanı", {
-        U: ("UIP_KONUT", "GELISME_KONUT"),
-        N: ("NIP_MEVCUT_KONUT", "ORTA_151_300HA"),
-        C: ("CDP_KENTSEL_YERLESIK", None)}),
+    "KONUT": _YERLESIK_KONUT,
+    "MESKEN": _YERLESIK_KONUT,
     "TOPLU_KONUT": ("Toplu Konut Alanı", {
         U: ("UIP_DONUSUM_KONUT_ALANLARI", "TOPLU_KONUT_ALANLARI"),
         N: ("NIP_DONUSUM_KONUT_ALANLARI", "TOPLU_KONUT_ALANLARI")}),
@@ -671,6 +674,9 @@ class SldCatalog:
                 line["stroke"] = _css(stroke, "stroke")
                 line["stroke_width"] = _parse_float(_css(stroke, "stroke-width"))
                 line["dash"] = _parse_dash(_css(stroke, "stroke-dasharray"))
+                # A metre uom means the width is a width of *ground*, not of
+                # paper — the two must not be confused when filling a mm field.
+                line["ground_uom"] = "metre" in (ls.get("uom") or "")
             out["line"] = line
         return out
 
@@ -739,7 +745,16 @@ def resolve_entry(cat: SldCatalog, label, style_name, rule_title, shipped_pngs):
     if line is not None:
         entry["line_color"] = line.get("stroke") or "#000000"
         width = line.get("stroke_width")
-        entry["line_width"] = max(0.2, min(2.0, width)) if width else 0.4
+        if width and line.get("ground_uom"):
+            # The number is metres of ground (kaldırım and refüj are declared
+            # 1 m wide, some watercourses 2.83 m). Copied into a paper width it
+            # draws these line objects several times too heavy; the drawing
+            # convention for them is a hairline.
+            entry["line_width"] = PLAN_HAIRLINE_MM
+        elif width:
+            entry["line_width"] = max(0.2, min(2.0, width))
+        else:
+            entry["line_width"] = 0.4
         if line.get("dash"):
             entry["dash"] = line["dash"]
 

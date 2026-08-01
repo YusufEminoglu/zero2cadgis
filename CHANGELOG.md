@@ -1,5 +1,25 @@
 # Changelog
 
+## [2.3.2] - 2026-08-02
+
+- Draw `PL_KONUT` as yerleşik konut. The Ministry's own UİP tabaka catalog
+  settles the reading under upper group 112000 "KONUT ALANLARI / YERLEŞİM
+  ALANLARI": 112001 GELİŞME KONUT ALANI is the tabaka `PL_GELISME_KONUT`, and
+  112002 YERLEŞİK KONUT ALANI is the tabaka `PL_KONUT`. A bare `PL_KONUT` is
+  therefore not a generic konut needing a default, and it was being given the
+  gelişme colour. Gelişme konut keeps its own reading and its own colour.
+- Draw kaldırım, refüj and yaya yolu as 0.3 mm hairlines. Their widths are
+  declared in the official style set in **metres of ground** — kaldırım and
+  refüj are 1 m wide, some watercourses 2.83 m — and were being copied into a
+  paper width, which drew them several times too heavy. Widths under a metre
+  unit are now recognised as ground widths and given the drawing convention
+  for plan line objects instead.
+- Clear the two findings the QGIS Hub reported on the previous version: an
+  unused `dataclasses.field` import that shadowed a local name (Flake8 F811),
+  and five unscoped Qt enum members (`QgsSimpleMarkerSymbolLayer.Square` and
+  friends, `QgsUnitTypes.RenderPixels`). The scoped spellings were verified to
+  work on both QGIS 3.44 LTR and QGIS 4.2 before being adopted.
+
 ## [2.3.1] - 2026-08-01
 
 - Show the drawing's own text again. Labels were being bound to the first
