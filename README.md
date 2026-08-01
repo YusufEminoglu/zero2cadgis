@@ -35,7 +35,7 @@
 - Extracts KML/KMZ `GroundOverlay` images as georeferenced GeoTIFF layers.
 - Simplifies collinear CAD vertices, removes duplicate nodes, and closes small polygon gaps by tolerance.
 - Preserves CAD color intent with QGIS renderers and optional buffered labels for text elements.
-- **Draws imar plans with the official e-Plan symbology.** In PlanGML mode, each CAD tabaka is matched against the Ministry's own plan gösterimleri style set and rendered with its official color, tarama pattern and line type. The rules and the tarama tiles are compiled into the plugin, so nothing is downloaded and no style server is needed.
+- **Draws imar plans with the official e-Plan symbology.** In PlanGML mode, each CAD tabaka is matched against the plan gösterimleri style set published by the Ministry on [eplan.csb.gov.tr](https://eplan.csb.gov.tr/) and rendered with its official color, tarama pattern and line type. The rules and the tarama tiles are compiled into the plugin, so nothing is downloaded and no style server is needed. The gösterim is the official standard, not 02CadGis artwork — see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 - Exports active QGIS vector layers to **DXF, KML or KMZ**.
 - Includes a built-in **Guide** button in the QGIS dock for workflow help.
 

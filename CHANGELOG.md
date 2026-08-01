@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.1.2] - 2026-08-01
+
+- Record the provenance of the official planning symbology. The gösterim shipped since 2.1.0 — the 131 tarama tiles redistributed byte for byte, and the colors, stroke widths, dash arrays and rule names in the generated catalog — comes from the plan gösterimleri style set published by the Çevre, Şehircilik ve İklim Değişikliği Bakanlığı on eplan.csb.gov.tr, and is the official standard of Ek-2 of the Mekânsal Planlar Yapım Yönetmeliği rather than 02CadGis artwork. `THIRD_PARTY_NOTICES.md` now states the source, what is reproduced, what is deliberately left out, and which parts are original work; the generated catalog header and the tarama folder carry the same note. No code or rendering behavior changes.
+
 ## [2.1.1] - 2026-08-01
 
 - Tell yerleşik and gelişme konut apart from the tabaka name. The official set draws them differently (brown against yellow at 1/1000, distinct tarama patterns at 1/5000 and 1/25.000+) but the distinction lives in a PlanGML attribute a CAD drawing does not carry, so the layer name is the only signal available. `YERLESIK`, `MESKUN`, `MEVCUT` and `GELISME` are now read in every spelling, before or after `KONUT`. A layer named only `KONUT` still gets the gelişme yellow.

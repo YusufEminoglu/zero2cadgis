@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """Offline compiler: official e-Plan GeoServer SLD set -> embedded plugin catalog.
 
-Reads the Ministry of Environment, Urbanisation and Climate Change e-Plan
-GeoServer data directory archive ("E-Plan SLD.zip", the public plan gösterimleri
-style set) and emits:
+Reads the GeoServer data directory archive published on the e-Plan portal of the
+T.C. Çevre, Şehircilik ve İklim Değişikliği Bakanlığı — Coğrafi Bilgi Sistemleri
+Genel Müdürlüğü (<https://eplan.csb.gov.tr/>), i.e. the official plan gösterimleri
+style set for Ek-2 of the Mekânsal Planlar Yapım Yönetmeliği, and emits:
 
   * ``core/eplan_catalog.py``  — resolved official style data (fill colors,
     tarama pattern references, stroke colors/widths/dash arrays) for every CAD
@@ -785,12 +786,18 @@ def main():
     buf = io.StringIO()
     buf.write('# -*- coding: utf-8 -*-\n')
     buf.write('"""Official Turkish e-Plan symbology catalog (generated file).\n\n')
-    buf.write('Compiled from the public Ministry e-Plan plan gösterimleri SLD style set by\n')
-    buf.write('``tools/compile_eplan_catalog.py`` — do not edit by hand; re-run the compiler.\n\n')
+    buf.write('Compiled by ``tools/compile_eplan_catalog.py`` from the plan gösterimleri\n')
+    buf.write('SLD style set published on the e-Plan portal of the T.C. Çevre, Şehircilik ve\n')
+    buf.write('İklim Değişikliği Bakanlığı — Coğrafi Bilgi Sistemleri Genel Müdürlüğü\n')
+    buf.write('(<https://eplan.csb.gov.tr/>). Do not edit by hand; re-run the compiler.\n\n')
     buf.write('Maps normalized CAD tabaka tokens to resolved official style data per plan\n')
     buf.write('type: UIP (uygulama imar planı 1/1000), NIP (nazım imar planı 1/5000),\n')
     buf.write('CDP (çevre düzeni planı 1/25.000+). Tarama tiles referenced here are shipped\n')
     buf.write('under ``resources/eplan_tarama/``.\n\n')
+    buf.write('The gösterim values below reproduce the official standard (Ek-2 of the\n')
+    buf.write('Mekânsal Planlar Yapım Yönetmeliği) and are not claimed as original work —\n')
+    buf.write('see THIRD_PARTY_NOTICES.md. The compiler, the tabaka-to-rule mapping and the\n')
+    buf.write('structure of this catalog are:\n\n')
     buf.write('Copyright (C) 2026 Yusuf Eminoğlu\n')
     buf.write('SPDX-License-Identifier: GPL-2.0-or-later\n')
     buf.write('"""\n\n')

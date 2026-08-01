@@ -1,13 +1,20 @@
 # -*- coding: utf-8 -*-
 """Official Turkish e-Plan symbology catalog (generated file).
 
-Compiled from the public Ministry e-Plan plan gösterimleri SLD style set by
-``tools/compile_eplan_catalog.py`` — do not edit by hand; re-run the compiler.
+Compiled by ``tools/compile_eplan_catalog.py`` from the plan gösterimleri
+SLD style set published on the e-Plan portal of the T.C. Çevre, Şehircilik ve
+İklim Değişikliği Bakanlığı — Coğrafi Bilgi Sistemleri Genel Müdürlüğü
+(<https://eplan.csb.gov.tr/>). Do not edit by hand; re-run the compiler.
 
 Maps normalized CAD tabaka tokens to resolved official style data per plan
 type: UIP (uygulama imar planı 1/1000), NIP (nazım imar planı 1/5000),
 CDP (çevre düzeni planı 1/25.000+). Tarama tiles referenced here are shipped
 under ``resources/eplan_tarama/``.
+
+The gösterim values below reproduce the official standard (Ek-2 of the
+Mekânsal Planlar Yapım Yönetmeliği) and are not claimed as original work —
+see THIRD_PARTY_NOTICES.md. The compiler, the tabaka-to-rule mapping and the
+structure of this catalog are:
 
 Copyright (C) 2026 Yusuf Eminoğlu
 SPDX-License-Identifier: GPL-2.0-or-later
