@@ -556,6 +556,12 @@ _PLAN_TYPE_SCALES = {
     "25000": "CDP", "50000": "CDP", "100000": "CDP", "200000": "CDP",
 }
 
+# Outline weight for a plan area. The official style set leaves the outline off
+# most polygon rules — the fill or the tarama carries the meaning — but a plan
+# sheet still needs its function boundaries to read, so this is the weight they
+# are drawn at unless a rule states its own.
+PLAN_POLYGON_OUTLINE_MM = 0.7
+
 
 def detect_plan_type(name: Optional[str]) -> Optional[str]:
     """Infer the plan type (UIP/NIP/CDP) from a file or layer name.
@@ -652,7 +658,8 @@ def _rule_from_entry(token_key: str, entry: Dict[str, Any], plan_type: str) -> P
     has_area = bool(fill or tarama_path)
     stroke = entry.get("stroke") or line_color or "#000000"
     if has_area:
-        stroke_width = float(entry.get("stroke_width", 0.15) or 0.15)
+        stroke_width = float(
+            entry.get("stroke_width") or PLAN_POLYGON_OUTLINE_MM)
     else:
         stroke_width = float(entry.get("line_width", 0.4) or 0.4)
 
@@ -1081,7 +1088,13 @@ def apply_plan_symbology(
     if category_field and hasattr(qgis_layer, "uniqueValues"):
         idx = qgis_layer.fields().indexOf(category_field)
         unique_vals = qgis_layer.uniqueValues(idx)
-        if len(unique_vals) > 1 and len(unique_vals) <= 300:
+        # A single value is still worth categorising: the symbol has to come
+        # from the tabaka. Falling through to the layer name for a one-tabaka
+        # layer only ever worked when the layer name happened to contain the
+        # tabaka's keyword, which official group names generally do not — a
+        # layer of PL_DERE named SU_ATIKSU_VE_ATIK_SISTEMLERI matched nothing
+        # and came out grey.
+        if 1 <= len(unique_vals) <= 300:
             categories = []
             for val in unique_vals:
                 val_str = str(val) if val is not None else ""

@@ -14,6 +14,7 @@ import unittest
 from zero2cadgis.core.eplan_catalog import EPLAN_CATALOG, EPLAN_PLAN_TYPES
 from zero2cadgis.core.symbology import (
     LABEL_FIELD_CANDIDATES,
+    PLAN_POLYGON_OUTLINE_MM,
     PLAN_SYMBOLOGY_CATALOG,
     PlanStyleRule,
     PlanSymbologyMatcher,
@@ -193,6 +194,35 @@ class TestOfficialMatching(unittest.TestCase):
         self.assertNotEqual(
             rule.fill_color.upper(),
             match_official_rule("PL_GELISME_KONUT", "UIP").fill_color.upper())
+
+    def test_plan_areas_carry_the_plan_outline_weight(self):
+        for name in ("PL_KONUT", "PL_PARK", "PL_CAMI", "PL_TICARET", "PL_DERE"):
+            with self.subTest(tabaka=name):
+                self.assertEqual(match_official_rule(name, "UIP").stroke_width,
+                                 PLAN_POLYGON_OUTLINE_MM)
+
+    def test_a_layer_name_cannot_stand_in_for_its_tabaka(self):
+        """Why a one-tabaka layer must take its symbol from the tabaka.
+
+        Layers are named after their official upper group. Most of those names
+        identify nothing, and a few identify the wrong thing outright — a layer
+        of PL_DERE is named after group "SU - ATIKSU VE ATIK SİSTEMLERİ", which
+        matches no rule at all, so it used to come out grey.
+        """
+        for group in ("SU - ATIKSU VE ATIK SİSTEMLERİ", "PLANLAMA SINIRLARI",
+                      "YAPI DÜZENİ VE YOĞUNLUKLARI", "ÖZEL ÇİZGİLER",
+                      "KENTSEL ÇALIŞMA ALANLARI"):
+                with self.subTest(group=group):
+                    self.assertIsNone(
+                        match_official_rule(f"1000_X_{group}_POLYGON", "UIP"))
+
+    def test_a_group_name_can_even_identify_the_wrong_thing(self):
+        # "İDARİ SINIRLAR" is a group of administrative *boundaries*, but read
+        # as a tabaka it lands on İdari Hizmet Alanı, an area. Guessing from
+        # the layer name is not merely unreliable, it is sometimes wrong.
+        by_group = match_official_rule("1000_X_İDARİ SINIRLAR_POLYGON", "UIP")
+        self.assertIsNotNone(by_group)
+        self.assertEqual(by_group.display_name, "İdari Hizmet Alanı")
 
     def test_plan_line_objects_are_hairlines(self):
         # Their SLD widths are declared in metres of ground (kaldırım and refüj

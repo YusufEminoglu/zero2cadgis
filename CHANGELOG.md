@@ -1,5 +1,24 @@
 # Changelog
 
+## [2.5.1] - 2026-08-02
+
+- Take a layer's symbol from its tabaka, never from its name. A layer holding
+  one tabaka fell through to matching its own layer name, which only ever
+  worked while layers were named after a category whose name happened to
+  contain the tabaka's keyword. Once layers took the official upper group
+  names, that stopped being true: 15 of the 24 official group names identify
+  nothing at all, so `PL_DERE` — sitting in a layer named after group
+  `SU - ATIKSU VE ATIK SİSTEMLERİ` — came out plain grey instead of water
+  blue, and `SNR_YAPIYAK` and `HAT_KADEME` lost their official styling the
+  same way. Worse, a group name can identify the *wrong* thing: read as a
+  tabaka, `İDARİ SINIRLAR` lands on İdari Hizmet Alanı, an area rather than a
+  boundary. Single-tabaka layers are now categorised on the tabaka like every
+  other layer.
+- Draw plan areas with a 0.7 mm outline. The official style set leaves the
+  outline off most polygon rules, since the fill or the tarama carries the
+  meaning, but a plan sheet still needs its function boundaries to read.
+  Rules that state their own outline keep it.
+
 ## [2.5.0] - 2026-08-02
 
 - Group layers by the Ministry's own upper groups. PlanGML mode grouped tabaka
