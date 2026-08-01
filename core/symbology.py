@@ -816,15 +816,28 @@ def apply_plan_symbology(
 
     # Stage 1: Categorized Renderer Check on Attribute Fields
     category_field = None
-    if hasattr(qgis_layer, "fields"):
+    if hasattr(qgis_layer, "fields") and hasattr(qgis_layer, "uniqueValues"):
         fields = [f.name() for f in qgis_layer.fields()]
         plangml_candidates = [
-            "UST_GRUP_ADI", "ALT_GRUP_ADI", "UST_GRUP_ID", "ALT_GRUP_ID", "DETAY_GRUP_ID", "PLAN_KODU", "FONKSIYON_KODU",
-            "LEJANT_KODU", "TAM_ADI", "GISTERIM", "GUSTERIM_ADI", "KOD", "FONKSIYON",
-            "LEJANT", "KULLANIM", "layer_name", "layer", "uip_tabaka", "tabaka", "TYPE", "DETAY"
+            "uip_tabaka", "ALT_GRUP_ADI", "TAM_ADI", "GISTERIM", "layer_name", "tabaka", "layer",
+            "ALT_GRUP_ID", "FONKSIYON_KODU", "LEJANT_KODU", "KOD", "FONKSIYON", "LEJANT", "KULLANIM",
+            "UST_GRUP_ADI", "UST_GRUP_ID", "TYPE", "DETAY"
         ]
+        # Prefer candidate field that actually has MULTIPLE unique values in this layer
         for candidate in plangml_candidates:
-            if candidate in fields or candidate.lower() in [f.lower() for f in fields]:
+            for f in qgis_layer.fields():
+                if f.name().upper() == candidate.upper():
+                    idx = qgis_layer.fields().indexOf(f.name())
+                    u_vals = qgis_layer.uniqueValues(idx)
+                    if len(u_vals) > 1:
+                        category_field = f.name()
+                        break
+            if category_field:
+                break
+
+        # Fallback: if no multi-value field found, pick first candidate field that exists
+        if not category_field:
+            for candidate in plangml_candidates:
                 for f in qgis_layer.fields():
                     if f.name().upper() == candidate.upper():
                         category_field = f.name()
@@ -834,19 +847,21 @@ def apply_plan_symbology(
 
     applied_categorized = False
     if category_field and hasattr(qgis_layer, "uniqueValues"):
-        unique_vals = qgis_layer.uniqueValues(qgis_layer.fields().indexOf(category_field))
+        idx = qgis_layer.fields().indexOf(category_field)
+        unique_vals = qgis_layer.uniqueValues(idx)
         if len(unique_vals) > 1 and len(unique_vals) <= 300:
             categories = []
             for val in unique_vals:
                 val_str = str(val) if val is not None else ""
                 matched_rule = PlanSymbologyMatcher.match_rule(
-                    qgis_layer.name(),
+                    val_str,
                     scale=plan_scale,
                     attributes={category_field: val}
                 ) or rule
                 sym = build_symbol(matched_rule)
                 if sym:
-                    categories.append(QgsRendererCategory(val, sym, matched_rule.display_name))
+                    cat_label = matched_rule.display_name if matched_rule else val_str
+                    categories.append(QgsRendererCategory(val, sym, cat_label))
             if categories:
                 renderer = QgsCategorizedSymbolRenderer(category_field, categories)
                 qgis_layer.setRenderer(renderer)

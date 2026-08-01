@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.0.0] - 2026-08-01
+
+- Fix categorized renderer category_field selection and sub-rule matching for PlanGML Upper Group layers
+
 ## [1.9.0] - 2026-08-01
 
 - Add dedicated PlanGML Spatial Planning Mode checkbox (disabled by default) to preserve raw CAD layers and attributes unless PlanGML mode is explicitly enabled
