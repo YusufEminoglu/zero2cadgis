@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.3.0] - 2026-08-01
+
+- Incorporate official PlanGML upper/sub-group ID hierarchy codes (100-700) and schema attributes into CategorizedSymbolRenderer
+
 ## [1.2.3] - 2026-08-01
 
 - Categorize by layer_name and uip_tabaka attribute values for PL_ tabaka e-Plan SLD translation

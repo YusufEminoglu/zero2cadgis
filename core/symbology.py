@@ -5,6 +5,12 @@ Provides automatic zoning legend and symbology matching for imported CAD & GIS p
 layers (NCZ, DXF, GML, KML, GeoJSON, FileGDB) based on Turkish Spatial Planning
 Regulations (Mekânsal Planlar Yapım Yönetmeliği e-Plan standards: 1/1000 UİP, 1/5000 NİP).
 
+Supports PlanGML official attribute schema and code hierarchy:
+  - UST_GRUP_ID, ALT_GRUP_ID, DETAY_GRUP_ID
+  - PLAN_KODU, FONKSIYON_KODU, LEJANT_KODU, KOD
+  - TAM_ADI, GISTERIM, GUSTERIM_ADI, LEJANT, FONKSIYON, KULLANIM
+  - Native CAD layer_name & uip_tabaka attributes
+
 Supports native vector hatch fills (tarama desenleri), custom stroke widths and line styles
 (solid, dash, dash-dot), point symbols, text annotations, and rule-based/categorized layer styling.
 
@@ -28,7 +34,7 @@ class PlanStyleRule:
     fill_opacity: float                     # 0.0 - 1.0
     stroke_color: str                       # Hex string e.g. '#333333'
     stroke_width: float                     # in mm
-    keywords: List[str]                     # Matching keywords / tokens in layer names or attributes
+    keywords: List[str]                     # Matching keywords, codes or tokens in layer names or attributes
     stroke_style: str = "solid"             # solid, dash, dot, dashdot
     hatch_pattern: Optional[str] = None     # None, diagonal, cross, horizontal, vertical
     hatch_color: Optional[str] = None       # Hex string for hatch lines
@@ -39,9 +45,10 @@ class PlanStyleRule:
 
 # -----------------------------------------------------------------------------
 # Official Turkish Spatial Planning Symbology Catalog (PASE Catalog)
+# Incorporates Official PlanGML Upper/Sub-Group Hierarchy Codes (100 - 700)
 # -----------------------------------------------------------------------------
 PLAN_SYMBOLOGY_CATALOG: List[PlanStyleRule] = [
-    # --- PLAN BOUNDARIES & CADASTRAL LINES ---
+    # --- 700: PLAN BOUNDARIES & CADASTRAL LINES ---
     PlanStyleRule(
         category_id="PLAN_BOUNDARY",
         display_name="Plan Sınırı / Ada Kenarı",
@@ -50,7 +57,7 @@ PLAN_SYMBOLOGY_CATALOG: List[PlanStyleRule] = [
         stroke_color="#000000",
         stroke_width=0.8,
         stroke_style="solid",
-        keywords=["ADA_KENARI", "PLAN_SINIRI", "SINIR", "KENAR", "PARSEL_KENARI", "CADASTRE", "BOUNDARY"],
+        keywords=["700", "701", "ADA_KENARI", "PLAN_SINIRI", "SINIR", "KENAR", "PARSEL_KENARI", "CADASTRE", "BOUNDARY"],
     ),
     PlanStyleRule(
         category_id="SIDEWALK",
@@ -60,7 +67,7 @@ PLAN_SYMBOLOGY_CATALOG: List[PlanStyleRule] = [
         stroke_color="#FF0000",
         stroke_width=0.4,
         stroke_style="solid",
-        keywords=["KALDIRIM", "YAYA_YOLU", "YAYA", "SIDEWALK", "PAVEMENT"],
+        keywords=["503", "KALDIRIM", "YAYA_YOLU", "YAYA", "SIDEWALK", "PAVEMENT"],
     ),
     PlanStyleRule(
         category_id="REFUGE",
@@ -70,10 +77,10 @@ PLAN_SYMBOLOGY_CATALOG: List[PlanStyleRule] = [
         stroke_color="#008000",
         stroke_width=0.4,
         stroke_style="solid",
-        keywords=["REFUJ", "ORTA_REFUJ", "MEDIAN"],
+        keywords=["504", "REFUJ", "ORTA_REFUJ", "MEDIAN"],
     ),
 
-    # --- RESIDENTIAL / KONUT ---
+    # --- 100: RESIDENTIAL / KONUT ALANLARI ---
     PlanStyleRule(
         category_id="RESIDENTIAL_LOW",
         display_name="Düşük Yoğunluklu Konut Alanı",
@@ -81,7 +88,7 @@ PLAN_SYMBOLOGY_CATALOG: List[PlanStyleRule] = [
         fill_opacity=1.0,
         stroke_color="#666600",
         stroke_width=0.3,
-        keywords=["KONUT_DUSUK", "DUSUK_YOGUNLUK", "DUSUK_YOGUNLIKLI", "RESIDENTIAL_LOW"],
+        keywords=["101", "KONUT_DUSUK", "DUSUK_YOGUNLUK", "DUSUK_YOGUNLIKLI", "RESIDENTIAL_LOW"],
     ),
     PlanStyleRule(
         category_id="RESIDENTIAL_MEDIUM",
@@ -90,7 +97,7 @@ PLAN_SYMBOLOGY_CATALOG: List[PlanStyleRule] = [
         fill_opacity=1.0,
         stroke_color="#666600",
         stroke_width=0.3,
-        keywords=["KONUT_ORTA", "ORTA_YOGUNLUK", "ORTA_YOGUNLIKLI", "RESIDENTIAL_MED"],
+        keywords=["102", "KONUT_ORTA", "ORTA_YOGUNLUK", "ORTA_YOGUNLIKLI", "RESIDENTIAL_MED"],
     ),
     PlanStyleRule(
         category_id="RESIDENTIAL_HIGH",
@@ -99,7 +106,7 @@ PLAN_SYMBOLOGY_CATALOG: List[PlanStyleRule] = [
         fill_opacity=1.0,
         stroke_color="#665200",
         stroke_width=0.35,
-        keywords=["KONUT_YUKSEK", "YUKSEK_YOGUNLUK", "YUKSEK_YOGUNLIKLI", "RESIDENTIAL_HIGH"],
+        keywords=["103", "KONUT_YUKSEK", "YUKSEK_YOGUNLUK", "YUKSEK_YOGUNLIKLI", "RESIDENTIAL_HIGH"],
     ),
     PlanStyleRule(
         category_id="RESIDENTIAL_GENERAL",
@@ -108,7 +115,7 @@ PLAN_SYMBOLOGY_CATALOG: List[PlanStyleRule] = [
         fill_opacity=1.0,
         stroke_color="#666600",
         stroke_width=0.3,
-        keywords=["KONUT", "KNT", "MESKEN", "KONUT_ALANI", "RESIDENTIAL", "AK_KONUT"],
+        keywords=["100", "KONUT", "KNT", "MESKEN", "KONUT_ALANI", "RESIDENTIAL", "AK_KONUT"],
     ),
     PlanStyleRule(
         category_id="COMMERCIAL_RESIDENTIAL",
@@ -117,10 +124,10 @@ PLAN_SYMBOLOGY_CATALOG: List[PlanStyleRule] = [
         fill_opacity=1.0,
         stroke_color="#995200",
         stroke_width=0.35,
-        keywords=["TIB", "TICARET_KONUT", "KONUT_TICARET", "KARMA", "MIXED_USE"],
+        keywords=["105", "TIB", "TICARET_KONUT", "KONUT_TICARET", "KARMA", "MIXED_USE"],
     ),
 
-    # --- COMMERCIAL / TİCARET ---
+    # --- 200: COMMERCIAL / TİCARET VE ÇALIŞMA ALANLARI ---
     PlanStyleRule(
         category_id="COMMERCIAL_GENERAL",
         display_name="Ticaret Alanı / İş Merkezi",
@@ -128,7 +135,7 @@ PLAN_SYMBOLOGY_CATALOG: List[PlanStyleRule] = [
         fill_opacity=1.0,
         stroke_color="#800000",
         stroke_width=0.35,
-        keywords=["TICARET", "TCR", "IS_MERKEZI", "COMMERCIAL", "TICARI", "CARSI", "SHOPPING"],
+        keywords=["200", "201", "TICARET", "TCR", "IS_MERKEZI", "COMMERCIAL", "TICARI", "CARSI", "SHOPPING"],
     ),
     PlanStyleRule(
         category_id="CENTRAL_BUSINESS",
@@ -137,7 +144,7 @@ PLAN_SYMBOLOGY_CATALOG: List[PlanStyleRule] = [
         fill_opacity=1.0,
         stroke_color="#660000",
         stroke_width=0.4,
-        keywords=["MIA", "MERKEZI_IS", "CBD", "MERKEZ"],
+        keywords=["202", "MIA", "MERKEZI_IS", "CBD", "MERKEZ"],
     ),
     PlanStyleRule(
         category_id="COMMERCIAL_STORAGE",
@@ -146,10 +153,46 @@ PLAN_SYMBOLOGY_CATALOG: List[PlanStyleRule] = [
         fill_opacity=1.0,
         stroke_color="#800000",
         stroke_width=0.3,
-        keywords=["TOPLU_TICARET", "TICARI_DEPO", "KUP", "WHOLESALE"],
+        keywords=["203", "TOPLU_TICARET", "TICARI_DEPO", "KUP", "WHOLESALE"],
+    ),
+    PlanStyleRule(
+        category_id="INDUSTRIAL_GENERAL",
+        display_name="Sanayi Alanı / Fabrika",
+        fill_color="#FF00FF",
+        fill_opacity=1.0,
+        stroke_color="#800080",
+        stroke_width=0.35,
+        keywords=["204", "SANAYI", "SAN", "FABRIKA", "INDUSTRIAL", "SANAYI_ALANI"],
+    ),
+    PlanStyleRule(
+        category_id="ORGANIZED_INDUSTRIAL",
+        display_name="Organize Sanayi Bölgesi (OSB)",
+        fill_color="#C000C0",
+        fill_opacity=1.0,
+        stroke_color="#600060",
+        stroke_width=0.4,
+        keywords=["205", "OSB", "ORGANIZE_SANAYI", "ORGANIZED_INDUSTRIAL"],
+    ),
+    PlanStyleRule(
+        category_id="SMALL_INDUSTRIAL",
+        display_name="Küçük Sanayi Sitesi (KSS)",
+        fill_color="#FF99FF",
+        fill_opacity=1.0,
+        stroke_color="#800080",
+        stroke_width=0.3,
+        keywords=["206", "KSS", "KUCUK_SANAYI", "ATOLYE", "SMALL_INDUSTRIAL"],
+    ),
+    PlanStyleRule(
+        category_id="LOGISTICS_STORAGE",
+        display_name="Lojistik ve Depolama Alanı",
+        fill_color="#CC6699",
+        fill_opacity=1.0,
+        stroke_color="#66334d",
+        stroke_width=0.35,
+        keywords=["207", "LOJISTIK", "DEPOLAMA", "ANTREPO", "LOGISTICS", "STORAGE"],
     ),
 
-    # --- PARKS & GREEN SPACES / AÇIK VE YEŞİL ALANLAR ---
+    # --- 300: PARKS & GREEN SPACES / AÇIK VE YEŞİL ALANLAR ---
     PlanStyleRule(
         category_id="PARK_PLAYGROUND",
         display_name="Park ve Çocuk Bahçesi",
@@ -157,7 +200,7 @@ PLAN_SYMBOLOGY_CATALOG: List[PlanStyleRule] = [
         fill_opacity=1.0,
         stroke_color="#006600",
         stroke_width=0.3,
-        keywords=["PARK", "COCUK_BAHCESI", "PARK_COCUK", "PLAYGROUND"],
+        keywords=["300", "301", "PARK", "COCUK_BAHCESI", "PARK_COCUK", "PLAYGROUND"],
     ),
     PlanStyleRule(
         category_id="ACTIVE_GREEN",
@@ -166,7 +209,7 @@ PLAN_SYMBOLOGY_CATALOG: List[PlanStyleRule] = [
         fill_opacity=1.0,
         stroke_color="#006600",
         stroke_width=0.3,
-        keywords=["ACIK_YESIL", "YESIL_ALAN", "YESIL", "GREEN_SPACE", "GREEN"],
+        keywords=["302", "ACIK_YESIL", "YESIL_ALAN", "YESIL", "GREEN_SPACE", "GREEN"],
     ),
     PlanStyleRule(
         category_id="SPORTS_AREA",
@@ -176,7 +219,7 @@ PLAN_SYMBOLOGY_CATALOG: List[PlanStyleRule] = [
         stroke_color="#006633",
         stroke_width=0.3,
         marker_shape="square",
-        keywords=["SPOR", "SPOR_ALANI", "SPORTS", "STADYUM", "SAHA"],
+        keywords=["303", "SPOR", "SPOR_ALANI", "SPORTS", "STADYUM", "SAHA"],
     ),
     PlanStyleRule(
         category_id="RECREATION",
@@ -185,7 +228,7 @@ PLAN_SYMBOLOGY_CATALOG: List[PlanStyleRule] = [
         fill_opacity=1.0,
         stroke_color="#006600",
         stroke_width=0.3,
-        keywords=["REKREASYON", "PIKNIK", "MESIRE", "RECREATION"],
+        keywords=["304", "REKREASYON", "PIKNIK", "MESIRE", "RECREATION"],
     ),
     PlanStyleRule(
         category_id="FOREST_AFFORESTATION",
@@ -198,7 +241,7 @@ PLAN_SYMBOLOGY_CATALOG: List[PlanStyleRule] = [
         hatch_color="#003300",
         hatch_distance=3.5,
         hatch_angle=45.0,
-        keywords=["ORMAN", "AGACLANDIRILACAK", "CORULUK", "FOREST"],
+        keywords=["305", "ORMAN", "AGACLANDIRILACAK", "CORULUK", "FOREST"],
     ),
     PlanStyleRule(
         category_id="CEMETERY",
@@ -210,10 +253,10 @@ PLAN_SYMBOLOGY_CATALOG: List[PlanStyleRule] = [
         hatch_pattern="cross",
         hatch_color="#334d33",
         hatch_distance=4.0,
-        keywords=["MEZARLIK", "MEZAR", "CEMETERY"],
+        keywords=["306", "MEZARLIK", "MEZAR", "CEMETERY"],
     ),
 
-    # --- PUBLIC FACILITIES / SOSYAL VE TEKNİK ALTYAPI ---
+    # --- 400: PUBLIC FACILITIES & UTILITIES / SOSYAL VE TEKNİK ALTYAPI ---
     PlanStyleRule(
         category_id="EDUCATION",
         display_name="Eğitim Tesis Alanı (Okul/Lise/Üniversite)",
@@ -222,7 +265,7 @@ PLAN_SYMBOLOGY_CATALOG: List[PlanStyleRule] = [
         stroke_color="#000080",
         stroke_width=0.35,
         marker_shape="square",
-        keywords=["EGITIM", "EGTM", "OKUL", "OKL", "ILKOKUL", "ORTAOKUL", "LISE", "UNIVERSITE", "KRES", "ANAOKULU", "EDUCATION"],
+        keywords=["400", "401", "EGITIM", "EGTM", "OKUL", "OKL", "ILKOKUL", "ORTAOKUL", "LISE", "UNIVERSITE", "KRES", "ANAOKULU", "EDUCATION"],
     ),
     PlanStyleRule(
         category_id="HEALTH",
@@ -232,7 +275,7 @@ PLAN_SYMBOLOGY_CATALOG: List[PlanStyleRule] = [
         stroke_color="#008080",
         stroke_width=0.35,
         marker_shape="cross",
-        keywords=["SAGLIK", "SGL", "HASTANE", "SAGLIK_OCAGI", "DISPANSER", "HEALTH", "HOSPITAL"],
+        keywords=["402", "SAGLIK", "SGL", "HASTANE", "SAGLIK_OCAGI", "DISPANSER", "HEALTH", "HOSPITAL"],
     ),
     PlanStyleRule(
         category_id="CULTURAL",
@@ -241,7 +284,7 @@ PLAN_SYMBOLOGY_CATALOG: List[PlanStyleRule] = [
         fill_opacity=1.0,
         stroke_color="#4d0066",
         stroke_width=0.35,
-        keywords=["KULTUR", "KULTUREL", "KUTUPHANE", "MUZE", "TIYATRO", "CULTURE"],
+        keywords=["403", "KULTUR", "KULTUREL", "KUTUPHANE", "MUZE", "TIYATRO", "CULTURE"],
     ),
     PlanStyleRule(
         category_id="RELIGIOUS",
@@ -251,7 +294,7 @@ PLAN_SYMBOLOGY_CATALOG: List[PlanStyleRule] = [
         stroke_color="#4d3319",
         stroke_width=0.35,
         marker_shape="triangle",
-        keywords=["IBADET", "CAMI", "DINI_TESIS", "MESCIT", "RELIGIOUS", "MOSQUE"],
+        keywords=["404", "IBADET", "CAMI", "DINI_TESIS", "MESCIT", "RELIGIOUS", "MOSQUE"],
     ),
     PlanStyleRule(
         category_id="ADMINISTRATIVE_OFFICIAL",
@@ -260,7 +303,7 @@ PLAN_SYMBOLOGY_CATALOG: List[PlanStyleRule] = [
         fill_opacity=1.0,
         stroke_color="#400040",
         stroke_width=0.35,
-        keywords=["RESMI_KURUM", "BELEDIYE", "IDARI", "GOVERNMENT", "OFFICIAL"],
+        keywords=["405", "RESMI_KURUM", "BELEDIYE", "IDARI", "GOVERNMENT", "OFFICIAL"],
     ),
     PlanStyleRule(
         category_id="SOCIAL_FACILITY",
@@ -269,7 +312,7 @@ PLAN_SYMBOLOGY_CATALOG: List[PlanStyleRule] = [
         fill_opacity=1.0,
         stroke_color="#33004d",
         stroke_width=0.35,
-        keywords=["SOSYAL_TESIS", "SOSYAL", "HIZMET_BINASI", "SOCIAL"],
+        keywords=["406", "SOSYAL_TESIS", "SOSYAL", "HIZMET_BINASI", "SOCIAL"],
     ),
     PlanStyleRule(
         category_id="MUNICIPAL_SERVICE",
@@ -278,65 +321,7 @@ PLAN_SYMBOLOGY_CATALOG: List[PlanStyleRule] = [
         fill_opacity=1.0,
         stroke_color="#4d1933",
         stroke_width=0.35,
-        keywords=["BHA", "BELEDIYE_HIZMET", "HIZMET_ALANI", "MUNICIPAL"],
-    ),
-
-    # --- INDUSTRIAL & LOGISTICS / SANAYİ VE LOJİSTİK ---
-    PlanStyleRule(
-        category_id="INDUSTRIAL_GENERAL",
-        display_name="Sanayi Alanı / Fabrika",
-        fill_color="#FF00FF",
-        fill_opacity=1.0,
-        stroke_color="#800080",
-        stroke_width=0.35,
-        keywords=["SANAYI", "SAN", "FABRIKA", "INDUSTRIAL", "SANAYI_ALANI"],
-    ),
-    PlanStyleRule(
-        category_id="ORGANIZED_INDUSTRIAL",
-        display_name="Organize Sanayi Bölgesi (OSB)",
-        fill_color="#C000C0",
-        fill_opacity=1.0,
-        stroke_color="#600060",
-        stroke_width=0.4,
-        keywords=["OSB", "ORGANIZE_SANAYI", "ORGANIZED_INDUSTRIAL"],
-    ),
-    PlanStyleRule(
-        category_id="SMALL_INDUSTRIAL",
-        display_name="Küçük Sanayi Sitesi (KSS)",
-        fill_color="#FF99FF",
-        fill_opacity=1.0,
-        stroke_color="#800080",
-        stroke_width=0.3,
-        keywords=["KSS", "KUCUK_SANAYI", "ATOLYE", "SMALL_INDUSTRIAL"],
-    ),
-    PlanStyleRule(
-        category_id="LOGISTICS_STORAGE",
-        display_name="Lojistik ve Depolama Alanı",
-        fill_color="#CC6699",
-        fill_opacity=1.0,
-        stroke_color="#66334d",
-        stroke_width=0.35,
-        keywords=["LOJISTIK", "DEPOLAMA", "ANTREPO", "LOGISTICS", "STORAGE"],
-    ),
-
-    # --- TRANSPORTATION & UTILITIES / ULAŞIM VE ALTYAPI ---
-    PlanStyleRule(
-        category_id="ROAD_TRANSPORTATION",
-        display_name="Yol / Ulaşım Güzergahı",
-        fill_color="#FFFFFF",
-        fill_opacity=1.0,
-        stroke_color="#333333",
-        stroke_width=0.5,
-        keywords=["YOL", "SOKAK", "BULVAR", "CADDE", "YOLORTA", "ROAD", "STREET", "HIGHWAY", "OTOBAN"],
-    ),
-    PlanStyleRule(
-        category_id="PARKING",
-        display_name="Otopark / Otopark Alanı",
-        fill_color="#808080",
-        fill_opacity=1.0,
-        stroke_color="#404040",
-        stroke_width=0.3,
-        keywords=["OTOPARK", "OPK", "PARKING", "OTO_PARK"],
+        keywords=["407", "BHA", "BELEDIYE_HIZMET", "HIZMET_ALANI", "MUNICIPAL"],
     ),
     PlanStyleRule(
         category_id="TECHNICAL_INFRASTRUCTURE",
@@ -349,10 +334,30 @@ PLAN_SYMBOLOGY_CATALOG: List[PlanStyleRule] = [
         hatch_color="#804d00",
         hatch_distance=3.0,
         hatch_angle=45.0,
-        keywords=["TEKNIK_ALTYAPI", "ALTYAPI", "TRAFO", "POMPA", "SU_DEPOSU", "ARITMA", "INFRASTRUCTURE"],
+        keywords=["408", "TEKNIK_ALTYAPI", "ALTYAPI", "TRAFO", "POMPA", "SU_DEPOSU", "ARITMA", "INFRASTRUCTURE"],
     ),
 
-    # --- PROTECTION & SPECIAL ZONES / KORUMA VE ÖZEL ALANLAR ---
+    # --- 500: TRANSPORTATION & UTILITIES / ULAŞIM VE ALTYAPI ---
+    PlanStyleRule(
+        category_id="ROAD_TRANSPORTATION",
+        display_name="Yol / Ulaşım Güzergahı",
+        fill_color="#FFFFFF",
+        fill_opacity=1.0,
+        stroke_color="#333333",
+        stroke_width=0.5,
+        keywords=["500", "501", "YOL", "SOKAK", "BULVAR", "CADDE", "YOLORTA", "ROAD", "STREET", "HIGHWAY", "OTOBAN"],
+    ),
+    PlanStyleRule(
+        category_id="PARKING",
+        display_name="Otopark / Otopark Alanı",
+        fill_color="#808080",
+        fill_opacity=1.0,
+        stroke_color="#404040",
+        stroke_width=0.3,
+        keywords=["502", "OTOPARK", "OPK", "PARKING", "OTO_PARK"],
+    ),
+
+    # --- 600: PROTECTION & SPECIAL ZONES / KORUMA VE ÖZEL ALANLAR ---
     PlanStyleRule(
         category_id="PROTECTION_ZONE",
         display_name="Koruma Alanı / Sit Bölgesi",
@@ -365,7 +370,7 @@ PLAN_SYMBOLOGY_CATALOG: List[PlanStyleRule] = [
         hatch_color="#997a00",
         hatch_distance=3.0,
         hatch_angle=135.0,
-        keywords=["KORUMA", "SIT", "DOGAL_SIT", "ARKEOLOJIK", "PROTECTED"],
+        keywords=["600", "601", "KORUMA", "SIT", "DOGAL_SIT", "ARKEOLOJIK", "PROTECTED"],
     ),
     PlanStyleRule(
         category_id="RISK_HAZARD_ZONE",
@@ -379,7 +384,7 @@ PLAN_SYMBOLOGY_CATALOG: List[PlanStyleRule] = [
         hatch_color="#FF3300",
         hatch_distance=2.5,
         hatch_angle=45.0,
-        keywords=["AFET", "TASKIN", "HEYELAN", "RISK_BOLGESI", "HAZARD", "FLOOD"],
+        keywords=["602", "AFET", "TASKIN", "HEYELAN", "RISK_BOLGESI", "HAZARD", "FLOOD"],
     ),
     PlanStyleRule(
         category_id="AGRICULTURAL",
@@ -391,7 +396,7 @@ PLAN_SYMBOLOGY_CATALOG: List[PlanStyleRule] = [
         hatch_pattern="horizontal",
         hatch_color="#669900",
         hatch_distance=3.5,
-        keywords=["TARIM", "MUTLAK_TARIM", "SERA", "AGRICULTURAL"],
+        keywords=["603", "TARIM", "MUTLAK_TARIM", "SERA", "AGRICULTURAL"],
     ),
 ]
 
@@ -404,7 +409,7 @@ class PlanSymbologyMatcher:
         """Clean and normalize a layer name or attribute string."""
         if not val:
             return ""
-        s = val.strip().upper()
+        s = str(val).strip().upper()
         # Strip common scale numbers and prefixes/suffixes e.g. 1000_UIP_, 5000_NIP_, _POLYGON, _LINE, _POINT
         s = re.sub(r"^(\d+[\._-]*)?(UIP_|NIP_|CDP_|MUIP_|MNIP_|KDP_|PL_|PLAN_|NCZ_LAYER_|LAYER_)", "", s, flags=re.IGNORECASE)
         s = re.sub(r"(_POLYGON|_LINESTRING|_LINE|_POINT|_TEXT|_TABLE)$", "", s, flags=re.IGNORECASE)
@@ -424,9 +429,32 @@ class PlanSymbologyMatcher:
         scale: str = "1000",
         attributes: Optional[Dict[str, Any]] = None,
     ) -> PlanStyleRule:
-        """Find the best matching PlanStyleRule using the PASE catalog."""
-        norm_name = cls.normalize_string(layer_name)
+        """Find the best matching PlanStyleRule using official PlanGML codes & keywords."""
+        if attributes:
+            # Check PlanGML Schema Code Fields First (UST_GRUP_ID, ALT_GRUP_ID, PLAN_KODU, KOD)
+            code_fields = ["UST_GRUP_ID", "ALT_GRUP_ID", "DETAY_GRUP_ID", "PLAN_KODU", "FONKSIYON_KODU", "LEJANT_KODU", "KOD"]
+            for k, v in attributes.items():
+                if any(cf == k.upper() for cf in code_fields) and v is not None:
+                    code_str = str(v).strip()
+                    if code_str:
+                        for rule in PLAN_SYMBOLOGY_CATALOG:
+                            if code_str in rule.keywords:
+                                return rule
 
+            # Check PlanGML Official Title Fields (TAM_ADI, GISTERIM, GUSTERIM_ADI, LEJANT, FONKSIYON, KULLANIM, layer_name)
+            title_fields = ["TAM_ADI", "GISTERIM", "GUSTERIM_ADI", "LEJANT", "FONKSIYON", "KULLANIM", "layer_name", "layer", "uip_tabaka", "tabaka"]
+            for k, v in attributes.items():
+                if any(tf == k.upper() for tf in title_fields) and isinstance(v, str):
+                    norm_val = cls.normalize_string(v)
+                    if norm_val:
+                        val_tokens = [t for t in norm_val.split("_") if t]
+                        for rule in PLAN_SYMBOLOGY_CATALOG:
+                            for kw in rule.keywords:
+                                norm_kw = cls.normalize_string(kw)
+                                if norm_kw and (norm_kw in val_tokens or norm_kw == norm_val or norm_kw in norm_val):
+                                    return rule
+
+        norm_name = cls.normalize_string(layer_name)
         if norm_name:
             tokens = [t for t in norm_name.split("_") if t]
             for rule in PLAN_SYMBOLOGY_CATALOG:
@@ -435,19 +463,6 @@ class PlanSymbologyMatcher:
                     if norm_kw:
                         if norm_kw in tokens or norm_kw == norm_name or norm_kw in norm_name or norm_name in norm_kw:
                             return rule
-
-        if attributes:
-            attr_keys = ["FONKSIYON", "LEJANT", "KULLANIM", "TYPE", "CATEGORY", "PLAN_KODU", "KOD", "DETAY", "LAYER"]
-            for k, v in attributes.items():
-                if any(ak in k.upper() for ak in attr_keys) and isinstance(v, str):
-                    norm_val = cls.normalize_string(v)
-                    if not norm_val:
-                        continue
-                    for rule in PLAN_SYMBOLOGY_CATALOG:
-                        for kw in rule.keywords:
-                            norm_kw = cls.normalize_string(kw)
-                            if norm_kw and (norm_kw == norm_val or norm_kw in norm_val):
-                                return rule
 
         # Fallback default rule if no match
         return PlanStyleRule(
@@ -631,13 +646,17 @@ def apply_plan_symbology(
             return create_qgis_marker_symbol(r)
         return None
 
-    # Check if layer has a land-use attribute field to categorize multiple functions inside 1 layer
+    # Comprehensive search for PlanGML official schema attribute fields
     category_field = None
     if hasattr(qgis_layer, "fields"):
         fields = [f.name() for f in qgis_layer.fields()]
-        for candidate in ["layer_name", "layer", "uip_tabaka", "tabaka", "FONKSIYON", "LEJANT", "KULLANIM", "TYPE", "DETAY", "PLAN_KODU"]:
+        plangml_candidates = [
+            "UST_GRUP_ID", "ALT_GRUP_ID", "DETAY_GRUP_ID", "PLAN_KODU", "FONKSIYON_KODU",
+            "LEJANT_KODU", "TAM_ADI", "GISTERIM", "GUSTERIM_ADI", "KOD", "FONKSIYON",
+            "LEJANT", "KULLANIM", "layer_name", "layer", "uip_tabaka", "tabaka", "TYPE", "DETAY"
+        ]
+        for candidate in plangml_candidates:
             if candidate in fields or candidate.lower() in [f.lower() for f in fields]:
-                # Found a potential category field! Check if layer has unique values
                 for f in qgis_layer.fields():
                     if f.name().upper() == candidate.upper():
                         category_field = f.name()
@@ -647,11 +666,15 @@ def apply_plan_symbology(
 
     if category_field and hasattr(qgis_layer, "uniqueValues"):
         unique_vals = qgis_layer.uniqueValues(qgis_layer.fields().indexOf(category_field))
-        if len(unique_vals) >= 1 and len(unique_vals) <= 200:
+        if len(unique_vals) >= 1 and len(unique_vals) <= 300:
             categories = []
             for val in unique_vals:
                 val_str = str(val) if val is not None else ""
-                matched_rule = PlanSymbologyMatcher.match_rule(val_str, scale=plan_scale, attributes={category_field: val_str}) or rule
+                matched_rule = PlanSymbologyMatcher.match_rule(
+                    qgis_layer.name(),
+                    scale=plan_scale,
+                    attributes={category_field: val}
+                ) or rule
                 sym = build_symbol(matched_rule)
                 if sym:
                     categories.append(QgsRendererCategory(val, sym, matched_rule.display_name))
