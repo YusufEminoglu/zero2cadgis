@@ -56,6 +56,21 @@ XLINK_HREF = "{http://www.w3.org/1999/xlink}href"
 # ---------------------------------------------------------------------------
 U, N, C = "UIP", "NIP", "CDP"
 
+# Yerleşik vs gelişme konut is a real distinction in the official set
+# (UIP_KONUT konut_tip 0 = yerleşik #8C541A, 1 = gelişme #FFFA26). Tabaka spell
+# it many ways, so both readings are shared across every spelling below. A bare
+# KONUT carries no signal and keeps the gelişme yellow planners expect.
+_YERLESIK_KONUT = ("Yerleşik Konut Alanı", {
+    U: ("UIP_KONUT", "YERLESIK_KONUT"),
+    N: ("NIP_MEVCUT_KONUT", "ORTA_151_300HA"),
+    C: ("CDP_KENTSEL_YERLESIK", None)})
+_MESKUN_KONUT = ("Yerleşik (Meskun) Konut Alanı", _YERLESIK_KONUT[1])
+_MEVCUT_KONUT = ("Mevcut (Yerleşik) Konut Alanı", _YERLESIK_KONUT[1])
+_GELISME_KONUT = ("Gelişme Konut Alanı", {
+    U: ("UIP_KONUT", "GELISME_KONUT"),
+    N: ("NIP_GELISME_KONUT", "ORTA_121_250HA"),
+    C: ("CDP_KENTSEL_GELISME_KONUT", None)})
+
 MAPPING = {
     # --- Konut / karma kullanim ---
     "KONUT_TICARET": ("Ticaret + Konut Alanı (TİCK)", {
@@ -75,26 +90,20 @@ MAPPING = {
     "TICK": ("Ticaret + Konut Alanı (TİCK)", {
         U: ("UIP_KENTSEL_CALISMA", "TICARET_KONUT_ALANI"),
         N: ("NIP_KENTSEL_CALISMA", "TICARET_KONUT_ALANI")}),
-    "YERLESIK_KONUT": ("Yerleşik Konut Alanı", {
-        U: ("UIP_KONUT", "YERLESIK_KONUT"),
-        N: ("NIP_MEVCUT_KONUT", "ORTA_151_300HA"),
-        C: ("CDP_KENTSEL_YERLESIK", None)}),
-    "KONUT_YERLESIK": ("Yerleşik Konut Alanı", {
-        U: ("UIP_KONUT", "YERLESIK_KONUT"),
-        N: ("NIP_MEVCUT_KONUT", "ORTA_151_300HA"),
-        C: ("CDP_KENTSEL_YERLESIK", None)}),
-    "MESKUN": ("Yerleşik (Meskun) Konut Alanı", {
-        U: ("UIP_KONUT", "YERLESIK_KONUT"),
-        N: ("NIP_MEVCUT_KONUT", "ORTA_151_300HA"),
-        C: ("CDP_KENTSEL_YERLESIK", None)}),
-    "GELISME_KONUT": ("Gelişme Konut Alanı", {
-        U: ("UIP_KONUT", "GELISME_KONUT"),
-        N: ("NIP_GELISME_KONUT", "ORTA_121_250HA"),
-        C: ("CDP_KENTSEL_GELISME_KONUT", None)}),
-    "KONUT_GELISME": ("Gelişme Konut Alanı", {
-        U: ("UIP_KONUT", "GELISME_KONUT"),
-        N: ("NIP_GELISME_KONUT", "ORTA_121_250HA"),
-        C: ("CDP_KENTSEL_GELISME_KONUT", None)}),
+    "YERLESIK_KONUT": _YERLESIK_KONUT,
+    "KONUT_YERLESIK": _YERLESIK_KONUT,
+    "YERLESIK": _YERLESIK_KONUT,
+    "KENTSEL_YERLESIK": _YERLESIK_KONUT,
+    "MESKUN_KONUT": _MESKUN_KONUT,
+    "KONUT_MESKUN": _MESKUN_KONUT,
+    "MESKUN": _MESKUN_KONUT,
+    "MEVCUT_KONUT": _MEVCUT_KONUT,
+    "KONUT_MEVCUT": _MEVCUT_KONUT,
+    "GELISME_KONUT": _GELISME_KONUT,
+    "KONUT_GELISME": _GELISME_KONUT,
+    "GELISME": _GELISME_KONUT,
+    "KENTSEL_GELISME": _GELISME_KONUT,
+    "GELISME_ALANI": _GELISME_KONUT,
     "KONUT": ("Konut Alanı", {
         U: ("UIP_KONUT", "GELISME_KONUT"),
         N: ("NIP_MEVCUT_KONUT", "ORTA_151_300HA"),

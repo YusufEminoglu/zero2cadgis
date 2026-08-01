@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.1.1] - 2026-08-01
+
+- Tell yerleşik and gelişme konut apart from the tabaka name. The official set draws them differently (brown against yellow at 1/1000, distinct tarama patterns at 1/5000 and 1/25.000+) but the distinction lives in a PlanGML attribute a CAD drawing does not carry, so the layer name is the only signal available. `YERLESIK`, `MESKUN`, `MEVCUT` and `GELISME` are now read in every spelling, before or after `KONUT`. A layer named only `KONUT` still gets the gelişme yellow.
+- Stop the Quality workflow failing on the offline catalog compiler. The workflow exists to mirror what the QGIS Hub scans, and the Hub only ever sees the files inside the zip, but the workflow was scanning the whole repository — including `tools/`, which `.zipignore` keeps out of every release. `tools/` is now excluded from all three static checks, matching the treatment `tests`, `e2e` and `scratch` already had.
+
 ## [2.1.0] - 2026-08-01
 
 - Match imported plan layers against the official e-Plan plan gösterimleri style set, so a Netcad or CAD imar plan is drawn with the Ministry's own colors, tarama patterns and line types instead of approximate stand-ins. 323 tabaka rules covering uygulama imar (1/1000), nazım imar (1/5000) and çevre düzeni (1/25.000+) plans ship inside the plugin, together with the 131 official tarama tiles they reference — no download, no server, no external style file.

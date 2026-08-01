@@ -98,6 +98,34 @@ class TestOfficialMatching(unittest.TestCase):
         self.assertEqual(rule.fill_color.upper(), "#FFFA26")
         self.assertEqual(rule.ust_grup_adi, "KONUT ALANLARI")
 
+    def test_yerlesik_and_gelisme_konut_are_told_apart_by_tabaka_name(self):
+        # UIP_KONUT konut_tip 0 / 1 in the official set; the CAD layer carries no
+        # such attribute, so the tabaka name is the only signal there is.
+        for name in ("PL_YERLESIK_KONUT", "PL_KONUT_YERLESIK", "PL_YERLESIK",
+                     "KENTSEL_YERLESIK", "PL_MESKUN_KONUT", "PL_MEVCUT_KONUT"):
+            with self.subTest(name=name):
+                rule = match_official_rule(name, "UIP")
+                self.assertEqual(rule.fill_color.upper(), "#8C541A")
+        for name in ("PL_GELISME_KONUT", "PL_KONUT_GELISME", "PL_GELISME",
+                     "KENTSEL_GELISME"):
+            with self.subTest(name=name):
+                rule = match_official_rule(name, "UIP")
+                self.assertEqual(rule.fill_color.upper(), "#FFFA26")
+
+    def test_bare_konut_keeps_the_gelisme_default(self):
+        rule = match_official_rule("PL_KONUT", "UIP")
+        self.assertEqual(rule.fill_color.upper(), "#FFFA26")
+
+    def test_konut_readings_stay_distinct_in_every_plan_type(self):
+        def appearance(rule):
+            return rule.tarama_path and os.path.basename(rule.tarama_path) \
+                or rule.fill_color
+        for plan_type in EPLAN_PLAN_TYPES:
+            with self.subTest(plan_type=plan_type):
+                yerlesik = match_official_rule("PL_YERLESIK_KONUT", plan_type)
+                gelisme = match_official_rule("PL_GELISME_KONUT", plan_type)
+                self.assertNotEqual(appearance(yerlesik), appearance(gelisme))
+
     def test_mixed_use_beats_bare_residential(self):
         rule = match_official_rule("PL_KONUT_TICARET", "UIP")
         self.assertIsNotNone(rule)
