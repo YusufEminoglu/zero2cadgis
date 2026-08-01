@@ -967,13 +967,30 @@ class Zero2CadGisDockWidget(QDockWidget):
         ncz_opt_form.addRow(self.chk_ncz_style)
 
         self.chk_ncz_plan_symbology = QCheckBox(
-            "PlanGML İmar Dönüşüm Modunu Aktif Et (PlanGML Schema & Symbology)")
+            "PlanGML spatial planning mode (official schema and symbology)")
         self.chk_ncz_plan_symbology.setToolTip(
-            "Sadece imar planı verilerinde aktif edin. Açıldığında katmanları PlanGML üst gruplarına dönüştürür, "
-            "9 adet resmi PlanGML sütununu ekler ve mevzuat lejant renklerini uygular. "
-            "Kapalıyken standart CAD katman ve renk yapısı korunur.")
+            "Turn this on for imar plan drawings only. Layers are grouped into "
+            "the official PlanGML upper groups, the PlanGML schema columns are "
+            "added, and each tabaka is drawn with its official e-Plan "
+            "gösterim. Left off, raw CAD layers, attributes and colors are "
+            "kept exactly as they are.")
         self.chk_ncz_plan_symbology.setChecked(False)
+        self.chk_ncz_plan_symbology.toggled.connect(
+            lambda _checked: self._sync_merge_geometry_availability())
         ncz_opt_form.addRow(self.chk_ncz_plan_symbology)
+
+        self.cmb_plan_type = QComboBox()
+        self.cmb_plan_type.addItems([
+            "Auto (detect from file name)",
+            "Uygulama İmar Planı (1/1000)",
+            "Nazım İmar Planı (1/5000)",
+            "Çevre Düzeni Planı (1/25.000+)",
+        ])
+        self.cmb_plan_type.setToolTip(
+            "Which official e-Plan style set to draw with. Auto reads the "
+            "scale from the file name: 1000 uses uygulama imar, 5000 nazım "
+            "imar, 25000 and above çevre düzeni.")
+        ncz_opt_form.addRow("Plan type (official symbology):", self.cmb_plan_type)
 
         self.chk_ncz_label = QCheckBox("Convert text elements to map labels")
         self.chk_ncz_label.setChecked(True)
@@ -985,9 +1002,11 @@ class Zero2CadGisDockWidget(QDockWidget):
         ncz_opt_form.addRow(self.chk_ncz_join)
 
         self.chk_ncz_merge_geometry = QCheckBox(
-            "Birleştirilmiş Üst Katmanlar Oluştur (Polygon / Line / Point Unified Layers)")
+            "Build unified upper layers (Polygon / Line / Point)")
         self.chk_ncz_merge_geometry.setToolTip(
-            "Tüm CAD tabakalarını geometri türüne göre (Poligon, Çizgi, Nokta) birleştirerek tekil üst katmanlar altında kategorize eder.")
+            "Merge CAD tabaka into one layer per geometry type instead of one "
+            "layer each. In PlanGML mode the layers are grouped by official "
+            "upper group and categorized by tabaka inside each group.")
         self.chk_ncz_merge_geometry.setChecked(True)
         self.chk_ncz_merge_geometry.setEnabled(True)
         ncz_opt_form.addRow(self.chk_ncz_merge_geometry)
@@ -1566,7 +1585,8 @@ class Zero2CadGisDockWidget(QDockWidget):
                     if getattr(self, "chk_conv_symbology", None) is None or self.chk_conv_symbology.isChecked():
                         with suppress(Exception):
                             from ..core.symbology import apply_plan_symbology
-                            apply_plan_symbology(cl)
+                            apply_plan_symbology(
+                                cl, source_name=os.path.basename(src))
                     QgsProject.instance().addMapLayer(cl, False)
                     group.addLayer(cl)
 
@@ -1628,10 +1648,7 @@ class Zero2CadGisDockWidget(QDockWidget):
         else:
             self.txt_ncz_path.setText(f"{len(file_paths)} files selected")
 
-        is_batch_import = len(file_paths) > 1
-        self.chk_ncz_merge_geometry.setEnabled(is_batch_import)
-        if not is_batch_import:
-            self.chk_ncz_merge_geometry.setChecked(False)
+        self._sync_merge_geometry_availability(len(file_paths) > 1)
 
         self.ncz_readers = {}
         total_records = 0
@@ -1806,6 +1823,44 @@ class Zero2CadGisDockWidget(QDockWidget):
         text = re.sub(r"\W+", "_", str(value).strip(), flags=re.UNICODE)
         return text.strip("_").upper() or "LAYER"
 
+    def _sync_merge_geometry_availability(
+            self, is_batch_import: bool | None = None) -> None:
+        """Decide whether unified upper layers can be produced.
+
+        In CAD mode merging only makes sense across several drawings. PlanGML
+        mode is defined by grouping tabaka into official upper groups, so it
+        enables merging for a single plan file too.
+        """
+        if is_batch_import is None:
+            is_batch_import = len(self.current_netcad_paths or []) > 1
+        chk_merge = getattr(self, "chk_ncz_merge_geometry", None)
+        if chk_merge is None:
+            return
+        chk_plan = getattr(self, "chk_ncz_plan_symbology", None)
+        is_plangml = chk_plan is not None and chk_plan.isChecked()
+
+        chk_merge.setEnabled(is_batch_import or is_plangml)
+        if is_plangml:
+            chk_merge.setChecked(True)
+        elif not is_batch_import:
+            chk_merge.setChecked(False)
+
+    def _selected_plan_type(self) -> str:
+        """Official e-Plan style set chosen in the UI: AUTO / UIP / NIP / CDP."""
+        combo = getattr(self, "cmb_plan_type", None)
+        if combo is None:
+            return "AUTO"
+        return {0: "AUTO", 1: "UIP", 2: "NIP", 3: "CDP"}.get(
+            combo.currentIndex(), "AUTO")
+
+    def _resolve_plan_type(self, source_name: str) -> str:
+        """Concrete plan type for a source file: UI choice, else filename scan."""
+        plan_type = self._selected_plan_type()
+        if plan_type != "AUTO":
+            return plan_type
+        from ..core.symbology import detect_plan_type
+        return detect_plan_type(source_name) or "UIP"
+
     def _import_netcad_dataset(self) -> None:
         if not self.ncz_readers:
             return
@@ -1920,7 +1975,9 @@ class Zero2CadGisDockWidget(QDockWidget):
                     is_plangml = getattr(self, "chk_ncz_plan_symbology", None) is not None and self.chk_ncz_plan_symbology.isChecked()
 
                     if merge_geometry_types and is_plangml:
-                        rule = PlanSymbologyMatcher.match_rule(layer_name)
+                        rule = PlanSymbologyMatcher.match_rule(
+                            layer_name,
+                            plan_type=self._resolve_plan_type(source_file_name))
                         ust_grup_adi = getattr(rule, "ust_grup_adi", "DİĞER PLAN ALANLARI") or "DİĞER PLAN ALANLARI"
                         ust_token = self._sanitize_name(ust_grup_adi)
                         family_token = self._sanitize_name(family)
@@ -2115,7 +2172,10 @@ class Zero2CadGisDockWidget(QDockWidget):
 
                     if getattr(self, "chk_ncz_plan_symbology", None) is None or self.chk_ncz_plan_symbology.isChecked():
                         with suppress(Exception):
-                            apply_plan_symbology(processed_layer)
+                            apply_plan_symbology(
+                                processed_layer,
+                                plan_type=self._resolve_plan_type(source_file_name),
+                                source_name=source_file_name)
                     elif self.chk_ncz_style.isChecked():
                         with suppress(Exception):
                             CadStylingEngine.apply_argb_renderer(
@@ -2213,7 +2273,9 @@ class Zero2CadGisDockWidget(QDockWidget):
             ]
 
             if is_plangml:
-                rule = PlanSymbologyMatcher.match_rule(tabaka_name)
+                plan_type = self._resolve_plan_type(source_file_name)
+                rule = PlanSymbologyMatcher.match_rule(
+                    tabaka_name, plan_type=plan_type)
                 ust_grup_id = next((k for k in rule.keywords if k.isdigit()), "100")
                 alt_grup_id = next((k for k in rule.keywords[1:] if k.isdigit()), ust_grup_id)
                 ust_grup_adi = getattr(rule, "ust_grup_adi", "") or "AÇIK VE YEŞİL ALANLAR"
@@ -2221,7 +2283,11 @@ class Zero2CadGisDockWidget(QDockWidget):
                 tam_adi = rule.display_name
                 gisterim = rule.display_name
                 fonksiyon_kodu = ust_grup_id
-                plan_kodu = "UIP_1000"
+                plan_kodu = {
+                    "UIP": "UIP_1000",
+                    "NIP": "NIP_5000",
+                    "CDP": "CDP_25000",
+                }.get(plan_type, "UIP_1000")
 
                 attr_values.extend([
                     ust_grup_id,
@@ -2320,7 +2386,10 @@ class Zero2CadGisDockWidget(QDockWidget):
             for layer in item.layers:
                 if getattr(self, "chk_ncz_plan_symbology", None) is None or self.chk_ncz_plan_symbology.isChecked():
                     with suppress(Exception):
-                        apply_plan_symbology(layer)
+                        apply_plan_symbology(
+                            layer,
+                            plan_type=self._selected_plan_type(),
+                            source_name=layer.name())
                 project.addMapLayer(layer, False)
                 group.addLayer(layer)
                 with suppress(Exception):

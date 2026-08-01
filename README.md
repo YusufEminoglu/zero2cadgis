@@ -35,6 +35,7 @@
 - Extracts KML/KMZ `GroundOverlay` images as georeferenced GeoTIFF layers.
 - Simplifies collinear CAD vertices, removes duplicate nodes, and closes small polygon gaps by tolerance.
 - Preserves CAD color intent with QGIS renderers and optional buffered labels for text elements.
+- **Draws imar plans with the official e-Plan symbology.** In PlanGML mode, each CAD tabaka is matched against the Ministry's own plan gösterimleri style set and rendered with its official color, tarama pattern and line type. The rules and the tarama tiles are compiled into the plugin, so nothing is downloaded and no style server is needed.
 - Exports active QGIS vector layers to **DXF, KML or KMZ**.
 - Includes a built-in **Guide** button in the QGIS dock for workflow help.
 
@@ -103,6 +104,33 @@ The Netcad panel is intentionally detailed because these drawings often contain 
 - **Geometry metrics:** optional length, area and centroid fields help QA and reporting.
 - **Styling:** ARGB colors and text labels can be carried into QGIS for easier review.
 - **Joins:** `@TAB` tables are linked back to geometry where matching name or label fields are available.
+
+#### PlanGML mode and official symbology
+
+**PlanGML mode is off by default and should stay off for non-planning drawings** —
+topographic surveys, utility networks, cadastral and civil engineering files keep
+their raw tabaka names, their CAD attributes and their original ARGB colors.
+
+Turn it on for an imar plan and 02CadGis will:
+
+- group tabaka into the official PlanGML upper groups (`KONUT ALANLARI`,
+  `AÇIK VE YEŞİL ALANLAR`, `SOSYAL VE TEKNİK ALTYAPI ALANLARI`, …), one layer per
+  upper group and geometry type;
+- add the PlanGML schema columns (`UST_GRUP_ADI`, `ALT_GRUP_ADI`, `PLAN_KODU`,
+  `FONKSIYON_KODU`, `TAM_ADI`, `GISTERIM`, `uip_tabaka`, …), keeping the original
+  tabaka name in `uip_tabaka`;
+- style each layer from the **official e-Plan style set** — a categorized renderer
+  over `uip_tabaka`, so every land use inside a merged layer keeps its own official
+  gösterim rather than a single flat color.
+
+The **plan type** selector picks which official set is used. *Auto* reads the scale
+from the file name — `1000_…` uses uygulama imar (1/1000), `5000_…` nazım imar
+(1/5000), `25000` and above çevre düzeni — and words such as `NAZIM` or `ÇEVRE`
+override the number. Choose the type explicitly when the file name says nothing.
+
+Tabaka the official set does not cover (CAD helper layers such as symbol, text
+anchor or rölöve layers) fall back to a neutral style and are never given a
+planning meaning they do not have.
 
 If a file does not parse as expected, retry with cleanup disabled and inspect the raw layer selection before increasing tolerance.
 

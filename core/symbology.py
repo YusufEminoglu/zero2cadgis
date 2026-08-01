@@ -43,6 +43,11 @@ class PlanStyleRule:
     hatch_distance: float = 3.0             # Line pattern spacing in mm
     hatch_angle: float = 45.0               # Line pattern angle in degrees
     marker_shape: str = "circle"            # circle, square, triangle, cross
+    dash_pattern: Optional[List[float]] = None   # Custom dash vector (mm) from official SLD
+    tarama_path: Optional[str] = None       # Official tarama (hatch tile) image path
+    tarama_size: Optional[Tuple[int, int]] = None  # Tile pixel size (w, h)
+    official: bool = False                  # True when sourced from the e-Plan SLD catalog
+    plan_type: str = ""                     # UIP / NIP / CDP when official
 
 
 # -----------------------------------------------------------------------------
@@ -517,6 +522,160 @@ PLAN_SYMBOLOGY_CATALOG: List[PlanStyleRule] = [
 ]
 
 
+# -----------------------------------------------------------------------------
+# Official e-Plan symbology engine
+#
+# ``eplan_catalog.py`` is generated offline from the public Ministry e-Plan
+# GeoServer SLD style set (tools/compile_eplan_catalog.py). It resolves CAD
+# tabaka tokens to the official plan gösterimleri appearance per plan type:
+# UIP (uygulama imar planı 1/1000), NIP (nazım imar planı 1/5000) and
+# CDP (çevre düzeni planı 1/25.000+). Tarama pattern tiles are shipped under
+# resources/eplan_tarama/.
+# -----------------------------------------------------------------------------
+from .eplan_catalog import EPLAN_CATALOG, EPLAN_PLAN_TYPES  # noqa: E402
+
+_TARAMA_DIR = os.path.normpath(os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "..", "resources", "eplan_tarama"))
+
+# Plan type fallback chain: a token missing for the requested plan type reuses
+# the closest official equivalent instead of dropping to the legacy catalog.
+_PLAN_TYPE_FALLBACK = {
+    "UIP": ("UIP", "NIP", "CDP"),
+    "NIP": ("NIP", "UIP", "CDP"),
+    "CDP": ("CDP", "NIP", "UIP"),
+}
+
+_PLAN_TYPE_WORDS = {
+    "UIP": "UIP", "UYGULAMA": "UIP", "MUIP": "UIP",
+    "NIP": "NIP", "NAZIM": "NIP", "MNIP": "NIP",
+    "CDP": "CDP", "CEVRE": "CDP", "MCDP": "CDP",
+}
+_PLAN_TYPE_SCALES = {
+    "500": "UIP", "1000": "UIP", "2000": "UIP",
+    "5000": "NIP", "10000": "NIP",
+    "25000": "CDP", "50000": "CDP", "100000": "CDP", "200000": "CDP",
+}
+
+
+def detect_plan_type(name: Optional[str]) -> Optional[str]:
+    """Infer the plan type (UIP/NIP/CDP) from a file or layer name.
+
+    Recognizes explicit markers (UIP/NAZIM/ÇEVRE...) and leading scale numbers
+    such as ``1000_BAHCESARAY_IMAR`` or ``1/5000 NAZIM PLAN``.
+    """
+    if not name:
+        return None
+    upper = str(name).upper()
+    tr_map = str.maketrans({"Ç": "C", "Ğ": "G", "İ": "I", "Ö": "O", "Ş": "S", "Ü": "U"})
+    upper = upper.translate(tr_map)
+    tokens = [t for t in re.split(r"[^A-Z0-9]+", upper) if t]
+    for token in tokens:
+        if token in _PLAN_TYPE_WORDS:
+            return _PLAN_TYPE_WORDS[token]
+    for token in tokens:
+        if token in _PLAN_TYPE_SCALES:
+            return _PLAN_TYPE_SCALES[token]
+    return None
+
+
+def _eplan_match_keys():
+    """All catalog tokens sorted for longest-first matching (cached)."""
+    cached = getattr(_eplan_match_keys, "_cache", None)
+    if cached is None:
+        keys = set()
+        for entries in EPLAN_CATALOG.values():
+            keys.update(entries)
+        cached = sorted(
+            ((tuple(k.split("_")), k) for k in keys),
+            key=lambda item: (-len(item[0]), -len(item[1])))
+        _eplan_match_keys._cache = cached
+    return cached
+
+
+def _contains_subsequence(tokens: List[str], key_tokens: Tuple[str, ...]) -> bool:
+    n, m = len(tokens), len(key_tokens)
+    if m > n:
+        return False
+    for i in range(n - m + 1):
+        if tuple(tokens[i:i + m]) == key_tokens:
+            return True
+    return False
+
+
+def _eplan_entry_for(token_key: str, plan_type: str) -> Optional[Dict[str, Any]]:
+    for pt in _PLAN_TYPE_FALLBACK.get(plan_type, ("UIP", "NIP", "CDP")):
+        entry = EPLAN_CATALOG.get(pt, {}).get(token_key)
+        if entry:
+            return entry
+    return None
+
+
+def match_official_rule(layer_name: str, plan_type: str = "UIP") -> Optional[PlanStyleRule]:
+    """Match a CAD tabaka / layer name against the official e-Plan catalog.
+
+    Returns a fully populated :class:`PlanStyleRule` carrying the official fill
+    color or tarama tile, stroke and dash data, or ``None`` when the name maps
+    to nothing official (caller falls back to the legacy PASE catalog).
+    """
+    if not layer_name:
+        return None
+    if plan_type not in EPLAN_PLAN_TYPES:
+        plan_type = detect_plan_type(layer_name) or "UIP"
+
+    norm = PlanSymbologyMatcher.normalize_string(layer_name)
+    if not norm:
+        return None
+    tokens = [t for t in norm.split("_") if t]
+
+    for key_tokens, key in _eplan_match_keys():
+        if not _contains_subsequence(tokens, key_tokens):
+            continue
+        entry = _eplan_entry_for(key, plan_type)
+        if entry is None:
+            continue
+        return _rule_from_entry(key, entry, plan_type)
+    return None
+
+
+def _rule_from_entry(token_key: str, entry: Dict[str, Any], plan_type: str) -> PlanStyleRule:
+    tarama_path = None
+    tarama_size = None
+    if entry.get("tarama"):
+        candidate = os.path.join(_TARAMA_DIR, entry["tarama"])
+        if os.path.exists(candidate):
+            tarama_path = candidate
+            size = entry.get("tarama_size")
+            tarama_size = (int(size[0]), int(size[1])) if size else None
+
+    fill = entry.get("fill")
+    line_color = entry.get("line_color")
+    has_area = bool(fill or tarama_path)
+    stroke = entry.get("stroke") or line_color or "#000000"
+    if has_area:
+        stroke_width = float(entry.get("stroke_width", 0.15) or 0.15)
+    else:
+        stroke_width = float(entry.get("line_width", 0.4) or 0.4)
+
+    dash = entry.get("dash")
+    return PlanStyleRule(
+        category_id=f"EPLAN_{plan_type}_{token_key}",
+        display_name=entry.get("label", token_key),
+        fill_color=fill or "#FFFFFF",
+        fill_opacity=float(entry.get("fill_opacity", 1.0)) if fill else 0.0,
+        stroke_color=stroke,
+        stroke_width=stroke_width,
+        keywords=[],
+        ust_grup_adi=entry.get("ust_grup", "DİĞER PLAN ALANLARI"),
+        alt_grup_adi=entry.get("label", token_key),
+        stroke_style="solid",
+        dash_pattern=[float(d) for d in dash] if dash else None,
+        tarama_path=tarama_path,
+        tarama_size=tarama_size,
+        official=True,
+        plan_type=plan_type,
+    )
+
+
 class PlanSymbologyMatcher:
     """Adaptive matcher for identifying planning land-use styles from layer metadata."""
 
@@ -541,8 +700,19 @@ class PlanSymbologyMatcher:
         layer_name: str,
         scale: str = "1000",
         attributes: Optional[Dict[str, Any]] = None,
+        plan_type: Optional[str] = None,
     ) -> PlanStyleRule:
-        """Find the best matching PlanStyleRule using official PlanGML codes & keywords."""
+        """Find the best matching PlanStyleRule using official PlanGML codes & keywords.
+
+        The official e-Plan SLD catalog (per plan type UIP/NIP/CDP) has priority;
+        the legacy PASE keyword catalog is the fallback for names the Ministry
+        style set does not cover.
+        """
+        official = match_official_rule(
+            layer_name, plan_type or detect_plan_type(layer_name) or "UIP")
+        if official is not None:
+            return official
+
         if attributes:
             code_fields = ["UST_GRUP_ID", "ALT_GRUP_ID", "DETAY_GRUP_ID", "PLAN_KODU", "FONKSIYON_KODU", "LEJANT_KODU", "KOD"]
             for k, v in attributes.items():
@@ -600,7 +770,12 @@ class PlanSymbologyMatcher:
 
 
 def create_qgis_fill_symbol(rule: PlanStyleRule) -> Any:
-    """Build a rich multi-layer QgsFillSymbol with vector hatch patterns and outlines."""
+    """Build a rich multi-layer QgsFillSymbol with vector hatch patterns and outlines.
+
+    Official e-Plan rules with a tarama tile render the Ministry pattern image
+    via a raster fill at its native pixel size; the rest use flat fills plus
+    optional vector hatches.
+    """
     from qgis.core import (  # type: ignore
         QgsFillSymbol,
         QgsSimpleFillSymbolLayer,
@@ -613,6 +788,26 @@ def create_qgis_fill_symbol(rule: PlanStyleRule) -> Any:
     while symbol.symbolLayerCount() > 0:
         symbol.takeSymbolLayer(0)
 
+    if rule.tarama_path and os.path.exists(rule.tarama_path):
+        with suppress(Exception):
+            from qgis.core import QgsRasterFillSymbolLayer  # type: ignore
+            raster_layer = QgsRasterFillSymbolLayer(rule.tarama_path)
+            with suppress(Exception):
+                from qgis.core import QgsUnitTypes  # type: ignore
+                if rule.tarama_size:
+                    raster_layer.setWidth(float(rule.tarama_size[0]))
+                    raster_layer.setWidthUnit(QgsUnitTypes.RenderPixels)
+            symbol.appendSymbolLayer(raster_layer)
+
+            outline_layer = QgsSimpleFillSymbolLayer()
+            outline_layer.setBrushStyle(Qt.BrushStyle.NoBrush)
+            outline_layer.setFillColor(QColor(0, 0, 0, 0))
+            outline_layer.setStrokeStyle(Qt.PenStyle.SolidLine)
+            outline_layer.setStrokeColor(QColor(rule.stroke_color))
+            outline_layer.setStrokeWidth(max(rule.stroke_width, 0.1))
+            symbol.appendSymbolLayer(outline_layer)
+            return symbol
+
     fill_qcolor = QColor(rule.fill_color)
     fill_qcolor.setAlphaF(rule.fill_opacity)
     stroke_qcolor = QColor(rule.stroke_color)
@@ -622,8 +817,9 @@ def create_qgis_fill_symbol(rule: PlanStyleRule) -> Any:
         bg_layer = QgsSimpleFillSymbolLayer()
         bg_layer.setColor(fill_qcolor)
         bg_layer.setFillColor(fill_qcolor)
-        bg_layer.setBrushStyle(Qt.SolidPattern)
-        bg_layer.setStrokeStyle(Qt.NoPen if rule.hatch_pattern else Qt.SolidLine)
+        bg_layer.setBrushStyle(Qt.BrushStyle.SolidPattern)
+        bg_layer.setStrokeStyle(
+            Qt.PenStyle.NoPen if rule.hatch_pattern else Qt.PenStyle.SolidLine)
         bg_layer.setStrokeColor(stroke_qcolor)
         bg_layer.setStrokeWidth(rule.stroke_width)
         symbol.appendSymbolLayer(bg_layer)
@@ -649,19 +845,19 @@ def create_qgis_fill_symbol(rule: PlanStyleRule) -> Any:
     # 3. Clean boundary outline layer
     if rule.stroke_width > 0:
         outline_layer = QgsSimpleFillSymbolLayer()
-        outline_layer.setBrushStyle(Qt.NoBrush)
+        outline_layer.setBrushStyle(Qt.BrushStyle.NoBrush)
         outline_layer.setFillColor(QColor(0, 0, 0, 0))
         outline_layer.setStrokeColor(stroke_qcolor)
         outline_layer.setStrokeWidth(rule.stroke_width)
 
         if rule.stroke_style == "dash":
-            outline_layer.setStrokeStyle(Qt.DashLine)
+            outline_layer.setStrokeStyle(Qt.PenStyle.DashLine)
         elif rule.stroke_style == "dashdot":
-            outline_layer.setStrokeStyle(Qt.DashDotLine)
+            outline_layer.setStrokeStyle(Qt.PenStyle.DashDotLine)
         elif rule.stroke_style == "dot":
-            outline_layer.setStrokeStyle(Qt.DotLine)
+            outline_layer.setStrokeStyle(Qt.PenStyle.DotLine)
         else:
-            outline_layer.setStrokeStyle(Qt.SolidLine)
+            outline_layer.setStrokeStyle(Qt.PenStyle.SolidLine)
 
         symbol.appendSymbolLayer(outline_layer)
 
@@ -683,16 +879,27 @@ def create_qgis_line_symbol(rule: PlanStyleRule) -> Any:
     if line_color == "#E0E0E0":
         line_color = "#222222"
     line_layer.setColor(QColor(line_color))
-    line_layer.setWidth(max(rule.stroke_width * 1.5, 0.5))
+    if rule.official:
+        line_layer.setColor(QColor(rule.stroke_color))
+        line_layer.setWidth(max(rule.stroke_width, 0.3))
+    else:
+        line_layer.setWidth(max(rule.stroke_width * 1.5, 0.5))
+
+    if rule.dash_pattern:
+        with suppress(Exception):
+            line_layer.setCustomDashVector(rule.dash_pattern)
+            line_layer.setUseCustomDashPattern(True)
+            symbol.appendSymbolLayer(line_layer)
+            return symbol
 
     if rule.stroke_style == "dash":
-        line_layer.setPenStyle(Qt.DashLine)
+        line_layer.setPenStyle(Qt.PenStyle.DashLine)
     elif rule.stroke_style == "dashdot":
-        line_layer.setPenStyle(Qt.DashDotLine)
+        line_layer.setPenStyle(Qt.PenStyle.DashDotLine)
     elif rule.stroke_style == "dot":
-        line_layer.setPenStyle(Qt.DotLine)
+        line_layer.setPenStyle(Qt.PenStyle.DotLine)
     else:
-        line_layer.setPenStyle(Qt.SolidLine)
+        line_layer.setPenStyle(Qt.PenStyle.SolidLine)
 
     symbol.appendSymbolLayer(line_layer)
     return symbol
@@ -711,7 +918,10 @@ def create_qgis_marker_symbol(rule: PlanStyleRule) -> Any:
     marker_layer.setColor(QColor(rule.fill_color if rule.fill_color != "#E0E0E0" else "#333333"))
     marker_layer.setStrokeColor(QColor(rule.stroke_color))
     marker_layer.setStrokeWidth(0.4)
-    marker_layer.setSize(4.0)
+    # CAD text-anchor and symbol layers carry no official point gösterim; a
+    # chunky marker would bury the plan under dots, so they stay discreet and
+    # let the label do the talking.
+    marker_layer.setSize(2.6 if rule.category_id != "DEFAULT_PLAN" else 1.2)
 
     if rule.marker_shape == "square":
         marker_layer.setShape(QgsSimpleMarkerSymbolLayer.Square)
@@ -726,63 +936,37 @@ def create_qgis_marker_symbol(rule: PlanStyleRule) -> Any:
     return symbol
 
 
-def apply_sld_from_zip(qgis_layer: Any, sld_zip_path: str = r"C:\Users\YE\Downloads\E-Plan SLD.zip") -> bool:
-    """Extract and apply matching official Ministry SLD style file directly onto a QgsVectorLayer."""
-    import tempfile, zipfile
-    if not os.path.exists(sld_zip_path) or not hasattr(qgis_layer, "name") or not hasattr(qgis_layer, "loadSldStyle"):
-        return False
-
-    layer_name = qgis_layer.name()
-    tr_map = str.maketrans({"Ç": "C", "Ğ": "G", "I": "I", "İ": "I", "Ö": "O", "Ş": "S", "Ü": "U"})
-    clean_layer = layer_name.upper().translate(tr_map)
-    clean_layer = re.sub(r"^(PL_|PLAN_|UIP_|MUIP_|NIP_|MNIP_)", "", clean_layer)
-    clean_layer = re.sub(r"(_POLYGON|_LINESTRING|_LINE|_POINT|_TEXT|_TABLE)$", "", clean_layer)
-
-    with zipfile.ZipFile(sld_zip_path, 'r') as z:
-        sld_entries = [n for n in z.namelist() if n.lower().endswith('.sld') and not os.path.basename(n).startswith('.')]
-        best_entry = None
-        for entry in sld_entries:
-            bname = os.path.splitext(os.path.basename(entry))[0].upper().translate(tr_map)
-            clean_bname = re.sub(r"^(PL_|PLAN_|UIP_|MUIP_|NIP_|MNIP_|CDP_|MCDP_)", "", bname)
-            if clean_layer == clean_bname or clean_layer in clean_bname:
-                best_entry = entry
-                break
-        
-        if best_entry:
-            tmp_dir = tempfile.gettempdir()
-            extracted_sld = z.extract(best_entry, tmp_dir)
-            res, _err = qgis_layer.loadSldStyle(extracted_sld)
-            try:
-                os.remove(extracted_sld)
-            except OSError:
-                pass
-            return res
-    return False
-
-
 def apply_plan_symbology(
     qgis_layer: Any,
     plan_scale: str = "1/1000",
     override_rule: Optional[PlanStyleRule] = None,
+    plan_type: str = "AUTO",
+    source_name: Optional[str] = None,
 ) -> bool:
     """Apply native QGIS style (fill color, hatch pattern, stroke width, labeling) to a QgsVectorLayer.
 
-    2-Stage Hybrid Rendering Pipeline:
+    2-Stage Hybrid Rendering Pipeline (official e-Plan catalog first, legacy
+    PASE keyword catalog as fallback):
       1. If attribute table contains land-use fields with multiple unique values, applies QgsCategorizedSymbolRenderer.
       2. If single-use layer or no multi-value field, matches layer name against PlanGML rules and applies QgsSingleSymbolRenderer.
+
+    ``plan_type`` selects the official style set: "UIP", "NIP", "CDP" or
+    "AUTO" to infer it from ``source_name`` / the layer name (scale prefixes
+    like 1000/5000/25000 and words like NAZIM or ÇEVRE are recognized).
 
     Safely handles headless/testing environments where qgis.core might not be loaded.
     Returns True if styling was successfully applied, False otherwise.
     """
-    # 0. Try loading matching official SLD from E-Plan SLD.zip if available on disk!
-    if os.path.exists(r"C:\Users\YE\Downloads\E-Plan SLD.zip"):
-        with suppress(Exception):
-            if apply_sld_from_zip(qgis_layer, r"C:\Users\YE\Downloads\E-Plan SLD.zip"):
-                return True
+    layer_name = qgis_layer.name() if hasattr(qgis_layer, "name") else ""
+    if plan_type not in EPLAN_PLAN_TYPES:
+        plan_type = (detect_plan_type(source_name)
+                     or detect_plan_type(layer_name)
+                     or "UIP")
 
     rule = override_rule
-    if rule is None and hasattr(qgis_layer, "name"):
-        rule = PlanSymbologyMatcher.match_rule(qgis_layer.name(), scale=plan_scale)
+    if rule is None and layer_name:
+        rule = PlanSymbologyMatcher.match_rule(
+            layer_name, scale=plan_scale, plan_type=plan_type)
 
     try:
         from qgis.core import (  # type: ignore
@@ -856,7 +1040,8 @@ def apply_plan_symbology(
                 matched_rule = PlanSymbologyMatcher.match_rule(
                     val_str,
                     scale=plan_scale,
-                    attributes={category_field: val}
+                    attributes={category_field: val},
+                    plan_type=plan_type,
                 ) or rule
                 sym = build_symbol(matched_rule)
                 if sym:

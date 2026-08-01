@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.1.0] - 2026-08-01
+
+- Match imported plan layers against the official e-Plan plan gösterimleri style set, so a Netcad or CAD imar plan is drawn with the Ministry's own colors, tarama patterns and line types instead of approximate stand-ins. 323 tabaka rules covering uygulama imar (1/1000), nazım imar (1/5000) and çevre düzeni (1/25.000+) plans ship inside the plugin, together with the 131 official tarama tiles they reference — no download, no server, no external style file.
+- Add a plan type selector to the Netcad panel. Auto mode reads the scale from the file name (1000 to uygulama imar, 5000 to nazım imar, 25000 and above to çevre düzeni) and can be overridden per import; the plan type also drives the PLAN_KODU attribute.
+- Fix plan symbology producing random QGIS colors on QGIS 4: unscoped Qt pen and brush enum members raise AttributeError under PyQt6, and the failure was being swallowed by the import-time exception guard. Verified on QGIS 3.44 LTR and QGIS 4.2 against a real 1/1000 municipal drawing, with a static guard test so it cannot regress unnoticed.
+- Enable unified upper-group layers for a single drawing when PlanGML mode is on. Grouping tabaka into official upper groups is what the mode is for, but it was previously reachable only when importing several files at once, so single-plan imports never produced categorized upper-group layers.
+- Remove the hardcoded local path to a downloaded Ministry SLD archive. Styling no longer depends on a file in one machine's Downloads folder, and applying an SLD whose rules filter on PlanGML attribute fields that CAD layers do not have no longer leaves layers unstyled.
+- Draw CAD text-anchor and symbol points with a discreet marker so labels stay readable instead of being buried under oversized dots.
+
 ## [2.0.0] - 2026-08-01
 
 - Fix categorized renderer category_field selection and sub-rule matching for PlanGML Upper Group layers
