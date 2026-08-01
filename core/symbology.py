@@ -5,7 +5,7 @@ Provides automatic zoning legend and symbology matching for imported CAD & GIS p
 layers (NCZ, DXF, GML, KML, GeoJSON, FileGDB) based on Turkish Spatial Planning
 Regulations (Mekânsal Planlar Yapım Yönetmeliği e-Plan standards: 1/1000 UİP, 1/5000 NİP).
 
-Uses advanced QgsRuleBasedRenderer (Rule-Based Renderer) to evaluate SQL expressions
+Uses advanced QgsRuleBasedRenderer (Rule-Based Renderer) with valid QGIS SQL expressions
 over PlanGML official schema attributes, numerical code hierarchies (100 - 700),
 and CAD layer names:
   - UST_GRUP_ID, ALT_GRUP_ID, DETAY_GRUP_ID
@@ -611,7 +611,7 @@ def apply_plan_symbology(
 ) -> bool:
     """Apply native QGIS Rule-Based style (fill color, hatch pattern, stroke width, labeling) to a QgsVectorLayer.
 
-    Builds an advanced QgsRuleBasedRenderer with multi-attribute fallback SQL expressions.
+    Builds an advanced QgsRuleBasedRenderer with valid QGIS SQL filter expressions.
     Safely handles headless/testing environments where qgis.core might not be loaded.
     Returns True if styling was successfully applied, False otherwise.
     """
@@ -651,7 +651,7 @@ def apply_plan_symbology(
     field_names = [f.name() for f in qgis_layer.fields()] if hasattr(qgis_layer, "fields") else []
 
     # -------------------------------------------------------------------------
-    # Build QgsRuleBasedRenderer with SQL-like Filter Expressions for 100% Coverage
+    # Build QgsRuleBasedRenderer with Valid QGIS SQL Filter Expressions
     # -------------------------------------------------------------------------
     root_rule = QgsRuleBasedRenderer.Rule(None)
     rules_added = 0
@@ -659,23 +659,24 @@ def apply_plan_symbology(
     for plan_rule in PLAN_SYMBOLOGY_CATALOG:
         sub_exprs = []
 
-        # 1. Numeric code conditions e.g. "UST_GRUP_ID" IN (100, 101) or "PLAN_KODU" IN (100, 101)
+        # 1. Numeric code conditions e.g. to_string("UST_GRUP_ID") IN ('100', '101') OR "UST_GRUP_ID" IN (100, 101)
         numeric_codes = [k for k in plan_rule.keywords if k.isdigit()]
         if numeric_codes:
-            codes_sql = ", ".join(numeric_codes)
+            quoted_codes = ", ".join(f"'{c}'" for c in numeric_codes)
+            raw_codes = ", ".join(numeric_codes)
             for f_name in ["UST_GRUP_ID", "ALT_GRUP_ID", "DETAY_GRUP_ID", "PLAN_KODU", "FONKSIYON_KODU", "LEJANT_KODU", "KOD"]:
                 if f_name in field_names or f_name.lower() in [fn.lower() for fn in field_names]:
                     exact_fn = next(fn for fn in field_names if fn.upper() == f_name.upper())
-                    sub_exprs.append(f'"{exact_fn}" IN ({codes_sql})')
+                    sub_exprs.append(f'to_string("{exact_fn}") IN ({quoted_codes}) OR "{exact_fn}" IN ({raw_codes})')
 
-        # 2. Text keyword conditions e.g. "layer_name" ILIKE '%KONUT%' or "TAM_ADI" ILIKE '%KONUT%'
+        # 2. Text keyword conditions e.g. lower("layer_name") LIKE '%konut%' (Valid QGIS Expression Syntax!)
         text_keywords = [k for k in plan_rule.keywords if not k.isdigit()]
         for kw in text_keywords:
-            clean_kw = kw.replace("'", "''")
+            clean_kw = kw.lower().replace("'", "''")
             for f_name in ["TAM_ADI", "GISTERIM", "GUSTERIM_ADI", "LEJANT", "FONKSIYON", "KULLANIM", "layer_name", "layer", "uip_tabaka", "tabaka", "TYPE", "DETAY"]:
                 if f_name in field_names or f_name.lower() in [fn.lower() for fn in field_names]:
                     exact_fn = next(fn for fn in field_names if fn.upper() == f_name.upper())
-                    sub_exprs.append(f'"{exact_fn}" ILIKE \'%{clean_kw}%\'')
+                    sub_exprs.append(f'lower("{exact_fn}") LIKE \'%{clean_kw}%\'')
 
         if sub_exprs:
             rule_sql = " OR ".join(sub_exprs)

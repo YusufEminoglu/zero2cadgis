@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.3.2] - 2026-08-01
+
+- Fix QGIS expression syntax for QgsRuleBasedRenderer (replace ILIKE with valid lower LIKE expressions)
+
 ## [1.3.1] - 2026-08-01
 
 - Implement QgsRuleBasedRenderer with SQL-like expression fallback rules over PlanGML schema attributes
