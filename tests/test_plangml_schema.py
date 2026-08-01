@@ -12,7 +12,50 @@ from __future__ import annotations
 import unittest
 
 from zero2cadgis.core.mpyy_catalog import MPYY_ALIASES, MPYY_TABAKA
-from zero2cadgis.core.plangml_schema import TabakaIdentity, lookup_tabaka
+from zero2cadgis.core.plangml_schema import (
+    UNCLASSIFIED_UPPER_GROUP,
+    TabakaIdentity,
+    lookup_tabaka,
+    upper_group_of,
+)
+
+
+class TestUpperGroups(unittest.TestCase):
+    """Layer grouping follows the regulation's own upper groups."""
+
+    def test_official_groups(self):
+        expected = {
+            "PL_KONUT": "KONUT ALANLARI / YERLEŞİM ALANLARI",
+            "PL_GELISME_KONUT": "KONUT ALANLARI / YERLEŞİM ALANLARI",
+            "PL_PARK": "AÇIK VE YEŞİL ALANLAR",
+            "PL_TICARET": "KENTSEL ÇALIŞMA ALANLARI",
+            "PL_ILKOKUL_ALANI": "EĞİTİM TESİSLERİ ALANI",
+            "PL_CAMI": "İBADET ALANLARI",
+            "PL_HASTANE": "SAĞLIK TESİSLERİ ALANI",
+            "SNR_PLANONAMA": "PLANLAMA SINIRLARI",
+            "KALDIRIM": "ÖZEL ÇİZGİLER",
+            "HAT_KADEME": "YAPI DÜZENİ VE YOĞUNLUKLARI",
+        }
+        for tabaka, group in expected.items():
+            with self.subTest(tabaka=tabaka):
+                self.assertEqual(upper_group_of(tabaka), group)
+
+    def test_aliased_tabaka_join_their_official_group(self):
+        self.assertEqual(upper_group_of("PL_SAGLIK_OCAGI"), "SAĞLIK TESİSLERİ ALANI")
+        self.assertEqual(upper_group_of("PL_DERE"), "SU - ATIKSU VE ATIK SİSTEMLERİ")
+
+    def test_unknown_tabaka_share_one_clearly_marked_bucket(self):
+        for tabaka in ("SM_AGAC", "YAZI_PLAN", "PL_REFUJ", "PL_KDKCA", ""):
+            with self.subTest(tabaka=tabaka):
+                self.assertEqual(upper_group_of(tabaka), UNCLASSIFIED_UPPER_GROUP)
+
+    def test_the_only_non_official_group_name_is_the_catch_all(self):
+        # Mixing the Ministry's names with near-identical invented ones would
+        # make a layer tree unreadable, so every other group name is official.
+        official = {r["ust_grup_adi"] for r in MPYY_TABAKA.values()}
+        self.assertNotIn(UNCLASSIFIED_UPPER_GROUP, official)
+        produced = {upper_group_of(t) for t in MPYY_TABAKA}
+        self.assertTrue(produced <= official)
 
 
 class TestExactMatches(unittest.TestCase):

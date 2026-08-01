@@ -124,9 +124,13 @@ their raw tabaka names, their CAD attributes and their original ARGB colors.
 
 Turn it on for an imar plan and 02CadGis will:
 
-- group tabaka into the official PlanGML upper groups (`KONUT ALANLARI`,
-  `AÇIK VE YEŞİL ALANLAR`, `SOSYAL VE TEKNİK ALTYAPI ALANLARI`, …), one layer per
-  upper group and geometry type;
+- group tabaka into the **official upper groups** of the Ministry's UİP tabaka
+  catalog — `KONUT ALANLARI / YERLEŞİM ALANLARI`, `KENTSEL ÇALIŞMA ALANLARI`,
+  `AÇIK VE YEŞİL ALANLAR`, `EĞİTİM TESİSLERİ ALANI`, `PLANLAMA SINIRLARI`, … —
+  one layer per upper group and geometry type, so the layer tree is organised
+  the way the regulation is. Tabaka the catalog does not define go to a single
+  `DİĞER PLAN ALANLARI` layer, which is the only group name here that is not
+  the Ministry's own;
 - fill the PlanGML schema columns (`UST_GRUP_ID`, `UST_GRUP_ADI`,
   `ALT_GRUP_ID`, `ALT_GRUP_ADI`, `PLAN_KODU`, `FONKSIYON_KODU`, `TAM_ADI`,
   `GISTERIM`, `uip_tabaka`) with the **official codes** from the Ministry's UİP

@@ -75,7 +75,7 @@ from ..core.csv_sniffer import (
 )
 from ..core.cad_engine import CadCleanupEngine, CadStylingEngine, CadFeatureAugmenter, CadExportEngine
 from ..core.symbology import PlanSymbologyMatcher, apply_plan_symbology
-from ..core.plangml_schema import lookup_tabaka
+from ..core.plangml_schema import lookup_tabaka, upper_group_of
 from ..core.path_utils import ensure_extension, has_extension
 from ..core.qgis_compat import add_features_or_raise
 
@@ -2020,11 +2020,10 @@ class Zero2CadGisDockWidget(QDockWidget):
                     is_plangml = getattr(self, "chk_ncz_plan_symbology", None) is not None and self.chk_ncz_plan_symbology.isChecked()
 
                     if merge_geometry_types and is_plangml:
-                        rule = PlanSymbologyMatcher.match_rule(
-                            layer_name,
-                            plan_type=self._resolve_plan_type(source_file_name))
-                        ust_grup_adi = getattr(rule, "ust_grup_adi", "DİĞER PLAN ALANLARI") or "DİĞER PLAN ALANLARI"
-                        ust_token = self._sanitize_name(ust_grup_adi)
+                        # Grouped by the Ministry's own upper groups, so the
+                        # layer tree is organised the way the regulation is.
+                        ust_token = self._sanitize_name(
+                            upper_group_of(layer_name))
                         family_token = self._sanitize_name(family)
                         display_name = f"{file_base_name}_{ust_token}_{family_token}"
                         group_name = file_base_name

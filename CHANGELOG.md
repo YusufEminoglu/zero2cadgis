@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.5.0] - 2026-08-02
+
+- Group layers by the Ministry's own upper groups. PlanGML mode grouped tabaka
+  into seven categories that read like the regulation's but were not from it;
+  it now uses the upper groups of the official UİP tabaka catalog, so a plan
+  opens organised the way the regulation organises it — `KONUT ALANLARI /
+  YERLEŞİM ALANLARI`, `KENTSEL ÇALIŞMA ALANLARI`, `EĞİTİM TESİSLERİ ALANI`,
+  `PLANLAMA SINIRLARI`, `ÖZEL ÇİZGİLER` and the rest. **Layer names change
+  accordingly.**
+- Tabaka the catalog does not define — CAD symbol and text layers, and local
+  names with no unambiguous official counterpart — go to a single
+  `DİĞER PLAN ALANLARI` layer. It is deliberately the only group name in the
+  tree that is not the Ministry's own: mixing official names with invented ones
+  that look almost identical would make the tree harder to read, not easier.
+- The layer tree and the PlanGML schema columns now agree, since both are
+  resolved from the same official catalog.
+
 ## [2.4.0] - 2026-08-02
 
 - Fill the PlanGML schema columns with the Ministry's own codes. They were

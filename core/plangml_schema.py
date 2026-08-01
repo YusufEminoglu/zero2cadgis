@@ -30,6 +30,12 @@ _TR_MAP = str.maketrans({
     "ç": "C", "ğ": "G", "ı": "I", "ö": "O", "ş": "S", "ü": "U",
 })
 
+# Where a tabaka goes when the official catalog does not define one for it: CAD
+# helper layers, and local names with no unambiguous official counterpart. It is
+# deliberately the *only* group name here that is not the Ministry's own, so a
+# layer tree never mixes official group names with near-identical invented ones.
+UNCLASSIFIED_UPPER_GROUP = "DİĞER PLAN ALANLARI"
+
 
 @dataclass(frozen=True)
 class TabakaIdentity:
@@ -99,3 +105,13 @@ def lookup_tabaka(name: Optional[str]) -> Optional[TabakaIdentity]:
         geometri=record["geometri"],
         matched_as=matched_as,
     )
+
+
+def upper_group_of(tabaka_name: Optional[str]) -> str:
+    """Official upper group a tabaka belongs to, for grouping layers.
+
+    Always returns a name: the Ministry's when the tabaka has an official
+    identity, and :data:`UNCLASSIFIED_UPPER_GROUP` when it does not.
+    """
+    identity = lookup_tabaka(tabaka_name)
+    return identity.ust_grup_adi if identity else UNCLASSIFIED_UPPER_GROUP
