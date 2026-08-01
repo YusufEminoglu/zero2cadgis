@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.2.2] - 2026-08-01
+
+- Token-based keyword search for prefixed UİP layer names
+
 ## [1.2.1] - 2026-08-01
 
 - Fix polygon solid brush fill and point marker styling

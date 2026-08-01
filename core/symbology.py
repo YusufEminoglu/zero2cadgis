@@ -428,11 +428,13 @@ class PlanSymbologyMatcher:
         norm_name = cls.normalize_string(layer_name)
 
         if norm_name:
+            tokens = [t for t in norm_name.split("_") if t]
             for rule in PLAN_SYMBOLOGY_CATALOG:
                 for kw in rule.keywords:
                     norm_kw = cls.normalize_string(kw)
-                    if norm_kw and (norm_kw == norm_name or norm_kw in norm_name or norm_name in norm_kw):
-                        return rule
+                    if norm_kw:
+                        if norm_kw in tokens or norm_kw == norm_name or norm_kw in norm_name or norm_name in norm_kw:
+                            return rule
 
         if attributes:
             attr_keys = ["FONKSIYON", "LEJANT", "KULLANIM", "TYPE", "CATEGORY", "PLAN_KODU", "KOD", "DETAY", "LAYER"]
