@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.5.0] - 2026-08-01
+
+- Add explicit PlanGML text hierarchy columns (UST_GRUP_ADI, ALT_GRUP_ADI) for spatial planning categorization
+
 ## [1.4.0] - 2026-08-01
 
 - Auto-generate official PlanGML schema columns (UST_GRUP_ID, ALT_GRUP_ID, PLAN_KODU, FONKSIYON_KODU, TAM_ADI, GISTERIM, uip_tabaka) on CAD import

@@ -493,7 +493,9 @@ class Zero2CadGisDockWidget(QDockWidget):
         QgsField("grid_y", QMetaType.Type.Double),
         # Official PlanGML Schema Columns
         QgsField("UST_GRUP_ID", QMetaType.Type.QString),
+        QgsField("UST_GRUP_ADI", QMetaType.Type.QString),
         QgsField("ALT_GRUP_ID", QMetaType.Type.QString),
+        QgsField("ALT_GRUP_ADI", QMetaType.Type.QString),
         QgsField("PLAN_KODU", QMetaType.Type.QString),
         QgsField("FONKSIYON_KODU", QMetaType.Type.QString),
         QgsField("TAM_ADI", QMetaType.Type.QString),
@@ -2173,6 +2175,8 @@ class Zero2CadGisDockWidget(QDockWidget):
             
             ust_grup_id = next((k for k in rule.keywords if k.isdigit()), "100")
             alt_grup_id = next((k for k in rule.keywords[1:] if k.isdigit()), ust_grup_id)
+            ust_grup_adi = getattr(rule, "ust_grup_adi", "") or "AÇIK VE YEŞİL ALANLAR"
+            alt_grup_adi = getattr(rule, "alt_grup_adi", "") or rule.display_name
             tam_adi = rule.display_name
             gisterim = rule.display_name
             fonksiyon_kodu = ust_grup_id
@@ -2200,7 +2204,9 @@ class Zero2CadGisDockWidget(QDockWidget):
                 entity.grid_y,
                 # Official PlanGML Schema Columns
                 ust_grup_id,
+                ust_grup_adi,
                 alt_grup_id,
+                alt_grup_adi,
                 plan_kodu,
                 fonksiyon_kodu,
                 tam_adi,
