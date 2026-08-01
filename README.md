@@ -98,6 +98,17 @@ The Netcad panel is intentionally detailed because these drawings often contain 
   drawing is near-instant. The cache rebuilds automatically when a file
   changes; use **Clear cache** on the Netcad tab to reset it manually.
 - **Batch import:** select several files; 02CadGis keeps file groups separate by default, or merges matching layer names inside geometry-type groups when **Merge geometry types** is enabled.
+- **Automatic CRS detection:** a Netcad drawing stores its own SRS id, not an
+  EPSG code, so 02CadGis works the EPSG out from the drawing's projection text
+  plus a sample of its coordinates and preselects it. The Turkish 3-degree
+  families are covered — TUREF and ED50, in both the TM form and the
+  zone-prefixed Gauss-Krüger form — along with the UTM zones over Turkey. The
+  panel shows which CRS was chosen and why, and the choice is only a
+  preselection: change it and your choice is what gets used. When the drawing
+  does not say enough to name a CRS with confidence, 02CadGis says so and
+  leaves the selection to you rather than guessing, since a wrong CRS silently
+  puts the data in the wrong place. The chosen CRS is what the layers are drawn
+  in and what a written GeoPackage carries.
 - **Metadata review:** version, projection text, EPSG hints, feature counts and table counts are shown before conversion.
 - **Layer filtering:** uncheck unnecessary CAD layers or `@TAB` tables before import.
 - **Closure tolerance:** keeps cadastral polygon creation controlled; use small values unless the drawing has known snap gaps.

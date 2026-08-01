@@ -1436,6 +1436,33 @@ class NetcadLazyReader:
             ]
         return list(self._fallback.attribute_tables) if self._fallback else []
 
+    def sample_coordinates(self, limit: int = 2000) -> list[tuple[float, float]]:
+        """A cheap coordinate sample, for working out the drawing's CRS.
+
+        Decodes the smallest layers only — a few dozen records are plenty to
+        read the easting magnitude and the northing band, and this runs while
+        the user is still looking at the layer tree.
+        """
+        summaries = sorted(
+            (s for s in self.layer_summaries() if s.record_count > 0),
+            key=lambda s: s.record_count)
+        wanted, budget = set(), 0
+        for summary in summaries:
+            wanted.add(summary.layer_code)
+            budget += summary.record_count
+            if budget >= 50:
+                break
+        if not wanted:
+            return []
+
+        sample: list[tuple[float, float]] = []
+        for entity in self.decode_layers(wanted):
+            for coordinate in entity.coordinates:
+                sample.append((coordinate.x, coordinate.y))
+                if len(sample) >= limit:
+                    return sample
+        return sample
+
     def decode_layers(self, layer_codes) -> list[NetcadEntity]:
         """Decode only the geometry records in *layer_codes*."""
         wanted = set(layer_codes)

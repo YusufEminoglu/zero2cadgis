@@ -1686,20 +1686,21 @@ class Zero2CadGisDockWidget(QDockWidget):
             self.progress_ncz.setValue(60)
             self.progress_ncz.setFormat("Building layer catalog...")
 
-            # Guess target CRS from first valid EPSG found
-            for epsg in epsg_codes:
-                clean_epsg = epsg.replace("EPSG:", "").strip()
-                crs = QgsCoordinateReferenceSystem(f"EPSG:{clean_epsg}")
-                if crs.isValid():
-                    self.ncz_crs_selector.setCrs(crs)
-                    break
+            self.progress_ncz.setFormat("Detecting coordinate system...")
+            QApplication.processEvents()
+            detection_note = self._auto_detect_ncz_crs()
 
             # Populate card
             self.lbl_ncz_version.setText(
                 ", ".join(versions) or "Standard / Older version")
-            self.lbl_ncz_projection.setText(
-                ", ".join(projections) or "Undefined")
-            self.lbl_ncz_epsg.setText(", ".join(epsg_codes) or "Not defined")
+            projection_note = ", ".join(projections) or "Undefined"
+            if epsg_codes:
+                # The drawing's own SRS id is not an EPSG code; keep it visible
+                # so the detected EPSG can be checked against it.
+                projection_note += f"  (drawing SRS: {', '.join(sorted(epsg_codes))})"
+            self.lbl_ncz_projection.setText(projection_note)
+            self.lbl_ncz_epsg.setText(detection_note)
+            self.lbl_ncz_epsg.setToolTip(detection_note)
             self.lbl_ncz_counts.setText(
                 f"{total_records} records / {total_tables} attribute tables "
                 f"across {len(file_paths)} files (layers decoded on import)")
@@ -1718,6 +1719,49 @@ class Zero2CadGisDockWidget(QDockWidget):
                 self,
                 "Netcad Parse Error",
                 f"Could not parse binary Netcad drawings:\n{exc}")
+
+    def _auto_detect_ncz_crs(self) -> str:
+        """Name the drawings' CRS and preselect it, returning what to show.
+
+        A Netcad drawing stores its own SRS id, not an EPSG code, so the EPSG
+        is worked out from the projection text plus a coordinate sample. The
+        result only preselects the CRS combo — the user always keeps the last
+        word, which is why the reasoning is reported rather than hidden.
+        """
+        from ..core.crs_detect import detect_crs
+
+        detections = {}
+        for file_path, reader in self.ncz_readers.items():
+            sample = []
+            with suppress(Exception):
+                sample = reader.sample_coordinates()
+            with suppress(Exception):
+                detections[file_path] = detect_crs(
+                    reader.projection_text, sample)
+        if not detections:
+            return "Not detected"
+
+        named = [d for d in detections.values() if d.epsg]
+        if not named:
+            return next(iter(detections.values())).reason
+
+        chosen = named[0]
+        codes = {d.epsg for d in named}
+        crs = QgsCoordinateReferenceSystem(chosen.authid)
+        if not crs.isValid():
+            return f"{chosen.authid} is not available in this QGIS installation."
+        self.ncz_crs_selector.setCrs(crs)
+
+        note = f"{chosen.authid} — {chosen.label}"
+        if chosen.confidence != "high":
+            note += " (please confirm)"
+        note += f". {chosen.reason}"
+        if len(codes) > 1:
+            others = ", ".join(sorted(
+                f"EPSG:{c}" for c in codes if c != chosen.epsg))
+            note += (f" The selected drawings do not agree — {others} was also "
+                     f"detected, so check the CRS before converting.")
+        return note
 
     def _fill_ncz_layer_tree(self) -> None:
         self.ncz_layer_tree.clear()

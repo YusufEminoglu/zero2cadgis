@@ -1,5 +1,36 @@
 # Changelog
 
+## [2.3.0] - 2026-08-01
+
+- Work out a Netcad drawing's coordinate system automatically and preselect it.
+  A drawing stores its own SRS id rather than an EPSG code — the test drawing
+  reports `SRS=7936`, which is not an EPSG code and was previously fed to QGIS
+  as one, so no CRS was ever detected. The EPSG is now derived from the
+  drawing's projection text together with a sample of its coordinates: the
+  projection text gives the datum, which no amount of looking at coordinates
+  can reveal because TUREF and ED50 differ by only a couple of hundred metres
+  over the same ground, while the easting magnitude gives the axis convention,
+  since a 6-digit easting is the TM form and an 8-digit one is the
+  zone-prefixed Gauss-Krüger form. `ITRF / 3 / Zone 42` over 6-digit eastings
+  therefore resolves to EPSG:5258, TUREF / TM42.
+- Covers the Turkish 3-degree families in both forms — TUREF / TM27–TM45 and
+  its Gauss-Krüger zones 9–15, ED50 / TM27–TM45 and its Gauss-Krüger zones
+  9–15 — plus the UTM zones over Turkey on WGS 84 and ED50, and geographic
+  coordinates. Every code was read out of the PROJ database.
+- The detected CRS is what the layers are drawn in and what a written
+  GeoPackage carries, verified end to end on QGIS 3.44 LTR and QGIS 4.2 by
+  importing a real 1/1000 drawing and reopening the GeoPackage.
+- When the drawing does not say enough to name a CRS with confidence — no
+  datum, or a 6-digit easting that cannot reveal its zone — nothing is
+  selected and the panel explains what is missing. A wrong CRS silently places
+  the data hundreds of metres or a whole zone away, which is worse than
+  leaving the choice to the operator. Where the zone is certain from the
+  easting but the datum is not, the modern TUREF is assumed and flagged as
+  needing confirmation.
+- The panel reports the detected CRS and the reasoning behind it, keeps the
+  drawing's raw SRS id visible next to the projection text, and treats the
+  detection as a preselection the operator can always override.
+
 ## [2.2.0] - 2026-08-01
 
 Spatial planning release: an imar plan imported from CAD is now drawn with the
