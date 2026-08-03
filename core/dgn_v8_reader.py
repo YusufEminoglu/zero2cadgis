@@ -144,12 +144,13 @@ class DgnV8Reader:
 
     def _graphic_streams(self) -> Iterator[Tuple[str, bytes]]:
         """Yield ``(name, decompressed_bytes)`` for every graphic
-        element stream in the default model (#000004)."""
+        element stream across all models."""
         if self._ole is None:
             raise RuntimeError("DGN file is not open")
         for entry in self._ole.listdir():
             name = "/".join(entry)
-            if "/Dgn^G/" not in name or "#000004" not in name:
+            # Graphic element streams live under Dgn-Md/#NNNNNN/Dgn^G/
+            if "/Dgn^G/" not in name:
                 continue
             raw = self._ole.openstream(entry).read()
             if len(raw) <= 16:
