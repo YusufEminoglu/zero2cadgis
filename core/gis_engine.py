@@ -10,6 +10,7 @@ import re
 import zipfile
 import tempfile
 import shutil
+from typing import Optional
 
 from osgeo import ogr, osr, gdal
 from qgis.core import (
@@ -18,6 +19,8 @@ from qgis.core import (
     QgsRasterLayer,
     QgsFeature,
     QgsField,
+    QgsGeometry,
+    QgsPointXY,
     QgsCoordinateReferenceSystem,
     QgsCoordinateTransform,
     QgsVectorFileWriter,
@@ -35,6 +38,7 @@ from .csv_sniffer import (
     sniff_delimited_dataset,
 )
 from . import ogr_catalog_cache
+from .dgn_v8_reader import DgnV8Reader, is_dgn_v8
 
 # CAD source families whose OGR "entities"/"elements" layer carries an
 # embedded per-CAD-layer field (DXF ``Layer`` name, DGN ``Level`` number).
@@ -201,6 +205,15 @@ class GisConverterEngine:
         infos = []
         for prefix, src in self._ogr_sources(is_kmz):
             ogr_ds = ogr.Open(src)
+
+            # --- DGN v8 fallback ---
+            if ogr_ds is None and src.lower().endswith(".dgn") \
+                    and is_dgn_v8(src):
+                infos.append(SourceLayerInfo(
+                    "DGN Entities", "LineString/Polygon",
+                    self._dgn_count_elements(src)))
+                continue
+
             if ogr_ds is None:
                 raise ValueError(self._open_error_message(src))
             for i in range(ogr_ds.GetLayerCount()):
@@ -234,6 +247,180 @@ class GisConverterEngine:
             return "LineString"
         return "Other"
 
+    # ------------------------------------------------------------------
+    # DGN v8 pure-Python fallback
+    # ------------------------------------------------------------------
+
+    def _dgn_fallback_discover_cad(
+            self, src: str) -> tuple[list[SourceLayerInfo], str]:
+        """Discover CAD layers from a DGN v8 file using the pure-Python
+        reader when GDAL's DGNv8 driver is unavailable."""
+        field = "Level"
+        self.cad_split_field = field
+        groups: dict[str, dict] = {}
+
+        with DgnV8Reader(src) as reader:
+            for elem in reader.elements():
+                key = str(elem.level)
+                rec = groups.setdefault(key, {"count": 0, "families": set()})
+                rec["count"] += 1
+                if elem.geometry:
+                    if len(elem.geometry) == 1:
+                        fam = "Point"
+                    elif (elem.element_type == 6
+                          and elem.geometry
+                          and self._is_closed(elem.geometry)):
+                        fam = "Polygon"
+                    else:
+                        fam = "LineString"
+                    rec["families"].add(fam)
+
+        infos: list[SourceLayerInfo] = []
+        for key in sorted(groups, key=lambda k: int(k) if k.isdigit() else 0):
+            rec = groups[key]
+            fam_str = "/".join(sorted(rec["families"])) or "LineString"
+            infos.append(SourceLayerInfo(
+                f"Level {key}", fam_str, rec["count"], key=key))
+        return infos, field
+
+    def _dgn_fallback_iter_layers(
+            self, src: str,
+            selected_levels: list[str] | None = None):
+        """Yield ``(level_display, QgsVectorLayer)`` for each DGN Level
+        using the pure-Python reader."""
+        import collections
+
+        # Group elements by Level
+        level_elems: dict[str, list] = collections.defaultdict(list)
+        with DgnV8Reader(src) as reader:
+            for elem in reader.elements():
+                level_elems[str(elem.level)].append(elem)
+
+        levels_to_yield = (selected_levels if selected_levels is not None
+                           else list(level_elems.keys()))
+
+        for level_key in levels_to_yield:
+            elems = level_elems.get(level_key, [])
+            if not elems:
+                continue
+            display = f"Level {level_key}"
+            vlayer = self._dgn_elements_to_memory_layer(
+                display, elems, level_key)
+            if vlayer is not None and vlayer.isValid():
+                yield display, vlayer
+
+    def _dgn_elements_to_memory_layer(
+            self, name: str, elements: list,
+            level_key: str) -> Optional[QgsVectorLayer]:
+        """Convert a list of :class:`DgnElement` objects into a QGIS
+        memory layer."""
+        # Determine geometry type from the first few elements
+        has_polygon = False
+        has_line = False
+        has_point = False
+        for elem in elements[:50]:
+            n = len(elem.geometry)
+            if n == 0:
+                continue
+            if (elem.element_type == 6 and n >= 3
+                    and self._is_closed(elem.geometry)):
+                has_polygon = True
+            elif n >= 3 and self._is_closed(elem.geometry):
+                has_polygon = True
+            elif n >= 2:
+                has_line = True
+            elif n == 1:
+                has_point = True
+
+        if has_polygon:
+            geom_type = "Polygon"
+        elif has_line:
+            geom_type = "MultiLineString"
+        elif has_point:
+            geom_type = "Point"
+        else:
+            return None
+
+        wkt_prefix = f"{geom_type}?crs="
+        vlayer = QgsVectorLayer(wkt_prefix, name, "memory")
+        if not vlayer.isValid():
+            return None
+
+        pr = vlayer.dataProvider()
+        pr.addAttributes([
+            QgsField("dgn_level", QMetaType.Type.Int),
+            QgsField("dgn_color", QMetaType.Type.Int),
+            QgsField("dgn_weight", QMetaType.Type.Int),
+            QgsField("dgn_style", QMetaType.Type.Int),
+            QgsField("dgn_type", QMetaType.Type.QString),
+        ])
+        vlayer.updateFields()
+
+        features: list[QgsFeature] = []
+        for elem in elements:
+            if not elem.geometry:
+                continue
+            geom = self._points_to_qgs_geometry(
+                elem.geometry, elem.element_type == 6, geom_type)
+            if geom is None:
+                continue
+            feat = QgsFeature()
+            feat.setGeometry(geom)
+            feat.setAttributes([
+                elem.level, elem.color_index, elem.weight,
+                elem.style, elem.type_name,
+            ])
+            features.append(feat)
+            if len(features) >= 50000:
+                add_features_or_raise(pr, features)
+                features.clear()
+        if features:
+            add_features_or_raise(pr, features)
+
+        vlayer.updateExtents()
+        return vlayer
+
+    @staticmethod
+    def _points_to_qgs_geometry(
+            points: list, is_shape: bool,
+            fallback_geom_type: str) -> Optional[QgsGeometry]:
+        """Convert a list of (x, y) pairs to a :class:`QgsGeometry`."""
+        n = len(points)
+        if n == 0:
+            return None
+        if n == 1:
+            return QgsGeometry.fromPointXY(
+                QgsPointXY(points[0][0], points[0][1]))
+        if n >= 3 and is_shape:
+            # Ensure the ring is closed
+            if points[0] != points[-1]:
+                pts = list(points) + [points[0]]
+            else:
+                pts = list(points)
+            return QgsGeometry.fromPolygonXY([
+                [QgsPointXY(x, y) for x, y in pts]])
+        return QgsGeometry.fromPolylineXY(
+            [QgsPointXY(x, y) for x, y in points])
+
+    @staticmethod
+    def _is_closed(points: list) -> bool:
+        """Return ``True`` if the first and last points coincide."""
+        if len(points) < 3:
+            return False
+        p0, pn = points[0], points[-1]
+        dx = abs(p0[0] - pn[0])
+        dy = abs(p0[1] - pn[1])
+        return dx < 1e-6 and dy < 1e-6
+
+    @staticmethod
+    def _dgn_count_elements(src: str) -> int:
+        """Count elements in a DGN v8 file (fast — just counts streams)."""
+        try:
+            with DgnV8Reader(src) as reader:
+                return sum(1 for _ in reader.elements())
+        except Exception:
+            return -1
+
     def discover_cad_layers(
             self, is_kmz: bool = False) -> tuple[list[SourceLayerInfo], str]:
         """Group a CAD entities layer by its embedded CAD-layer field.
@@ -246,6 +433,14 @@ class GisConverterEngine:
         remembered so a later :meth:`convert` splits by it.
         """
         src = self._resolve_source(is_kmz)
+
+        # --- DGN v8 fallback (GDAL lacks the DGNv8 driver) ---
+        if src.lower().endswith(".dgn") and is_dgn_v8(src):
+            dgn_ds = ogr.Open(src)
+            if dgn_ds is None:
+                return self._dgn_fallback_discover_cad(src)
+            dgn_ds = None
+
         ogr_ds = ogr.Open(src)
         if ogr_ds is None:
             raise ValueError(self._open_error_message(src))
@@ -289,6 +484,16 @@ class GisConverterEngine:
                          selected_values: list[str] | None):
         """Yield ``(cad_layer_value, QgsVectorLayer)`` per CAD-layer subset."""
         field = self.cad_split_field
+
+        # --- DGN v8 fallback ---
+        if src.lower().endswith(".dgn") and is_dgn_v8(src):
+            test_ds = ogr.Open(src)
+            if test_ds is None:
+                yield from self._dgn_fallback_iter_layers(
+                    src, selected_values)
+                return
+            test_ds = None
+
         ogr_ds = ogr.Open(src)
         if ogr_ds is None or ogr_ds.GetLayerCount() == 0:
             raise ValueError(self._open_error_message(src))
@@ -325,7 +530,42 @@ class GisConverterEngine:
                 vlayer.setSubsetString(f"\"{field}\" = '{escaped}'")
             yield display, vlayer
 
+    @staticmethod
+    def _check_dgn_driver(src: str) -> str | None:
+        """Return an explanation if *src* is a DGN file that GDAL cannot open.
+
+        Standard OSGeo4W / QGIS GDAL builds include the legacy ``DGN`` (v7)
+        driver but **not** the ``DGNv8`` driver — the latter requires
+        proprietary Open Design Alliance (ODA) Teigha libraries.  When
+        ``ogr.Open`` fails on a ``.dgn`` file the most likely cause is a v8
+        file hitting a build without the v8 driver.
+        """
+        if not src.lower().endswith(".dgn"):
+            return None
+        # DGNv8 driver is what opens v8 files.  If it is available we trust
+        # GDAL and return None — the failure is something else entirely.
+        if ogr.GetDriverByName("DGNv8") is not None:
+            return None
+        return (
+            f"GDAL cannot read this DGN file because the DGNv8 driver is "
+            f"not available in your GDAL build.\n\n"
+            f"Your GDAL build likely includes the legacy DGN (v7) driver, "
+            f"but this file appears to be a DGN v8 dataset.  The DGNv8 "
+            f"driver depends on proprietary Open Design Alliance (ODA) "
+            f"Teigha libraries and is not included in standard QGIS / "
+            f"OSGeo4W GDAL builds.\n\n"
+            f"Workarounds:\n"
+            f"• Convert the file to DGN v7 or DXF using Bentley MicroStation, "
+            f"ODA Drawings Explorer (free), or another CAD tool — DXF is "
+            f"fully supported by GDAL.\n"
+            f"• Use a custom GDAL build that includes the DGNv8 driver "
+            f"(see https://gdal.org/drivers/vector/dgnv8.html)."
+        )
+
     def _open_error_message(self, src: str) -> str:
+        dgn_msg = self._check_dgn_driver(src)
+        if dgn_msg is not None:
+            return dgn_msg
         if src.lower().endswith(".mdb"):
             return (
                 f"Unable to open source dataset with GDAL/OGR provider: {src}\n\n"
@@ -361,6 +601,24 @@ class GisConverterEngine:
         found_any = False
         for prefix, src in self._ogr_sources(is_kmz):
             ogr_ds = ogr.Open(src)
+
+            # --- DGN v8 fallback (non-CAD-split mode) ---
+            if ogr_ds is None and src.lower().endswith(".dgn") \
+                    and is_dgn_v8(src):
+                layer_name = "DGN Entities"
+                display = f"{prefix}{layer_name}"
+                if selected_layers is not None \
+                        and display not in selected_layers:
+                    continue
+                vlayer = self._dgn_elements_to_memory_layer(
+                    layer_name,
+                    list(DgnV8Reader(src).elements()),
+                    "0")
+                if vlayer is not None and vlayer.isValid():
+                    found_any = True
+                    yield display, vlayer
+                continue
+
             if ogr_ds is None:
                 raise ValueError(self._open_error_message(src))
             layer_names = [ogr_ds.GetLayerByIndex(i).GetName()

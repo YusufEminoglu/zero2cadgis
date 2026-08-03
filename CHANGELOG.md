@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.6.0] - 2026-08-04
+
+- DGN v8 files can now be read even when GDAL's DGNv8 driver is not available.
+  A pure-Python reader opens the MicroStation V8 compound-document container,
+  decompresses the element streams, extracts Line, LineString, Shape, Arc and
+  Ellipse geometry from each DGN Level, and presents them as selectable CAD
+  layers in the existing CAD-split tree — the same workflow as DXF.  Cell
+  headers, complex chains, text, and annotation elements are listed but their
+  geometry is deferred (they reference sub-elements that will follow in a
+  later release).  The GDAL path is still tried first; the fallback only
+  activates when `ogr.Open` returns None on a `.dgn` file.
+- The error message shown when a DGN file cannot be opened now diagnoses the
+  missing DGNv8 driver explicitly and suggests concrete workarounds.
+
 ## [2.5.1] - 2026-08-02
 
 - Take a layer's symbol from its tabaka, never from its name. A layer holding
