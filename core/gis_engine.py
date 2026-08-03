@@ -38,7 +38,7 @@ from .csv_sniffer import (
     sniff_delimited_dataset,
 )
 from . import ogr_catalog_cache
-from .dgn_v8_reader import DgnV8Reader, is_dgn_v8
+from .dgn_v8_reader import DgnV8Reader, is_dgn_v8 as _is_dgn_v8
 
 # CAD source families whose OGR "entities"/"elements" layer carries an
 # embedded per-CAD-layer field (DXF ``Layer`` name, DGN ``Level`` number).
@@ -208,7 +208,7 @@ class GisConverterEngine:
 
             # --- DGN v8 fallback ---
             if ogr_ds is None and src.lower().endswith(".dgn") \
-                    and is_dgn_v8(src):
+                    and self._try_dgn_fallback(src):
                 infos.append(SourceLayerInfo(
                     "DGN Entities", "LineString/Polygon",
                     self._dgn_count_elements(src)))
@@ -250,6 +250,30 @@ class GisConverterEngine:
     # ------------------------------------------------------------------
     # DGN v8 pure-Python fallback
     # ------------------------------------------------------------------
+
+    @staticmethod
+    def _try_dgn_fallback(src: str) -> Optional[DgnV8Reader]:
+        """Return an open :class:`DgnV8Reader` if *src* is a DGN file
+        the pure-Python reader can handle, or ``None``.
+
+        Unlike :func:`is_dgn_v8` this does not pre-flight the OLE2
+        signature — it just tries to open the file and returns the
+        reader on success so the caller can use it immediately.
+        """
+        if not src.lower().endswith(".dgn"):
+            return None
+        try:
+            reader = DgnV8Reader(src)
+            reader.open()
+            # Consume one element to verify the file is readable
+            for _elem in reader.elements():
+                # Re-wrap so the caller can iterate from the start
+                reader.close()
+                return DgnV8Reader(src)
+            reader.close()
+            return None  # file opened but zero elements
+        except Exception:
+            return None
 
     def _dgn_fallback_discover_cad(
             self, src: str) -> tuple[list[SourceLayerInfo], str]:
@@ -435,9 +459,9 @@ class GisConverterEngine:
         src = self._resolve_source(is_kmz)
 
         # --- DGN v8 fallback (GDAL lacks the DGNv8 driver) ---
-        if src.lower().endswith(".dgn") and is_dgn_v8(src):
+        if src.lower().endswith(".dgn"):
             dgn_ds = ogr.Open(src)
-            if dgn_ds is None:
+            if dgn_ds is None and self._try_dgn_fallback(src):
                 return self._dgn_fallback_discover_cad(src)
             dgn_ds = None
 
@@ -486,9 +510,9 @@ class GisConverterEngine:
         field = self.cad_split_field
 
         # --- DGN v8 fallback ---
-        if src.lower().endswith(".dgn") and is_dgn_v8(src):
+        if src.lower().endswith(".dgn"):
             test_ds = ogr.Open(src)
-            if test_ds is None:
+            if test_ds is None and self._try_dgn_fallback(src):
                 yield from self._dgn_fallback_iter_layers(
                     src, selected_values)
                 return
@@ -603,21 +627,23 @@ class GisConverterEngine:
             ogr_ds = ogr.Open(src)
 
             # --- DGN v8 fallback (non-CAD-split mode) ---
-            if ogr_ds is None and src.lower().endswith(".dgn") \
-                    and is_dgn_v8(src):
-                layer_name = "DGN Entities"
-                display = f"{prefix}{layer_name}"
-                if selected_layers is not None \
-                        and display not in selected_layers:
+            if ogr_ds is None and src.lower().endswith(".dgn"):
+                dgn_reader = self._try_dgn_fallback(src)
+                if dgn_reader is not None:
+                    layer_name = "DGN Entities"
+                    display = f"{prefix}{layer_name}"
+                    if selected_layers is not None \
+                            and display not in selected_layers:
+                        dgn_reader.close()
+                        continue
+                    with dgn_reader:
+                        elems = list(dgn_reader.elements())
+                    vlayer = self._dgn_elements_to_memory_layer(
+                        layer_name, elems, "0")
+                    if vlayer is not None and vlayer.isValid():
+                        found_any = True
+                        yield display, vlayer
                     continue
-                vlayer = self._dgn_elements_to_memory_layer(
-                    layer_name,
-                    list(DgnV8Reader(src).elements()),
-                    "0")
-                if vlayer is not None and vlayer.isValid():
-                    found_any = True
-                    yield display, vlayer
-                continue
 
             if ogr_ds is None:
                 raise ValueError(self._open_error_message(src))
