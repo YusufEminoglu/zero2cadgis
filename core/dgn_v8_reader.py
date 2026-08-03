@@ -27,19 +27,32 @@ selection and datum transformation.
 from __future__ import annotations
 
 import math
+import os
 import struct
+import sys
 import zlib
 from dataclasses import dataclass, field
 from enum import IntEnum
 from typing import Iterator, List, Optional, Tuple
 
+olefile = None
+
+# Resolve the vendored _vendor directory relative to this file's location.
+# QGIS plugin loaders may not set up package-relative imports reliably,
+# so an absolute path via sys.path is the most robust option.
+_vendor_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                            "..", "_vendor")
+_vendor_dir = os.path.normpath(os.path.abspath(_vendor_dir))
+if os.path.isdir(_vendor_dir) and _vendor_dir not in sys.path:
+    sys.path.insert(0, _vendor_dir)
+
 try:
-    from .._vendor import olefile
+    import olefile  # type: ignore[assignment]  # noqa: F811
 except ImportError:
     try:
-        import olefile  # type: ignore[no-redef]
+        from .._vendor import olefile  # type: ignore[no-redef,assignment]
     except ImportError:
-        olefile = None  # type: ignore[assignment]
+        pass  # olefile stays None — is_dgn_v8 / DgnV8Reader will report it
 
 
 # ===================================================================
