@@ -381,7 +381,7 @@ class GisConverterEngine:
             fam_str = "/".join(sorted(rec["families"])) or "LineString"
             lvl_num = int(key) if key.isdigit() else -1
             lname = layer_names.get(lvl_num, "")
-            display_name = f"Level {key}" + (f" ({lname})" if lname else "")
+            display_name = f"{lname} (Level {key})" if lname else f"Level {key}"
             infos.append(SourceLayerInfo(
                 display_name, fam_str, rec["count"], key=key))
         return infos, field
@@ -411,7 +411,7 @@ class GisConverterEngine:
             for key in level_elems.keys():
                 lvl_num = int(key) if key.isdigit() else -1
                 lname = layer_names.get(lvl_num, "")
-                disp = f"Level {key}" + (f" ({lname})" if lname else "")
+                disp = f"{lname} (Level {key})" if lname else f"Level {key}"
                 if (key in selected_levels or
                         disp in selected_levels or
                         f"Level {key}" in selected_levels or
@@ -424,9 +424,9 @@ class GisConverterEngine:
                 continue
             lvl_num = int(level_key) if level_key.isdigit() else -1
             lname = layer_names.get(lvl_num, "")
-            display = f"Level {level_key}" + (f" ({lname})" if lname else "")
+            display = f"{lname} (Level {level_key})" if lname else f"Level {level_key}"
             vlayer = self._dgn_elements_to_memory_layer(
-                display, elems, level_key)
+                display, elems, level_key, level_name=lname)
             if vlayer is not None and vlayer.isValid():
                 yield display, vlayer
 
@@ -486,7 +486,7 @@ class GisConverterEngine:
 
     def _dgn_elements_to_memory_layer(
             self, name: str, elements: list,
-            level_key: str) -> Optional[QgsVectorLayer]:
+            level_key: str, level_name: str = "") -> Optional[QgsVectorLayer]:
         """Convert a list of :class:`DgnElement` objects into a QGIS
         memory layer."""
         if not elements:
@@ -536,6 +536,7 @@ class GisConverterEngine:
         pr = vlayer.dataProvider()
         pr.addAttributes([
             QgsField("dgn_level", QMetaType.Type.Int),
+            QgsField("dgn_level_name", QMetaType.Type.QString),
             QgsField("dgn_color", QMetaType.Type.Int),
             QgsField("dgn_weight", QMetaType.Type.Int),
             QgsField("dgn_style", QMetaType.Type.Int),
@@ -565,8 +566,8 @@ class GisConverterEngine:
             feat = QgsFeature(vlayer.fields())
             feat.setGeometry(geom)
             feat.setAttributes([
-                elem.level, elem.color_index, elem.weight,
-                elem.style, elem.type_name,
+                elem.level, level_name or elem.type_name, elem.color_index,
+                elem.weight, elem.style, elem.type_name,
             ])
             features.append(feat)
             if len(features) >= 50000:
@@ -671,12 +672,21 @@ class GisConverterEngine:
             rec["families"].add(self._ogr_geom_family(gname))
         ogr_ds = None
 
+        dgn_layer_names = {}
+        if src.lower().endswith(".dgn"):
+            with contextlib.suppress(Exception):
+                with DgnV8Reader(src) as reader:
+                    dgn_layer_names = reader.layer_names()
+
         self.cad_split_field = field
         infos = []
         for key in sorted(groups):
             rec = groups[key]
+            lvl_num = int(key) if key.isdigit() else -1
+            lname = dgn_layer_names.get(lvl_num, "")
+            display_name = f"{lname} (Level {key})" if lname else (key or "(no layer)")
             infos.append(SourceLayerInfo(
-                key or "(no layer)",
+                display_name,
                 "/".join(sorted(rec["families"])),
                 rec["count"],
                 key=key))
@@ -723,9 +733,22 @@ class GisConverterEngine:
         else:
             values = selected_values
 
+        dgn_layer_names = {}
+        if src.lower().endswith(".dgn"):
+            with contextlib.suppress(Exception):
+                with DgnV8Reader(src) as reader:
+                    dgn_layer_names = reader.layer_names()
+
         for value in values:
             uri = f"{src}|layername={entities_name}"
-            display = str(value) if value not in (None, "") else "NO_LAYER"
+            lvl_num = int(value) if str(value).isdigit() else -1
+            lname = dgn_layer_names.get(lvl_num, "")
+            if lname and value not in (None, ""):
+                display = f"{lname} (Level {value})"
+            elif value not in (None, ""):
+                display = f"Level {value}"
+            else:
+                display = "NO_LAYER"
             vlayer = QgsVectorLayer(uri, display, "ogr")
             if not vlayer.isValid():
                 self.last_warnings.append(
@@ -1040,18 +1063,48 @@ class GisConverterEngine:
                 continue
             groups.setdefault(geom_type_str, []).append((geom, feat))
 
+        dgn_layer_names = {}
+        if self.source_path.lower().endswith(".dgn"):
+            with contextlib.suppress(Exception):
+                with DgnV8Reader(self.source_path) as reader:
+                    dgn_layer_names = reader.layer_names()
+
         for geom_type_str, type_data in sorted(groups.items()):
             mem_uri = f"{geom_type_str}?crs={self.target_crs.authid()}"
             mem_layer = QgsVectorLayer(mem_uri, layer_name, "memory")
             prov = mem_layer.dataProvider()
-            prov.addAttributes(processed_layer.fields())
+            fields = QgsFields(processed_layer.fields())
+            if dgn_layer_names and "dgn_level_name" not in fields.names():
+                fields.append(QgsField("dgn_level_name", QMetaType.Type.QString))
+            prov.addAttributes(fields)
             mem_layer.updateFields()
 
             features = []
             for geom, original_feat in type_data:
                 new_feat = QgsFeature(mem_layer.fields())
                 new_feat.setGeometry(geom)
-                new_feat.setAttributes(original_feat.attributes())
+                attrs = list(original_feat.attributes())
+                if len(attrs) < len(mem_layer.fields()):
+                    attrs.extend([None] * (len(mem_layer.fields()) - len(attrs)))
+
+                lvl_val = None
+                if "Level" in original_feat.fields().names():
+                    lvl_val = original_feat["Level"]
+                elif "dgn_level" in original_feat.fields().names():
+                    lvl_val = original_feat["dgn_level"]
+
+                if lvl_val is not None:
+                    lvl_num = int(lvl_val) if str(lvl_val).isdigit() else -1
+                    lname = dgn_layer_names.get(lvl_num, "")
+                    if lname:
+                        if "dgn_level_name" in mem_layer.fields().names():
+                            idx = mem_layer.fields().indexOf("dgn_level_name")
+                            attrs[idx] = lname
+                        if "Layer" in mem_layer.fields().names():
+                            idx = mem_layer.fields().indexOf("Layer")
+                            attrs[idx] = lname
+
+                new_feat.setAttributes(attrs)
                 features.append(new_feat)
             add_features_or_raise(mem_layer, features, "CAD layer split")
 

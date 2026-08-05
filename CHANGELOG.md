@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.6.6] - 2026-08-06
+
+- Added human-readable MicroStation DGN level name extraction:
+  - Scanned DGN v8 Level Table streams (`Dgn^N`) to extract official level names (e.g. `Olcu_Cizgi`, `ETKILENEN_YERLER`, `06-88`, `KARAYOLU`, `KAMULASTIRMA_SINIRI`).
+  - Updated layer display names to include human-readable level titles (e.g. `Olcu_Cizgi (Level 512)` instead of generic `Level 512`).
+  - Populated `dgn_level_name` feature attributes and GeoPackage layer names (`OLCU_CIZGI_LEVEL_512`).
+
 ## [2.6.5] - 2026-08-06
 
 - Critical fix for MicroStation DGN v8 file decoding and coordinate extents:

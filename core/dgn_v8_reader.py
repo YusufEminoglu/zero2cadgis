@@ -29,6 +29,7 @@ from __future__ import annotations
 import contextlib
 import math
 import os
+import re
 import struct
 import sys
 import zlib
@@ -204,9 +205,10 @@ class DgnV8Reader:
             return {}
         names: dict[int, str] = {}
         try:
-            for entry in self._ole.listdir():
+            entries = sorted(self._ole.listdir(), key=lambda e: (0 if '$40' in '/'.join(e) else 1, '/'.join(e)))
+            for entry in entries:
                 name = "/".join(entry)
-                if "Dgn^N" not in name:
+                if "Dgn^N" not in name and "Level" not in name and "Dgn~H" not in name:
                     continue
                 raw = None
                 try:
@@ -225,26 +227,16 @@ class DgnV8Reader:
                 if dec is None:
                     dec = raw
 
-                # Scan decompressed level table stream for UTF-16 / ASCII level names
-                pos = 0
-                while pos < len(dec) - 8:
-                    # Look for level ID structure: uint32 level_id, string length, chars
-                    lid = struct.unpack_from("<I", dec, pos)[0]
-                    if 1 <= lid <= 0x7FFFFFFF:
-                        # Attempt ASCII string decode in vicinity
-                        sub = dec[pos+4:pos+64]
-                        # Look for null-terminated printable string
-                        clean_str = ""
-                        for b in sub:
-                            if 32 <= b <= 126:
-                                clean_str += chr(b)
-                            elif b == 0 and len(clean_str) >= 2:
-                                break
-                            elif clean_str:
-                                break
-                        if len(clean_str) >= 2 and lid not in names:
-                            names[lid] = clean_str
-                    pos += 4
+                for m in re.finditer(rb'([A-Za-z0-9_\-\.\ ]{3,64})\x00', dec):
+                    sname = m.group(1).decode('utf-8', errors='ignore').strip()
+                    if not sname or sname.lower() in ('name', 'vf', 'none', 'true', 'false', 'shape', 'line'):
+                        continue
+                    start = m.start()
+                    if start >= 28:
+                        lid = struct.unpack_from('<I', dec, start - 28)[0]
+                        if 0 < lid <= 0x7FFFFFFF:
+                            if lid not in names:
+                                names[lid] = sname
         except (IOError, AttributeError, OSError) as exc:
             _ = exc
         return names
