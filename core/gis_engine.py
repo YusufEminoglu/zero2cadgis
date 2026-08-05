@@ -5,6 +5,7 @@ Includes HTML balloon description parsing and KML GroundOverlay Georeferencing.
 """
 from __future__ import annotations
 
+import contextlib
 import os
 import re
 import zipfile
@@ -39,6 +40,7 @@ from .csv_sniffer import (
 )
 from . import ogr_catalog_cache
 from .dgn_v8_reader import DgnV8Reader, is_dgn_v8 as _is_dgn_v8, check_dgn_driver_available
+from .crs_detect import detect_crs
 
 # CAD source families whose OGR "entities"/"elements" layer carries an
 # embedded per-CAD-layer field (DXF ``Layer`` name, DGN ``Level`` number).
@@ -146,7 +148,8 @@ class GisConverterEngine:
     def __init__(self, source_path: str, target_gpkg: str,
                  target_crs: QgsCoordinateReferenceSystem,
                  csv_profile: CsvGeometryProfile | None = None,
-                 csv_source_crs: str = ""):
+                 csv_source_crs: str = "",
+                 source_crs: QgsCoordinateReferenceSystem | str | None = None):
         self.source_path = source_path
         self.target_gpkg = target_gpkg
         self.target_crs = target_crs
@@ -159,6 +162,68 @@ class GisConverterEngine:
         # When set (to "Layer"/"Level"), the single CAD entities layer is
         # split into one output layer per distinct CAD-layer value.
         self.cad_split_field: str = ""
+
+        self.source_crs: Optional[QgsCoordinateReferenceSystem] = None
+        if source_crs:
+            if isinstance(source_crs, QgsCoordinateReferenceSystem):
+                if source_crs.isValid():
+                    self.source_crs = source_crs
+            elif isinstance(source_crs, str) and source_crs.strip():
+                c = QgsCoordinateReferenceSystem(source_crs)
+                if c.isValid():
+                    self.source_crs = c
+        if self.source_crs is None and csv_source_crs:
+            c = QgsCoordinateReferenceSystem(csv_source_crs)
+            if c.isValid():
+                self.source_crs = c
+
+    def _effective_source_crs(
+            self,
+            layer: Optional[QgsVectorLayer] = None,
+            sample_coords: Optional[list] = None) -> QgsCoordinateReferenceSystem:
+        """Resolve a valid source CRS for layer transformation.
+
+        If layer has a valid CRS, return it.
+        Otherwise, if explicit source_crs / csv_source_crs is set and valid, use it.
+        Otherwise, attempt coordinate auto-detection (detect_crs).
+        Fallback to target_crs or active project CRS so CRS is guaranteed valid.
+        """
+        if layer is not None and layer.crs().isValid():
+            return layer.crs()
+
+        if self.source_crs is not None and self.source_crs.isValid():
+            return self.source_crs
+
+        if self.csv_source_crs:
+            c = QgsCoordinateReferenceSystem(self.csv_source_crs)
+            if c.isValid():
+                return c
+
+        coords = sample_coords or []
+        if not coords and layer is not None:
+            try:
+                for feat in layer.getFeatures():
+                    geom = feat.geometry()
+                    if geom and not geom.isEmpty():
+                        pt = geom.centroid().asPoint()
+                        coords.append((pt.x(), pt.y()))
+                        if len(coords) >= 50:
+                            break
+            except Exception:
+                coords = []
+
+        if coords:
+            with contextlib.suppress(Exception):
+                detection = detect_crs(coordinates=coords)
+                if detection.epsg:
+                    c = QgsCoordinateReferenceSystem(detection.authid)
+                    if c.isValid():
+                        return c
+
+        if self.target_crs and self.target_crs.isValid():
+            return self.target_crs
+
+        return QgsProject.instance().crs()
 
     # ── source resolution & discovery ────────────────────────────────
 
@@ -453,10 +518,20 @@ class GisConverterEngine:
         else:
             geom_type = "LineString"
 
-        wkt_prefix = f"{geom_type}?crs="
+        all_pts = []
+        for elem in elements:
+            if elem.geometry:
+                all_pts.extend(elem.geometry[:2])
+                if len(all_pts) >= 50:
+                    break
+
+        src_crs = self._effective_source_crs(sample_coords=all_pts)
+
+        wkt_prefix = f"{geom_type}?crs={src_crs.authid()}"
         vlayer = QgsVectorLayer(wkt_prefix, name, "memory")
         if not vlayer.isValid():
             return None
+        vlayer.setCrs(src_crs)
 
         pr = vlayer.dataProvider()
         pr.addAttributes([
@@ -648,6 +723,8 @@ class GisConverterEngine:
                 self.last_warnings.append(
                     f"CAD layer '{display}' could not be read and was skipped.")
                 continue
+            if not vlayer.crs().isValid():
+                vlayer.setCrs(self._effective_source_crs(vlayer))
             if value is None:
                 pass
             elif value == "":
@@ -905,9 +982,12 @@ class GisConverterEngine:
                 else QgsVectorFileWriter.ActionOnExistingFile.CreateOrOverwriteFile
             )
 
-            if processed_layer.crs() != self.target_crs:
+            src_crs = self._effective_source_crs(processed_layer)
+            if not processed_layer.crs().isValid():
+                processed_layer.setCrs(src_crs)
+            if src_crs != self.target_crs:
                 options.ct = QgsCoordinateTransform(
-                    processed_layer.crs(), self.target_crs, QgsProject.instance())
+                    src_crs, self.target_crs, QgsProject.instance())
 
             err, err_msg, _, _ = QgsVectorFileWriter.writeAsVectorFormatV3(
                 processed_layer,
@@ -933,8 +1013,11 @@ class GisConverterEngine:
     def _write_cad_layer_gpkg(self, processed_layer, layer_name, wrote_any,
                               transform_context, loaded_layers) -> bool:
         """Write one CAD-layer subset to GPKG, split by geometry type."""
+        src_crs = self._effective_source_crs(processed_layer)
+        if not processed_layer.crs().isValid():
+            processed_layer.setCrs(src_crs)
+
         transform = None
-        src_crs = processed_layer.crs()
         if src_crs.isValid() and src_crs != self.target_crs:
             transform = QgsCoordinateTransform(
                 src_crs, self.target_crs, QgsProject.instance())
@@ -1283,10 +1366,14 @@ class GisConverterEngine:
             default_geom_type = memory_geometry_type_name(processed_layer)
             features_by_type = {}
 
+            src_crs = self._effective_source_crs(processed_layer)
+            if not processed_layer.crs().isValid():
+                processed_layer.setCrs(src_crs)
+
             transform = None
-            if processed_layer.crs() != self.target_crs:
+            if src_crs.isValid() and src_crs != self.target_crs:
                 transform = QgsCoordinateTransform(
-                    processed_layer.crs(), self.target_crs, QgsProject.instance())
+                    src_crs, self.target_crs, QgsProject.instance())
 
             for feat in processed_layer.getFeatures():
                 geom = feat.geometry()

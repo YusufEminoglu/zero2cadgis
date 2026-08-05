@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.6.4] - 2026-08-06
+
+- Fixed CAD/DGN CRS resolution and reprojection issues:
+  - Added `_effective_source_crs()` helper to automatically assign valid source CRS to DGN and DXF layers (using user input, coordinate sampling via `detect_crs()`, target CRS, or project CRS).
+  - Guaranteed `QgsCoordinateTransform` creation during conversion and memory cloning so 100% of feature geometries are properly reprojected to the target CRS.
+  - Set valid CRS on all DGN memory layers and live loaded CAD layers so QGIS canvas can reproject features on the fly.
+
 ## [2.6.3] - 2026-08-06
 
 - Fixed feature rejection bug in DGN memory layers by adding `_coerce_geometry_for_layer()`:

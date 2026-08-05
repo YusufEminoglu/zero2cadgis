@@ -1514,9 +1514,11 @@ class Zero2CadGisDockWidget(QDockWidget):
                 if self.csv_src_crs.crs().isValid():
                     csv_crs = self.csv_src_crs.crs().authid()
 
+            src_crs_param = self.csv_src_crs.crs() if self.csv_src_crs.crs().isValid() else None
             self.gis_converter = GisConverterEngine(
                 src, dst, crs,
-                csv_profile=csv_profile, csv_source_crs=csv_crs)
+                csv_profile=csv_profile, csv_source_crs=csv_crs,
+                source_crs=src_crs_param)
             if self._cad_split_field and self._is_cad_format(fmt):
                 self.gis_converter.cad_split_field = self._cad_split_field
 
