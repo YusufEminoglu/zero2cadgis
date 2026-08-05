@@ -428,10 +428,10 @@ class GisConverterEngine:
             ])
             features.append(feat)
             if len(features) >= 50000:
-                add_features_or_raise(pr, features)
+                add_features_or_raise(vlayer, features, "DGN memory layer")
                 features.clear()
         if features:
-            add_features_or_raise(pr, features)
+            add_features_or_raise(vlayer, features, "DGN memory layer")
 
         vlayer.updateExtents()
         return vlayer

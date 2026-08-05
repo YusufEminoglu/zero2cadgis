@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.6.2] - 2026-08-06
+
+- Fixed positional argument error in `add_features_or_raise()` by making the `context` parameter optional (`context: str = "Add features"`) and ensuring `vlayer` object is correctly passed during DGN feature construction.
+
 ## [2.6.1] - 2026-08-06
 
 - Fixed MicroStation DGN v7 and DGN v8 file conversion issues:

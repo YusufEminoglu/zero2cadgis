@@ -81,7 +81,7 @@ def _feature_count(layer) -> int | None:
     return count if isinstance(count, int) else None
 
 
-def add_features_or_raise(layer, features: list, context: str) -> None:
+def add_features_or_raise(layer, features: list, context: str = "Add features") -> None:
     """Add features and fail loudly if QGIS rejects any feature silently."""
     if not features:
         layer.updateExtents()
