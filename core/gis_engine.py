@@ -365,16 +365,72 @@ class GisConverterEngine:
             if vlayer is not None and vlayer.isValid():
                 yield display, vlayer
 
+    @staticmethod
+    def _coerce_geometry_for_layer(
+            geom: Optional[QgsGeometry],
+            target_type: str) -> Optional[QgsGeometry]:
+        """Coerce a QgsGeometry to match the memory layer's WKB geometry family."""
+        if not geom or geom.isEmpty():
+            return None
+        try:
+            gt = geom.type()
+        except Exception:
+            return geom
+
+        try:
+            is_line_geom = (gt == QgsWkbTypes.GeometryType.LineGeometry)
+            is_poly_geom = (gt == QgsWkbTypes.GeometryType.PolygonGeometry)
+            is_point_geom = (gt == QgsWkbTypes.GeometryType.PointGeometry)
+        except Exception:
+            t_str = str(gt).lower()
+            is_line_geom = "line" in t_str
+            is_poly_geom = "polygon" in t_str
+            is_point_geom = "point" in t_str
+
+        if target_type in ("LineString", "MultiLineString"):
+            if is_line_geom:
+                return geom
+            if is_poly_geom:
+                poly = geom.asPolygon()
+                if poly and poly[0]:
+                    return QgsGeometry.fromPolylineXY(poly[0])
+                mpoly = geom.asMultiPolygon()
+                if mpoly and mpoly[0] and mpoly[0][0]:
+                    return QgsGeometry.fromPolylineXY(mpoly[0][0])
+                return None
+            if is_point_geom:
+                pt = geom.asPoint()
+                return QgsGeometry.fromPolylineXY([pt, pt])
+        elif target_type in ("Polygon", "MultiPolygon"):
+            if is_poly_geom:
+                return geom
+            if is_line_geom:
+                pts = geom.asPolyline()
+                if len(pts) >= 3:
+                    if pts[0] != pts[-1]:
+                        pts = list(pts) + [pts[0]]
+                    return QgsGeometry.fromPolygonXY([pts])
+                return None
+        elif target_type in ("Point", "MultiPoint"):
+            if is_point_geom:
+                return geom
+            c = geom.centroid()
+            return c if c and not c.isEmpty() else None
+
+        return geom
+
     def _dgn_elements_to_memory_layer(
             self, name: str, elements: list,
             level_key: str) -> Optional[QgsVectorLayer]:
         """Convert a list of :class:`DgnElement` objects into a QGIS
         memory layer."""
-        # Determine geometry type from the first few elements
+        if not elements:
+            return None
+
         has_polygon = False
         has_line = False
         has_point = False
-        for elem in elements[:50]:
+        for elem in elements:
             n = len(elem.geometry)
             if n == 0:
                 continue
@@ -388,14 +444,14 @@ class GisConverterEngine:
             elif n == 1:
                 has_point = True
 
-        if has_polygon:
+        if has_polygon and not has_line:
             geom_type = "Polygon"
-        elif has_line:
-            geom_type = "MultiLineString"
+        elif has_polygon or has_line:
+            geom_type = "LineString"
         elif has_point:
             geom_type = "Point"
         else:
-            return None
+            geom_type = "LineString"
 
         wkt_prefix = f"{geom_type}?crs="
         vlayer = QgsVectorLayer(wkt_prefix, name, "memory")
@@ -416,11 +472,14 @@ class GisConverterEngine:
         for elem in elements:
             if not elem.geometry:
                 continue
-            geom = self._points_to_qgs_geometry(
+            raw_geom = self._points_to_qgs_geometry(
                 elem.geometry, elem.element_type == 6, geom_type)
+            if raw_geom is None:
+                continue
+            geom = self._coerce_geometry_for_layer(raw_geom, geom_type)
             if geom is None:
                 continue
-            feat = QgsFeature()
+            feat = QgsFeature(vlayer.fields())
             feat.setGeometry(geom)
             feat.setAttributes([
                 elem.level, elem.color_index, elem.weight,

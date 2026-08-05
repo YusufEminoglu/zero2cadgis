@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.6.3] - 2026-08-06
+
+- Fixed feature rejection bug in DGN memory layers by adding `_coerce_geometry_for_layer()`:
+  - Ensures 100% of DGN elements (lines, shapes, points) are coerced to match the target memory layer geometry type, preventing QGIS memory provider feature rejection errors on layers with mixed element types.
+  - Properly bound `vlayer.fields()` to constructed `QgsFeature` instances.
+
 ## [2.6.2] - 2026-08-06
 
 - Fixed positional argument error in `add_features_or_raise()` by making the `context` parameter optional (`context: str = "Add features"`) and ensuring `vlayer` object is correctly passed during DGN feature construction.
