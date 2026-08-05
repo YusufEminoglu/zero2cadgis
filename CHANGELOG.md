@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.7.0] - 2026-08-06
+
+- Added native & CLI-assisted AutoCAD DWG (*.dwg) conversion support:
+  - Enabled AutoCAD DWG format in dropdown format selector and file dialogs.
+  - Direct reading for legacy DWG R2000 (ACAD1015) files via GDAL CAD driver.
+  - Automatic on-the-fly conversion of modern AutoCAD DWG files (R2004-R2024) via ODA File Converter CLI integration when installed on Windows.
+  - Clear user guidance and error messaging pointing to free ODA File Converter utility download if unassisted modern DWG files are loaded.
+
 ## [2.6.6] - 2026-08-06
 
 - Added human-readable MicroStation DGN level name extraction:

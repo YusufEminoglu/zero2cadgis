@@ -411,6 +411,8 @@ class SourceFormat:
 SOURCE_FORMATS: list[SourceFormat] = [
     SourceFormat("dxf", "DXF (*.dxf)", "Select DXF File",
                  "AutoCAD DXF (*.dxf)", (".dxf",)),
+    SourceFormat("dwg", "AutoCAD DWG (*.dwg)", "Select AutoCAD DWG File",
+                 "AutoCAD DWG (*.dwg)", (".dwg",)),
     SourceFormat("kml", "KML / KMZ (*.kml, *.kmz)", "Select KML or KMZ File",
                  "Keyhole Markup Language (*.kml *.kmz)", (".kml", ".kmz")),
     SourceFormat("gml", "GML (*.gml)", "Select GML File",
@@ -631,17 +633,6 @@ class Zero2CadGisDockWidget(QDockWidget):
         self.cmb_src_type = QComboBox()
         for fmt in SOURCE_FORMATS:
             self.cmb_src_type.addItem(fmt.label, fmt.key)
-        self.cmb_src_type.insertSeparator(self.cmb_src_type.count())
-        self.cmb_src_type.addItem(
-            "Future enhancement: DWG (*.dwg)")
-        future_dwg_index = self.cmb_src_type.count() - 1
-        future_dwg_item = self.cmb_src_type.model().item(future_dwg_index)
-        if future_dwg_item is not None:
-            future_dwg_item.setEnabled(False)
-        self.cmb_src_type.setItemData(
-            future_dwg_index,
-            "Current QGIS/GDAL builds only read limited DWG versions via libopencad. Convert DWG to DXF first.",
-            Qt.ItemDataRole.ToolTipRole)
         self.cmb_src_type.currentIndexChanged.connect(
             self._on_source_type_changed)
         type_layout.addWidget(self.cmb_src_type, 1)

@@ -11,6 +11,7 @@ import re
 import zipfile
 import tempfile
 import shutil
+import subprocess  # nosec B404
 from typing import Optional
 
 from osgeo import ogr, osr, gdal
@@ -231,11 +232,67 @@ class GisConverterEngine:
     def is_delimited(self) -> bool:
         return is_delimited_dataset(self.source_path)
 
+    @staticmethod
+    def _find_oda_file_converter() -> Optional[str]:
+        """Search for ODAFileConverter executable on Windows."""
+        candidates = [
+            r"C:\Program Files\ODA\ODAFileConverter\ODAFileConverter.exe",
+            r"C:\Program Files (x86)\ODA\ODAFileConverter\ODAFileConverter.exe",
+            r"C:\Program Files\ODAFileConverter\ODAFileConverter.exe",
+            r"C:\Program Files (x86)\ODAFileConverter\ODAFileConverter.exe",
+        ]
+        for c in candidates:
+            if os.path.exists(c):
+                return c
+        return shutil.which("ODAFileConverter.exe") or shutil.which("ODAFileConverter")
+
     def _resolve_source(self, is_kmz: bool) -> str:
-        """Return the readable source path, extracting KMZ only once."""
+        """Return the readable source path, extracting KMZ or converting DWG via ODA if needed."""
         if self._resolved_src is None:
-            self._resolved_src = (
-                self.extract_kmz() if is_kmz else self.source_path)
+            raw_path = self.extract_kmz() if is_kmz else self.source_path
+            if raw_path.lower().endswith(".dwg"):
+                # 1. Try reading directly with GDAL CAD driver (e.g. DWG R2000)
+                cad_ds = None
+                try:
+                    cad_ds = ogr.Open(raw_path)
+                except Exception:
+                    cad_ds = None
+                if cad_ds is not None and cad_ds.GetLayerCount() > 0:
+                    cad_ds = None
+                    self._resolved_src = raw_path
+                    return self._resolved_src
+
+                # 2. Try ODA File Converter CLI if available
+                oda_exe = self._find_oda_file_converter()
+                if oda_exe:
+                    out_dir = tempfile.mkdtemp(prefix="gis_dwg_out_")
+                    in_dir = tempfile.mkdtemp(prefix="gis_dwg_in_")
+                    self.temp_dirs.extend([out_dir, in_dir])
+                    fname = os.path.basename(raw_path)
+                    shutil.copy2(raw_path, os.path.join(in_dir, fname))
+                    try:
+                        subprocess.run(  # nosec B603
+                            [oda_exe, in_dir, out_dir, "ACAD2018", "DXF", "0", "1"],
+                            check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                            timeout=30
+                        )
+                        dxf_file = os.path.join(out_dir, os.path.splitext(fname)[0] + ".dxf")
+                        if os.path.exists(dxf_file):
+                            self._resolved_src = dxf_file
+                            return self._resolved_src
+                    except Exception as exc:
+                        self.last_warnings.append(f"ODAFileConverter warning: {exc}")
+
+                # 3. Raise helpful error explaining ODA File Converter
+                raise ValueError(
+                    f"GDAL CAD driver could not read this DWG file: '{os.path.basename(raw_path)}'.\n\n"
+                    f"Standard GDAL builds only support legacy DWG R2000 files. For modern DWG "
+                    f"files (R2004-R2024), install the free ODA File Converter utility from "
+                    f"Open Design Alliance (https://www.opendesign.com/guestfiles/oda_file_converter).\n"
+                    f"Zero2CadGis will automatically detect it and convert DWG files on the fly!"
+                )
+
+            self._resolved_src = raw_path
         return self._resolved_src
 
     def _ensure_csv_profile(self) -> CsvGeometryProfile:
