@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.6.1] - 2026-08-06
+
+- Fixed MicroStation DGN v7 and DGN v8 file conversion issues:
+  - Resolved `Dgn^G` element stream lookup bug in `DgnV8Reader` by supporting all stream naming layouts without requiring trailing slashes.
+  - Added robust multi-offset fallback decompression for raw deflate and zlib streams.
+  - Added 2D vs 3D point coordinate decoding support (`stride 24` vs `16`) to prevent coordinate corruption and giant coordinate aborts on 3D drawings.
+  - Fixed Level ID upper bound limit (from 0xFFFF to 0x7FFFFFFF) to support high-range MicroStation levels.
+  - Added MicroStation level name table extraction (`Dgn^N` streams) for level display names.
+  - Fixed CAD layer splitting when converting without explicit level filtering (`selected_values=None`).
+  - Prioritised pure-Python fallback whenever GDAL legacy driver fails or returns 0 layers on DGN files.
+
 ## [2.6.0] - 2026-08-04
 
 - DGN v8 files can now be read even when GDAL's DGNv8 driver is not available.

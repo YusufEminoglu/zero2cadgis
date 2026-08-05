@@ -26,6 +26,7 @@ selection and datum transformation.
 
 from __future__ import annotations
 
+import contextlib
 import math
 import os
 import struct
@@ -82,11 +83,9 @@ _TYPE_NAMES: dict[int, str] = {
 }
 
 # Element types whose geometry we can extract reliably.
-# Simple graphic primitives have fixed-size headers and known
-# geometry layouts.
 _SIMPLE_GEOM_TYPES = frozenset({
     ElementType.LINE, ElementType.LINE_STRING, ElementType.SHAPE,
-    ElementType.CURVE, ElementType.ELLIPSE, ElementType.ARC,
+    ElementType.TEXT, ElementType.CURVE, ElementType.ELLIPSE, ElementType.ARC,
 })
 
 
@@ -117,9 +116,6 @@ class DgnV8Reader:
         path: Absolute path to the ``.dgn`` file.
     """
 
-    # Geometry starts at this byte offset for the most common simple
-    # element types (line, shape).  For LineString a slightly larger
-    # offset is needed (see ``_geom_offset_for_type``).
     _BASE_GEOM_OFFSET = 0x64  # 100 bytes
 
     def __init__(self, path: str) -> None:
@@ -162,16 +158,32 @@ class DgnV8Reader:
             raise RuntimeError("DGN file is not open")
         for entry in self._ole.listdir():
             name = "/".join(entry)
-            # Graphic element streams live under Dgn-Md/#NNNNNN/Dgn^G/
-            if "/Dgn^G/" not in name:
+            # Graphic element streams live under Dgn-Md/#NNNNNN/Dgn^G/ or Dgn^G
+            if "Dgn^G" not in name:
                 continue
-            raw = self._ole.openstream(entry).read()
-            if len(raw) <= 16:
-                continue
+            raw = None
             try:
-                dec = zlib.decompress(raw[16:])
-            except zlib.error:
+                raw = self._ole.openstream(entry).read()
+            except (IOError, AttributeError, OSError):
+                raw = None
+            if not raw or len(raw) < 12:
                 continue
+
+            dec = None
+            for offset in (16, 12, 8, 0):
+                if len(raw) <= offset:
+                    continue
+                chunk = raw[offset:]
+                with contextlib.suppress(zlib.error):
+                    dec = zlib.decompress(chunk)
+                    break
+                with contextlib.suppress(zlib.error):
+                    dec = zlib.decompress(chunk, -zlib.MAX_WBITS)
+                    break
+
+            if dec is None:
+                dec = raw
+
             if len(dec) < 12:
                 continue
             yield name, dec
@@ -188,10 +200,54 @@ class DgnV8Reader:
     def layer_names(self) -> dict[int, str]:
         """Return a mapping ``{level_number: level_name}`` discovered
         from the file's level table (if present)."""
-        # The level table is stored in the ``Dgn^Nm`` streams.
-        # For now we return an empty dict — this can be extended
-        # once the level-table binary layout is fully mapped.
-        return {}
+        if self._ole is None:
+            return {}
+        names: dict[int, str] = {}
+        try:
+            for entry in self._ole.listdir():
+                name = "/".join(entry)
+                if "Dgn^N" not in name:
+                    continue
+                raw = None
+                try:
+                    raw = self._ole.openstream(entry).read()
+                except (IOError, AttributeError, OSError):
+                    raw = None
+                if not raw:
+                    continue
+                dec = None
+                for offset in (16, 12, 8, 0):
+                    if len(raw) <= offset:
+                        continue
+                    with contextlib.suppress(zlib.error):
+                        dec = zlib.decompress(raw[offset:])
+                        break
+                if dec is None:
+                    dec = raw
+
+                # Scan decompressed level table stream for UTF-16 / ASCII level names
+                pos = 0
+                while pos < len(dec) - 8:
+                    # Look for level ID structure: uint32 level_id, string length, chars
+                    lid = struct.unpack_from("<I", dec, pos)[0]
+                    if 1 <= lid <= 0x7FFFFFFF:
+                        # Attempt ASCII string decode in vicinity
+                        sub = dec[pos+4:pos+64]
+                        # Look for null-terminated printable string
+                        clean_str = ""
+                        for b in sub:
+                            if 32 <= b <= 126:
+                                clean_str += chr(b)
+                            elif b == 0 and len(clean_str) >= 2:
+                                break
+                            elif clean_str:
+                                break
+                        if len(clean_str) >= 2 and lid not in names:
+                            names[lid] = clean_str
+                    pos += 4
+        except (IOError, AttributeError, OSError) as exc:
+            _ = exc
+        return names
 
     # ------------------------------------------------------------------
     # Stream-level parsing
@@ -201,22 +257,17 @@ class DgnV8Reader:
     def _geom_offset_for_type(type_byte: int, subtype_byte: int) -> int:
         """Return the byte offset where geometry data begins for a
         given element type and sub-type."""
-        # Lines (type 3) and shapes (type 6) use the same layout.
-        # LineStrings (type 4) have an extra 8-byte field (vertex count)
-        # before the coordinate array.
         if type_byte == ElementType.LINE_STRING:
             return 0x6C
-        # Curves, ellipses, and arcs may need special handling —
-        # for now return the base offset and let validation filter
-        # bad geometry downstream.
-        if type_byte in (ElementType.CURVE, ElementType.ELLIPSE,
-                         ElementType.ARC):
+        if type_byte in (ElementType.CURVE, ElementType.ELLIPSE, ElementType.ARC):
             return 0x6C
+        if type_byte == ElementType.TEXT:
+            return 0x50
         return DgnV8Reader._BASE_GEOM_OFFSET
 
     @staticmethod
     def _decode_points(data: bytes, start: int,
-                       end: int) -> List[Tuple[float, float]]:
+                       end: int, is_3d: bool = False) -> List[Tuple[float, float]]:
         """Decode (X, Y) double-precision pairs from *start* to *end*.
 
         Stops at NaN sentinels and values that are clearly garbage
@@ -224,41 +275,40 @@ class DgnV8Reader:
         """
         pts: List[Tuple[float, float]] = []
         pos = start
+        stride = 24 if is_3d else 16
         while pos + 16 <= end:
             x = struct.unpack_from("<d", data, pos)[0]
             y = struct.unpack_from("<d", data, pos + 8)[0]
-            if math.isnan(x) or math.isnan(y):
-                pos += 16
+            if math.isnan(x) or math.isnan(y) or math.isinf(x) or math.isinf(y):
+                pos += stride
                 continue
-            if math.isinf(x) or math.isinf(y):
-                pos += 16
-                continue
-            # Extremely large values (>1e16) in an engineering drawing
-            # are almost certainly mis-parsed linkage data, not real
-            # coordinates.
             if abs(x) > 1e16 or abs(y) > 1e16:
                 break
             pts.append((x, y))
-            pos += 16
+            pos += stride
         return pts
 
     @staticmethod
     def _read_level(data: bytes, elem_start: int) -> int:
         """Extract the MicroStation Level number."""
+        if elem_start + 0x30 > len(data):
+            return 0
         level = struct.unpack_from("<I", data, elem_start + 0x2C)[0]
-        if 0 <= level <= 0xFFFF:
+        if 0 <= level <= 0x7FFFFFFF:
             return level
-        # Try alternate offsets for variant layouts
-        for off in (0x28, 0x30):
-            level = struct.unpack_from("<I", data, elem_start + off)[0]
-            if 0 <= level <= 0xFFFF:
-                return level
+        for off in (0x28, 0x30, 0x14, 0x18):
+            if elem_start + off + 4 <= len(data):
+                level = struct.unpack_from("<I", data, elem_start + off)[0]
+                if 0 <= level <= 0x7FFFFFFF:
+                    return level
         return 0
 
     @staticmethod
     def _read_color(data: bytes,
                     elem_start: int) -> Tuple[int, int, int]:
         """Return ``(color_index, weight, style)``."""
+        if elem_start + 0x34 > len(data):
+            return (0, 0, 0)
         cg = struct.unpack_from("<I", data, elem_start + 0x30)[0]
         return (cg & 0xFF, (cg >> 8) & 0xFF, (cg >> 16) & 0xFF)
 
@@ -269,8 +319,10 @@ class DgnV8Reader:
 
         while pos + 16 <= data_len:
             elem_start = pos
-            type_byte = data[pos + 4]
+            type_byte = data[pos + 4] & 0x7F
             subtype_byte = data[pos + 5]
+
+            is_3d = bool(data[pos + 1] & 0x40)
 
             word_count = struct.unpack_from("<I", data, pos + 8)[0]
             if word_count < 4 or word_count > 0xFFFFF:
@@ -294,10 +346,12 @@ class DgnV8Reader:
                 abs_geom = elem_start + geom_off
                 if abs_geom < elem_end:
                     geometry = self._decode_points(data, abs_geom,
-                                                    elem_end)
+                                                    elem_end, is_3d=is_3d)
+                    if not geometry and is_3d:
+                        # Fallback attempt as 2D
+                        geometry = self._decode_points(data, abs_geom,
+                                                        elem_end, is_3d=False)
 
-            # Yield even elements with empty geometry so callers can
-            # report on what was found (levels, counts, etc.).
             yield DgnElement(
                 element_type=type_byte,
                 type_name=type_name,
@@ -326,7 +380,7 @@ def is_dgn_v8(path: str) -> bool:
         try:
             for entry in ole.listdir():
                 name = "/".join(entry)
-                if "Dgn~H" in name or "Dgn-Md" in name:
+                if "Dgn~H" in name or "Dgn-Md" in name or "Dgn^G" in name:
                     return True
             return False
         finally:

@@ -38,7 +38,7 @@ from .csv_sniffer import (
     sniff_delimited_dataset,
 )
 from . import ogr_catalog_cache
-from .dgn_v8_reader import DgnV8Reader, is_dgn_v8 as _is_dgn_v8
+from .dgn_v8_reader import DgnV8Reader, is_dgn_v8 as _is_dgn_v8, check_dgn_driver_available
 
 # CAD source families whose OGR "entities"/"elements" layer carries an
 # embedded per-CAD-layer field (DXF ``Layer`` name, DGN ``Level`` number).
@@ -204,14 +204,21 @@ class GisConverterEngine:
 
         infos = []
         for prefix, src in self._ogr_sources(is_kmz):
-            ogr_ds = ogr.Open(src)
+            ogr_ds = None
+            if not src.lower().endswith(".dgn") or check_dgn_driver_available() or not _is_dgn_v8(src):
+                try:
+                    ogr_ds = ogr.Open(src)
+                except Exception:
+                    ogr_ds = None
 
-            # --- DGN v8 fallback ---
-            if ogr_ds is None and src.lower().endswith(".dgn") \
-                    and self._try_dgn_fallback(src):
+            # --- DGN fallback (if ogr.Open failed or returned 0 layers on DGN) ---
+            if (ogr_ds is None or (src.lower().endswith(".dgn") and ogr_ds.GetLayerCount() == 0)) \
+                    and src.lower().endswith(".dgn") and self._try_dgn_fallback(src):
                 infos.append(SourceLayerInfo(
                     "DGN Entities", "LineString/Polygon",
                     self._dgn_count_elements(src)))
+                if ogr_ds:
+                    ogr_ds = None
                 continue
 
             if ogr_ds is None:
@@ -265,9 +272,8 @@ class GisConverterEngine:
         try:
             reader = DgnV8Reader(src)
             reader.open()
-            # Consume one element to verify the file is readable
+            # Consume elements (up to 1) to verify reader works
             for _elem in reader.elements():
-                # Re-wrap so the caller can iterate from the start
                 reader.close()
                 return DgnV8Reader(src)
             reader.close()
@@ -282,8 +288,13 @@ class GisConverterEngine:
         field = "Level"
         self.cad_split_field = field
         groups: dict[str, dict] = {}
+        layer_names: dict[int, str] = {}
 
         with DgnV8Reader(src) as reader:
+            try:
+                layer_names = reader.layer_names()
+            except Exception:
+                layer_names = {}
             for elem in reader.elements():
                 key = str(elem.level)
                 rec = groups.setdefault(key, {"count": 0, "families": set()})
@@ -303,8 +314,11 @@ class GisConverterEngine:
         for key in sorted(groups, key=lambda k: int(k) if k.isdigit() else 0):
             rec = groups[key]
             fam_str = "/".join(sorted(rec["families"])) or "LineString"
+            lvl_num = int(key) if key.isdigit() else -1
+            lname = layer_names.get(lvl_num, "")
+            display_name = f"Level {key}" + (f" ({lname})" if lname else "")
             infos.append(SourceLayerInfo(
-                f"Level {key}", fam_str, rec["count"], key=key))
+                display_name, fam_str, rec["count"], key=key))
         return infos, field
 
     def _dgn_fallback_iter_layers(
@@ -316,18 +330,36 @@ class GisConverterEngine:
 
         # Group elements by Level
         level_elems: dict[str, list] = collections.defaultdict(list)
+        layer_names = {}
         with DgnV8Reader(src) as reader:
+            try:
+                layer_names = reader.layer_names()
+            except Exception:
+                layer_names = {}
             for elem in reader.elements():
                 level_elems[str(elem.level)].append(elem)
 
-        levels_to_yield = (selected_levels if selected_levels is not None
-                           else list(level_elems.keys()))
+        if selected_levels is None:
+            levels_to_yield = list(level_elems.keys())
+        else:
+            levels_to_yield = []
+            for key in level_elems.keys():
+                lvl_num = int(key) if key.isdigit() else -1
+                lname = layer_names.get(lvl_num, "")
+                disp = f"Level {key}" + (f" ({lname})" if lname else "")
+                if (key in selected_levels or
+                        disp in selected_levels or
+                        f"Level {key}" in selected_levels or
+                        (lname and lname in selected_levels)):
+                    levels_to_yield.append(key)
 
         for level_key in levels_to_yield:
             elems = level_elems.get(level_key, [])
             if not elems:
                 continue
-            display = f"Level {level_key}"
+            lvl_num = int(level_key) if level_key.isdigit() else -1
+            lname = layer_names.get(lvl_num, "")
+            display = f"Level {level_key}" + (f" ({lname})" if lname else "")
             vlayer = self._dgn_elements_to_memory_layer(
                 display, elems, level_key)
             if vlayer is not None and vlayer.isValid():
@@ -460,10 +492,14 @@ class GisConverterEngine:
 
         # --- DGN v8 fallback (GDAL lacks the DGNv8 driver) ---
         if src.lower().endswith(".dgn"):
-            dgn_ds = ogr.Open(src)
-            if dgn_ds is None and self._try_dgn_fallback(src):
-                return self._dgn_fallback_discover_cad(src)
-            dgn_ds = None
+            if not check_dgn_driver_available() and _is_dgn_v8(src):
+                if self._try_dgn_fallback(src):
+                    return self._dgn_fallback_discover_cad(src)
+            else:
+                dgn_ds = ogr.Open(src)
+                if (dgn_ds is None or dgn_ds.GetLayerCount() == 0) and self._try_dgn_fallback(src):
+                    return self._dgn_fallback_discover_cad(src)
+                dgn_ds = None
 
         ogr_ds = ogr.Open(src)
         if ogr_ds is None:
@@ -511,12 +547,18 @@ class GisConverterEngine:
 
         # --- DGN v8 fallback ---
         if src.lower().endswith(".dgn"):
-            test_ds = ogr.Open(src)
-            if test_ds is None and self._try_dgn_fallback(src):
-                yield from self._dgn_fallback_iter_layers(
-                    src, selected_values)
-                return
-            test_ds = None
+            if not check_dgn_driver_available() and _is_dgn_v8(src):
+                if self._try_dgn_fallback(src):
+                    yield from self._dgn_fallback_iter_layers(
+                        src, selected_values)
+                    return
+            else:
+                test_ds = ogr.Open(src)
+                if (test_ds is None or test_ds.GetLayerCount() == 0) and self._try_dgn_fallback(src):
+                    yield from self._dgn_fallback_iter_layers(
+                        src, selected_values)
+                    return
+                test_ds = None
 
         ogr_ds = ogr.Open(src)
         if ogr_ds is None or ogr_ds.GetLayerCount() == 0:
@@ -533,7 +575,12 @@ class GisConverterEngine:
                 break
         ogr_ds = None
 
-        values = selected_values if selected_values is not None else [None]
+        if selected_values is None:
+            infos, _ = self.discover_cad_layers(is_kmz=False)
+            values = [i.key for i in infos] if infos else [None]
+        else:
+            values = selected_values
+
         for value in values:
             uri = f"{src}|layername={entities_name}"
             display = str(value) if value not in (None, "") else "NO_LAYER"
@@ -624,10 +671,16 @@ class GisConverterEngine:
 
         found_any = False
         for prefix, src in self._ogr_sources(is_kmz):
-            ogr_ds = ogr.Open(src)
+            ogr_ds = None
+            if not src.lower().endswith(".dgn") or check_dgn_driver_available() or not _is_dgn_v8(src):
+                try:
+                    ogr_ds = ogr.Open(src)
+                except Exception:
+                    ogr_ds = None
 
             # --- DGN v8 fallback (non-CAD-split mode) ---
-            if ogr_ds is None and src.lower().endswith(".dgn"):
+            if (ogr_ds is None or (src.lower().endswith(".dgn") and ogr_ds.GetLayerCount() == 0)) \
+                    and src.lower().endswith(".dgn"):
                 dgn_reader = self._try_dgn_fallback(src)
                 if dgn_reader is not None:
                     layer_name = "DGN Entities"
