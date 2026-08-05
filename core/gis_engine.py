@@ -234,33 +234,105 @@ class GisConverterEngine:
 
     @staticmethod
     def _find_oda_file_converter() -> Optional[str]:
-        """Search for ODAFileConverter executable on Windows."""
+        """Search for ODAFileConverter executable across settings, env vars, system PATH, static paths, and registry."""
+        # 1. Custom path saved in QSettings
+        with contextlib.suppress(Exception):
+            from qgis.PyQt.QtCore import QSettings
+            custom_path = QSettings().value("zero2cadgis/oda_converter_path", "")
+            if custom_path and os.path.exists(str(custom_path)):
+                return str(custom_path)
+
+        # 2. Check QGIS native settings for ODAFileConverter
+        with contextlib.suppress(Exception):
+            from qgis.core import QgsSettings
+            s = QgsSettings()
+            for key in ("/qgis/odaFileConverterPath", "/dwg/odaConverterPath", "/Processing/Configuration/ODA_FILE_CONVERTER_PATH"):
+                val = s.value(key, "")
+                if val and os.path.exists(str(val)):
+                    return str(val)
+
+        # 3. Environment variables
+        for env_key in ("ODA_FILE_CONVERTER_PATH", "ODA_PATH", "ODA_CONVERTER"):
+            val = os.environ.get(env_key)
+            if val and os.path.exists(val):
+                return val
+
+        # 4. System PATH
+        path_exe = shutil.which("ODAFileConverter.exe") or shutil.which("ODAFileConverter")
+        if path_exe and os.path.exists(path_exe):
+            return path_exe
+
+        # 5. Common static install candidates
         candidates = [
             r"C:\Program Files\ODA\ODAFileConverter\ODAFileConverter.exe",
             r"C:\Program Files (x86)\ODA\ODAFileConverter\ODAFileConverter.exe",
             r"C:\Program Files\ODAFileConverter\ODAFileConverter.exe",
             r"C:\Program Files (x86)\ODAFileConverter\ODAFileConverter.exe",
+            r"C:\ODA\ODAFileConverter\ODAFileConverter.exe",
         ]
         for c in candidates:
             if os.path.exists(c):
                 return c
-        return shutil.which("ODAFileConverter.exe") or shutil.which("ODAFileConverter")
+
+        # 6. Shallow glob search in Program Files
+        import glob
+        for base in [r"C:\Program Files\ODA", r"C:\Program Files (x86)\ODA", r"C:\Program Files", r"C:\Program Files (x86)"]:
+            if os.path.exists(base):
+                matches = glob.glob(os.path.join(base, "ODAFileConverter*", "ODAFileConverter.exe"))
+                if matches:
+                    return matches[0]
+                matches = glob.glob(os.path.join(base, "*", "ODAFileConverter.exe"))
+                if matches:
+                    return matches[0]
+
+        # 7. Windows Registry search
+        if os.name == "nt":
+            with contextlib.suppress(Exception):
+                import winreg
+                for hkey in (winreg.HKEY_LOCAL_MACHINE, winreg.HKEY_CURRENT_USER):
+                    for subkey_path in (
+                        r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall",
+                        r"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall",
+                        r"SOFTWARE\OpenDesign",
+                        r"SOFTWARE\ODA"
+                    ):
+                        with contextlib.suppress(Exception):
+                            key = winreg.OpenKey(hkey, subkey_path)
+                            for i in range(winreg.QueryInfoKey(key)[0]):
+                                with contextlib.suppress(Exception):
+                                    sub = winreg.EnumKey(key, i)
+                                    sub_key = winreg.OpenKey(key, sub)
+                                    with contextlib.suppress(Exception):
+                                        name, _ = winreg.QueryValueEx(sub_key, "DisplayName")
+                                        if "oda" in str(name).lower():
+                                            loc, _ = winreg.QueryValueEx(sub_key, "InstallLocation")
+                                            exe = os.path.join(str(loc), "ODAFileConverter.exe")
+                                            if os.path.exists(exe):
+                                                return exe
+
+        return None
 
     def _resolve_source(self, is_kmz: bool) -> str:
         """Return the readable source path, extracting KMZ or converting DWG via ODA if needed."""
         if self._resolved_src is None:
             raw_path = self.extract_kmz() if is_kmz else self.source_path
             if raw_path.lower().endswith(".dwg"):
-                # 1. Try reading directly with GDAL CAD driver (e.g. DWG R2000)
+                # 1. Try reading directly with GDAL CAD driver (e.g. legacy DWG R2000)
                 cad_ds = None
                 try:
                     cad_ds = ogr.Open(raw_path)
                 except Exception:
                     cad_ds = None
                 if cad_ds is not None and cad_ds.GetLayerCount() > 0:
+                    with contextlib.suppress(Exception):
+                        lyr = cad_ds.GetLayerByIndex(0)
+                        fc = lyr.GetFeatureCount()
+                        # Modern DWG files (R2004-R2024) cause libopencad to return 0 features or throw
+                        if fc > 0 or (fc == -1 and lyr.GetNextFeature() is not None):
+                            cad_ds = None
+                            self._resolved_src = raw_path
+                            return self._resolved_src
                     cad_ds = None
-                    self._resolved_src = raw_path
-                    return self._resolved_src
 
                 # 2. Try ODA File Converter CLI if available
                 oda_exe = self._find_oda_file_converter()
@@ -268,28 +340,58 @@ class GisConverterEngine:
                     out_dir = tempfile.mkdtemp(prefix="gis_dwg_out_")
                     in_dir = tempfile.mkdtemp(prefix="gis_dwg_in_")
                     self.temp_dirs.extend([out_dir, in_dir])
-                    fname = os.path.basename(raw_path)
-                    shutil.copy2(raw_path, os.path.join(in_dir, fname))
+                    
+                    # Copy input DWG to a pure ASCII filename to avoid Unicode/Turkish filename CLI issues
+                    safe_in_dwg = os.path.join(in_dir, "input_converted.dwg")
+                    shutil.copy2(raw_path, safe_in_dwg)
+
+                    for cad_ver in ["ACAD2018", "ACAD2013", "ACAD2010", "ACAD2000"]:
+                        try:
+                            subprocess.run(  # nosec B603
+                                [oda_exe, in_dir, out_dir, cad_ver, "DXF", "0", "1"],
+                                check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                timeout=45
+                            )
+                            dxf_candidates = [
+                                os.path.join(out_dir, "input_converted.dxf"),
+                                os.path.join(out_dir, "input_converted.DXF"),
+                            ]
+                            for f in os.listdir(out_dir):
+                                if f.lower().endswith(".dxf"):
+                                    dxf_candidates.append(os.path.join(out_dir, f))
+
+                            for dxf_file in dxf_candidates:
+                                if os.path.exists(dxf_file) and os.path.getsize(dxf_file) > 0:
+                                    self._resolved_src = dxf_file
+                                    return self._resolved_src
+                        except Exception as exc:
+                            self.last_warnings.append(f"ODAFileConverter ({cad_ver}) warning: {exc}")
+
+                # 3. Try LibreDWG dwg2dxf if available
+                dwg2dxf_exe = shutil.which("dwg2dxf") or shutil.which("dwg2dxf.exe")
+                if dwg2dxf_exe:
+                    out_dir = tempfile.mkdtemp(prefix="gis_libredwg_out_")
+                    self.temp_dirs.append(out_dir)
+                    dxf_out = os.path.join(out_dir, "converted.dxf")
                     try:
                         subprocess.run(  # nosec B603
-                            [oda_exe, in_dir, out_dir, "ACAD2018", "DXF", "0", "1"],
+                            [dwg2dxf_exe, "-o", dxf_out, raw_path],
                             check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                            timeout=30
+                            timeout=45
                         )
-                        dxf_file = os.path.join(out_dir, os.path.splitext(fname)[0] + ".dxf")
-                        if os.path.exists(dxf_file):
-                            self._resolved_src = dxf_file
+                        if os.path.exists(dxf_out) and os.path.getsize(dxf_out) > 0:
+                            self._resolved_src = dxf_out
                             return self._resolved_src
                     except Exception as exc:
-                        self.last_warnings.append(f"ODAFileConverter warning: {exc}")
+                        self.last_warnings.append(f"dwg2dxf warning: {exc}")
 
-                # 3. Raise helpful error explaining ODA File Converter
+                # 4. Raise helpful error explaining ODA File Converter
                 raise ValueError(
                     f"GDAL CAD driver could not read this DWG file: '{os.path.basename(raw_path)}'.\n\n"
                     f"Standard GDAL builds only support legacy DWG R2000 files. For modern DWG "
                     f"files (R2004-R2024), install the free ODA File Converter utility from "
                     f"Open Design Alliance (https://www.opendesign.com/guestfiles/oda_file_converter).\n"
-                    f"Zero2CadGis will automatically detect it and convert DWG files on the fly!"
+                    f"Zero2CadGis can locate ODAFileConverter.exe automatically or allow you to select its path!"
                 )
 
             self._resolved_src = raw_path

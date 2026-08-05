@@ -661,13 +661,19 @@ class Zero2CadGisDockWidget(QDockWidget):
         cad_row.setSpacing(4)
         self.chk_cad_split = QCheckBox("Split into CAD layers (by Layer/Level)")
         self.chk_cad_split.setToolTip(
-            "DXF and DGN files store every entity in one table tagged with a "
-            "CAD layer name (DXF) or level (DGN). When enabled, each CAD layer "
+            "DXF, DWG and DGN files store every entity in one table tagged with a "
+            "CAD layer name (DXF/DWG) or level (DGN). When enabled, each CAD layer "
             "becomes its own selectable QGIS layer instead of one merged blob.")
         self.chk_cad_split.setChecked(True)
         self.chk_cad_split.setVisible(False)
         self.chk_cad_split.toggled.connect(self._on_cad_split_toggled)
         cad_row.addWidget(self.chk_cad_split)
+
+        self.btn_oda_path = QPushButton("ODA Path...")
+        self.btn_oda_path.setToolTip(
+            "Set custom executable path to ODAFileConverter.exe for modern DWG files (R2004-R2024).")
+        self.btn_oda_path.clicked.connect(self._configure_oda_path)
+        cad_row.addWidget(self.btn_oda_path)
 
         self.btn_clear_ogr_cache = QPushButton("Clear catalog cache")
         self.btn_clear_ogr_cache.setToolTip(
@@ -1211,7 +1217,63 @@ class Zero2CadGisDockWidget(QDockWidget):
 
     @staticmethod
     def _is_cad_format(fmt: SourceFormat | None) -> bool:
-        return fmt is not None and fmt.key in ("dxf", "dgn")
+        return fmt is not None and fmt.key in ("dxf", "dwg", "dgn")
+
+    def _configure_oda_path(self) -> None:
+        current = QSettings().value("zero2cadgis/oda_converter_path", "")
+        start_dir = os.path.dirname(str(current)) if current and os.path.exists(str(current)) else r"C:\Program Files"
+        file_path, _ = QFileDialog.getOpenFileName(
+            self, "Select ODAFileConverter.exe Executable",
+            start_dir, "ODAFileConverter (ODAFileConverter.exe *.exe);;All Files (*.*)")
+        if file_path and os.path.exists(file_path):
+            QSettings().setValue("zero2cadgis/oda_converter_path", file_path)
+            self.iface.messageBar().pushMessage(
+                "02CadGis",
+                f"Saved ODA File Converter path: {file_path}",
+                Qgis.MessageLevel.Success, 5)
+            src_path = self.txt_src_path.text().strip()
+            fmt = self._current_source_format()
+            if src_path and fmt is not None:
+                self._refresh_source_preview(src_path, fmt)
+
+    def _handle_dwg_error(self, file_path: str, err_msg: str) -> bool:
+        """Show an interactive setup dialog when ODA File Converter is needed for DWG files."""
+        msg_box = QMessageBox(self)
+        msg_box.setWindowTitle("DWG Import - ODA File Converter Required")
+        msg_box.setIcon(QMessageBox.Icon.Information)
+        msg_box.setText(
+            f"GDAL CAD driver could not read modern DWG file:\n'{os.path.basename(file_path)}'\n\n"
+            "Standard GDAL builds only support legacy DWG R2000 files. "
+            "Modern DWG files (R2004-R2024) require the free ODA File Converter utility "
+            "from Open Design Alliance."
+        )
+        msg_box.setInformativeText(
+            "If ODA File Converter is installed, click 'Locate ODAFileConverter.exe' to set its location.\n"
+            "Otherwise, click 'Download ODA Converter' to get the free utility."
+        )
+        btn_locate = msg_box.addButton("Locate ODAFileConverter.exe...", QMessageBox.ButtonRole.ActionRole)
+        btn_download = msg_box.addButton("Download ODA Converter", QMessageBox.ButtonRole.HelpRole)
+        btn_cancel = msg_box.addButton(QMessageBox.StandardButton.Cancel)
+
+        msg_box.exec()
+        clicked = msg_box.clickedButton()
+
+        if clicked == btn_locate:
+            path, _ = QFileDialog.getOpenFileName(
+                self, "Select ODAFileConverter.exe Executable",
+                r"C:\Program Files", "Executable Files (ODAFileConverter.exe *.exe);;All Files (*.*)")
+            if path and os.path.exists(path):
+                QSettings().setValue("zero2cadgis/oda_converter_path", path)
+                self.iface.messageBar().pushMessage(
+                    "02CadGis", f"Saved ODA File Converter path: {path}",
+                    Qgis.MessageLevel.Success, 5)
+                return True
+        elif clicked == btn_download:
+            from qgis.PyQt.QtGui import QDesktopServices
+            from qgis.PyQt.QtCore import QUrl
+            QDesktopServices.openUrl(QUrl("https://www.opendesign.com/guestfiles/oda_file_converter"))
+
+        return False
 
     def _on_source_type_changed(self, index: int) -> None:
         self.txt_src_path.clear()
@@ -1248,11 +1310,7 @@ class Zero2CadGisDockWidget(QDockWidget):
         fmt = self._current_source_format()
         start_dir = self._last_import_dir()
         if fmt is None:
-            QMessageBox.information(
-                self,
-                "Future Enhancement",
-                "DWG import needs broader CAD reader support than the current QGIS/GDAL libopencad driver provides. Convert DWG to DXF first.")
-            return
+            fmt = SOURCE_FORMATS[0]
 
         if fmt.is_dir:
             file_path = QFileDialog.getExistingDirectory(
@@ -1269,13 +1327,6 @@ class Zero2CadGisDockWidget(QDockWidget):
                 f"{fmt.file_filter};;{all_supported_filter()};;All Files (*.*)")
             file_path, _ = QFileDialog.getOpenFileName(
                 self, fmt.dialog_title, start_dir, dialog_filter)
-            if file_path and format_for_path(file_path) is None:
-                if file_path.lower().endswith(".dwg"):
-                    QMessageBox.warning(
-                        self,
-                        "Unsupported Drawing Version",
-                        "DWG import is a future enhancement in this QGIS/GDAL build. Convert DWG to DXF first, then import the DXF file.")
-                    return
 
         if not file_path:
             return
@@ -1338,6 +1389,11 @@ class Zero2CadGisDockWidget(QDockWidget):
             from_cache = probe.catalog_from_cache
             probe.cleanup()
         except Exception as exc:
+            err_text = str(exc)
+            if fmt and fmt.key == "dwg" and ("ODA" in err_text or "GDAL CAD driver" in err_text or "legacy DWG R2000" in err_text):
+                if self._handle_dwg_error(file_path, err_text):
+                    self._refresh_source_preview(file_path, fmt)
+                    return
             self.src_preview_group.setVisible(False)
             self.lbl_src_status.setText(f"Could not inspect dataset: {exc}")
             return
@@ -1470,11 +1526,7 @@ class Zero2CadGisDockWidget(QDockWidget):
         dst = self.txt_gpkg_path.text()
         fmt = self._current_source_format()
         if fmt is None:
-            QMessageBox.information(
-                self,
-                "Future Enhancement",
-                "DWG import is planned for a future enhancement. Convert DWG to DXF first.")
-            return
+            fmt = format_for_path(src) or SOURCE_FORMATS[0]
 
         selected_layers = self._selected_source_layers()
         if selected_layers is not None and not selected_layers:
@@ -1611,6 +1663,11 @@ class Zero2CadGisDockWidget(QDockWidget):
 
         except Exception as exc:
             self.progress_conv.setVisible(False)
+            err_text = str(exc)
+            if fmt and fmt.key == "dwg" and ("ODA" in err_text or "GDAL CAD driver" in err_text or "legacy DWG R2000" in err_text):
+                if self._handle_dwg_error(src, err_text):
+                    self._convert_gis_dataset()
+                    return
             QMessageBox.critical(
                 self,
                 "Conversion Error",

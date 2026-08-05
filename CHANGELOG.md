@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.7.1] - 2026-08-06
+
+- Robust AutoCAD DWG conversion and ODA File Converter integration fixes:
+  - Enhanced `_find_oda_file_converter` to search user settings (`zero2cadgis/oda_converter_path`), QGIS settings, environment variables, system PATH, versioned Program Files folders, and Windows Registry.
+  - Added interactive ODA setup dialog (`_handle_dwg_error`) allowing users to locate `ODAFileConverter.exe` or download it when attempting to open modern DWG files (R2004-R2024).
+  - Added an "ODA Path..." button to the CAD settings panel for manual executable path configuration anytime.
+  - Fixed Unicode/Turkish filename CLI conversion bugs (e.g. `deprem master altlık.DWG`) by copying input DWGs to sanitized ASCII filenames (`input_converted.dwg`) before passing to ODA File Converter CLI.
+  - Fixed false-positive GDAL CAD driver layer detection by verifying feature count and feature readability before skipping ODA conversion.
+  - Added LibreDWG (`dwg2dxf`) CLI fallback detection when ODA is absent.
+  - Enabled CAD layer splitting (`chk_cad_split`) for `.dwg` files.
+
 ## [2.7.0] - 2026-08-06
 
 - Added native & CLI-assisted AutoCAD DWG (*.dwg) conversion support:

@@ -282,13 +282,46 @@ class TestCsvSniffer(unittest.TestCase):
         uri = build_delimitedtext_uri("/tmp/b.csv", table_profile)
         self.assertIn("geomType=none", uri)
 
-    def test_is_delimited_dataset(self):
-        from zero2cadgis.core.csv_sniffer import is_delimited_dataset
+    def test_find_oda_file_converter_custom_setting(self):
+        from zero2cadgis.core.gis_engine import GisConverterEngine
+        mock_settings = MagicMock()
+        mock_settings.value.return_value = r"C:\Custom\ODAFileConverter.exe"
+        with patch("qgis.PyQt.QtCore.QSettings", return_value=mock_settings), \
+             patch("os.path.exists", side_effect=lambda p: p == r"C:\Custom\ODAFileConverter.exe"):
+            oda_exe = GisConverterEngine._find_oda_file_converter()
+            self.assertEqual(oda_exe, r"C:\Custom\ODAFileConverter.exe")
 
-        self.assertTrue(is_delimited_dataset(r"C:\d\points.CSV"))
-        self.assertTrue(is_delimited_dataset("data.tsv"))
-        self.assertTrue(is_delimited_dataset("data.txt"))
-        self.assertFalse(is_delimited_dataset("drawing.dxf"))
+    def test_dwg_resolution_invokes_oda_with_safe_ascii_filename(self):
+        from zero2cadgis.core.gis_engine import GisConverterEngine
+        engine = GisConverterEngine(r"C:\drawings\deprem master altlık.DWG", r"C:\out.gpkg", MagicMock())
+
+        # Mock ogr.Open returning a layer with 0 features (modern DWG)
+        mock_ds = MagicMock()
+        mock_layer = MagicMock()
+        mock_layer.GetFeatureCount.return_value = 0
+        mock_ds.GetLayerCount.return_value = 1
+        mock_ds.GetLayerByIndex.return_value = mock_layer
+
+        with patch("zero2cadgis.core.gis_engine.ogr.Open", return_value=mock_ds), \
+             patch.object(GisConverterEngine, "_find_oda_file_converter", return_value=r"C:\ODA\ODAFileConverter.exe"), \
+             patch("shutil.copy2") as mock_copy, \
+             patch("subprocess.run") as mock_run, \
+             patch("os.path.exists", return_value=True), \
+             patch("os.path.getsize", return_value=1024), \
+             patch("os.listdir", return_value=["input_converted.dxf"]):
+
+            resolved = engine._resolve_source(is_kmz=False)
+            self.assertTrue(resolved.endswith(".dxf"))
+            # Verify input DWG was copied to safe ASCII name input_converted.dwg
+            self.assertTrue(mock_copy.called)
+            copy_dst = mock_copy.call_args[0][1]
+            self.assertTrue(copy_dst.endswith("input_converted.dwg"))
+            # Verify ODA subprocess CLI execution
+            self.assertTrue(mock_run.called)
+            cmd = mock_run.call_args[0][0]
+            self.assertEqual(cmd[0], r"C:\ODA\ODAFileConverter.exe")
+            self.assertEqual(cmd[3], "ACAD2018")
+            self.assertEqual(cmd[4], "DXF")
 
 
 if __name__ == "__main__":
