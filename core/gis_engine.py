@@ -547,8 +547,16 @@ class GisConverterEngine:
         for elem in elements:
             if not elem.geometry:
                 continue
+            valid_pts = [
+                pt for pt in elem.geometry
+                if 100_000.0 <= pt[0] <= 16_000_000.0
+                and 100_000.0 <= pt[1] <= 16_000_000.0
+                and abs(pt[0] - pt[1]) >= 1.0
+            ]
+            if not valid_pts:
+                continue
             raw_geom = self._points_to_qgs_geometry(
-                elem.geometry, elem.element_type == 6, geom_type)
+                valid_pts, elem.element_type == 6, geom_type)
             if raw_geom is None:
                 continue
             geom = self._coerce_geometry_for_layer(raw_geom, geom_type)

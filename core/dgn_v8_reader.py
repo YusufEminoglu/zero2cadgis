@@ -85,7 +85,7 @@ _TYPE_NAMES: dict[int, str] = {
 # Element types whose geometry we can extract reliably.
 _SIMPLE_GEOM_TYPES = frozenset({
     ElementType.LINE, ElementType.LINE_STRING, ElementType.SHAPE,
-    ElementType.TEXT, ElementType.CURVE, ElementType.ELLIPSE, ElementType.ARC,
+    ElementType.CURVE,
 })
 
 
@@ -257,26 +257,40 @@ class DgnV8Reader:
     def _geom_offset_for_type(type_byte: int, subtype_byte: int) -> int:
         """Return the byte offset where geometry data begins for a
         given element type and sub-type."""
-        if type_byte == ElementType.LINE_STRING:
+        if type_byte in (ElementType.LINE, ElementType.LINE_STRING, ElementType.SHAPE):
+            return 0x74
+        if type_byte in (ElementType.CURVE, ElementType.ELLIPSE):
             return 0x6C
-        if type_byte in (ElementType.CURVE, ElementType.ELLIPSE, ElementType.ARC):
-            return 0x6C
+        if type_byte == ElementType.ARC:
+            return 0x7C
         if type_byte == ElementType.TEXT:
-            return 0x50
-        return DgnV8Reader._BASE_GEOM_OFFSET
+            return 0x7C
+        return 0x74
+
+    @staticmethod
+    def _auto_scale_uor(x: float, y: float) -> Tuple[float, float]:
+        """Auto-detect MicroStation DGN UOR (Units of Resolution) scale factor."""
+        ax, ay = abs(x), abs(y)
+        if (100_000_000.0 <= ax <= 500_000_000_000.0) or (100_000_000.0 <= ay <= 500_000_000_000.0):
+            return x / 10000.0, y / 10000.0
+        if (500_000_000_000.0 < ax <= 5_000_000_000_000.0) or (500_000_000_000.0 < ay <= 5_000_000_000_000.0):
+            return x / 100000.0, y / 100000.0
+        if (10_000_000.0 <= ax < 100_000_000.0) or (10_000_000.0 <= ay < 100_000_000.0):
+            return x / 1000.0, y / 1000.0
+        return x, y
 
     @staticmethod
     def _decode_points(data: bytes, start: int,
-                       end: int, is_3d: bool = False) -> List[Tuple[float, float]]:
-        """Decode (X, Y) double-precision pairs from *start* to *end*.
-
-        Stops at NaN sentinels and values that are clearly garbage
-        (magnitude > 1e16 for engineering coordinates).
-        """
+                       end: int, is_3d: bool = False,
+                       max_points: int = 0) -> List[Tuple[float, float]]:
+        """Decode (X, Y) double-precision pairs from *start* to *end*."""
         pts: List[Tuple[float, float]] = []
         pos = start
         stride = 24 if is_3d else 16
+        count = 0
         while pos + 16 <= end:
+            if max_points > 0 and count >= max_points:
+                break
             x = struct.unpack_from("<d", data, pos)[0]
             y = struct.unpack_from("<d", data, pos + 8)[0]
             if math.isnan(x) or math.isnan(y) or math.isinf(x) or math.isinf(y):
@@ -284,8 +298,27 @@ class DgnV8Reader:
                 continue
             if abs(x) > 1e16 or abs(y) > 1e16:
                 break
-            pts.append((x, y))
+            sx, sy = DgnV8Reader._auto_scale_uor(x, y)
+
+            # Swap axes if Northing (4M+) is in X and Easting (500k) is in Y
+            if sx > 3_000_000.0 and sy < 1_500_000.0:
+                sx, sy = sy, sx
+
+            # Skip invalid scaling outliers or metadata sentinels (e.g. font sizes, scale pairs)
+            if abs(sx) > 16_000_000.0 or abs(sy) > 16_000_000.0:
+                pos += stride
+                continue
+            if abs(sx - sy) < 0.0001 and sx > 1_000_000.0:
+                pos += stride
+                continue
+            if sy > 1_000_000.0 and (sy < 3_500_000.0 or sy > 5_000_000.0):
+                pos += stride
+                continue
+
+            pts.append((sx, sy))
+            count += 1
             pos += stride
+
         return pts
 
     @staticmethod
@@ -324,8 +357,8 @@ class DgnV8Reader:
 
             is_3d = bool(data[pos + 1] & 0x40)
 
-            word_count = struct.unpack_from("<I", data, pos + 8)[0]
-            if word_count < 4 or word_count > 0xFFFFF:
+            word_count = struct.unpack_from("<H", data, pos + 8)[0]
+            if word_count < 4:
                 pos += 4
                 continue
 
@@ -340,17 +373,43 @@ class DgnV8Reader:
 
             geometry: List[Tuple[float, float]] = []
 
+            max_pts = 0
+            if type_byte == ElementType.LINE:
+                max_pts = 2
+            elif type_byte in (ElementType.LINE_STRING, ElementType.SHAPE):
+                if elem_start + 0x4C <= elem_end:
+                    n_raw = struct.unpack_from("<I", data, elem_start + 0x48)[0]
+                    if 0 < n_raw <= 5000:
+                        max_pts = n_raw
+
             if type_byte in _SIMPLE_GEOM_TYPES:
                 geom_off = self._geom_offset_for_type(type_byte,
                                                        subtype_byte)
                 abs_geom = elem_start + geom_off
                 if abs_geom < elem_end:
                     geometry = self._decode_points(data, abs_geom,
-                                                    elem_end, is_3d=is_3d)
+                                                    elem_end, is_3d=is_3d,
+                                                    max_points=max_pts)
                     if not geometry and is_3d:
-                        # Fallback attempt as 2D
                         geometry = self._decode_points(data, abs_geom,
-                                                        elem_end, is_3d=False)
+                                                        elem_end, is_3d=False,
+                                                        max_points=max_pts)
+            elif type_byte in (ElementType.ARC, ElementType.ELLIPSE):
+                abs_geom = elem_start + 0x8C
+                if abs_geom + 16 <= elem_end:
+                    pts = self._decode_points(data, abs_geom, elem_end, is_3d=is_3d, max_points=1)
+                    if pts and abs(pts[0][0] - pts[0][1]) > 1000.0:
+                        cx, cy = pts[0]
+                        geometry = [
+                            (cx + 5.0 * math.cos(math.radians(a)), cy + 5.0 * math.sin(math.radians(a)))
+                            for a in range(0, 360, 20)
+                        ]
+            elif type_byte in (ElementType.TEXT, 17):
+                abs_geom = elem_start + 0x74
+                if abs_geom + 16 <= elem_end:
+                    pts = self._decode_points(data, abs_geom, elem_end, is_3d=is_3d, max_points=1)
+                    if pts and abs(pts[0][0] - pts[0][1]) > 1000.0:
+                        geometry = pts
 
             yield DgnElement(
                 element_type=type_byte,

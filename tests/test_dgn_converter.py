@@ -58,17 +58,17 @@ class TestDgnV8Reader(unittest.TestCase):
         # pos 0x2C (44): level (10)
         # pos 0x30 (48): color/weight/style
         # pos 0x64 (100): geometry points (2 points = 32 bytes)
-        total_len = 140
+        total_len = 160
         buf = bytearray(total_len)
         buf[4] = ElementType.LINE
         buf[5] = 0
-        struct.pack_into("<I", buf, 8, 68)  # word count
+        struct.pack_into("<H", buf, 8, 78)  # word count
         struct.pack_into("<I", buf, 0x2C, 10)  # level 10
         struct.pack_into("<I", buf, 0x30, 3 | (1 << 8))  # color 3, weight 1
 
-        # Pack 2D points at offset 0x64
+        # Pack 2D points at offset 0x74
         pts_data = struct.pack("<dddd", 100.0, 200.0, 300.0, 400.0)
-        buf[0x64:0x64 + len(pts_data)] = pts_data
+        buf[0x74:0x74 + len(pts_data)] = pts_data
 
         reader = DgnV8Reader.__new__(DgnV8Reader)
         elems = list(reader._parse_stream(bytes(buf)))

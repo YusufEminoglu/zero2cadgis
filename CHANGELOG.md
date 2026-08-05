@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.6.5] - 2026-08-06
+
+- Critical fix for MicroStation DGN v8 file decoding and coordinate extents:
+  - Fixed 16-bit word_count header unpacking (`<H` vs `<I`) to prevent element misalignments and skipping elements across graphic streams.
+  - Added MicroStation DGN UOR (Units of Resolution) automatic scale factor detection (`_auto_scale_uor`), accurately scaling raw UOR values (e.g. 10,000x / 100,000x) into exact real-world metric survey coordinates (e.g. İzmir Pancar OSB TM30: 520,948m E, 4,230,899m N).
+  - Fixed geometry vertex offsets (`0x74` for Line/LineString/Shape, `0x8C` for Arc/Ellipse, `0x74` for Text/MultiText) and point count limits (`max_points`), removing trailing metadata zeros `(0, 0)` and preventing layer extent explosions (e.g. 42 Billion / Inf).
+  - Added coordinate axis swap detection for drawings with inverted Easting/Northing fields.
+
 ## [2.6.4] - 2026-08-06
 
 - Fixed CAD/DGN CRS resolution and reprojection issues:
