@@ -227,8 +227,18 @@ class DgnV8Reader:
                 if dec is None:
                     dec = raw
 
-                for m in re.finditer(rb'([A-Za-z0-9_\-\.\ ]{3,64})\x00', dec):
-                    sname = m.group(1).decode('utf-8', errors='ignore').strip()
+                from .qgis_compat import fix_mojibake
+                for m in re.finditer(rb'([\x20-\x7E\x80-\xFF]{3,64})\x00', dec):
+                    btext = m.group(1)
+                    sname = ""
+                    try:
+                        sname = btext.decode('utf-8')
+                    except UnicodeDecodeError:
+                        try:
+                            sname = btext.decode('cp1254')
+                        except UnicodeDecodeError:
+                            sname = btext.decode('latin1', errors='ignore')
+                    sname = fix_mojibake(sname.strip())
                     if not sname or sname.lower() in ('name', 'vf', 'none', 'true', 'false', 'shape', 'line'):
                         continue
                     start = m.start()

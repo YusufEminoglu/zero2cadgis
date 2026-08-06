@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.7.3] - 2026-08-06
+
+- Fixed single vs multi geometry mismatch when converting all CAD layers (`Level 0_MultiPolygon` rejection error):
+  - Fixed `_coerce_geometry_for_layer()` to automatically convert single `Polygon` to `MultiPolygon` via `convertToMultiType()` when target memory layer is `MultiPolygon`, single `LineString` to `MultiLineString`, and single `Point` to `MultiPoint` (and vice-versa via `convertToSingleType()`).
+  - Added `fix_mojibake()` utility repairing Turkish character corruptions (CP1254, CP1252, UTF-8) and unescaping DXF `\U+XXXX` unicode escape sequences in CAD layer names, level names, and attributes.
+
 ## [2.7.2] - 2026-08-06
 
 - Fixed CAD memory provider feature rejection error (`only X of Y features were accepted by layer`):

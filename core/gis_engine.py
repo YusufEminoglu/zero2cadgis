@@ -32,7 +32,7 @@ from qgis.core import (
 from qgis.PyQt.QtCore import QMetaType
 from qgis.PyQt.QtXml import QDomDocument
 
-from .qgis_compat import add_features_or_raise, memory_geometry_type_name
+from .qgis_compat import add_features_or_raise, memory_geometry_type_name, fix_mojibake
 from .csv_sniffer import (
     CsvGeometryProfile,
     build_delimitedtext_uri,
@@ -623,33 +623,73 @@ class GisConverterEngine:
 
         if target_type in ("LineString", "MultiLineString"):
             if is_line_geom:
-                return geom
-            if is_poly_geom:
+                g_out = geom
+            elif is_poly_geom:
                 poly = geom.asPolygon()
                 if poly and poly[0]:
-                    return QgsGeometry.fromPolylineXY(poly[0])
-                mpoly = geom.asMultiPolygon()
-                if mpoly and mpoly[0] and mpoly[0][0]:
-                    return QgsGeometry.fromPolylineXY(mpoly[0][0])
-                return None
-            if is_point_geom:
+                    g_out = QgsGeometry.fromPolylineXY(poly[0])
+                else:
+                    mpoly = geom.asMultiPolygon()
+                    g_out = QgsGeometry.fromPolylineXY(mpoly[0][0]) if (mpoly and mpoly[0] and mpoly[0][0]) else None
+            elif is_point_geom:
                 pt = geom.asPoint()
-                return QgsGeometry.fromPolylineXY([pt, pt])
+                g_out = QgsGeometry.fromPolylineXY([pt, pt])
+            else:
+                g_out = geom
+
+            if g_out and not g_out.isEmpty():
+                if target_type == "MultiLineString" and not QgsWkbTypes.isMultiType(g_out.wkbType()):
+                    g_copy = QgsGeometry(g_out)
+                    g_copy.convertToMultiType()
+                    return g_copy
+                elif target_type == "LineString" and QgsWkbTypes.isMultiType(g_out.wkbType()):
+                    g_copy = QgsGeometry(g_out)
+                    g_copy.convertToSingleType()
+                    return g_copy
+            return g_out
+
         elif target_type in ("Polygon", "MultiPolygon"):
             if is_poly_geom:
-                return geom
-            if is_line_geom:
+                g_out = geom
+            elif is_line_geom:
                 pts = geom.asPolyline()
                 if len(pts) >= 3:
                     if pts[0] != pts[-1]:
                         pts = list(pts) + [pts[0]]
-                    return QgsGeometry.fromPolygonXY([pts])
-                return None
+                    g_out = QgsGeometry.fromPolygonXY([pts])
+                else:
+                    g_out = None
+            else:
+                g_out = geom
+
+            if g_out and not g_out.isEmpty():
+                if target_type == "MultiPolygon" and not QgsWkbTypes.isMultiType(g_out.wkbType()):
+                    g_copy = QgsGeometry(g_out)
+                    g_copy.convertToMultiType()
+                    return g_copy
+                elif target_type == "Polygon" and QgsWkbTypes.isMultiType(g_out.wkbType()):
+                    g_copy = QgsGeometry(g_out)
+                    g_copy.convertToSingleType()
+                    return g_copy
+            return g_out
+
         elif target_type in ("Point", "MultiPoint"):
             if is_point_geom:
-                return geom
-            c = geom.centroid()
-            return c if c and not c.isEmpty() else None
+                g_out = geom
+            else:
+                c = geom.centroid()
+                g_out = c if c and not c.isEmpty() else None
+
+            if g_out and not g_out.isEmpty():
+                if target_type == "MultiPoint" and not QgsWkbTypes.isMultiType(g_out.wkbType()):
+                    g_copy = QgsGeometry(g_out)
+                    g_copy.convertToMultiType()
+                    return g_copy
+                elif target_type == "Point" and QgsWkbTypes.isMultiType(g_out.wkbType()):
+                    g_copy = QgsGeometry(g_out)
+                    g_copy.convertToSingleType()
+                    return g_copy
+            return g_out
 
         return geom
 
@@ -833,7 +873,7 @@ class GisConverterEngine:
         layer.ResetReading()
         for feat in layer:
             value = feat.GetField(field)
-            key = "" if value is None else str(value)
+            key = "" if value is None else fix_mojibake(str(value))
             geom = feat.GetGeometryRef()
             gname = geom.GetGeometryName() if geom else "NONE"
             rec = groups.setdefault(key, {"count": 0, "families": set()})
@@ -852,8 +892,9 @@ class GisConverterEngine:
         for key in sorted(groups):
             rec = groups[key]
             lvl_num = int(key) if key.isdigit() else -1
-            lname = dgn_layer_names.get(lvl_num, "")
+            lname = fix_mojibake(dgn_layer_names.get(lvl_num, ""))
             display_name = f"{lname} (Level {key})" if lname else (key or "(no layer)")
+            display_name = fix_mojibake(display_name)
             infos.append(SourceLayerInfo(
                 display_name,
                 "/".join(sorted(rec["families"])),
@@ -911,13 +952,14 @@ class GisConverterEngine:
         for value in values:
             uri = f"{src}|layername={entities_name}"
             lvl_num = int(value) if str(value).isdigit() else -1
-            lname = dgn_layer_names.get(lvl_num, "")
+            lname = fix_mojibake(dgn_layer_names.get(lvl_num, ""))
             if lname and value not in (None, ""):
                 display = f"{lname} (Level {value})"
             elif value not in (None, ""):
                 display = f"Level {value}"
             else:
                 display = "NO_LAYER"
+            display = fix_mojibake(display)
             vlayer = QgsVectorLayer(uri, display, "ogr")
             if not vlayer.isValid():
                 self.last_warnings.append(

@@ -3,7 +3,30 @@
 from __future__ import annotations
 
 import contextlib
+import re
 from qgis.core import QgsWkbTypes
+
+
+def fix_mojibake(text: str | None) -> str:
+    """Repair Mojibake character corruptions and unescape DXF unicode escapes."""
+    if not text or not isinstance(text, str):
+        return str(text) if text is not None else ""
+
+    # 1. Unescape DXF \U+XXXX / \u+XXXX unicode escapes (e.g. \U+015E -> Ş)
+    if "\\U+" in text or "\\u+" in text or r"\U+" in text or r"\u+" in text:
+        text = re.sub(r"\\?[Uu]\+([0-9A-Fa-f]{4})", lambda m: chr(int(m.group(1), 16)), text)
+
+    # 2. Repair UTF-8 / CP1254 / CP1252 Mojibake sequences (e.g. Ã§ -> ç, Ã– -> Ö)
+    if any(c in text for c in ("Ã", "Â", "Å", "Ä", "Ã°", "Ã½")):
+        for src_enc in ("latin1", "cp1252"):
+            for dst_enc in ("utf-8", "cp1254", "iso-8859-9"):
+                try:
+                    fixed = text.encode(src_enc).decode(dst_enc)
+                    if not any(c in fixed for c in ("Ã", "Â", "Å", "Ä")):
+                        return fixed
+                except (UnicodeEncodeError, UnicodeDecodeError):
+                    pass
+    return text
 
 
 def _value_text(value) -> str:
