@@ -77,7 +77,7 @@ from ..core.cad_engine import CadCleanupEngine, CadStylingEngine, CadFeatureAugm
 from ..core.symbology import PlanSymbologyMatcher, apply_plan_symbology
 from ..core.plangml_schema import lookup_tabaka, upper_group_of
 from ..core.path_utils import ensure_extension, has_extension
-from ..core.qgis_compat import add_features_or_raise
+from ..core.qgis_compat import add_features_or_raise, fix_mojibake
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Dock stylesheet — every text colour, background and border is *pinned* so
@@ -1402,7 +1402,7 @@ class Zero2CadGisDockWidget(QDockWidget):
         self.src_layer_tree.setHeaderLabels([header, "Geometry", "Features"])
         for info in infos:
             item = QTreeWidgetItem(self.src_layer_tree)
-            item.setText(0, info.name)
+            item.setText(0, fix_mojibake(info.name))
             item.setText(1, info.geometry)
             item.setText(2, "?" if info.feature_count < 0
                          else str(info.feature_count))
@@ -1841,9 +1841,9 @@ class Zero2CadGisDockWidget(QDockWidget):
                 cad_root.setCheckState(0, Qt.CheckState.Checked)
                 cad_root.setExpanded(True)
 
-                for summary in sorted(summaries, key=lambda s: s.layer_name):
+                for summary in sorted(summaries, key=lambda s: fix_mojibake(s.layer_name)):
                     item = QTreeWidgetItem(cad_root)
-                    item.setText(0, summary.layer_name)
+                    item.setText(0, fix_mojibake(summary.layer_name))
                     item.setText(1, "/".join(sorted(summary.families)))
                     item.setText(2, str(summary.record_count))
                     item.setFlags(

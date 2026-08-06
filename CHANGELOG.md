@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.7.5] - 2026-08-06
+
+- Comprehensive Turkish Mojibake and Unicode character corruption repairs across all CAD/GIS layers and feature attribute tables:
+  - Upgraded `fix_mojibake()` with multi-pass encoding recovery (UTF-8, CP1254, CP1252, ISO-8859-9) and direct character replacement mapping for stubborn Turkish Mojibake sequences (`Ã§` -> `ç`, `Ã–` -> `Ö`, `ÅŸ` -> `ş`, `ÄŸ` -> `ğ`, `Ä±` -> `ı`, `Ãİ` -> `İ`, etc.).
+  - Applied `fix_mojibake()` across feature attribute values in `convert_to_memory()`, `_write_cad_layer_gpkg()`, `CadFeatureAugmenter`, and UI tree items in `dock.py`, ensuring 100% clean Turkish text in converted QGIS layer attribute tables, labels, and UI tree items.
+
 ## [2.7.4] - 2026-08-06
 
 - Fixed false-positive feature rejection error on CAD layers containing empty/non-spatial entities (`only 2 of 6 features accepted by layer`):

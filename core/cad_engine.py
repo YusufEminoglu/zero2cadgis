@@ -131,8 +131,10 @@ class CadFeatureAugmenter:
             new_feat.setGeometry(geom)
 
             # Copy original values
+            from .qgis_compat import fix_mojibake
             for field in layer.fields():
-                new_feat[field.name()] = feat[field.name()]
+                val = feat[field.name()]
+                new_feat[field.name()] = fix_mojibake(val) if isinstance(val, str) else val
 
             # Perform calculations
             length = 0.0

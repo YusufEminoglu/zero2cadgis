@@ -17,15 +17,30 @@ def fix_mojibake(text: str | None) -> str:
         text = re.sub(r"\\?[Uu]\+([0-9A-Fa-f]{4})", lambda m: chr(int(m.group(1), 16)), text)
 
     # 2. Repair UTF-8 / CP1254 / CP1252 Mojibake sequences (e.g. Ã§ -> ç, Ã– -> Ö)
-    if any(c in text for c in ("Ã", "Â", "Å", "Ä", "Ã°", "Ã½")):
+    if any(c in text for c in ("Ã", "Â", "Å", "Ä", "Ã°", "Ã½", "â", "ï")):
         for src_enc in ("latin1", "cp1252"):
             for dst_enc in ("utf-8", "cp1254", "iso-8859-9"):
                 try:
                     fixed = text.encode(src_enc).decode(dst_enc)
-                    if not any(c in fixed for c in ("Ã", "Â", "Å", "Ä")):
-                        return fixed
+                    if not any(c in fixed for c in ("Ã", "Â", "Å", "Ä", "â")):
+                        text = fixed
+                        break
                 except (UnicodeEncodeError, UnicodeDecodeError):
                     pass
+
+    # 3. Direct character replacement for remaining stubborn Turkish Mojibake double-encodings
+    replacements = {
+        "Ã§": "ç", "Ã‡": "Ç",
+        "Ã¶": "ö", "Ã–": "Ö",
+        "Ã¼": "ü", "Ãœ": "Ü",
+        "ÅŸ": "ş", "ÅŞ": "Ş", "ÃŸ": "ş",
+        "ÄŸ": "ğ", "ÄĞ": "Ğ", "Ã°": "ğ",
+        "Ä±": "ı", "Ã½": "ı", "Ãİ": "İ",
+    }
+    for bad, good in replacements.items():
+        if bad in text:
+            text = text.replace(bad, good)
+
     return text
 
 

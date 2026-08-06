@@ -1295,7 +1295,10 @@ class GisConverterEngine:
                 new_feat = QgsFeature(mem_layer.fields())
                 coerced = self._coerce_geometry_for_layer(geom, geom_type_str)
                 new_feat.setGeometry(coerced or geom)
-                attrs = list(original_feat.attributes())
+                attrs = [
+                    fix_mojibake(a) if isinstance(a, str) else a
+                    for a in original_feat.attributes()
+                ]
                 if len(attrs) < len(mem_layer.fields()):
                     attrs.extend([None] * (len(mem_layer.fields()) - len(attrs)))
 
@@ -1307,7 +1310,7 @@ class GisConverterEngine:
 
                 if lvl_val is not None:
                     lvl_num = int(lvl_val) if str(lvl_val).isdigit() else -1
-                    lname = dgn_layer_names.get(lvl_num, "")
+                    lname = fix_mojibake(dgn_layer_names.get(lvl_num, ""))
                     if lname:
                         if "dgn_level_name" in mem_layer.fields().names():
                             idx = mem_layer.fields().indexOf("dgn_level_name")
@@ -1316,6 +1319,10 @@ class GisConverterEngine:
                             idx = mem_layer.fields().indexOf("Layer")
                             attrs[idx] = lname
 
+                attrs = [
+                    fix_mojibake(a) if isinstance(a, str) else a
+                    for a in attrs
+                ]
                 new_feat.setAttributes(attrs)
                 features.append(new_feat)
             add_features_or_raise(mem_layer, features, "CAD layer split")
@@ -1681,7 +1688,11 @@ class GisConverterEngine:
                     new_feat = QgsFeature(mem_layer.fields())
                     coerced = self._coerce_geometry_for_layer(geom, geom_type_str)
                     new_feat.setGeometry(coerced or geom)
-                    new_feat.setAttributes(original_feat.attributes())
+                    fixed_attrs = [
+                        fix_mojibake(a) if isinstance(a, str) else a
+                        for a in original_feat.attributes()
+                    ]
+                    new_feat.setAttributes(fixed_attrs)
                     features.append(new_feat)
 
                 add_features_or_raise(
