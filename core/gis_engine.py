@@ -596,6 +596,16 @@ class GisConverterEngine:
         """Coerce a QgsGeometry to match the memory layer's WKB geometry family."""
         if not geom or geom.isEmpty():
             return None
+
+        # Flatten 3D (Z) coordinates and segmentize curved geometries for 2D memory layers
+        with contextlib.suppress(Exception):
+            if QgsWkbTypes.isCurved(geom.wkbType()):
+                geom = geom.constrainedStraightSegmentedGeometry()
+            if QgsWkbTypes.hasZ(geom.wkbType()) and geom.get():
+                g_copy = QgsGeometry(geom)
+                g_copy.get().dropZValue()
+                geom = g_copy
+
         try:
             gt = geom.type()
         except Exception:
@@ -1241,7 +1251,8 @@ class GisConverterEngine:
             features = []
             for geom, original_feat in type_data:
                 new_feat = QgsFeature(mem_layer.fields())
-                new_feat.setGeometry(geom)
+                coerced = self._coerce_geometry_for_layer(geom, geom_type_str)
+                new_feat.setGeometry(coerced or geom)
                 attrs = list(original_feat.attributes())
                 if len(attrs) < len(mem_layer.fields()):
                     attrs.extend([None] * (len(mem_layer.fields()) - len(attrs)))
@@ -1626,7 +1637,8 @@ class GisConverterEngine:
                 features = []
                 for geom, original_feat in type_data:
                     new_feat = QgsFeature(mem_layer.fields())
-                    new_feat.setGeometry(geom)
+                    coerced = self._coerce_geometry_for_layer(geom, geom_type_str)
+                    new_feat.setGeometry(coerced or geom)
                     new_feat.setAttributes(original_feat.attributes())
                     features.append(new_feat)
 

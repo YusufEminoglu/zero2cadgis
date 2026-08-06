@@ -2,6 +2,7 @@
 """Small QGIS 3/4 compatibility helpers used by conversion engines."""
 from __future__ import annotations
 
+import contextlib
 from qgis.core import QgsWkbTypes
 
 
@@ -103,6 +104,31 @@ def add_features_or_raise(layer, features: list, context: str = "Add features") 
         added = after - before
     else:
         added = len(features) if ok else 0
+
+    if not ok or added < len(features):
+        # Fallback: attempt coercing / dropping Z / segmentizing curves on features if provider rejected 3D/curved geometries
+        with contextlib.suppress(Exception):
+            from qgis.core import QgsWkbTypes, QgsGeometry, QgsFeature
+            coerced_features = []
+            for feat in features:
+                new_f = QgsFeature(feat)
+                g = feat.geometry()
+                if g and not g.isEmpty():
+                    g_copy = QgsGeometry(g)
+                    if QgsWkbTypes.isCurved(g_copy.wkbType()):
+                        g_copy = g_copy.constrainedStraightSegmentedGeometry()
+                    if QgsWkbTypes.hasZ(g_copy.wkbType()) and g_copy.get():
+                        g_copy.get().dropZValue()
+                    new_f.setGeometry(g_copy)
+                coerced_features.append(new_f)
+
+            res2 = provider.addFeatures(coerced_features)
+            layer.updateExtents()
+            after2 = _feature_count(layer)
+            if before is not None and after2 is not None:
+                added = after2 - before
+                if added >= len(features):
+                    ok = True
 
     if not ok or added < len(features):
         added = max(0, added)

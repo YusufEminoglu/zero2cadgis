@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.7.2] - 2026-08-06
+
+- Fixed CAD memory provider feature rejection error (`only X of Y features were accepted by layer`):
+  - Added 3D (Z) coordinate flattening (`dropZValue()`) and curved geometry straight-segmentization (`constrainedStraightSegmentedGeometry()`) in `_coerce_geometry_for_layer()` so 100% of 3D / curved CAD features (e.g. `Level U-CATI`) are accepted by 2D QGIS memory layers.
+  - Added automatic fallback recovery in `add_features_or_raise()` to ensure no CAD features are silently dropped or rejected during scratch memory layer cloning or GeoPackage conversion.
+
 ## [2.7.1] - 2026-08-06
 
 - Robust AutoCAD DWG conversion and ODA File Converter integration fixes:
