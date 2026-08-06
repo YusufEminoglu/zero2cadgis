@@ -1,7 +1,7 @@
 <div align="center">
   <img src="icons/icon.png" width="148" height="148" alt="02CadGis icon">
   <h1>02CadGis</h1>
-  <p><strong>CAD, KML, GML, CSV, GDB and Netcad conversion studio for QGIS</strong></p>
+  <p><strong>AutoCAD DWG/DXF, Netcad NCZ, KML, GML, CSV, GDB, DGN conversion studio for QGIS</strong></p>
   <p>
     <a href="https://plugins.qgis.org/"><img alt="QGIS" src="https://img.shields.io/badge/QGIS-3.22%2B-589632?style=for-the-badge"></a>
     <img alt="License" src="https://img.shields.io/badge/GPL--2.0--or--later-blue?style=for-the-badge">
@@ -10,7 +10,7 @@
   </p>
 </div>
 
-**02CadGis** is a professional QGIS dock plugin for turning CAD and GIS exchange files into clean GeoPackage layers. It is built for planning, cadastral, municipal, and urban analytics workflows where DXF, KML/KMZ, GML, GeoJSON, CSV, SpatiaLite, GPX, DGN, FileGDB, and Netcad files need to become usable QGIS data quickly.
+**02CadGis** is a professional QGIS dock plugin for turning CAD and GIS exchange files into clean GeoPackage layers. It is built for planning, cadastral, municipal, and urban analytics workflows where AutoCAD DWG (*.dwg), DXF, KML/KMZ, GML, GeoJSON, CSV, SpatiaLite, GPX, DGN, FileGDB, and Netcad files need to become usable QGIS data quickly.
 
 <table>
   <tr>
@@ -22,7 +22,7 @@
 
 ## What It Does
 
-- Converts **DXF, KML, KMZ, GML, GeoJSON, CSV/TSV, SpatiaLite/SQLite, GPX, DGN, FileGDB, Personal GDB, NCZ and compatible NCA** files into `.gpkg` layers.
+- Converts **AutoCAD DWG (*.dwg), DXF, KML, KMZ, GML, GeoJSON, CSV/TSV, SpatiaLite/SQLite, GPX, DGN, FileGDB, Personal GDB, NCZ and compatible NCA** files into `.gpkg` layers.
 - Accepts **drag & drop**: drop any supported file onto the dock and the dataset type is detected automatically (Netcad files jump to the NCZ tab).
 - Shows a **pre-conversion layer preview** with geometry types and feature counts, so you convert only the layers you check.
 - **Caches the layer catalog** of Geodatabase and database sources by a content fingerprint, so reopening the same unchanged `.gdb`/`.mdb` lists its layers instantly (over 100x faster) without reopening the driver.

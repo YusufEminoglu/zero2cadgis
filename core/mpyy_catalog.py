@@ -2,8 +2,8 @@
 """Official MPYY UİP tabaka catalog (generated file).
 
 Compiled by ``tools/compile_mpyy_catalog.py`` from the Mekânsal Planlar
-Yapım Yönetmeliği UİP database published by the T.C. Çevre, Şehircilik ve
-İklim Değişikliği Bakanlığı. Do not edit by hand; re-run the compiler.
+Yapım Yönetmeliği UİP database compiled and maintained by Yusuf Eminoğlu.
+Do not edit by hand; re-run the compiler.
 
 Gives each UİP tabaka its official identity — upper group and code, function
 and code — so the PlanGML schema columns of an imported plan carry the

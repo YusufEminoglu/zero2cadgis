@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.7.6] - 2026-08-06
+
+- Updated plugin icon branding and metadata/about sections:
+  - Installed updated plugin icon artwork (`icons/icon.png`).
+  - Updated `metadata.txt`, `README.md`, and GitHub About descriptions to explicitly highlight AutoCAD DWG (`*.dwg`) native and ODA-assisted conversion features.
+  - Corrected attribution for `MpyyUipDb_2026_02_27.gpkg` in `THIRD_PARTY_NOTICES.md` to reflect compilation and maintenance by Yusuf Eminoğlu.
+
 ## [2.7.5] - 2026-08-06
 
 - Comprehensive Turkish Mojibake and Unicode character corruption repairs across all CAD/GIS layers and feature attribute tables:

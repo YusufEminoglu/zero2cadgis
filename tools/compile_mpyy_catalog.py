@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-"""Offline compiler: official MPYY UİP tabaka catalog -> embedded plugin table.
+"""Offline compiler: MPYY UİP tabaka catalog -> embedded plugin table.
 
-Reads the Mekânsal Planlar Yapım Yönetmeliği UİP database published by the
-T.C. Çevre, Şehircilik ve İklim Değişikliği Bakanlığı (a GeoPackage, e.g.
-``MpyyUipDb_2026_02_27.gpkg``) and emits ``core/mpyy_catalog.py``: the official
-identity of every UİP tabaka — its upper group and code, and its function and
-code — so the PlanGML schema columns of an imported plan carry the Ministry's
-own values instead of invented ones.
+Reads the Mekânsal Planlar Yapım Yönetmeliği UİP database compiled and
+maintained by Yusuf Eminoğlu (``MpyyUipDb_2026_02_27.gpkg``) and emits
+``core/mpyy_catalog.py``: the official identity of every UİP tabaka — its upper
+group and code, and its function and code — so the PlanGML schema columns of an
+imported plan carry the standard values.
 
 The source tables are ``uipPolygonTable`` and ``uipLineTable``, both with
 columns ``id1, ust_konu_grup, id2, uip_fonksiyon, id3, uip_tabaka``.

@@ -54,10 +54,10 @@ or produced in cooperation with the Ministry or any of its directorates.
 tabaka, its upper group and code and its function and code, so that the
 PlanGML schema columns of an imported plan carry the Ministry's own values.
 
-- Source: the **Mekânsal Planlar Yapım Yönetmeliği UİP database** published by
-  the **T.C. Çevre, Şehircilik ve İklim Değişikliği Bakanlığı** (a GeoPackage,
-  e.g. `MpyyUipDb_2026_02_27.gpkg`), tables `uipPolygonTable` and
-  `uipLineTable`.
+- Source: the **Mekânsal Planlar Yapım Yönetmeliği UİP database** compiled,
+  structured, and maintained by **Yusuf Eminoğlu** (`MpyyUipDb_2026_02_27.gpkg`),
+  based on the official Mekânsal Planlar Yapım Yönetmeliği UİP tabaka catalog and
+  regulation schema tables (`uipPolygonTable` and `uipLineTable`).
 - Standard: the same Mekânsal Planlar Yapım Yönetmeliği as the plan
   gösterimleri above. The codes are the ones a plan is validated against.
 
@@ -66,10 +66,10 @@ function names and codes — 256 tabaka across 25 upper groups — extracted by
 `tools/compile_mpyy_catalog.py`. No geometry and no drawing data from the
 database is included.
 
-Copyright: the catalog is the Ministry's and is **not claimed** as original
-work here, on the same basis as the plan gösterimleri above. The compiler, the
-`MPYY_ALIASES` list mapping local tabaka spellings onto official ones, and the
-lookup in `core/plangml_schema.py` are Copyright (C) 2026 Yusuf Eminoğlu.
+Copyright: The database structure, `MpyyUipDb_2026_02_27.gpkg` compilation,
+the compiler, the `MPYY_ALIASES` list mapping local tabaka spellings onto
+official ones, and the lookup in `core/plangml_schema.py` are:
+Copyright (C) 2026 Yusuf Eminoğlu.
 
 ## Jeomatik NCZ Reader
 

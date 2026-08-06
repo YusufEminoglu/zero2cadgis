@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+<title>02CadGis - CAD to GIS</title>
+<g id="cad" fill="none" stroke="#E6910A" stroke-linecap="round" stroke-linejoin="round">
+<path stroke-width="15" d="M152,119 L108,372 M55,268 L238,196"/>
+<path stroke-width="25" d="M258,96 L60,140 L50,340 L214,428 L258,410 L272,310 L238,196 Z"/></g>
+<g id="grips" fill="#E6910A">
+<rect x="46" y="126" width="28" height="28" rx="3"/>
+<rect x="244" y="82" width="28" height="28" rx="3"/>
+<rect x="224" y="182" width="28" height="28" rx="3"/>
+<rect x="258" y="296" width="28" height="28" rx="3"/>
+<rect x="244" y="396" width="28" height="28" rx="3"/>
+<rect x="200" y="414" width="28" height="28" rx="3"/>
+<rect x="36" y="326" width="28" height="28" rx="3"/>
+</g><g id="gis">
+<path fill="#22B573" d="M261,101 L300,97 L364,120 L360,274 L274,302 L242,195 Z"/>
+<path fill="#0E8C7F" d="M275,312 L361,284 L359,386 L261,406 Z"/>
+<path fill="#17A398" d="M371,121 L459,151 L455,258 L367,275 Z"/>
+<path fill="#2ACB8B" d="M367,283 L455,266 L449,365 L365,384 Z"/>
+</g></svg>
