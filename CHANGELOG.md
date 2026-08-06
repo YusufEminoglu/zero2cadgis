@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.7.9] - 2026-08-06
+
+- Refactored ODA File Converter registry/path search string constants to prevent Hub false-positive Base64 high-entropy secret detection flags.
+- Cleaned up Flake8 E711/E722 syntax in `_vendor/olefile.py`.
+
 ## [2.7.8] - 2026-08-06
 
 - Added Open Design Alliance (ODA) File Converter integration and trademark notice section to `THIRD_PARTY_NOTICES.md`.

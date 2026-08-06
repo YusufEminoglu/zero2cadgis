@@ -2164,7 +2164,7 @@ class OleFileIO:
         """
         #REFERENCE: [MS-OLEPS] https://msdn.microsoft.com/en-us/library/dd942421.aspx
         # make sure no_conversion is a list, just to simplify code below:
-        if no_conversion == None:
+        if no_conversion is None:
             no_conversion = []
         # stream path as a string to report exceptions:
         streampath = filename
@@ -2371,7 +2371,7 @@ class OleFileIO:
         FMTID_USERDEFINED_PROPERTIES = _clsid(b'\x05\xD5\xCD\xD5\x9C\x2E\x1B\x10\x93\x97\x08\x00\x2B\x2C\xF9\xAE')
 
         # make sure no_conversion is a list, just to simplify code below:
-        if no_conversion == None:
+        if no_conversion is None:
             no_conversion = []
         # stream path as a string to report exceptions:
         streampath = filename
@@ -2631,7 +2631,7 @@ def main():
                                 for index, variable in enumerate(variables):
                                     print('\t{} {}: {}'.format(index, variable['property_name'],variable['value']))
 
-                    except:
+                    except Exception:
                         log.exception('Error while parsing user-defined property stream %r' % streamname)
 
 
