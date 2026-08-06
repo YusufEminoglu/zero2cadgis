@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.8.0] - 2026-08-06
+
+- Add MS Access (.accdb and .mdb) database import support
+
 ## [2.7.9] - 2026-08-06
 
 - Refactored ODA File Converter registry/path search string constants to prevent Hub false-positive Base64 high-entropy secret detection flags.

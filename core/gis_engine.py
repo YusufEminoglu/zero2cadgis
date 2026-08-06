@@ -41,6 +41,7 @@ from .csv_sniffer import (
 )
 from . import ogr_catalog_cache
 from .dgn_v8_reader import DgnV8Reader, is_dgn_v8 as _is_dgn_v8, check_dgn_driver_available
+from .msaccess_reader import MsAccessDbReader, is_msaccess_available
 from .crs_detect import detect_crs
 
 # CAD source families whose OGR "entities"/"elements" layer carries an
@@ -444,6 +445,17 @@ class GisConverterEngine:
                     ogr_ds = ogr.Open(src)
                 except Exception:
                     ogr_ds = None
+
+            # --- MS Access (.accdb / .mdb) fallback (if ogr.Open failed or returned 0 layers) ---
+            if (ogr_ds is None or ogr_ds.GetLayerCount() == 0) and src.lower().endswith((".accdb", ".mdb")) and is_msaccess_available():
+                ms_reader = MsAccessDbReader(src, self.source_crs)
+                with contextlib.suppress(Exception):
+                    ms_tables = ms_reader.list_tables()
+                    for t in ms_tables:
+                        infos.append(SourceLayerInfo(f"{prefix}{t['name']}", t["geometry"], int(t["feature_count"])))
+                    if ogr_ds:
+                        ogr_ds = None
+                    continue
 
             # --- DGN fallback (if ogr.Open failed or returned 0 layers on DGN) ---
             if (ogr_ds is None or (src.lower().endswith(".dgn") and ogr_ds.GetLayerCount() == 0)) \
@@ -1025,10 +1037,10 @@ class GisConverterEngine:
         dgn_msg = self._check_dgn_driver(src)
         if dgn_msg is not None:
             return dgn_msg
-        if src.lower().endswith(".mdb"):
+        if src.lower().endswith((".mdb", ".accdb")):
             return (
-                f"Unable to open source dataset with GDAL/OGR provider: {src}\n\n"
-                "Note: Reading ArcGIS Personal Geodatabases (.mdb) requires the 64-bit "
+                f"Unable to open MS Access database: {src}\n\n"
+                "Note: Reading Microsoft Access databases (.accdb / .mdb) requires the 64-bit "
                 "Microsoft Access Database Engine (ODBC driver) to be installed on Windows. "
                 "Make sure it matches your QGIS bitness (usually 64-bit)."
             )
@@ -1065,6 +1077,22 @@ class GisConverterEngine:
                     ogr_ds = ogr.Open(src)
                 except Exception:
                     ogr_ds = None
+
+            # --- MS Access (.accdb / .mdb) fallback (non-CAD-split mode) ---
+            if (ogr_ds is None or ogr_ds.GetLayerCount() == 0) and src.lower().endswith((".accdb", ".mdb")) and is_msaccess_available():
+                ms_reader = MsAccessDbReader(src, self.source_crs)
+                with contextlib.suppress(Exception):
+                    ms_tables = ms_reader.list_tables()
+                    for t in ms_tables:
+                        layer_name = t["name"]
+                        display = f"{prefix}{layer_name}"
+                        if selected_layers is not None and display not in selected_layers:
+                            continue
+                        vlayer = ms_reader.read_layer(layer_name)
+                        if vlayer is not None and vlayer.isValid():
+                            found_any = True
+                            yield display, vlayer
+                    continue
 
             # --- DGN v8 fallback (non-CAD-split mode) ---
             if (ogr_ds is None or (src.lower().endswith(".dgn") and ogr_ds.GetLayerCount() == 0)) \

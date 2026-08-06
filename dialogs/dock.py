@@ -435,9 +435,9 @@ SOURCE_FORMATS: list[SourceFormat] = [
     SourceFormat("gdb", "ArcGIS File Geodatabase (*.gdb)",
                  "Select ArcGIS File Geodatabase Directory",
                  "", (".gdb",), is_dir=True),
-    SourceFormat("mdb", "ArcGIS Personal Geodatabase (*.mdb)",
-                 "Select ArcGIS Personal Geodatabase File",
-                 "ArcGIS Personal Geodatabase (*.mdb)", (".mdb",)),
+    SourceFormat("mdb", "MS Access / Personal Geodatabase (*.accdb, *.mdb)",
+                 "Select MS Access Database File",
+                 "MS Access / Personal Geodatabase (*.accdb *.mdb)", (".accdb", ".mdb")),
 ]
 
 NCZ_EXTENSIONS = (".ncz", ".nca")
