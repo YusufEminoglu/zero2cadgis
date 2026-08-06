@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.7.8] - 2026-08-06
+
+- Added Open Design Alliance (ODA) File Converter integration and trademark notice section to `THIRD_PARTY_NOTICES.md`.
+
 ## [2.7.7] - 2026-08-06
 
 - Made background transparent for all in-set plugin icons (`icon_cad.png`, `icon_gis.png`, `icon_ncz.png`) to align with the main transparent `icon.png` artwork.

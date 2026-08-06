@@ -97,3 +97,19 @@ the upstream copyright, source, and license information beginning with
 The Jeomatik name, logo, and associated trademarks are not used under the
 GPL and remain the property of their respective owner. 02CadGis is an
 independent project and is not endorsed by or affiliated with Jeomatik.
+
+## ODA File Converter Integration & Trademarks
+
+02CadGis optionally integrates with the free external utility **ODA File Converter**
+provided by **Open Design Alliance (ODA)** (<https://www.opendesign.com/>) to enable
+on-the-fly conversion of modern AutoCAD DWG files (R2004–R2024).
+
+- **No Bundling**: `ODAFileConverter.exe` or ODA SDK binaries are **not** bundled,
+  distributed, or shipped within the 02CadGis plugin zip.
+- **System Integration**: The plugin automatically detects any user-installed instance
+  of ODA File Converter on the host operating system or prompts the user to download it
+  directly from Open Design Alliance.
+- **Trademarks**: ODA, Open Design Alliance, DWG, and Teigha are registered trademarks
+  of Open Design Alliance. AutoCAD is a registered trademark of Autodesk, Inc.
+  02CadGis is an independent open-source project and is not endorsed by, affiliated with,
+  or produced in cooperation with Open Design Alliance or Autodesk.
