@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.8.1] - 2026-08-06
+
+- Fix metric coordinate CRS detection and target CRS reprojection
+
 ## [2.8.0] - 2026-08-06
 
 - Add MS Access (.accdb and .mdb) database import support

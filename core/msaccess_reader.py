@@ -315,10 +315,23 @@ class MsAccessDbReader:
                             if c.isValid():
                                 effective_crs = c
                 if effective_crs is None or not effective_crs.isValid():
-                    effective_crs = QgsProject.instance().crs()
+                    prj_c = QgsProject.instance().crs()
+                    if prj_c and prj_c.isValid():
+                        effective_crs = prj_c
 
-            uri_crs = effective_crs.authid() if effective_crs and effective_crs.isValid() else "EPSG:4326"
-            layer_uri = f"{layer_geom_family}?crs={uri_crs}"
+            is_metric = False
+            if sample_coords:
+                x_avg = sum(p[0] for p in sample_coords) / len(sample_coords)
+                y_avg = sum(p[1] for p in sample_coords) / len(sample_coords)
+                if abs(x_avg) > 180.0 or abs(y_avg) > 90.0:
+                    is_metric = True
+
+            if effective_crs is None or not effective_crs.isValid():
+                if not is_metric:
+                    effective_crs = QgsCoordinateReferenceSystem("EPSG:4326")
+
+            uri_crs = f"?crs={effective_crs.authid()}" if (effective_crs and effective_crs.isValid()) else ""
+            layer_uri = f"{layer_geom_family}{uri_crs}"
             vlayer = QgsVectorLayer(layer_uri, table_name, "memory")
             if not vlayer.isValid():
                 return None

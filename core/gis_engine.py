@@ -185,13 +185,38 @@ class GisConverterEngine:
             sample_coords: Optional[list] = None) -> QgsCoordinateReferenceSystem:
         """Resolve a valid source CRS for layer transformation.
 
-        If layer has a valid CRS, return it.
+        If layer has a valid CRS and its coordinate scale matches (e.g. not EPSG:4326
+        when coordinates are clearly metric), return it.
         Otherwise, if explicit source_crs / csv_source_crs is set and valid, use it.
         Otherwise, attempt coordinate auto-detection (detect_crs).
         Fallback to target_crs or active project CRS so CRS is guaranteed valid.
         """
+        coords = sample_coords or []
+        if not coords and layer is not None:
+            with contextlib.suppress(Exception):
+                ext = layer.extent()
+                if ext and not ext.isEmpty():
+                    if abs(ext.xMinimum()) > 180.0 or abs(ext.yMinimum()) > 90.0 or abs(ext.xMaximum()) > 180.0 or abs(ext.yMaximum()) > 90.0:
+                        coords = [(ext.center().x(), ext.center().y())]
+                if not coords:
+                    for feat in layer.getFeatures():
+                        geom = feat.geometry()
+                        if geom and not geom.isEmpty():
+                            pt = geom.centroid().asPoint()
+                            coords.append((pt.x(), pt.y()))
+                            if len(coords) >= 50:
+                                break
+
+        is_metric_coords = False
+        if coords:
+            x_avg = sum(p[0] for p in coords) / len(coords)
+            y_avg = sum(p[1] for p in coords) / len(coords)
+            if abs(x_avg) > 180.0 or abs(y_avg) > 90.0:
+                is_metric_coords = True
+
         if layer is not None and layer.crs().isValid():
-            return layer.crs()
+            if not (is_metric_coords and layer.crs().authid() == "EPSG:4326"):
+                return layer.crs()
 
         if self.source_crs is not None and self.source_crs.isValid():
             return self.source_crs
@@ -200,19 +225,6 @@ class GisConverterEngine:
             c = QgsCoordinateReferenceSystem(self.csv_source_crs)
             if c.isValid():
                 return c
-
-        coords = sample_coords or []
-        if not coords and layer is not None:
-            try:
-                for feat in layer.getFeatures():
-                    geom = feat.geometry()
-                    if geom and not geom.isEmpty():
-                        pt = geom.centroid().asPoint()
-                        coords.append((pt.x(), pt.y()))
-                        if len(coords) >= 50:
-                            break
-            except Exception:
-                coords = []
 
         if coords:
             with contextlib.suppress(Exception):
@@ -225,7 +237,11 @@ class GisConverterEngine:
         if self.target_crs and self.target_crs.isValid():
             return self.target_crs
 
-        return QgsProject.instance().crs()
+        prj_c = QgsProject.instance().crs()
+        if prj_c and prj_c.isValid():
+            return prj_c
+
+        return QgsCoordinateReferenceSystem("EPSG:5253") if is_metric_coords else QgsCoordinateReferenceSystem("EPSG:4326")
 
     # ── source resolution & discovery ────────────────────────────────
 
@@ -1263,8 +1279,7 @@ class GisConverterEngine:
             )
 
             src_crs = self._effective_source_crs(processed_layer)
-            if not processed_layer.crs().isValid():
-                processed_layer.setCrs(src_crs)
+            processed_layer.setCrs(src_crs)
             if src_crs != self.target_crs:
                 options.ct = QgsCoordinateTransform(
                     src_crs, self.target_crs, QgsProject.instance())
