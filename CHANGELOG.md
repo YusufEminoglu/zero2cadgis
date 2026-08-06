@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.7.7] - 2026-08-06
+
+- Made background transparent for all in-set plugin icons (`icon_cad.png`, `icon_gis.png`, `icon_ncz.png`) to align with the main transparent `icon.png` artwork.
+
 ## [2.7.6] - 2026-08-06
 
 - Updated plugin icon branding and metadata/about sections:
