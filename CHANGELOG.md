@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.7.4] - 2026-08-06
+
+- Fixed false-positive feature rejection error on CAD layers containing empty/non-spatial entities (`only 2 of 6 features accepted by layer`):
+  - Updated `add_features_or_raise()` to filter out null/empty geometries before feature counting, ensuring text-only or empty CAD entities do not trigger rejection exceptions.
+  - Enhanced fallback recovery in `add_features_or_raise()` with automatic single <-> multi WKB conversion matching target layer WKB types.
+
 ## [2.7.3] - 2026-08-06
 
 - Fixed single vs multi geometry mismatch when converting all CAD layers (`Level 0_MultiPolygon` rejection error):

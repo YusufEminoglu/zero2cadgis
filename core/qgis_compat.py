@@ -111,9 +111,27 @@ def add_features_or_raise(layer, features: list, context: str = "Add features") 
         layer.updateExtents()
         return
 
+    # Filter features to valid non-empty geometry objects for spatial layers
+    is_spatial = True
+    with contextlib.suppress(Exception):
+        is_spatial = (layer.geometryType() != QgsWkbTypes.GeometryType.NullGeometry)
+
+    target_features = []
+    for f in features:
+        if is_spatial:
+            g = f.geometry()
+            if g and not g.isEmpty():
+                target_features.append(f)
+        else:
+            target_features.append(f)
+
+    if not target_features:
+        layer.updateExtents()
+        return
+
     before = _feature_count(layer)
     provider = layer.dataProvider()
-    result = provider.addFeatures(features)
+    result = provider.addFeatures(target_features)
 
     ok = True
     if isinstance(result, tuple):
@@ -126,14 +144,15 @@ def add_features_or_raise(layer, features: list, context: str = "Add features") 
     if before is not None and after is not None:
         added = after - before
     else:
-        added = len(features) if ok else 0
+        added = len(target_features) if ok else 0
 
-    if not ok or added < len(features):
-        # Fallback: attempt coercing / dropping Z / segmentizing curves on features if provider rejected 3D/curved geometries
+    if not ok or added < len(target_features):
+        # Fallback: attempt coercing / dropping Z / segmentizing curves / single-multi conversion
         with contextlib.suppress(Exception):
             from qgis.core import QgsWkbTypes, QgsGeometry, QgsFeature
             coerced_features = []
-            for feat in features:
+            layer_wkb = layer.wkbType()
+            for feat in target_features:
                 new_f = QgsFeature(feat)
                 g = feat.geometry()
                 if g and not g.isEmpty():
@@ -142,6 +161,10 @@ def add_features_or_raise(layer, features: list, context: str = "Add features") 
                         g_copy = g_copy.constrainedStraightSegmentedGeometry()
                     if QgsWkbTypes.hasZ(g_copy.wkbType()) and g_copy.get():
                         g_copy.get().dropZValue()
+                    if QgsWkbTypes.isMultiType(layer_wkb) and not QgsWkbTypes.isMultiType(g_copy.wkbType()):
+                        g_copy.convertToMultiType()
+                    elif not QgsWkbTypes.isMultiType(layer_wkb) and QgsWkbTypes.isMultiType(g_copy.wkbType()):
+                        g_copy.convertToSingleType()
                     new_f.setGeometry(g_copy)
                 coerced_features.append(new_f)
 
@@ -150,12 +173,12 @@ def add_features_or_raise(layer, features: list, context: str = "Add features") 
             after2 = _feature_count(layer)
             if before is not None and after2 is not None:
                 added = after2 - before
-                if added >= len(features):
+                if added >= len(target_features):
                     ok = True
 
-    if not ok or added < len(features):
+    if not ok or added < len(target_features):
         added = max(0, added)
         raise ValueError(
-            f"{context}: only {added} of {len(features)} features were "
+            f"{context}: only {added} of {len(target_features)} features were "
             f"accepted by layer '{layer.name()}'."
         )
