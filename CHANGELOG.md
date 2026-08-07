@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.8.2] - 2026-08-07
+
+- Expanded reference manual 2x: CAD/GIS theory, 4 algorithms, CRS math, 22 DOI refs
+
 ## [2.8.1] - 2026-08-06
 
 - Fix metric coordinate CRS detection and target CRS reprojection
