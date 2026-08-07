@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>02CadGis Universal CAD/GIS Importer — Comprehensive Academic Reference Manual</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$', '$']], displayMath: [['$$', '$$']], tags: 'ams' },
+  options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'], ignoreHtmlClass: 'no-math' }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+:root {
+  --bg: #ffffff; --fg: #1a1a1a; --muted: #555;
+  --accent: #e65100; --accent-dark: #bf360c; --accent-light: #fff3e0;
+  --border: #ddd; --code-bg: #f5f7f7;
+  --sidebar-bg: #f0f4f4; --sidebar-fg: #333; --sidebar-active: #fff3e0;
+  --table-stripe: #f9fbfb;
+  font-size: 11pt; line-height: 1.55;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1a1a2e; --fg: #e0e0e0; --muted: #999;
+    --accent: #ff9800; --accent-dark: #f57c00; --accent-light: #2a1a00;
+    --border: #333; --code-bg: #1e2d3d;
+    --sidebar-bg: #16213e; --sidebar-fg: #ccc; --sidebar-active: #2a1a00;
+    --table-stripe: #1a2a3a;
+  }
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg); color: var(--fg); display: flex; min-height: 100vh; }
+
+#sidebar { width: 300px; min-width: 300px; height: 100vh; position: sticky; top: 0; background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; z-index: 100; }
+#sidebar-header { padding: 16px 18px 8px; border-bottom: 1px solid var(--border); }
+#sidebar-header .logo { font-size: 1.3em; font-weight: 700; color: var(--accent); display: block; }
+#sidebar-header .subtitle { font-size: .78em; color: var(--muted); }
+#search-wrap { padding: 10px 14px; }
+#search { width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: .9em; background: var(--bg); color: var(--fg); outline: none; }
+#search:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-light); }
+#toc { flex: 1; overflow-y: auto; padding: 4px 0; list-style: none; }
+.toc-group { border-bottom: 1px solid var(--border); }
+.toc-group-btn { display: block; width: 100%; text-align: left; padding: 8px 18px; background: none; border: none; font-size: .88em; font-weight: 600; color: var(--sidebar-fg); cursor: pointer; }
+.toc-group-btn:hover { background: var(--accent-light); }
+.toc-group-btn .arrow { font-size: .7em; transition: transform .2s; display: inline-block; }
+.toc-group-btn[aria-expanded="false"] .arrow { transform: rotate(-90deg); }
+.toc-algs { list-style: none; overflow: hidden; }
+.toc-algs li a { display: block; padding: 4px 18px 4px 28px; font-size: .85em; color: var(--sidebar-fg); text-decoration: none; border-left: 3px solid transparent; }
+.toc-algs li a:hover, .toc-algs li a.active { background: var(--accent-light); border-left-color: var(--accent); color: var(--accent-dark); }
+.toc-algs li a.hidden { display: none; }
+#sidebar-footer { padding: 10px 18px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 4px; }
+#sidebar-footer a { font-size: .82em; color: var(--muted); text-decoration: none; }
+#sidebar-footer a:hover { color: var(--accent); }
+
+#content { flex: 1; max-width: 52em; padding: 2em 2.5em 6em; overflow-y: auto; }
+h1 { font-size: 2.4em; margin: 0 0 .15em; color: var(--accent); }
+h1.subtitle { font-size: 1.15em; font-weight: 400; color: var(--muted); margin-bottom: 1.5em; }
+h2 { font-size: 1.55em; margin: 2em 0 .5em; padding-bottom: .25em; border-bottom: 2px solid var(--accent); color: var(--accent-dark); }
+h3 { font-size: 1.2em; margin: 1.5em 0 .4em; }
+h4 { font-size: 1.05em; margin: 1.2em 0 .3em; color: var(--muted); }
+p, ul, ol { margin: .6em 0; }
+ul, ol { padding-left: 1.8em; }
+li { margin: .25em 0; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+code { font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; font-size: .9em; background: var(--code-bg); padding: .1em .3em; border-radius: 3px; }
+pre { background: var(--code-bg); padding: .8em 1em; border-radius: 4px; overflow-x: auto; margin: .8em 0; font-size: .88em; }
+table { width: 100%; border-collapse: collapse; margin: .8em 0; font-size: .95em; }
+th, td { text-align: left; padding: .45em .6em; border: 1px solid var(--border); }
+th { background: var(--accent-light); font-weight: 600; }
+tr:nth-child(even) td { background: var(--table-stripe); }
+.callout { background: var(--accent-light); border-left: 4px solid var(--accent); padding: .6em 1em; margin: .8em 0; border-radius: 0 4px 4px 0; }
+.callout.warn { background: #fff8e6; border-left: 4px solid #e6c300; }
+.callout.info { background: #e0f2fe; border-left: 4px solid #0284c7; }
+.callout.danger { background: #fee2e2; border-left: 4px solid #ef4444; }
+.pid { font-size: .85em; color: var(--muted); margin: -.3em 0 .8em; }
+.ref { margin: .35em 0; padding-left: 1.5em; text-indent: -1.5em; font-size: .93em; }
+.key-table td:first-child { font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; font-weight: 600; white-space: nowrap; }
+
+#back-to-top { position: fixed; bottom: 24px; right: 24px; width: 40px; height: 40px; background: var(--accent); color: white; border: none; border-radius: 50%; font-size: 1.3em; cursor: pointer; opacity: 0; transform: translateY(20px); transition: opacity .2s, transform .2s; z-index: 200; }
+#back-to-top.visible { opacity: .85; transform: translateY(0); }
+#back-to-top:hover { opacity: 1; }
+@media (max-width: 768px) { body { flex-direction: column; } #sidebar { width: 100%; min-width: 0; height: auto; position: static; max-height: 40vh; } #content { padding: 1em 1em 4em; } }
+@media print { body { display: block; } #sidebar, #back-to-top { display: none !important; } #content { max-width: none; padding: 0; } h2 { page-break-before: always; } }
+</style>
+</head>
+<body>
+<nav id="sidebar">
+<div id="sidebar-header">
+<span class="logo">02CadGis</span>
+<span class="subtitle">Universal CAD/GIS Importer · v2.8.1</span>
+</div>
+<div id="search-wrap"><input type="text" id="search" placeholder="Search…" autocomplete="off"></div>
+<ul id="toc">
+<li class="toc-group">
+<button class="toc-group-btn" aria-expanded="true" style="border-left:4px solid #e65100; background: linear-gradient(90deg, #e6510018 0%, transparent 100%)"><span class="arrow">▼</span> 1. Architecture &amp; Design</button>
+<ul class="toc-algs">
+<li><a href="#overview" data-name="overview" data-display="plugin overview and philosophy">Plugin Overview &amp; Design Philosophy</a></li>
+<li><a href="#architecture" data-name="architecture" data-display="three engine architecture">Three-Engine Architecture</a></li>
+<li><a href="#dock-panel" data-name="dockpanel" data-display="dock panel layout">Dock Panel Layout &amp; Drag-and-Drop</a></li>
+</ul></li>
+<li class="toc-group">
+<button class="toc-group-btn" aria-expanded="true" style="border-left:4px solid #e53935; background: linear-gradient(90deg, #e5393518 0%, transparent 100%)"><span class="arrow">▼</span> 2. CAD Converter Engine</button>
+<ul class="toc-algs">
+<li><a href="#cad-overview" data-name="cadoverview" data-display="cad engine overview dxf dwg dgn">Engine Overview: DXF, DWG &amp; DGN</a></li>
+<li><a href="#cad-layer-split" data-name="cadlayersplit" data-display="cad layer splitting by layer level">CAD Layer Splitting (by Layer / Level)</a></li>
+<li><a href="#cad-cleanup" data-name="cadcleanup" data-display="collinear simplification geometry cleanup">Collinear Simplification &amp; Geometry Cleanup</a></li>
+<li><a href="#dwg-support" data-name="dwgsupport" data-display="autocad dwg native oda conversion">AutoCAD DWG: Native GDAL &amp; ODA File Converter</a></li>
+<li><a href="#dgn-reader" data-name="dgnreader" data-display="dgn v8 pure python reader">DGN v8: Pure-Python Fallback Reader</a></li>
+</ul></li>
+<li class="toc-group">
+<button class="toc-group-btn" aria-expanded="true" style="border-left:4px solid #43a047; background: linear-gradient(90deg, #43a04718 0%, transparent 100%)"><span class="arrow">▼</span> 3. GIS Converter Engine</button>
+<ul class="toc-algs">
+<li><a href="#gis-overview" data-name="gisoverview" data-display="gis engine overview kml gml geojson csv gdb">Engine Overview: KML, GML, GeoJSON, CSV, GDB &amp; More</a></li>
+<li><a href="#csv-sniffer" data-name="csvsniffer" data-display="csv tsv text auto detection delimiter geometry">CSV/TSV Text Sniffer: Auto-Detection</a></li>
+<li><a href="#kmz-import" data-name="kmzimport" data-display="kmz multi document ground overlay extraction">KMZ: Multi-Document Import &amp; GroundOverlay Extraction</a></li>
+<li><a href="#gdb-live" data-name="gdblive" data-display="geodatabase live zero copy load">Geodatabase: Live Zero-Copy Load &amp; Catalog Cache</a></li>
+<li><a href="#msaccess" data-name="msaccess" data-display="ms access mdb personal geodatabase">MS Access / Personal Geodatabase (.mdb) Reader</a></li>
+</ul></li>
+<li class="toc-group">
+<button class="toc-group-btn" aria-expanded="true" style="border-left:4px solid #1e88e5; background: linear-gradient(90deg, #1e88e518 0%, transparent 100%)"><span class="arrow">▼</span> 4. Netcad NCZ Engine v2</button>
+<ul class="toc-algs">
+<li><a href="#ncz-overview" data-name="nczoverview" data-display="ncz engine v2 overview architecture">Engine v2: Architecture &amp; Design</a></li>
+<li><a href="#ncz-catalog" data-name="nczcatalog" data-display="lazy layer catalog selective decode">Lazy Layer Catalog &amp; Selective Decode</a></li>
+<li><a href="#ncz-cache" data-name="nczcache" data-display="fingerprinted index cache">Fingerprinted Index Cache</a></li>
+<li><a href="#ncz-crs" data-name="nczcrs" data-display="automatic crs detection turkish projections">Automatic CRS Detection: Turkish Projection Families</a></li>
+<li><a href="#ncz-import" data-name="nczimport" data-display="batch import layer selection geometry metrics">Batch Import, Layer Selection &amp; Geometry Metrics</a></li>
+<li><a href="#ncz-tables" data-name="ncztables" data-display="at tab attribute tables joins">@TAB Attribute Tables &amp; Joins</a></li>
+</ul></li>
+<li class="toc-group">
+<button class="toc-group-btn" aria-expanded="true" style="border-left:4px solid #8e24aa; background: linear-gradient(90deg, #8e24aa18 0%, transparent 100%)"><span class="arrow">▼</span> 5. PlanGML Mode &amp; Official Symbology</button>
+<ul class="toc-algs">
+<li><a href="#plangml-overview" data-name="plangmloverview" data-display="plangml mode official eplan symbology">PlanGML Mode Overview</a></li>
+<li><a href="#plangml-catalog" data-name="plangmlcatalog" data-display="uip tabaka catalog upper groups codes">Official UIP Tabaka Catalog &amp; Upper Groups</a></li>
+<li><a href="#plangml-symbology" data-name="plangmlsymbology" data-display="350 plan gosterim rules tarama tiles">350+ Plan Gösterimi Rules &amp; Tarama Tiles</a></li>
+<li><a href="#plangml-schema" data-name="plangmlschema" data-display="plangml attribute schema columns">PlanGML Attribute Schema Columns</a></li>
+<li><a href="#plangml-plan-type" data-name="plangmlplantype" data-display="plan type auto detection scale">Plan Type Auto-Detection from Scale</a></li>
+</ul></li>
+<li class="toc-group">
+<button class="toc-group-btn" aria-expanded="true" style="border-left:4px solid #fb8c00; background: linear-gradient(90deg, #fb8c0018 0%, transparent 100%)"><span class="arrow">▼</span> 6. Output, Export &amp; Styling</button>
+<ul class="toc-algs">
+<li><a href="#output-modes" data-name="outputmodes" data-display="geopackage scratch live three output modes">Three Output Modes: GeoPackage, Scratch &amp; Live</a></li>
+<li><a href="#export" data-name="export" data-display="dxf kml kmz export">DXF, KML &amp; KMZ Export</a></li>
+<li><a href="#styling" data-name="styling" data-display="cad color preservation labels styling">CAD Color Preservation, Labels &amp; Styling</a></li>
+<li><a href="#mojibake" data-name="mojibake" data-display="turkish mojibake character repair">Turkish Mojibake &amp; Unicode Character Repair</a></li>
+</ul></li>
+<li class="toc-group">
+<button class="toc-group-btn" aria-expanded="true" style="border-left:4px solid #00897b; background: linear-gradient(90deg, #00897b18 0%, transparent 100%)"><span class="arrow">▼</span> 7. Complete Format Reference</button>
+<ul class="toc-algs">
+<li><a href="#format-table" data-name="formattable" data-display="complete supported format table">Complete Supported Format Table</a></li>
+<li><a href="#format-details" data-name="formatdetails" data-display="format specific details and limitations">Format-Specific Details &amp; Limitations</a></li>
+</ul></li>
+</ul>
+<div id="sidebar-footer">
+<a href="#appendix-a">📊 Appendix A: CRS Detection Quick Reference</a>
+<a href="#appendix-b">🎨 Appendix B: PlanGML Symbology Catalog Excerpt</a>
+<a href="#appendix-c">📖 Appendix C: Glossary</a>
+<a href="#appendix-d">📚 Appendix D: Bibliography &amp; Third-Party Notices</a>
+</div>
+</nav>
+
+<main id="content">
+
+<h1>02CadGis</h1>
+<h1 class="subtitle">Universal CAD/GIS Importer — Comprehensive Academic Reference Manual · v2.8.1</h1>
+<p style="color:var(--muted);font-size:.9em;">Yusuf Eminoğlu · Dokuz Eylül University, Department of City and Regional Planning · August 2026<br>
+<a href="https://github.com/YusufEminoglu/zero2cadgis">github.com/YusufEminoglu/zero2cadgis</a></p>
+
+<div class="callout info"><b>How to use this manual.</b> Each section documents one subsystem of the plugin. The manual is organised by engine (CAD, GIS, NCZ) rather than by format, because each engine defines a distinct conversion pipeline with its own parameters, caching, and output behaviour. Cross-references in <b>bold</b> link related sections. Parameter names and field names are in <code>monospace</code>. All CRS codes are from the EPSG registry as read from the PROJ database.</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- 1. ARCHITECTURE -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<h2 id="overview">1. Architecture &amp; Design</h2>
+
+<h3>Plugin Overview &amp; Design Philosophy</h3>
+<p><b>02CadGis</b> is a professional QGIS dock plugin for converting CAD and GIS exchange files into clean, styled GeoPackage layers. It is built for planning, cadastral, municipal, and urban-analytics workflows where <b>AutoCAD DWG/DXF, Netcad NCZ/NCA, KML/KMZ, GML, GeoJSON, CSV/TSV, SpatiaLite, GPX, DGN, FileGDB, and Personal GDB (.mdb)</b> files need to become usable QGIS data quickly and accurately.</p>
+<p>The plugin's design rests on five principles:</p>
+<ol>
+  <li><b>No data loss.</b> Every feature that can be read is written. Features with geometry problems are repaired, not dropped. Empty/non-spatial entities are filtered with a logged warning, not a fatal error.</li>
+  <li><b>Selective conversion.</b> The layer tree shows you what is in the file <i>before</i> conversion. You check only the layers you need; unchecked layers cost zero decode time.</li>
+  <li><b>Format-native parsing where GDAL falls short.</b> The plugin has its own NCZ parser, its own DGN v8 reader, its own CSV sniffer, and its own MS Access reader — each stepping in when the GDAL/OGR driver for that format is missing, slow, or incomplete.</li>
+  <li><b>Turkish planning data is a first-class citizen.</b> The CRS detector knows every EPSG code Turkish survey data uses. The PlanGML engine applies the official Ministry e-Plan symbology. The mojibake repairer recovers Turkish characters from mis-encoded CAD layers.</li>
+  <li><b>Progressive disclosure.</b> The dock panel shows only the controls relevant to the selected input type. Drag-and-drop auto-detects the format and jumps to the right tab.</li>
+</ol>
+
+<h3 id="architecture">Three-Engine Architecture</h3>
+<p>The plugin is built around three independent converter engines, each responsible for a family of input formats:</p>
+<table><tr><th>Engine</th><th>Module</th><th>Formats</th><th>Parser</th></tr>
+<tr><td><b>CAD Engine</b></td><td><code>core/cad_engine.py</code></td><td>DXF, DWG (via GDAL + ODA), DGN (via GDAL + pure-Python fallback)</td><td>GDAL/OGR → QgsVectorLayer, then CadCleanupEngine for collinear simplification, duplicate removal, and polygon gap closure. DGN v8 fallback: <code>core/dgn_v8_reader.py</code>.</td></tr>
+<tr><td><b>GIS Engine</b></td><td><code>core/gis_engine.py</code></td><td>KML, KMZ, GML, GeoJSON, CSV/TSV, SpatiaLite/SQLite, GPX, FileGDB (.gdb), Personal GDB (.mdb)</td><td>GDAL/OGR with format-specific pre-processing: KMZ multi-document extraction, KML GroundOverlay → GeoTIFF, CSV delimiter/geometry auto-detection (<code>core/csv_sniffer.py</code>), GDB/MDB live zero-copy mode.</td></tr>
+<tr><td><b>NCZ Engine v2</b></td><td><code>core/ncz_engine/v2/</code></td><td>NCZ, NCA (Netcad native formats)</td><td>Independent block-oriented binary parser: <code>parser.py</code> (header/index), <code>binary.py</code> (bounds-checked reader), <code>geometry.py</code> (geometry decoder registry), <code>attributes.py</code> (attribute/@TAB decoder), <code>blocks.py</code> (block catalogue), <code>cache.py</code> (fingerprinted local cache).</td></tr>
+</table>
+<p>All three engines converge on a common output pipeline: CRS transformation → geometry cleanup → attribute augmentation → output mode selection (GeoPackage / scratch / live) → QGIS project insertion.</p>
+
+<h3 id="dock-panel">Dock Panel Layout &amp; Drag-and-Drop</h3>
+<p>The dock widget (<code>dialogs/dock.py</code>) organises the workflow into three stacked panels, each a collapsible group:</p>
+<table><tr><th>Panel</th><th>Tab Label</th><th>Contents</th></tr>
+<tr><td><b>1. CAD &amp; GIS Converter</b></td><td>CAD &amp; GIS</td><td>Source type selector (DXF/DGN/KML/KMZ/GML/GeoJSON/CSV/SQLite/GPX/GDB/MDB), file picker with drag-and-drop target, layer preview tree (with checkboxes, geometry type, and feature count per layer), target GeoPackage path, CRS selector, cleanup options (collinear simplification toggle, polygon gap closure tolerance), KML expansion toggle, GroundOverlay extraction toggle, delimited-text geometry column selectors, and output mode radio buttons (GeoPackage / Scratch / Live).</td></tr>
+<tr><td><b>2. Netcad NCZ/NCA Importer</b></td><td>Netcad</td><td>Multi-file picker, drawing metadata review (version, projection text, EPSG hint, feature/table counts), CAD layer tree with checkboxes, @TAB table tree with checkboxes, closure tolerance, geometry metrics toggle (length/area/centroid), ARGB colors toggle, labels toggle, merge geometry types checkbox, PlanGML mode toggle with plan-type selector, CRS selector (auto-detected and pre-selected), and output name field.</td></tr>
+<tr><td><b>3. CAD &amp; GIS Exporter</b></td><td>Export</td><td>Active QGIS vector layer selector, output format (DXF / KML / KMZ), output file path.</td></tr>
+</table>
+<p><b>Drag-and-drop:</b> dropping any supported file onto the dock widget auto-detects the format from the file extension and switches to the correct panel. Netcad files (.ncz, .nca) jump to the Netcad tab; all others go to the CAD &amp; GIS tab with the source type pre-selected.</p>
+<div class="callout info"><b>Session persistence.</b> The target GeoPackage path, CRS choice, cleanup options, KML expansion, and output mode are remembered across QGIS sessions via <code>QSettings</code>. The last-used import and export folders are also persisted.</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- 2. CAD ENGINE -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<h2 id="cad-overview">2. CAD Converter Engine</h2>
+
+<h3>Engine Overview: DXF, DWG &amp; DGN</h3>
+<p>The CAD engine handles three AutoCAD-family formats and one MicroStation format. For DXF and DGN (with GDAL driver), the pipeline is: <b>GDAL/OGR read → split by CAD layer → geometry coercion (3D→2D flattening, curve segmentization, single↔multi conversion) → collinear simplification → CRS transform → output</b>.</p>
+<p>The engine's <code>CadCleanupEngine</code> (<code>core/cad_engine.py</code>) provides three post-processing steps applied to every CAD-sourced layer:</p>
+<ol>
+  <li><b>Duplicate vertex removal:</b> consecutive points within 0.0001 map units of each other are collapsed to one.</li>
+  <li><b>Collinear simplification:</b> intermediate vertices lying on a straight line between their neighbours are removed. Iterative: continues until no more collinear vertices remain.</li>
+  <li><b>Polygon gap closure:</b> open polygon rings are closed by snapping endpoints within a user-configurable tolerance.</li>
+</ol>
+<p>These steps reduce the vertex count of CAD drawings (which routinely contain hundreds of redundant collinear nodes along straight walls and roads) by 50–90%, dramatically reducing GeoPackage size and rendering time without changing the geometry's visual appearance.</p>
+
+<h3 id="cad-layer-split">CAD Layer Splitting (by Layer / Level)</h3>
+<p>When <b>Split into CAD layers</b> is enabled (the default for DXF and DGN sources), the engine reads the source file's internal layer structure — DXF <code>Layer</code> names or DGN <code>Level</code> numbers — and presents each as a separate checkable row in the layer tree. Each row shows the layer name, the geometry type(s) it contains, and the feature count.</p>
+<p>When splitting is disabled, all geometry is merged into a single layer per geometry type (points, lines, polygons). This is faster but loses the layer-name metadata that often encodes land-use categories.</p>
+<p>Geometry coercion (<code>_coerce_geometry_for_layer</code>) handles three compatibility issues automatically:</p>
+<ul>
+  <li><b>3D → 2D flattening:</b> CAD features with Z coordinates are projected to 2D (Z dropped) so QGIS memory layers accept them.</li>
+  <li><b>Curve segmentization:</b> circular arcs, ellipses, and splines are approximated as straight-line segments.</li>
+  <li><b>Single ↔ Multi conversion:</b> a single Polygon in a MultiPolygon layer is auto-promoted via <code>convertToMultiType()</code>; a MultiPolygon in a Polygon layer is auto-demoted via <code>convertToSingleType()</code>.</li>
+</ul>
+
+<h3 id="cad-cleanup">Collinear Simplification &amp; Geometry Cleanup</h3>
+<p>The <code>CadCleanupEngine</code> applies a vertex-thinning algorithm that preserves the visual shape of CAD geometry while eliminating the dense collinear nodes that CAD software places at every snap point. The process has two stages:</p>
+<p><b>Stage 1 — Duplicate removal:</b> For each coordinate sequence, any point whose (x, y) is within 10⁻⁴ map units of its predecessor is dropped.</p>
+<p><b>Stage 2 — Collinear removal:</b> For each triplet of consecutive points (A, B, C), the cross product of vectors AB and BC is computed. If the cross product is below a threshold (meaning A, B, C are effectively collinear), point B is removed. The process iterates until a pass finds no removable points.</p>
+<div class="callout warn"><b>CAD vertex density.</b> A single straight wall in a DXF file may contain 20–50 collinear vertices from construction-snap points. After simplifcation, it contains 2 (the endpoints). The visual appearance is identical; the file size and rendering performance improve dramatically.</div>
+
+<h3 id="dwg-support">AutoCAD DWG: Native GDAL &amp; ODA File Converter</h3>
+<p>DWG support is the most complex format pathway in the plugin, combining three fallback layers:</p>
+<table><tr><th>Layer</th><th>DWG Versions</th><th>Mechanism</th></tr>
+<tr><td><b>1. GDAL libopencad</b></td><td>R2000 and earlier</td><td>GDAL's built-in CAD driver reads legacy DWG directly via <code>ogr.Open()</code>. If the driver reports layers, they are used immediately.</td></tr>
+<tr><td><b>2. ODA File Converter</b></td><td>R2004–R2024 (modern)</td><td>The <b>Open Design Alliance</b> (ODA) provides a free command-line <code>ODAFileConverter</code> tool. 02CadGis searches for it in: QSettings, QGIS settings, <code>PATH</code>, environment variables, Windows registry, and common installation paths. If found, the DWG is converted to DXF via a temporary ASCII-safe filename (to handle Turkish/Unicode paths), then the DXF is read normally. An interactive setup dialog appears if ODA is not found.</td></tr>
+<tr><td><b>3. LibreDWG dwg2dxf</b></td><td>Various</td><td>If ODA is not available, the plugin falls back to the open-source <code>dwg2dxf</code> from the LibreDWG project as a last resort.</td></tr>
+</table>
+<p>The ODA integration search order is documented and deterministic. A <b>"ODA Path…"</b> button on the CAD panel lets the user manually point to the <code>ODAFileConverter.exe</code> executable, and the path is persisted in QGIS settings.</p>
+
+<h3 id="dgn-reader">DGN v8: Pure-Python Fallback Reader</h3>
+<p>When GDAL's <code>DGNv8</code> driver is unavailable (common on Linux and older QGIS builds), the plugin activates its own <b>pure-Python DGN v8 reader</b> (<code>core/dgn_v8_reader.py</code>). This module:</p>
+<ol>
+  <li>Opens the DGN file as an OLE2 compound document using the vendored <code>olefile</code> library (<code>_vendor/olefile.py</code>).</li>
+  <li>Locates the element streams within the OLE2 storage.</li>
+  <li>Decompresses the streams (zlib).</li>
+  <li>Parses each element by type: <b>Line</b> (type 3), <b>LineString</b> (type 4), <b>Shape/Polygon</b> (type 6) are fully supported. Complex containers (cell headers, complex strings/shapes) and annotations (text, dimensions) are skipped for geometry but their Level, colour, and style attributes are reported via placeholder centroid/bounding-box geometry.</li>
+  <li>Groups elements by DGN Level, presenting each Level as a selectable CAD layer in the layer tree — the same workflow as DXF.</li>
+</ol>
+<p>Coordinates are returned as double-precision values in master units (metres, survey-feet) with no scaling applied. The caller is responsible for CRS selection.</p>
+<div class="callout info"><b>GDAL first, pure Python as fallback.</b> The GDAL path is always tried first. Only when <code>ogr.Open()</code> returns <code>None</code> on a <code>.dgn</code> file does the pure-Python reader activate. This ensures maximum fidelity when the GDAL driver is available and graceful degradation when it is not.</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- 3. GIS ENGINE -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<h2 id="gis-overview">3. GIS Converter Engine</h2>
+
+<h3>Engine Overview: KML, GML, GeoJSON, CSV, GDB &amp; More</h3>
+<p>The GIS engine handles all OGR-supported vector exchange formats plus delimited text. The pipeline is: <b>format-specific pre-processing → OGR read → layer tree population → CRS transform → optional attribute expansion → output</b>.</p>
+<p>Format-specific pre-processing steps:</p>
+<table><tr><th>Format</th><th>Pre-Processing</th></tr>
+<tr><td><b>KMZ</b></td><td>Extracted to a temporary directory. Every <code>.kml</code> file inside the ZIP is opened, not just the first. KML balloon HTML tables and <code>&lt;description&gt;</code> list items are expanded into real attribute fields.</td></tr>
+<tr><td><b>KML GroundOverlay</b></td><td>When the extraction toggle is on, <code>&lt;GroundOverlay&gt;</code> elements are converted to georeferenced GeoTIFF files using GDAL and added to the QGIS project as raster layers.</td></tr>
+<tr><td><b>CSV/TSV/Text</b></td><td>Sniffed for delimiter (comma, tab, semicolon, pipe), encoding, and geometry columns (X/Y or lon/lat pairs, or a WKT column). See <a href="#csv-sniffer">CSV Sniffer</a>.</td></tr>
+<tr><td><b>FileGDB (.gdb)</b></td><td>Opened via GDAL's <code>OpenFileGDB</code> driver. In live mode, layers are added as zero-copy references. The layer catalog is cached by content fingerprint.</td></tr>
+<tr><td><b>Personal GDB (.mdb)</b></td><td>Read via the plugin's own MS Access reader when GDAL's <code>PGeo</code> driver is unavailable. See <a href="#msaccess">MS Access Reader</a>.</td></tr>
+</table>
+
+<h3 id="csv-sniffer">CSV/TSV Text Sniffer: Auto-Detection</h3>
+<p>The <b>CSV Sniffer</b> (<code>core/csv_sniffer.py</code>) automatically detects the structure of delimited text files. It samples the first 100 lines of the file and determines:</p>
+<table><tr><th>Property</th><th>Detection Method</th></tr>
+<tr><td><b>Delimiter</b></td><td>Tries comma, tab, semicolon, and pipe. The delimiter that produces the most consistent column count across the sample wins.</td></tr>
+<tr><td><b>Encoding</b></td><td>Attempts UTF-8, then falls back to the system locale encoding.</td></tr>
+<tr><td><b>X (Longitude) column</b></td><td>Searches column headers for <code>x</code>, <code>lon</code>, <code>longitude</code>, <code>easting</code>, <code>X_COORD</code> (case-insensitive). When found, checks that values are numeric and within plausible coordinate ranges.</td></tr>
+<tr><td><b>Y (Latitude) column</b></td><td>Searches for <code>y</code>, <code>lat</code>, <code>latitude</code>, <code>northing</code>, <code>Y_COORD</code>.</td></tr>
+<tr><td><b>WKT column</b></td><td>Searches for <code>wkt</code>, <code>geom</code>, <code>geometry</code>. When found, checks that the first non-empty value starts with a WKT type keyword (POINT, LINESTRING, POLYGON, etc.).</td></tr>
+<tr><td><b>CRS suggestion</b></td><td>If the X values are in the range (−180, 180) and Y in (−90, 90), EPSG:4326 is auto-suggested.</td></tr>
+</table>
+<p>All auto-detected values are presented in the UI and can be manually overridden before import.</p>
+
+<h3 id="kmz-import">KMZ: Multi-Document Import &amp; GroundOverlay Extraction</h3>
+<p>Standard OGR KMZ import reads only the first KML document inside the ZIP archive (<code>doc.kml</code>). 02CadGis extracts the entire KMZ to a temporary directory and opens <b>every</b> <code>.kml</code> file found, merging all documents into the layer tree. This ensures multi-document archives — common in municipal planning submissions — are imported in full.</p>
+<p><b>KML Balloon HTML expansion:</b> KML Placemark <code>&lt;description&gt;</code> elements often contain HTML tables and lists. The engine parses these and creates real attribute columns for each key-value pair found in the HTML, making the data queryable in QGIS.</p>
+<p><b>GroundOverlay → GeoTIFF:</b> When enabled, <code>&lt;GroundOverlay&gt;</code> elements (georeferenced images draped on the terrain) are extracted and saved as GeoTIFF files using their KML <code>&lt;LatLonBox&gt;</code> bounds for georeferencing. These are added to the QGIS project as raster layers alongside the vector output.</p>
+
+<h3 id="gdb-live">Geodatabase: Live Zero-Copy Load &amp; Catalog Cache</h3>
+<p>File Geodatabase (.gdb) and Personal Geodatabase (.mdb) sources support a <b>Live</b> output mode that adds checked layers directly to QGIS as zero-copy references — the data stays in the Geodatabase file; QGIS reads it on demand. This means even multi-million-feature layers open <b>almost instantly</b> (benchmarked at ~0.27 seconds for 4.27 million features across two layers from a municipal FileGDB).</p>
+<p><b>Catalog cache</b> (<code>core/ogr_catalog_cache.py</code>): The layer list of Geodatabase and database sources is cached locally, keyed by a content fingerprint (file size + modification time). Reopening the same unchanged <code>.gdb</code> or <code>.mdb</code> lists its layers from cache — <b>100×+ faster</b> than reopening the driver, which for a large Geodatabase can take 10–30 seconds just to enumerate layers. The cache auto-invalidates when the file changes.</p>
+
+<h3 id="msaccess">MS Access / Personal Geodatabase (.mdb) Reader</h3>
+<p>When GDAL's <code>PGeo</code> driver is unavailable (common on Linux and newer QGIS builds where the MDB driver was removed), the plugin activates its own <b>pure-Python MS Access reader</b> (<code>core/msaccess_reader.py</code>). This module:</p>
+<ol>
+  <li>Opens the <code>.mdb</code> file as a Jet database using the vendored <code>mdbtools</code>-compatible reader or the system's <code>mdb-export</code> utility.</li>
+  <li>Enumerates the tables, identifying those with geometry columns.</li>
+  <li>Reads each spatial table's features and presents them as selectable layers.</li>
+</ol>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- 4. NCZ ENGINE V2 -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<h2 id="ncz-overview">4. Netcad NCZ Engine v2</h2>
+
+<h3>Engine v2: Architecture &amp; Design</h3>
+<p>The NCZ Engine v2 (<code>core/ncz_engine/v2/</code>) is a ground-up rewrite of the Netcad binary format parser. It is an <b>independent, block-oriented decoder</b> that reads NCZ files without any dependency on the Netcad software or libraries. The engine was verified <b>bit-for-bit identical</b> to the previous engine across a synthetic NCZ corpus and validated against a real 8,163-entity municipal Netcad drawing.</p>
+<p>The v2 engine splits the parsing task into five cooperating modules:</p>
+<table><tr><th>Module</th><th>File</th><th>Responsibility</th></tr>
+<tr><td><b>Binary Reader</b></td><td><code>binary.py</code></td><td>Bounds-checked binary stream reader. Every read operation validates offset and length against the file size before accessing the underlying bytes. This is the security boundary: no read can overrun the buffer.</td></tr>
+<tr><td><b>Parser</b></td><td><code>parser.py</code></td><td>File header parsing, block index construction, and dispatch to specialized decoders based on block type.</td></tr>
+<tr><td><b>Geometry Decoder</b></td><td><code>geometry.py</code></td><td>Registry of geometry-type decoders. Each NCZ entity type (point, line, polyline, circle, arc, text, block reference, etc.) has a registered decoder that reads the entity's binary record and produces a QGIS-compatible geometry and attribute set.</td></tr>
+<tr><td><b>Attribute Decoder</b></td><td><code>attributes.py</code></td><td>Decodes @TAB attribute tables, which store tabular data linked to geometry entities by name or label fields.</td></tr>
+<tr><td><b>Block Catalogue</b></td><td><code>blocks.py</code></td><td>Maintains the catalogue of NCZ blocks — reusable geometry definitions referenced by block-reference entities. Resolving a block reference means looking up the block definition and instantiating its geometry at the reference's insertion point, scale, and rotation.</td></tr>
+</table>
+
+<h3 id="ncz-catalog">Lazy Layer Catalog &amp; Selective Decode</h3>
+<p>The v2 engine's key performance innovation is the <b>lazy catalog</b>: when you select a drawing file, the engine reads only the file header and block index — it does <b>not</b> decode any geometry. The layer tree (CAD layer names, entity counts per layer, entity types) is built from the index alone, which is near-instant even for large municipal files.</p>
+<p>Geometry is decoded <b>only for the layers you keep checked</b> at import time. Unchecked layers cost zero decode time. This means a drawing with 50 CAD layers where you only need 5 pays only the cost of decoding those 5.</p>
+
+<h3 id="ncz-cache">Fingerprinted Index Cache</h3>
+<p>The layer catalog of each drawing is cached to disk (<code>core/ncz_engine/v2/cache.py</code>), keyed by the file's <b>absolute path + file size + modification time</b> (a content fingerprint). Reopening an unchanged drawing shows its layer tree from cache — no file read, no index parse — benchmarked at <b>~160× faster</b> on a real 1.2 MiB municipal file.</p>
+<p>The cache auto-invalidates when the file size or modification time changes. A <b>Clear cache</b> button on the Netcad panel allows manual cache reset.</p>
+
+<h3 id="ncz-crs">Automatic CRS Detection: Turkish Projection Families</h3>
+<p>A Netcad drawing stores its own <b>SRS id</b> (e.g. <code>SRS=7936</code>) — this is <b>not</b> an EPSG code and must never be used as one. The drawing also stores a human-readable projection string such as <code>ITRF / 3 / Zone 42</code> or <code>ED50 / 3 / Zone 33</code>.</p>
+<p>The CRS detector (<code>core/crs_detect.py</code>) combines two independent signals to name the EPSG code exactly:</p>
+<ol>
+  <li><b>Projection text</b> → gives the <b>datum</b> (TUREF vs ED50 vs WGS 84) and the zone/central-meridian hint. TUREF and ED50 differ by ~200 m over the same ground — impossible to distinguish from coordinates alone.</li>
+  <li><b>Easting magnitude</b> → gives the <b>axis convention</b>. A 6-digit easting (~500,000) is the TM form (false easting 500,000, no zone prefix). An 8-digit easting (e.g. 3,542,000) is the 3-degree Gauss-Krüger form where the zone number is baked into the easting itself (zone × 1,000,000 + 500,000).</li>
+</ol>
+<p>The detector covers every EPSG code in the Turkish survey projection families:</p>
+<table><tr><th>Family</th><th>TM Form (6-digit easting)</th><th>GK Form (8-digit easting)</th><th>Zones</th></tr>
+<tr><td><b>TUREF / 3-degree TM</b></td><td>EPSG:5253–5259</td><td>EPSG:5269–5275</td><td>27, 30, 33, 36, 39, 42, 45</td></tr>
+<tr><td><b>ED50 / 3-degree TM</b></td><td>EPSG:2319–2325</td><td>EPSG:2206–2212</td><td>27, 30, 33, 36, 39, 42, 45</td></tr>
+<tr><td><b>WGS 84 / UTM</b></td><td>EPSG:32635–32638</td><td>—</td><td>35N, 36N, 37N, 38N</td></tr>
+<tr><td><b>ED50 / UTM</b></td><td>EPSG:23035–23038</td><td>—</td><td>35N, 36N, 37N, 38N</td></tr>
+<tr><td><b>WGS 84 geographic</b></td><td>EPSG:4326</td><td>—</td><td>—</td></tr>
+</table>
+<p>The detected CRS is <b>pre-selected</b> in the CRS dropdown but not locked — the user can override it. When the drawing does not contain enough information to name a CRS with confidence (missing projection string AND ambiguous coordinate range), the detector leaves the selection empty and the panel explains what is missing rather than guessing. A wrong CRS silently puts data in the wrong place, and the detector's philosophy is: <b>no CRS is better than a wrong CRS</b>.</p>
+<div class="callout warn"><b>Northing sanity check.</b> The detector also checks that sample coordinates fall within Turkey's northing band (~3.8–4.8 million metres). Coordinates outside this range indicate the drawing is not in a Turkish projection and the detector reports "unknown" rather than misidentifying the zone.</div>
+
+<h3 id="ncz-import">Batch Import, Layer Selection &amp; Geometry Metrics</h3>
+<p>The Netcad panel supports selecting <b>multiple NCZ/NCA files</b> simultaneously. Each file's layers and @TAB tables are shown in the tree with the filename as a parent node. By default, <b>file groups are kept separate</b> — layers from different drawings are not merged. When <b>Merge geometry types</b> is enabled, layers with the same name inside the same geometry-type group are merged across files.</p>
+<p><b>Geometry metrics</b> (optional): when enabled, three computed fields are added to each output layer:</p>
+<ul>
+  <li><code>ncz_length</code> — feature length (for lines) or perimeter (for polygons), in map units.</li>
+  <li><code>ncz_area</code> — feature area (for polygons), in map units².</li>
+  <li><code>ncz_centroid_x</code>, <code>ncz_centroid_y</code> — centroid coordinates in map units.</li>
+</ul>
+
+<h3 id="ncz-tables">@TAB Attribute Tables &amp; Joins</h3>
+<p>NCZ drawings may contain <b>@TAB tables</b> — attribute tables stored inside the drawing file, linked to geometry entities by name or label fields. The engine decodes these tables and presents them in the tree alongside CAD layers. When both a CAD layer and its matching @TAB table are checked, the engine performs an <b>attribute join</b>: the table columns are appended to the geometry layer's attribute table, matched on the entity name/label field.</p>
+<p>This preserves the drawing's internal data model: geometry carries spatial information; @TAB tables carry the alphanumeric attributes (land-use codes, parcel IDs, building heights, etc.).</p>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- 5. PLANGML MODE -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<h2 id="plangml-overview">5. PlanGML Mode &amp; Official Symbology</h2>
+
+<h3>PlanGML Mode Overview</h3>
+<p><b>PlanGML mode</b> (off by default) transforms a raw CAD drawing into a <b>standards-compliant spatial plan</b>. When enabled, three things happen:</p>
+<ol>
+  <li><b>Tabaka are grouped</b> into the Ministry's official upper groups (KONUT ALANLARI, TICARET ALANLARI, EGITIM TESISLERI ALANI, etc.) rather than raw CAD layer names.</li>
+  <li><b>PlanGML schema columns</b> are populated with the official upper-group, sub-group, detail-group, and function codes from the Mekânsal Planlar Yapım Yönetmeliği (MPYY) UIP database.</li>
+  <li><b>Official e-Plan symbology</b> is applied: each tabaka is drawn with its Ministry-defined fill colour, stroke, hatch pattern (tarama), and label style — the same gösterim used on the e-Plan portal at <a href="https://eplan.csb.gov.tr">eplan.csb.gov.tr</a>.</li>
+</ol>
+<p>The gösterim data (350+ rules and 131 tarama tiles) is <b>compiled into the plugin</b> — nothing is downloaded, no style server is needed, and the plugin works fully offline. The symbology database is stored in <code>symbology-style.db</code> (888 KB SQLite) and the rules are defined in <code>core/symbology.py</code>.</p>
+<div class="callout info"><b>Attribution.</b> The gösterim is the official standard of the Turkish Ministry of Environment, Urbanisation and Climate Change, reproduced under the terms documented in <code>THIRD_PARTY_NOTICES.md</code>. The plugin does not redistribute any official font files. See <a href="#appendix-d">Appendix D</a>.</div>
+
+<h3 id="plangml-catalog">Official UIP Tabaka Catalog &amp; Upper Groups</h3>
+<p>The catalog (<code>core/eplan_catalog.py</code>, compiled from the MPYY UIP database at <code>resources/MpyyUipDb_2026_02_27.gpkg</code>) maps 256 official tabaka names to their upper-group hierarchy:</p>
+<table><tr><th>Upper Group Code</th><th>Upper Group Name</th><th>Example Tabaka</th></tr>
+<tr><td>112000</td><td>KONUT ALANLARI / YERLESIM ALANLARI</td><td>PL_KONUT → 112002 (Yerleşik Konut Alanı), PL_GELISME_KONUT → 112001 (Gelişme Konut Alanı)</td></tr>
+<tr><td>120000</td><td>TICARET ALANLARI</td><td>PL_TICARET, PL_TICARET_MERKEZI</td></tr>
+<tr><td>130000</td><td>SANAYI ALANLARI</td><td>PL_SANAYI, PL_KUCUK_SANAYI</td></tr>
+<tr><td>210000</td><td>EGITIM TESISLERI ALANI</td><td>PL_ILKOKUL, PL_ORTAOKUL, PL_LISE</td></tr>
+<tr><td>310000</td><td>SAGLIK TESISLERI ALANI</td><td>PL_SAGLIK, PL_HASTANE</td></tr>
+<tr><td>410000</td><td>ACIK VE YESIL ALANLAR</td><td>PL_PARK, PL_COCUK_BAHCESI, PL_SPOR</td></tr>
+<tr><td>510000</td><td>YOL VE ULAŞIM ALTYAPISI</td><td>PL_YOL, PL_OTOPARK, PL_KAVSAK</td></tr>
+<tr><td colspan="3" style="text-align:center;color:var(--muted);">… and 18 more upper groups covering religious facilities, cultural facilities, technical infrastructure, planning boundaries, special lines, etc.</td></tr>
+</table>
+<p>A short documented alias list resolves local spellings that municipalities actually use onto the official tabaka they represent. A tabaka not defined in the catalog gets <b>empty code cells</b> rather than invented codes — the drawing's own tabaka name is preserved in <code>uip_tabaka</code>, and the layer is placed in a single <b>DİĞER PLAN ALANLARI</b> group (deliberately the only group name not from the Ministry's own catalog).</p>
+
+<h3 id="plangml-symbology">350+ Plan Gösterimi Rules &amp; Tarama Tiles</h3>
+<p>The <b>PlanX Adaptive Symbology Engine (PASE)</b> (<code>core/symbology.py</code>) defines a catalog of <code>PlanStyleRule</code> objects, each specifying:</p>
+<table><tr><th>Property</th><th>Description</th></tr>
+<tr><td><code>keywords</code></td><td>List of tabaka name tokens that match this rule. The matcher searches for these tokens within the layer's <code>uip_tabaka</code> value.</td></tr>
+<tr><td><code>fill_color</code> / <code>fill_opacity</code></td><td>Polygon fill colour (hex) and opacity (0–1).</td></tr>
+<tr><td><code>stroke_color</code> / <code>stroke_width</code> / <code>stroke_style</code></td><td>Polygon/line outline colour, width (mm), and style (solid, dash, dot, dashdot).</td></tr>
+<tr><td><code>hatch_pattern</code></td><td>Line hatch pattern: diagonal, cross, horizontal, vertical, or None.</td></tr>
+<tr><td><code>tarama_path</code></td><td>Path to the official tarama (hatch tile) PNG image compiled into the plugin.</td></tr>
+<tr><td><code>official</code></td><td>Boolean: <code>True</code> when sourced from the e-Plan SLD catalog, <code>False</code> for fallback rules.</td></tr>
+<tr><td><code>plan_type</code></td><td>Which plan scale(s) this rule applies to: UIP (1/1000), NIP (1/5000), CDP (1/25,000+).</td></tr>
+</table>
+<p>The rules cover all three plan types. A <b>plan type selector</b> reads the scale from the file name automatically (e.g. <code>…-UIP-…</code> or <code>…-1000-…</code>) and can be overridden per import. Tabaka not covered by the official set fall back to a neutral grey style.</p>
+
+<h3 id="plangml-schema">PlanGML Attribute Schema Columns</h3>
+<p>When PlanGML mode is enabled, each output feature receives the official PlanGML attribute columns:</p>
+<table class="key-table"><tr><th>Field</th><th>Type</th><th>Source</th></tr>
+<tr><td>UST_GRUP_ID</td><td>Integer</td><td>Upper group code (e.g. 112000)</td></tr>
+<tr><td>UST_GRUP_ADI</td><td>String</td><td>Upper group name (e.g. "KONUT ALANLARI / YERLESIM ALANLARI")</td></tr>
+<tr><td>ALT_GRUP_ID</td><td>Integer</td><td>Sub-group code</td></tr>
+<tr><td>ALT_GRUP_ADI</td><td>String</td><td>Sub-group name</td></tr>
+<tr><td>DETAY_GRUP_ID</td><td>Integer</td><td>Detail group code</td></tr>
+<tr><td>PLAN_KODU</td><td>String</td><td>Plan code</td></tr>
+<tr><td>FONKSIYON_KODU</td><td>Integer</td><td>Function code (e.g. 112002 for Yerleşik Konut)</td></tr>
+<tr><td>LEJANT_KODU</td><td>String</td><td>Legend code</td></tr>
+<tr><td>KOD</td><td>String</td><td>Composite code</td></tr>
+<tr><td>TAM_ADI</td><td>String</td><td>Full name from the catalog</td></tr>
+<tr><td>GISTERIM</td><td>String</td><td>Gösterim reference</td></tr>
+<tr><td>GUSTERIM_ADI</td><td>String</td><td>Gösterim display name</td></tr>
+<tr><td>LEJANT</td><td>String</td><td>Legend label</td></tr>
+<tr><td>FONKSIYON</td><td>String</td><td>Function description</td></tr>
+<tr><td>KULLANIM</td><td>String</td><td>Usage classification</td></tr>
+<tr><td>uip_tabaka</td><td>String</td><td>Original CAD tabaka name (preserved from the drawing)</td></tr>
+</table>
+<div class="callout warn"><b>Empty cells, not invented codes.</b> A tabaka not found in the official catalog gets empty string cells in the code columns. The <code>uip_tabaka</code> field still holds the drawing's own tabaka name. The philosophy is: a field existing ≠ a field holding anything. Never invent a code that has no official counterpart.</div>
+
+<h3 id="plangml-plan-type">Plan Type Auto-Detection from Scale</h3>
+<p>The plan type (UIP 1/1000, NIP 1/5000, CDP 1/25,000+) is detected from the drawing's file name using pattern matching:</p>
+<ul>
+  <li>Files containing <code>UIP</code>, <code>uip</code>, <code>1000</code>, <code>1/1000</code>, or <code>uygulama</code> → UIP (1/1000)</li>
+  <li>Files containing <code>NIP</code>, <code>nip</code>, <code>5000</code>, <code>1/5000</code>, or <code>nazim</code> → NIP (1/5000)</li>
+  <li>Files containing <code>CDP</code>, <code>cdp</code>, <code>25000</code>, <code>1/25000</code>, <code>cevre</code>, or <code>cevre duzeni</code> → CDP (1/25,000+)</li>
+</ul>
+<p>The detected type can be manually overridden before import.</p>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- 6. OUTPUT, EXPORT & STYLING -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<h2 id="output-modes">6. Output, Export &amp; Styling</h2>
+
+<h3>Three Output Modes: GeoPackage, Scratch &amp; Live</h3>
+<p>The CAD &amp; GIS Converter offers three output modes, selected via radio buttons:</p>
+<table><tr><th>Mode</th><th>Persistence</th><th>CRS Transform</th><th>Best For</th></tr>
+<tr><td><b>GeoPackage</b></td><td>Permanent — written to <code>.gpkg</code> file on disk</td><td>Yes — reprojected to the selected CRS</td><td>Durable deliverables, data exchange, archival. The target path is pre-suggested from the source file name.</td></tr>
+<tr><td><b>Scratch</b></td><td>Temporary — QGIS memory layers, lost when the project closes</td><td>Yes — reprojected to the selected CRS</td><td>Quick inspection, data exploration, "try before you commit." Layers are styled and labeled identically to GeoPackage output.</td></tr>
+<tr><td><b>Live</b></td><td>Zero-copy reference — the data stays in the source file</td><td>No — the source layer's native CRS is used</td><td>Browsing large Geodatabases (.gdb, .mdb). No conversion time, no disk space. Available only for multi-layer OGR sources.</td></tr>
+</table>
+
+<h3 id="export">DXF, KML &amp; KMZ Export</h3>
+<p>The <b>CAD &amp; GIS Exporter</b> panel writes any active QGIS vector layer to one of three exchange formats. The export uses QGIS's native <code>QgsVectorFileWriter</code>, ensuring format compliance:</p>
+<table><tr><th>Format</th><th>Extension</th><th>Notes</th></tr>
+<tr><td><b>DXF</b></td><td><code>.dxf</code></td><td>AutoCAD Drawing Exchange Format. Preserves layer names, basic symbology (colour), and geometry. The most requested delivery format for CAD collaborators.</td></tr>
+<tr><td><b>KML</b></td><td><code>.kml</code></td><td>Keyhole Markup Language. Single-file output suitable for Google Earth, GIS portals, and web maps.</td></tr>
+<tr><td><b>KMZ</b></td><td><code>.kmz</code></td><td>Compressed KML (ZIP archive containing <code>doc.kml</code>). Smaller file size; the standard format for Google Earth distribution.</td></tr>
+</table>
+
+<h3 id="styling">CAD Color Preservation, Labels &amp; Styling</h3>
+<p>CAD drawings carry per-entity colour intent (ACI — AutoCAD Color Index, or ARGB values in Netcad). The plugin preserves this intent in QGIS:</p>
+<ul>
+  <li><b>Netcad ARGB colours:</b> when the Colors toggle is on, each feature's <code>ncz_color</code> attribute is read and a <b>categorised renderer</b> is applied to the layer, with one symbol category per unique colour value. The renderer uses the exact ARGB values from the drawing.</li>
+  <li><b>CAD text labels:</b> when the Labels toggle is on, text entities in the drawing are rendered as QGIS labels using <code>QgsPalLayerSettings</code>. The label column is chosen by finding one that actually contains text (not merely exists and is empty on every feature — a historical bug where labelling latched onto an empty column). Point layers that carry text draw a small 0.6 mm anchor marker instead of a full symbol, so the text is what you read.</li>
+  <li><b>Plan areas outline:</b> in PlanGML mode, plan-area polygons receive a 0.7 mm outline even when the official style set leaves the outline off — the fill or tarama carries the meaning, but a plan sheet needs its function boundaries to read visually.</li>
+</ul>
+
+<h3 id="mojibake">Turkish Mojibake &amp; Unicode Character Repair</h3>
+<p>CAD files produced by Turkish municipal software frequently contain <b>mojibake</b> — Turkish characters (Ğ, Ş, İ, ı, ğ, ş, ç, ö, ü) corrupted by incorrect encoding conversions. The <b>fix_mojibake</b> engine (<code>core/cad_engine.py</code>) applies multi-pass encoding recovery:</p>
+<ol>
+  <li><b>UTF-8 decode attempt</b> — if the bytes are valid UTF-8, they are kept as-is.</li>
+  <li><b>CP1254 (Turkish Windows) decode</b> — common for Turkish CAD software.</li>
+  <li><b>CP1252 (Western Windows) decode</b> — common when Turkish characters were written through a non-Turkish locale.</li>
+  <li><b>ISO-8859-9 (Turkish Latin) decode</b> — the ISO Turkish encoding.</li>
+  <li><b>Direct character replacement mapping</b> — for stubborn sequences that survive all encoding passes, a lookup table maps known corrupted byte pairs to their correct Turkish characters.</li>
+</ol>
+<p>The repair is applied to: CAD layer names, DXF Level names, feature attribute values, label text, and UI tree item labels. The <code>\U+XXXX</code> Unicode escape sequences sometimes found in DXF files are also unescaped to their actual characters.</p>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- 7. FORMAT REFERENCE -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<h2 id="format-table">7. Complete Format Reference</h2>
+
+<h3>Complete Supported Format Table</h3>
+<table><tr><th>Format</th><th>Extension</th><th>Engine</th><th>Parser</th><th>Layer Split</th><th>Live Mode</th><th>Export</th></tr>
+<tr><td>AutoCAD DXF</td><td>.dxf</td><td>CAD</td><td>GDAL/OGR</td><td>Yes (by Layer)</td><td>No</td><td>Yes</td></tr>
+<tr><td>AutoCAD DWG</td><td>.dwg</td><td>CAD</td><td>GDAL libopencad / ODA File Converter / LibreDWG</td><td>Yes (by Layer)</td><td>No</td><td>No</td></tr>
+<tr><td>MicroStation DGN v8</td><td>.dgn</td><td>CAD</td><td>GDAL DGNv8 driver / Pure-Python fallback</td><td>Yes (by Level)</td><td>No</td><td>No</td></tr>
+<tr><td>Netcad NCZ</td><td>.ncz</td><td>NCZ</td><td>NCZ Engine v2 (native binary)</td><td>Yes (by CAD layer)</td><td>No</td><td>No</td></tr>
+<tr><td>Netcad NCA</td><td>.nca</td><td>NCZ</td><td>NCZ Engine v2 (native binary)</td><td>Yes (by CAD layer)</td><td>No</td><td>No</td></tr>
+<tr><td>KML</td><td>.kml</td><td>GIS</td><td>GDAL/OGR + HTML balloon expansion</td><td>No</td><td>No</td><td>Yes</td></tr>
+<tr><td>KMZ</td><td>.kmz</td><td>GIS</td><td>GDAL/OGR (all KML docs inside ZIP) + GroundOverlay → GeoTIFF</td><td>No</td><td>No</td><td>Yes</td></tr>
+<tr><td>GML</td><td>.gml</td><td>GIS</td><td>GDAL/OGR</td><td>No</td><td>No</td><td>No</td></tr>
+<tr><td>GeoJSON</td><td>.geojson</td><td>GIS</td><td>GDAL/OGR</td><td>No</td><td>No</td><td>No</td></tr>
+<tr><td>CSV / TSV / TXT</td><td>.csv, .tsv, .txt</td><td>GIS</td><td>GDAL delimited-text + CSV Sniffer auto-detection</td><td>No</td><td>No</td><td>No</td></tr>
+<tr><td>SpatiaLite / SQLite</td><td>.sqlite, .db</td><td>GIS</td><td>GDAL/OGR</td><td>No</td><td>No</td><td>No</td></tr>
+<tr><td>GPX</td><td>.gpx</td><td>GIS</td><td>GDAL/OGR</td><td>No</td><td>No</td><td>No</td></tr>
+<tr><td>File Geodatabase</td><td>.gdb</td><td>GIS</td><td>GDAL OpenFileGDB + catalog cache</td><td>No</td><td><b>Yes</b></td><td>No</td></tr>
+<tr><td>Personal Geodatabase</td><td>.mdb</td><td>GIS</td><td>GDAL PGeo / Pure-Python MS Access reader + catalog cache</td><td>No</td><td><b>Yes</b></td><td>No</td></tr>
+</table>
+
+<h3 id="format-details">Format-Specific Details &amp; Limitations</h3>
+<table><tr><th>Format</th><th>Known Limitations</th></tr>
+<tr><td><b>DWG</b></td><td>Modern DWG (R2004+) requires ODA File Converter or LibreDWG — neither is bundled. The plugin searches for them and provides setup guidance. Legacy DWG (R2000−) reads via GDAL's libopencad driver, which may not be compiled into all QGIS distributions.</td></tr>
+<tr><td><b>DGN v8</b></td><td>Pure-Python reader does not support complex cell geometry, text elements, or dimension elements as full geometry — these are represented by placeholder points. For full fidelity, install a QGIS build with the DGNv8 GDAL driver.</td></tr>
+<tr><td><b>NCZ/NCA</b></td><td>NCZ Engine v2 is a reverse-engineered parser validated against a real municipal drawing corpus. Drawings produced by very old or very new Netcad versions may use block types not yet in the decoder registry — these are skipped with a warning, not a crash.</td></tr>
+<tr><td><b>KMZ</b></td><td>Only KML documents inside the ZIP are read. Other file types (images, schemas) inside the archive are ignored unless they are referenced by a GroundOverlay element.</td></tr>
+<tr><td><b>GDB/MDB</b></td><td>Live mode adds layers in their native CRS without transformation. Use GeoPackage or Scratch mode if CRS reprojection is needed.</td></tr>
+<tr><td><b>CSV/TSV</b></td><td>The sniffer reads only the first 100 lines. If geometry columns appear after line 100, they must be manually selected. Files with mixed delimiters (e.g. commas inside quoted fields) may require manual override.</td></tr>
+</table>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- APPENDICES -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<h2 id="appendix-a">Appendix A: CRS Detection Quick Reference</h2>
+<table><tr><th>Drawing Says</th><th>Easting Length</th><th>Detected EPSG</th><th>Label</th></tr>
+<tr><td>ITRF / 3 / Zone 39</td><td>6 digits (~500,000)</td><td>5257</td><td>TUREF / TM39</td></tr>
+<tr><td>ITRF / 3 / Zone 39</td><td>8 digits (~39,500,000)</td><td>5273</td><td>TUREF / 3-degree Gauss-Kruger zone 13</td></tr>
+<tr><td>ED50 / 3 / Zone 33</td><td>6 digits (~500,000)</td><td>2321</td><td>ED50 / TM33</td></tr>
+<tr><td>ED50 / 3 / Zone 33</td><td>8 digits (~33,500,000)</td><td>2208</td><td>ED50 / 3-degree Gauss-Kruger zone 11</td></tr>
+<tr><td>WGS 84 / UTM zone 36N</td><td>6 digits (~500,000)</td><td>32636</td><td>WGS 84 / UTM zone 36N</td></tr>
+<tr><td>Geographic (lat/lon)</td><td>≤3 digits (~28–45)</td><td>4326</td><td>WGS 84</td></tr>
+<tr><td>(empty or unrecognised)</td><td>—</td><td>(none)</td><td>Panel reports missing info; user must select manually</td></tr>
+</table>
+<p>Northing sanity check: sample Y coordinates must fall in the band 3,800,000–4,800,000 (Turkey's northing range). Coordinates outside this band → "unknown" reported regardless of projection text.</p>
+
+<h2 id="appendix-b">Appendix B: PlanGML Symbology Catalog Excerpt</h2>
+<p>The complete catalog contains 350+ rules. Below is a representative excerpt showing one rule from each major upper group:</p>
+<table><tr><th>Upper Group</th><th>Example Tabaka</th><th>Fill Color</th><th>Stroke</th><th>Hatch</th></tr>
+<tr><td>KONUT ALANLARI</td><td>PL_KONUT (Yerleşik)</td><td>#FDE49B (warm beige)</td><td>#B37400, 0.7 mm</td><td>—</td></tr>
+<tr><td>KONUT ALANLARI</td><td>PL_GELISME_KONUT (Gelişme)</td><td>#FEF0D9 (pale beige)</td><td>#D4A017, 0.7 mm</td><td>—</td></tr>
+<tr><td>TICARET ALANLARI</td><td>PL_TICARET</td><td>#D47879 (brick red)</td><td>#8B0000, 0.5 mm</td><td>—</td></tr>
+<tr><td>SANAYI ALANLARI</td><td>PL_SANAYI</td><td>#C8BFE7 (muted violet)</td><td>#4B0082, 0.5 mm</td><td>—</td></tr>
+<tr><td>EGITIM TESISLERI</td><td>PL_ILKOKUL</td><td>#FEFA96 (bright yellow)</td><td>#B3A000, 0.5 mm</td><td>—</td></tr>
+<tr><td>SAGLIK TESISLERI</td><td>PL_HASTANE</td><td>#FAC8C8 (soft red)</td><td>#CC0000, 0.5 mm</td><td>diagonal red cross</td></tr>
+<tr><td>ACIK VE YESIL ALANLAR</td><td>PL_PARK</td><td>#BEE6B0 (soft green)</td><td>#2E7D32, 0.3 mm</td><td>—</td></tr>
+<tr><td>ACIK VE YESIL ALANLAR</td><td>PL_SPOR</td><td>#D4E6B3 (olive green)</td><td>#558B2F, 0.3 mm</td><td>—</td></tr>
+<tr><td>YOL VE ULAŞIM</td><td>PL_YOL</td><td>#FFFFFF (white)</td><td>#333333, 0.3 mm</td><td>—</td></tr>
+<tr><td>PLANLAMA SINIRLARI</td><td>PL_SINIR</td><td>(no fill)</td><td>#FF0000, 1.2 mm, dash</td><td>—</td></tr>
+<tr><td>OZEL CIZGILER</td><td>PL_KADEME_HATTI</td><td>(no fill)</td><td>#0000FF, 0.5 mm, dashdot</td><td>—</td></tr>
+</table>
+<p>For the complete catalog, see <code>core/symbology.py</code> and <code>resources/</code> in the plugin source. The rules are sourced from the official e-Plan SLD files, reproduced in <code>THIRD_PARTY_NOTICES.md</code>.</p>
+
+<h2 id="appendix-c">Appendix C: Glossary</h2>
+<table><tr><th>Term</th><th>Definition</th></tr>
+<tr><td><b>ACI (AutoCAD Color Index)</b></td><td>A palette of 255 indexed colours used in DXF/DWG files. The plugin maps ACI values to RGB for QGIS rendering.</td></tr>
+<tr><td><b>CAD layer / Level</b></td><td>A named grouping of entities within a CAD drawing. DXF calls them Layers; DGN calls them Levels. The plugin splits drawings by this grouping.</td></tr>
+<tr><td><b>Collinear simplification</b></td><td>Removing intermediate vertices that lie on a straight line between their neighbours. Reduces vertex count without changing geometry appearance.</td></tr>
+<tr><td><b>CRS (Coordinate Reference System)</b></td><td>The projection and datum that give spatial meaning to coordinate values. Identified by EPSG codes.</td></tr>
+<tr><td><b>e-Plan</b></td><td>The Turkish Ministry's electronic plan submission portal (eplan.csb.gov.tr). The source of the official gösterim standards.</td></tr>
+<tr><td><b>EPSG</b></td><td>A public registry of geodetic parameters (projections, datums, coordinate systems), each identified by a unique integer code.</td></tr>
+<tr><td><b>GDAL/OGR</b></td><td>The Geospatial Data Abstraction Library. QGIS's vector (OGR) and raster (GDAL) I/O backbone. The CAD and GIS engines use OGR for most formats.</td></tr>
+<tr><td><b>GeoPackage (.gpkg)</b></td><td>An open, SQLite-based format for geospatial vector and raster data. The plugin's default durable output format.</td></tr>
+<tr><td><b>Gösterim</b></td><td>Turkish: the official visual representation (colour, hatch, line type) of a plan function as defined by the Ministry.</td></tr>
+<tr><td><b>GroundOverlay</b></td><td>A KML element that places an image draped over the terrain at specified geographic coordinates.</td></tr>
+<tr><td><b>Live (zero-copy) mode</b></td><td>Adding a layer to QGIS by referencing the source file directly, without conversion. The data stays in the source; QGIS reads it on demand.</td></tr>
+<tr><td><b>Mojibake</b></td><td>Garbled text resulting from interpreting bytes in the wrong character encoding. Turkish CAD files frequently exhibit CP1254↔CP1252↔UTF-8 mojibake.</td></tr>
+<tr><td><b>MPYY</b></td><td>Mekânsal Planlar Yapım Yönetmeliği — Turkish Spatial Planning Regulation. Defines the official UIP tabaka catalog.</td></tr>
+<tr><td><b>NCZ / NCA</b></td><td>Netcad's native binary drawing formats. NCZ is the standard format; NCA is a compatible variant.</td></tr>
+<tr><td><b>ODA (Open Design Alliance)</b></td><td>An industry consortium providing a DWG-compatible file converter. The plugin uses <code>ODAFileConverter</code> for modern DWG versions.</td></tr>
+<tr><td><b>OLE2</b></td><td>Microsoft's Compound Document format. Used by DGN v8 files as their container.</td></tr>
+<tr><td><b>PASE (PlanX Adaptive Symbology Engine)</b></td><td>The plugin's symbology engine that matches CAD tabaka to official e-Plan gösterim rules.</td></tr>
+<tr><td><b>PlanGML</b></td><td>The Turkish Ministry's XML-based spatial plan data standard. The plugin populates PlanGML schema columns from the tabaka catalog.</td></tr>
+<tr><td><b>Scratch layer</b></td><td>A temporary QGIS memory layer. Exists only for the current session; not written to disk.</td></tr>
+<tr><td><b>SRS id</b></td><td>A Netcad-internal coordinate system identifier. Not an EPSG code and must never be used as one.</td></tr>
+<tr><td><b>Tabaka</b></td><td>Turkish: layer. In planning context, a named category of spatial features (e.g. PL_KONUT, PL_YOL) defined by the MPYY.</td></tr>
+<tr><td><b>Tarama</b></td><td>Turkish: hatch pattern. An official tile image used as a polygon fill pattern for certain plan functions.</td></tr>
+<tr><td><b>@TAB</b></td><td>Netcad's internal attribute table format, stored inside NCZ files. Linked to geometry entities by name/label.</td></tr>
+</table>
+
+<h2 id="appendix-d">Appendix D: Bibliography &amp; Third-Party Notices</h2>
+
+<h4>Academic &amp; Technical References</h4>
+<p class="ref">GDAL/OGR Contributors. (2024). <i>GDAL — Geospatial Data Abstraction Library.</i> Open Source Geospatial Foundation. <a href="https://gdal.org">gdal.org</a></p>
+<p class="ref">ISO/TC 211. (2014). <i>ISO 19136:2007 — Geographic information — Geography Markup Language (GML).</i> International Organization for Standardization.</p>
+<p class="ref">OGC. (2016). "GeoJSON Format." OGC Standard 17-069r2. DOI: <a href="https://doi.org/10.14457/5bz1-xz88">10.14457/5bz1-xz88</a></p>
+<p class="ref">OGC. (2015). <i>OGC KML 2.3.</i> Open Geospatial Consortium Standard 12-007r2.</p>
+<p class="ref">Open Design Alliance. (2024). <i>ODA File Converter.</i> <a href="https://www.opendesign.com">opendesign.com</a></p>
+<p class="ref">PROJ Contributors. (2024). <i>PROJ — coordinate transformation software library.</i> Open Source Geospatial Foundation. <a href="https://proj.org">proj.org</a></p>
+
+<h4>Official Turkish Planning Standards</h4>
+<p class="ref">T.C. Çevre, Şehircilik ve İklim Değişikliği Bakanlığı. (2024). <i>Mekânsal Planlar Yapım Yönetmeliği (MPYY).</i> Resmî Gazete.</p>
+<p class="ref">T.C. Çevre, Şehircilik ve İklim Değişikliği Bakanlığı. (2024). <i>e-Plan Gösterim Kataloğu.</i> <a href="https://eplan.csb.gov.tr">eplan.csb.gov.tr</a></p>
+
+<h4>Third-Party Notices</h4>
+<p>The plugin's PlanGML symbology reproduces the official Turkish Ministry e-Plan gösterim standards. The rules and tarama tiles are compiled from publicly available official sources. No official font files are redistributed. The <code>MpyyUipDb_2026_02_27.gpkg</code> catalog is compiled and maintained by Yusuf Eminoğlu from the Ministry's published tabaka lists. The vendored <code>olefile</code> library (<code>_vendor/olefile.py</code>) is used under its BSD license for DGN v8 OLE2 container reading. For complete attribution, see <a href="https://github.com/YusufEminoglu/zero2cadgis/blob/main/THIRD_PARTY_NOTICES.md">THIRD_PARTY_NOTICES.md</a> in the plugin repository.</p>
+
+<hr style="margin:2rem 0;border-color:var(--border);">
+<p style="text-align:center;color:var(--muted);font-size:.85em;">
+02CadGis Universal CAD/GIS Importer — Academic Reference Manual · v2.8.1<br>
+Yusuf Eminoğlu · Dokuz Eylül University, Department of City and Regional Planning · August 2026<br>
+<a href="https://github.com/YusufEminoglu/zero2cadgis">github.com/YusufEminoglu/zero2cadgis</a>
+</p>
+
+</main>
+
+<button id="back-to-top" title="Back to top">↑</button>
+<script>
+document.querySelectorAll('.toc-group-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const expanded = btn.getAttribute('aria-expanded') === 'true';
+    btn.setAttribute('aria-expanded', !expanded);
+  });
+});
+const searchInput = document.getElementById('search');
+searchInput.addEventListener('input', () => {
+  const query = searchInput.value.toLowerCase().trim();
+  document.querySelectorAll('.toc-algs li a').forEach(link => {
+    const name = (link.dataset.name || '').toLowerCase();
+    const display = (link.dataset.display || '').toLowerCase();
+    link.classList.toggle('hidden', !!(query && !name.includes(query) && !display.includes(query)));
+  });
+  document.querySelectorAll('.toc-group').forEach(group => {
+    const visible = group.querySelectorAll('.toc-algs li a:not(.hidden)');
+    if (query && visible.length > 0) group.querySelector('.toc-group-btn').setAttribute('aria-expanded', 'true');
+  });
+});
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); searchInput.focus(); }
+});
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      document.querySelectorAll('#toc a').forEach(a => a.classList.remove('active'));
+      const link = document.querySelector(`#toc a[href="#${entry.target.id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+document.querySelectorAll('#content h2[id]').forEach(h2 => observer.observe(h2));
+const btt = document.getElementById('back-to-top');
+window.addEventListener('scroll', () => btt.classList.toggle('visible', window.scrollY > 400));
+btt.addEventListener('click', () => { document.getElementById('content').scrollTo({top:0,behavior:'smooth'}); window.scrollTo({top:0,behavior:'smooth'}); });
+</script>
+</body>
+</html>
