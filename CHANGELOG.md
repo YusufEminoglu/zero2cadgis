@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.8.3] - 2026-08-07
+
+- Add floating Save as PDF button to reference manual
+
 ## [2.8.2] - 2026-08-07
 
 - Expanded reference manual 2x: CAD/GIS theory, 4 algorithms, CRS math, 22 DOI refs
