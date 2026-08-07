@@ -8,6 +8,9 @@
     <img alt="GeoPackage" src="https://img.shields.io/badge/GeoPackage-output-2f855a?style=for-the-badge">
     <img alt="PlanX" src="https://img.shields.io/badge/PlanX-ecosystem-263238?style=for-the-badge">
   </p>
+  <p>
+    <a href="https://yusufeminoglu.github.io/zero2cadgis/ZERO2CADGIS_REFERENCE_MANUAL.html"><b>📖 Comprehensive Academic Reference Manual</b></a>
+  </p>
 </div>
 
 **02CadGis** is a professional QGIS dock plugin for turning CAD and GIS exchange files into clean GeoPackage layers. It is built for planning, cadastral, municipal, and urban analytics workflows where AutoCAD DWG (*.dwg), DXF, KML/KMZ, GML, GeoJSON, CSV, SpatiaLite, GPX, DGN, FileGDB, and Netcad files need to become usable QGIS data quickly.
