@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.8.4] - 2026-08-07
+
+- Added online user manual link (https://yusufeminoglu.github.io/zero2cadgis/) and GitHub repository star call-to-action.
+
 ## [2.8.3] - 2026-08-07
 
 - Add floating Save as PDF button to reference manual
