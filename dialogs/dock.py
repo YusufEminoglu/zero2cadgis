@@ -527,6 +527,7 @@ class Zero2CadGisDockWidget(QDockWidget):
         self.gis_converter = None
         self.src_csv_profile: CsvGeometryProfile | None = None
         self._cad_split_field: str = ""
+        self._export_selection_connections: set[str] = set()
 
         self._build_ui()
         self._restore_persistent_options()
@@ -1047,6 +1048,8 @@ class Zero2CadGisDockWidget(QDockWidget):
         exp_form.setSpacing(3)
 
         self.cmb_exp_layer = QComboBox()
+        self.cmb_exp_layer.currentIndexChanged.connect(
+            self._on_export_layer_changed)
         exp_form.addRow("Select Source Layer:", self.cmb_exp_layer)
 
         self.cmb_exp_format = QComboBox()
@@ -1055,6 +1058,24 @@ class Zero2CadGisDockWidget(QDockWidget):
         self.cmb_exp_format.currentIndexChanged.connect(
             self._on_export_format_changed)
         exp_form.addRow("Target Export Format:", self.cmb_exp_format)
+
+        self.export_crs = QgsProjectionSelectionWidget()
+        self.export_crs.setOptionVisible(
+            QgsProjectionSelectionWidget.CrsOption.ProjectCrs, True)
+        self.export_crs.setCrs(QgsProject.instance().crs())
+        exp_form.addRow("Output CRS:", self.export_crs)
+
+        self.lbl_export_crs_hint = QLabel(
+            "DXF uses the chosen engineering/project CRS.")
+        self.lbl_export_crs_hint.setObjectName("dock_subtitle")
+        self.lbl_export_crs_hint.setWordWrap(True)
+        exp_form.addRow("", self.lbl_export_crs_hint)
+
+        self.chk_export_selected = QCheckBox("Selected features only")
+        self.chk_export_selected.setToolTip(
+            "Export only the features currently selected on the source layer. "
+            "The full layer is exported when this option is off.")
+        exp_form.addRow("Feature Scope:", self.chk_export_selected)
 
         self.txt_exp_path = QLineEdit()
         self.txt_exp_path.setReadOnly(True)
@@ -2671,15 +2692,62 @@ class Zero2CadGisDockWidget(QDockWidget):
 
     def _populate_layers_combo(self) -> None:
         """Fills vector layers into exporter combobox."""
+        previous_id = self.cmb_exp_layer.currentData()
         self.cmb_exp_layer.clear()
         layers = QgsProject.instance().mapLayers().values()
         for layer in layers:
             if isinstance(layer, QgsVectorLayer) and layer.isValid():
                 self.cmb_exp_layer.addItem(layer.name(), layer.id())
+                if layer.id() not in self._export_selection_connections:
+                    layer.selectionChanged.connect(
+                        self._update_export_selection_scope)
+                    self._export_selection_connections.add(layer.id())
+        previous_index = self.cmb_exp_layer.findData(previous_id)
+        if previous_index >= 0:
+            self.cmb_exp_layer.setCurrentIndex(previous_index)
+        self._on_export_layer_changed(self.cmb_exp_layer.currentIndex())
         self._update_export_button_state()
 
     def _on_export_format_changed(self, index: int) -> None:
         self.txt_exp_path.clear()
+        if index in (1, 2):
+            self.export_crs.setCrs(QgsCoordinateReferenceSystem("EPSG:4326"))
+            self.export_crs.setEnabled(False)
+            self.lbl_export_crs_hint.setText(
+                "KML/KMZ is always exported as WGS 84 (EPSG:4326) for "
+                "standards-compliant Google Earth positioning.")
+        else:
+            self.export_crs.setEnabled(True)
+            layer = self._selected_export_layer()
+            if layer is not None and layer.crs().isValid():
+                self.export_crs.setCrs(layer.crs())
+            self.lbl_export_crs_hint.setText(
+                "DXF uses the chosen engineering/project CRS.")
+        self._update_export_button_state()
+
+    def _selected_export_layer(self) -> QgsVectorLayer | None:
+        layer = QgsProject.instance().mapLayer(self.cmb_exp_layer.currentData())
+        if isinstance(layer, QgsVectorLayer) and layer.isValid():
+            return layer
+        return None
+
+    def _on_export_layer_changed(self, _index: int) -> None:
+        layer = self._selected_export_layer()
+        self._update_export_selection_scope()
+        if self.cmb_exp_format.currentIndex() == 0 and layer is not None \
+                and layer.crs().isValid():
+            self.export_crs.setCrs(layer.crs())
+        self._update_export_button_state()
+
+    def _update_export_selection_scope(self, *_signal_args) -> None:
+        """Keep selected-feature scope live as the canvas selection changes."""
+        layer = self._selected_export_layer()
+        selected_count = layer.selectedFeatureCount() if layer else 0
+        self.chk_export_selected.setText(
+            f"Selected features only ({selected_count} selected)")
+        self.chk_export_selected.setEnabled(selected_count > 0)
+        if selected_count == 0:
+            self.chk_export_selected.setChecked(False)
         self._update_export_button_state()
 
     def _last_export_dir(self) -> str:
@@ -2739,26 +2807,43 @@ class Zero2CadGisDockWidget(QDockWidget):
             return
 
         try:
-            success = False
-            if format_idx == 0:  # DXF
-                success = CadExportEngine.export_layer_to_dxf(
-                    layer, output_path)
-            elif format_idx == 1:  # KML
-                success = GisConverterEngine.export_layer_to_gis(
-                    layer, output_path, "KML")
-            else:  # KMZ
-                success = GisConverterEngine.export_layer_to_gis(
-                    layer, output_path, "KMZ")
-
-            if success:
-                QMessageBox.information(
-                    self,
-                    "Success",
-                    f"Successfully exported layer to drawing format!\nPath: {output_path}"
-                )
-            else:
+            selected_only = self.chk_export_selected.isChecked()
+            if selected_only and layer.selectedFeatureCount() == 0:
                 raise ValueError(
-                    "Engine reported export failure (check coordinate compatibility).")
+                    "Selected-features mode is enabled, but the layer no "
+                    "longer has a selection.")
+            target_crs = self.export_crs.crs()
+            if not target_crs.isValid():
+                raise ValueError("Choose a valid output CRS before exporting.")
+
+            if format_idx == 0:  # DXF
+                result = CadExportEngine.export_layer_to_dxf(
+                    layer, output_path,
+                    target_crs=target_crs,
+                    selected_only=selected_only)
+            elif format_idx == 1:  # KML
+                result = GisConverterEngine.export_layer_to_gis(
+                    layer, output_path, "KML",
+                    target_crs=target_crs,
+                    selected_only=selected_only)
+            else:  # KMZ
+                result = GisConverterEngine.export_layer_to_gis(
+                    layer, output_path, "KMZ",
+                    target_crs=target_crs,
+                    selected_only=selected_only)
+
+            size_mb = result.bytes_written / (1024 * 1024)
+            scope = "selected features" if selected_only else "all features"
+            QMessageBox.information(
+                self,
+                "Export Complete",
+                f"Verified {result.driver} export complete.\n\n"
+                f"Layer: {layer.name()}\n"
+                f"Scope: {scope}\n"
+                f"Features: {result.feature_count:,}\n"
+                f"Output CRS: {result.target_crs}\n"
+                f"File size: {size_mb:.2f} MB\n"
+                f"Path: {result.path}")
 
         except Exception as exc:
             QMessageBox.critical(

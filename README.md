@@ -40,7 +40,10 @@
 - Simplifies collinear CAD vertices, removes duplicate nodes, and closes small polygon gaps by tolerance.
 - Preserves CAD color intent with QGIS renderers and optional buffered labels for text elements.
 - **Draws imar plans with the official e-Plan symbology.** In PlanGML mode, each CAD tabaka is matched against the plan gösterimleri style set published by the Ministry on [eplan.csb.gov.tr](https://eplan.csb.gov.tr/) and rendered with its official color, tarama pattern and line type. The rules and the tarama tiles are compiled into the plugin, so nothing is downloaded and no style server is needed. The gösterim is the official standard, not 02CadGis artwork — see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
-- Exports active QGIS vector layers to **DXF, KML or KMZ**.
+- Exports active QGIS vector layers to **DXF, KML or KMZ**, either in full or
+  from the current feature selection. DXF has an explicit output CRS; KML/KMZ
+  is safely transformed to WGS 84. Atomic publishing protects an existing
+  deliverable from a failed or empty writer result.
 - Includes a built-in **Guide** button in the QGIS dock for workflow help.
 
 ## Supported Workflows
@@ -49,10 +52,10 @@
 | --- | --- | --- | --- |
 | CAD/GIS import | `.dxf`, `.dgn`, `.kml`, `.kmz`, `.gml`, `.geojson`, `.sqlite`, `.gpx`, `.gdb`, `.mdb` to `.gpkg` or scratch layers | QGIS GDAL/OGR | Standard exchange files and planning datasets |
 | Delimited text import | `.csv`, `.tsv`, `.txt` with auto-detected X/Y or WKT geometry | QGIS delimited text provider | Survey point lists, exports from spreadsheets and databases |
-| Future enhancement | `.dwg` | Planned external/newer CAD reader path | DWG versions beyond GDAL libopencad support |
+| AutoCAD DWG import | `.dwg` to `.gpkg`, scratch or live layers | GDAL CAD plus optional ODA/LibreDWG assistance | Legacy and modern AutoCAD drawings |
 | Netcad import | `.ncz`, compatible `.nca` | Built-in parser | Netcad drawings with layers, colors, labels and `@TAB` tables |
 | KML overlay extraction | KML/KMZ GroundOverlay to GeoTIFF | GDAL | Georeferenced image overlays |
-| QGIS export | Active vector layer to `.dxf`, `.kml`, `.kmz` | QGIS vector writer | Delivery back to CAD/GIS exchange formats |
+| QGIS export | Full layer or selected features to `.dxf`, `.kml`, `.kmz` | Atomic QGIS vector writer with explicit CRS handling | Verified CAD/GIS delivery without partial-file replacement |
 
 ## QGIS Dock
 
@@ -65,7 +68,11 @@ The plugin opens as one compact dock with three focused panels:
    Select one or more Netcad drawings, review metadata, choose CAD layers and `@TAB` tables, set closure tolerance, generate geometry metrics, apply colors/labels, and load to QGIS.
 
 3. **CAD & GIS Exporter**
-   Select a project vector layer and export it as DXF, KML or KMZ.
+   Select a project vector layer, choose the complete layer or its current
+   feature selection, and export to DXF, KML or KMZ. DXF exposes its delivery
+   CRS; KML/KMZ is locked to WGS 84 for correct Google Earth positioning. The
+   writer validates its temporary output before atomically publishing the
+   final file, then reports the exported feature count, CRS and file size.
 
 Use **temporary scratch layers** for quick inspection. Use **GeoPackage output** for durable deliverables.
 
@@ -76,7 +83,7 @@ flowchart LR
   A[CAD / GIS / Netcad source] --> B{Input type}
   B -->|DXF DGN KML KMZ GML GeoJSON SQLite GPX GDB| C[QGIS OGR reader]
   B -->|CSV TSV TXT| T[Delimited text sniffer]
-  B -->|DWG| X[Future enhancement]
+  B -->|DWG| X[GDAL CAD / ODA / LibreDWG]
   B -->|NCZ / NCA| D[Netcad parser]
   C --> E[CRS + cleanup + attributes]
   T --> E
@@ -86,7 +93,7 @@ flowchart LR
   F -->|Scratch| H[QGIS memory layers]
   G --> I[QGIS project]
   H --> I
-  I --> J[DXF / KML / KMZ export]
+  I --> J[Atomic DXF / KML / KMZ export]
 ```
 
 ## Netcad Import Notes

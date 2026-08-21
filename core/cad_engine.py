@@ -19,12 +19,18 @@ from qgis.core import (
     QgsTextFormat,
     QgsTextBufferSettings,
     QgsVectorFileWriter,
-    QgsFields
+    QgsFields,
+    QgsCoordinateTransform,
 )
 from qgis.PyQt.QtCore import QMetaType
 from qgis.PyQt.QtGui import QColor, QFont
 
 from .qgis_compat import add_features_or_raise, memory_geometry_type_name
+from .export_utils import (
+    atomic_output,
+    exported_feature_count,
+    verified_export_result,
+)
 
 
 class CadCleanupEngine:
@@ -244,13 +250,39 @@ class CadExportEngine:
     """Exports active vectors into DXF format."""
 
     @staticmethod
-    def export_layer_to_dxf(layer: QgsVectorLayer, output_path: str) -> bool:
+    def export_layer_to_dxf(
+            layer: QgsVectorLayer,
+            output_path: str,
+            target_crs=None,
+            selected_only: bool = False):
         transform_context = QgsProject.instance().transformContext()
         options = QgsVectorFileWriter.SaveVectorOptions()
         options.driverName = "DXF"
         options.skipAttributeCreation = True
+        options.onlySelectedFeatures = selected_only
 
-        err, err_msg, _, _ = QgsVectorFileWriter.writeAsVectorFormatV3(
-            layer, output_path, transform_context, options
-        )
-        return err == QgsVectorFileWriter.WriterError.NoError
+        source_crs = layer.crs()
+        if not source_crs.isValid():
+            raise ValueError(
+                "The source layer has no valid CRS. Assign its source CRS "
+                "before exporting so coordinates are not mislabelled.")
+        effective_crs = (
+            target_crs if target_crs and target_crs.isValid() else source_crs)
+        if source_crs.isValid() and effective_crs.isValid() \
+                and source_crs != effective_crs:
+            options.ct = QgsCoordinateTransform(
+                source_crs, effective_crs, QgsProject.instance())
+
+        feature_count = exported_feature_count(layer, selected_only)
+        if selected_only and feature_count == 0:
+            raise ValueError("No features are selected in the source layer.")
+
+        with atomic_output(output_path) as temporary_path:
+            err, err_msg, _, _ = QgsVectorFileWriter.writeAsVectorFormatV3(
+                layer, temporary_path, transform_context, options)
+            if err != QgsVectorFileWriter.WriterError.NoError:
+                raise ValueError(f"DXF writer failed: {err_msg}")
+
+        authid = effective_crs.authid() if effective_crs.isValid() else "Unknown"
+        return verified_export_result(
+            output_path, "DXF", feature_count, authid)

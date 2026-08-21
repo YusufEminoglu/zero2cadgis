@@ -43,6 +43,11 @@ from . import ogr_catalog_cache
 from .dgn_v8_reader import DgnV8Reader, is_dgn_v8 as _is_dgn_v8, check_dgn_driver_available
 from .msaccess_reader import MsAccessDbReader, is_msaccess_available
 from .crs_detect import detect_crs
+from .export_utils import (
+    atomic_output,
+    exported_feature_count,
+    verified_export_result,
+)
 
 # CAD source families whose OGR "entities"/"elements" layer carries an
 # embedded per-CAD-layer field (DXF ``Layer`` name, DGN ``Level`` number).
@@ -1595,39 +1600,61 @@ class GisConverterEngine:
     def export_layer_to_gis(
             layer: QgsVectorLayer,
             output_path: str,
-            format_name: str) -> bool:
+            format_name: str,
+            target_crs=None,
+            selected_only: bool = False):
         """Exports any vector layer to KML or KMZ format."""
         transform_context = QgsProject.instance().transformContext()
         options = QgsVectorFileWriter.SaveVectorOptions()
+        options.onlySelectedFeatures = selected_only
+
+        source_crs = layer.crs()
+        if not source_crs.isValid():
+            raise ValueError(
+                "The source layer has no valid CRS. Assign its source CRS "
+                "before exporting so coordinates are not mislabelled.")
+        effective_crs = (
+            target_crs if target_crs and target_crs.isValid() else source_crs)
+        if source_crs.isValid() and effective_crs.isValid() \
+                and source_crs != effective_crs:
+            options.ct = QgsCoordinateTransform(
+                source_crs, effective_crs, QgsProject.instance())
+
+        feature_count = exported_feature_count(layer, selected_only)
+        if selected_only and feature_count == 0:
+            raise ValueError("No features are selected in the source layer.")
 
         if format_name.upper() == "KML":
             options.driverName = "KML"
-            err, err_msg, _, _ = QgsVectorFileWriter.writeAsVectorFormatV3(
-                layer, output_path, transform_context, options
-            )
-            return err == QgsVectorFileWriter.WriterError.NoError
+            with atomic_output(output_path) as temporary_path:
+                err, err_msg, _, _ = QgsVectorFileWriter.writeAsVectorFormatV3(
+                    layer, temporary_path, transform_context, options)
+                if err != QgsVectorFileWriter.WriterError.NoError:
+                    raise ValueError(f"KML writer failed: {err_msg}")
 
         elif format_name.upper() == "KMZ":
             # Write to a temporary KML first, then package as KMZ zip
             temp_dir = tempfile.mkdtemp(prefix="kmz_export_")
             temp_kml = os.path.join(temp_dir, "doc.kml")
             options.driverName = "KML"
-
-            err, err_msg, _, _ = QgsVectorFileWriter.writeAsVectorFormatV3(
-                layer, temp_kml, transform_context, options
-            )
-
-            if err == QgsVectorFileWriter.WriterError.NoError:
-                # Zip to KMZ
-                with zipfile.ZipFile(output_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
-                    zipf.write(temp_kml, "doc.kml")
+            try:
+                err, err_msg, _, _ = QgsVectorFileWriter.writeAsVectorFormatV3(
+                    layer, temp_kml, transform_context, options)
+                if err != QgsVectorFileWriter.WriterError.NoError:
+                    raise ValueError(f"KMZ writer failed: {err_msg}")
+                with atomic_output(output_path) as temporary_path:
+                    with zipfile.ZipFile(
+                            temporary_path, "w",
+                            zipfile.ZIP_DEFLATED) as archive:
+                        archive.write(temp_kml, "doc.kml")
+            finally:
                 shutil.rmtree(temp_dir, ignore_errors=True)
-                return True
-            else:
-                shutil.rmtree(temp_dir, ignore_errors=True)
-                return False
+        else:
+            raise ValueError(f"Unsupported export format: {format_name}")
 
-        return False
+        authid = effective_crs.authid() if effective_crs.isValid() else "Unknown"
+        return verified_export_result(
+            output_path, format_name.upper(), feature_count, authid)
 
     def _expand_html_descriptions(
             self, layer: QgsVectorLayer) -> QgsVectorLayer:

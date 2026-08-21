@@ -1,5 +1,22 @@
 # Changelog
 
+## [3.0.0] - 2026-08-21
+
+- Rebuilt the CAD/GIS exporter as a delivery-grade workflow:
+  - export the full layer or only its currently selected features;
+  - choose an explicit output CRS for DXF delivery;
+  - automatically lock KML/KMZ output to standards-compliant WGS 84
+    (`EPSG:4326`);
+  - publish DXF/KML/KMZ atomically, preserving an existing good deliverable if
+    GDAL fails or produces an empty intermediate file;
+  - show a verified completion summary with feature count, scope, CRS, file
+    size and final path.
+- Redesigned the plugin icon for toolbar legibility with heavier geometry,
+  high-contrast outlines and full-bleed artwork using the complete 512 px
+  canvas with no transparent margin.
+- Added pure-Python regression coverage for atomic export commit, rollback,
+  empty-output rejection and verified result metadata.
+
 ## [2.8.4] - 2026-08-07
 
 - Added online user manual link (https://yusufeminoglu.github.io/zero2cadgis/) and GitHub repository star call-to-action.
