@@ -7,10 +7,10 @@
     <img alt="License" src="https://img.shields.io/badge/GPL--2.0--or--later-blue?style=for-the-badge">
     <img alt="GeoPackage" src="https://img.shields.io/badge/GeoPackage-output-2f855a?style=for-the-badge">
     <img alt="PlanX" src="https://img.shields.io/badge/PlanX-ecosystem-263238?style=for-the-badge">
-    <br><a href="https://yusufeminoglu.github.io/zero2cadgis/"><img alt="Documentation" src="https://img.shields.io/badge/📖_Reference_Manual-02CadGis-13a0a0?style=for-the-badge"></a>
+    <br><a href="https://geophilo.pages.dev/zero2cadgis/"><img alt="Documentation" src="https://img.shields.io/badge/📖_Reference_Manual-02CadGis-13a0a0?style=for-the-badge"></a>
   </p>
   <p>
-    <a href="https://yusufeminoglu.github.io/zero2cadgis/ZERO2CADGIS_REFERENCE_MANUAL.html"><b>📖 Comprehensive Academic Reference Manual</b></a>
+    <a href="https://geophilo.pages.dev/zero2cadgis/ZERO2CADGIS_REFERENCE_MANUAL.html"><b>📖 Comprehensive Academic Reference Manual</b></a>
   </p>
 </div>
 
@@ -238,6 +238,6 @@ QGIS_Plugin_Releases\zero2cadgis.zip
 
 - 02CadGis developer and maintainer: Yusuf Eminoğlu
 - Email: yusuf.eminoglu@deu.edu.tr
-- Repository: <https://github.com/YusufEminoglu/zero2cadgis>
+- Repository: <https://gitlab.com/geospacephilo/EasyFillet>
 - License: GNU General Public License v2.0 or later
 - Third-party code: see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)
