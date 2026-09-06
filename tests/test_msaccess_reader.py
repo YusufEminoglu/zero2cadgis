@@ -99,6 +99,24 @@ def test_coerce_geometry():
     assert c_poly_from_line is not None
     assert c_poly_from_line.type() == QgsWkbTypes.GeometryType.PolygonGeometry
 
+    multi_line = QgsGeometry.fromMultiPolylineXY([
+        [QgsPointXY(0, 0), QgsPointXY(2, 0), QgsPointXY(2, 2)],
+        [QgsPointXY(10, 10), QgsPointXY(12, 10), QgsPointXY(12, 12)],
+    ])
+    polygons = _coerce_geometry(multi_line, "MultiPolygon")
+    assert polygons is not None
+    assert QgsWkbTypes.isMultiType(polygons.wkbType())
+    assert len(polygons.asMultiPolygon()) == 2
+
+    multi_polygon = QgsGeometry.fromMultiPolygonXY([
+        [[QgsPointXY(0, 0), QgsPointXY(1, 0), QgsPointXY(1, 1), QgsPointXY(0, 0)]],
+        [[QgsPointXY(5, 5), QgsPointXY(6, 5), QgsPointXY(6, 6), QgsPointXY(5, 5)]],
+    ])
+    lines = _coerce_geometry(multi_polygon, "MultiLineString")
+    assert lines is not None
+    assert QgsWkbTypes.isMultiType(lines.wkbType())
+    assert len(lines.asMultiPolyline()) == 2
+
 
 def test_msaccess_available_flag():
     # Smoke test for function existence and boolean return
@@ -106,3 +124,17 @@ def test_msaccess_available_flag():
     assert isinstance(res, bool)
     drv = get_msaccess_odbc_driver()
     assert drv is None or isinstance(drv, str)
+
+
+if __name__ == "__main__":
+    checks = (
+        test_clean_attribute_value,
+        test_geom_from_geojson_dict,
+        test_parse_geometry_value,
+        test_find_best_geometry_column,
+        test_coerce_geometry,
+        test_msaccess_available_flag,
+    )
+    for check in checks:
+        check()
+    print(f"PASSED: {len(checks)}")

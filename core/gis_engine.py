@@ -55,6 +55,8 @@ CAD_LAYER_FIELDS = ("Layer", "Level")
 
 
 MAX_KML_XML_BYTES = 64 * 1024 * 1024
+MAX_KMZ_MEMBERS = 10_000
+MAX_KMZ_UNCOMPRESSED_BYTES = 512 * 1024 * 1024
 
 
 class SourceLayerInfo:
@@ -1174,12 +1176,32 @@ class GisConverterEngine:
         temp_dir = tempfile.mkdtemp(prefix="gis_kmz_")
         self.temp_dirs.append(temp_dir)
 
-        with zipfile.ZipFile(self.source_path, 'r') as zip_ref:
+        with zipfile.ZipFile(self.source_path, "r") as zip_ref:
+            members = zip_ref.infolist()
+            if len(members) > MAX_KMZ_MEMBERS:
+                raise ValueError(
+                    f"KMZ contains too many archive entries ({len(members):,}).")
+            expanded_size = sum(max(0, member.file_size) for member in members)
+            if expanded_size > MAX_KMZ_UNCOMPRESSED_BYTES:
+                raise ValueError(
+                    "KMZ expands beyond the 512 MB safety limit.")
+
+            root = os.path.realpath(temp_dir)
+            safe_members = []
+            for member in members:
+                target = os.path.realpath(os.path.join(temp_dir, member.filename))
+                if os.path.commonpath((root, target)) != root:
+                    raise ValueError(
+                        f"Unsafe path found in KMZ archive: {member.filename}")
+                safe_members.append(member)
+
             kml_files = [
-                n for n in zip_ref.namelist() if n.lower().endswith(".kml")]
+                member.filename for member in safe_members
+                if member.filename.lower().endswith(".kml")]
             if not kml_files:
                 raise ValueError("KML file not found in the KMZ package.")
-            zip_ref.extractall(temp_dir)
+            for member in safe_members:
+                zip_ref.extract(member, temp_dir)
 
         doc = next((n for n in kml_files
                     if os.path.basename(n).lower() == "doc.kml"), None)
@@ -1231,87 +1253,82 @@ class GisConverterEngine:
             selected_layers: list[str] | None = None,
             progress_cb=None) -> list[QgsVectorLayer]:
         """Converts GIS layers to GPKG and returns list of loaded vector layers."""
-        # Re-create target GPKG
-        if os.path.exists(self.target_gpkg):
-            try:
-                os.remove(self.target_gpkg)
-            except OSError:
-                pass
+        if not self.target_gpkg:
+            raise ValueError("A target GeoPackage path is required.")
+
+        layer_specs: list[tuple[str, str]] = []
+        transform_context = QgsProject.instance().transformContext()
+        # Write to a sibling temporary GeoPackage and publish it only after
+        # every selected layer succeeds. A failed conversion can therefore
+        # never destroy a known-good delivery at ``target_gpkg``.
+        with atomic_output(self.target_gpkg) as working_gpkg:
+            wrote_any = False
+            for layer_name, vlayer in self._iter_source_layers(
+                    is_kmz, selected_layers):
+                if progress_cb:
+                    progress_cb(layer_name)
+
+                processed_layer = vlayer
+                if html_expansion and "description" in [
+                        f.name() for f in vlayer.fields()]:
+                    processed_layer = self._expand_html_descriptions(vlayer)
+
+                if self.cad_split_field:
+                    wrote_any = self._write_cad_layer_gpkg(
+                        processed_layer, layer_name, wrote_any,
+                        transform_context, working_gpkg, layer_specs)
+                    continue
+
+                options = QgsVectorFileWriter.SaveVectorOptions()
+                options.driverName = "GPKG"
+                options.layerName = self._sanitize_column_name(layer_name)
+
+                fid_index = processed_layer.fields().lookupField("fid")
+                if fid_index >= 0:
+                    fid_type = processed_layer.fields()[fid_index] \
+                        .typeName().lower()
+                    if fid_type not in (
+                            "integer", "integer64", "int", "int2", "int4",
+                            "int8", "int16", "int32", "int64", "long",
+                            "longlong"):
+                        options.layerOptions = ["FID=cadgis_fid"]
+                options.actionOnExistingFile = (
+                    QgsVectorFileWriter.ActionOnExistingFile.CreateOrOverwriteLayer
+                    if wrote_any
+                    else QgsVectorFileWriter.ActionOnExistingFile.CreateOrOverwriteFile
+                )
+
+                src_crs = self._effective_source_crs(processed_layer)
+                processed_layer.setCrs(src_crs)
+                if src_crs != self.target_crs:
+                    options.ct = QgsCoordinateTransform(
+                        src_crs, self.target_crs, QgsProject.instance())
+
+                err, err_msg, _, _ = QgsVectorFileWriter.writeAsVectorFormatV3(
+                    processed_layer, working_gpkg, transform_context, options)
+                if err != QgsVectorFileWriter.WriterError.NoError:
+                    raise ValueError(
+                        f"Failed writing layer '{layer_name}' to GPKG: {err_msg}")
+                wrote_any = True
+                layer_specs.append((layer_name, options.layerName))
+
+            if not wrote_any:
+                raise ValueError(
+                    "No readable layers were selected for conversion.")
 
         loaded_layers = []
-        transform_context = QgsProject.instance().transformContext()
-        wrote_any = False
-
-        for layer_name, vlayer in self._iter_source_layers(
-                is_kmz, selected_layers):
-            if progress_cb:
-                progress_cb(layer_name)
-
-            processed_layer = vlayer
-            if html_expansion and "description" in [
-                    f.name() for f in vlayer.fields()]:
-                processed_layer = self._expand_html_descriptions(vlayer)
-
-            # CAD layer subsets can mix geometry types; a GeoPackage layer
-            # holds one geometry type, so split them before writing.
-            if self.cad_split_field:
-                wrote_any = self._write_cad_layer_gpkg(
-                    processed_layer, layer_name, wrote_any,
-                    transform_context, loaded_layers)
-                continue
-
-            # Define writer options
-            options = QgsVectorFileWriter.SaveVectorOptions()
-            options.driverName = "GPKG"
-            options.layerName = self._sanitize_column_name(layer_name)
-
-            # GML/GeoJSON sources may carry a non-integer "fid" attribute;
-            # GPKG reserves fid for its integer primary key, so move the
-            # primary key to another column in that case.
-            fid_index = processed_layer.fields().lookupField("fid")
-            if fid_index >= 0:
-                fid_type = processed_layer.fields()[fid_index] \
-                    .typeName().lower()
-                if fid_type not in (
-                        "integer", "integer64", "int", "int2", "int4",
-                        "int8", "int16", "int32", "int64", "long",
-                        "longlong"):
-                    options.layerOptions = ["FID=cadgis_fid"]
-            options.actionOnExistingFile = (
-                QgsVectorFileWriter.ActionOnExistingFile.CreateOrOverwriteLayer
-                if wrote_any
-                else QgsVectorFileWriter.ActionOnExistingFile.CreateOrOverwriteFile
-            )
-
-            src_crs = self._effective_source_crs(processed_layer)
-            processed_layer.setCrs(src_crs)
-            if src_crs != self.target_crs:
-                options.ct = QgsCoordinateTransform(
-                    src_crs, self.target_crs, QgsProject.instance())
-
-            err, err_msg, _, _ = QgsVectorFileWriter.writeAsVectorFormatV3(
-                processed_layer,
-                self.target_gpkg,
-                transform_context,
-                options
-            )
-            if err != QgsVectorFileWriter.WriterError.NoError:
+        for display_name, stored_name in layer_specs:
+            gpkg_uri = f"{self.target_gpkg}|layername={stored_name}"
+            gpkg_layer = QgsVectorLayer(gpkg_uri, display_name, "ogr")
+            if not gpkg_layer.isValid():
                 raise ValueError(
-                    f"Failed writing layer '{layer_name}' to GPKG: {err_msg}")
-            wrote_any = True
-
-            gpkg_uri = f"{self.target_gpkg}|layername={options.layerName}"
-            gpkg_layer = QgsVectorLayer(gpkg_uri, layer_name, "ogr")
-            if gpkg_layer.isValid():
-                loaded_layers.append(gpkg_layer)
-
-        if not wrote_any:
-            raise ValueError(
-                "No readable layers were selected for conversion.")
+                    f"Published GeoPackage layer '{stored_name}' could not be reopened.")
+            loaded_layers.append(gpkg_layer)
         return loaded_layers
 
     def _write_cad_layer_gpkg(self, processed_layer, layer_name, wrote_any,
-                              transform_context, loaded_layers) -> bool:
+                              transform_context, output_path,
+                              layer_specs) -> bool:
         """Write one CAD-layer subset to GPKG, split by geometry type."""
         src_crs = self._effective_source_crs(processed_layer)
         if not processed_layer.crs().isValid():
@@ -1399,17 +1416,14 @@ class GisConverterEngine:
                 else QgsVectorFileWriter.ActionOnExistingFile.CreateOrOverwriteFile
             )
             err, err_msg, _, _ = QgsVectorFileWriter.writeAsVectorFormatV3(
-                mem_layer, self.target_gpkg, transform_context, options)
+                mem_layer, output_path, transform_context, options)
             if err != QgsVectorFileWriter.WriterError.NoError:
                 raise ValueError(
                     f"Failed writing CAD layer '{layer_name}' to GPKG: "
                     f"{err_msg}")
             wrote_any = True
 
-            gpkg_uri = f"{self.target_gpkg}|layername={gpkg_layer_name}"
-            gpkg_layer = QgsVectorLayer(gpkg_uri, gpkg_layer_name, "ogr")
-            if gpkg_layer.isValid():
-                loaded_layers.append(gpkg_layer)
+            layer_specs.append((gpkg_layer_name, gpkg_layer_name))
         return wrote_any
 
     def load_layers_live(

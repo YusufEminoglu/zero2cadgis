@@ -33,6 +33,8 @@
 - Loads selected layers **live, with no conversion**: for FileGDB / Personal GDB (and any multi-layer OGR source) the checked layers are added straight to QGIS as zero-copy references, so even multi-million-feature Geodatabase layers open in a fraction of a second.
 - **Splits DXF and DGN by CAD layer**: each CAD layer name (DXF `Layer`) or level (DGN `Level`) becomes its own selectable QGIS layer instead of a single merged table.
 - Reads **every KML document inside a KMZ**, not just the first, so multi-document archives are imported in full.
+- Treats KMZ as untrusted input: archive paths, entry count and expanded size
+  are validated before extraction.
 - Reads **delimited text with automatic geometry detection**: delimiter, X/Y or lon/lat columns (WGS84 auto-suggested), or a WKT column, all overridable before import.
 - Imports multiple Netcad drawings at once with selectable CAD layers and `@TAB` attribute tables.
 - Expands KML balloon HTML tables and list descriptions into real attribute fields.
@@ -44,6 +46,10 @@
   from the current feature selection. DXF has an explicit output CRS; KML/KMZ
   is safely transformed to WGS 84. Atomic publishing protects an existing
   deliverable from a failed or empty writer result.
+- Publishes imported GeoPackages transactionally as well: all selected layers
+  must finish before the existing destination is replaced.
+- Produces a copy-ready **conversion receipt** with source, destination, mode,
+  CRS, layer geometry, feature totals and warnings for QA and delivery records.
 - Includes a built-in **Guide** button in the QGIS dock for workflow help.
 
 ## Supported Workflows
@@ -73,6 +79,10 @@ The plugin opens as one compact dock with three focused panels:
    CRS; KML/KMZ is locked to WGS 84 for correct Google Earth positioning. The
    writer validates its temporary output before atomically publishing the
    final file, then reports the exported feature count, CRS and file size.
+
+Every completed import also opens a **Last Conversion Receipt** card. Copy it
+directly into a project log, delivery note or QA report; it records exactly what
+was loaded or written rather than relying on a transient message-bar notice.
 
 Use **temporary scratch layers** for quick inspection. Use **GeoPackage output** for durable deliverables.
 

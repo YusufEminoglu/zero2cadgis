@@ -189,13 +189,18 @@ def _coerce_geometry(geom: QgsGeometry, target_family: str) -> Optional[QgsGeome
                 g_out.convertToMultiType()
             return g_out
         elif gt == QgsWkbTypes.GeometryType.LineGeometry:
-            pts = geom.asPolyline()
-            if len(pts) >= 3:
-                if pts[0] != pts[-1]:
-                    pts = list(pts) + [pts[0]]
-                poly_g = QgsGeometry.fromPolygonXY([pts])
-                poly_g.convertToMultiType()
-                return poly_g
+            parts = (geom.asMultiPolyline()
+                     if QgsWkbTypes.isMultiType(geom.wkbType())
+                     else [geom.asPolyline()])
+            rings = []
+            for points in parts:
+                if len(points) >= 3:
+                    ring = list(points)
+                    if ring[0] != ring[-1]:
+                        ring.append(ring[0])
+                    rings.append(ring)
+            if rings:
+                return QgsGeometry.fromMultiPolygonXY([[ring] for ring in rings])
             return None
         return None
 
@@ -205,11 +210,12 @@ def _coerce_geometry(geom: QgsGeometry, target_family: str) -> Optional[QgsGeome
                 g_out.convertToMultiType()
             return g_out
         elif gt == QgsWkbTypes.GeometryType.PolygonGeometry:
-            poly = geom.asPolygon()
-            if poly and poly[0]:
-                line_g = QgsGeometry.fromPolylineXY(poly[0])
-                line_g.convertToMultiType()
-                return line_g
+            polygons = (geom.asMultiPolygon()
+                        if QgsWkbTypes.isMultiType(geom.wkbType())
+                        else [geom.asPolygon()])
+            lines = [polygon[0] for polygon in polygons if polygon and polygon[0]]
+            if lines:
+                return QgsGeometry.fromMultiPolylineXY(lines)
             return None
         return None
 

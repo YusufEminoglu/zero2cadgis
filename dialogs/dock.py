@@ -77,7 +77,12 @@ from ..core.cad_engine import CadCleanupEngine, CadStylingEngine, CadFeatureAugm
 from ..core.symbology import PlanSymbologyMatcher, apply_plan_symbology
 from ..core.plangml_schema import lookup_tabaka, upper_group_of
 from ..core.path_utils import ensure_extension, has_extension
-from ..core.qgis_compat import add_features_or_raise, fix_mojibake
+from ..core.qgis_compat import (
+    add_features_or_raise,
+    fix_mojibake,
+    memory_geometry_type_name,
+)
+from ..core.conversion_receipt import ConvertedLayer, build_conversion_receipt
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Dock stylesheet — every text colour, background and border is *pinned* so
@@ -842,6 +847,25 @@ class Zero2CadGisDockWidget(QDockWidget):
         self.btn_convert_gis.clicked.connect(self._convert_gis_dataset)
         cad_gis_layout.addWidget(self.btn_convert_gis)
 
+        self.conversion_receipt_group = QGroupBox("Last Conversion Receipt")
+        receipt_layout = QVBoxLayout(self.conversion_receipt_group)
+        receipt_layout.setContentsMargins(6, 10, 6, 6)
+        receipt_layout.setSpacing(3)
+        self.txt_conversion_receipt = QTextBrowser()
+        self.txt_conversion_receipt.setMinimumHeight(120)
+        self.txt_conversion_receipt.setOpenExternalLinks(False)
+        receipt_layout.addWidget(self.txt_conversion_receipt)
+        receipt_actions = QHBoxLayout()
+        receipt_actions.addStretch(1)
+        self.btn_copy_receipt = QPushButton("Copy Receipt")
+        self.btn_copy_receipt.clicked.connect(
+            lambda: QApplication.clipboard().setText(
+                self.txt_conversion_receipt.toPlainText()))
+        receipt_actions.addWidget(self.btn_copy_receipt)
+        receipt_layout.addLayout(receipt_actions)
+        self.conversion_receipt_group.setVisible(False)
+        cad_gis_layout.addWidget(self.conversion_receipt_group)
+
         self._on_source_type_changed(self.cmb_src_type.currentIndex())
 
         tab_cad_gis = self._make_scroll_tab(tab1_inner)
@@ -1578,7 +1602,9 @@ class Zero2CadGisDockWidget(QDockWidget):
                 if self.csv_src_crs.crs().isValid():
                     csv_crs = self.csv_src_crs.crs().authid()
 
-            src_crs_param = self.csv_src_crs.crs() if self.csv_src_crs.crs().isValid() else None
+            src_crs_param = None
+            if fmt.key == "csv" and self.csv_src_crs.crs().isValid():
+                src_crs_param = self.csv_src_crs.crs()
             self.gis_converter = GisConverterEngine(
                 src, dst, crs,
                 csv_profile=csv_profile, csv_source_crs=csv_crs,
@@ -1681,6 +1707,32 @@ class Zero2CadGisDockWidget(QDockWidget):
             for note in notes:
                 self.iface.messageBar().pushMessage(
                     "02CadGis", note, Qgis.MessageLevel.Warning, 10)
+
+            mode_name = ("Live / zero-copy" if is_live else
+                         "Temporary scratch" if is_temp else
+                         "Atomic GeoPackage")
+            destination = (src if is_live else
+                           "QGIS temporary memory" if is_temp else dst)
+            receipt_layers = []
+            for layer in loaded_layers:
+                with suppress(Exception):
+                    receipt_layers.append(ConvertedLayer(
+                        name=layer.name(),
+                        geometry=memory_geometry_type_name(layer),
+                        feature_count=int(layer.featureCount()),
+                        crs=layer.crs().authid(),
+                    ))
+            receipt = build_conversion_receipt(
+                source=src,
+                mode=mode_name,
+                destination=destination,
+                target_crs=("source CRS / on-the-fly" if is_live
+                            else crs.authid()),
+                layers=receipt_layers,
+                warnings=notes,
+            )
+            self.txt_conversion_receipt.setPlainText(receipt)
+            self.conversion_receipt_group.setVisible(True)
 
         except Exception as exc:
             self.progress_conv.setVisible(False)

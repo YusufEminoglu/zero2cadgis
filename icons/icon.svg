@@ -2,19 +2,17 @@
   <title>02CadGis - CAD to GIS</title>
   <!-- Full-bleed 3.0 mark: the artwork reaches the icon canvas on every side. -->
   <g transform="matrix(1.1935 0 0 1.399 -39.4 -110.5)">
-    <g id="gis" stroke="#0B4450" stroke-width="7" stroke-linejoin="round">
+    <g id="gis">
       <path fill="#22B573" d="M261,101 L300,97 L364,120 L360,274 L274,302 L242,195 Z"/>
       <path fill="#0E8C7F" d="M275,312 L361,284 L359,386 L261,406 Z"/>
-      <path fill="#17A398" d="M371,121 L459,151 L455,258 L367,275 Z"/>
-      <path fill="#2ACB8B" d="M367,283 L455,266 L449,365 L365,384 Z"/>
+      <path fill="#17A398" d="M371,121 L462,151 L460,258 L367,275 Z"/>
+      <path fill="#2ACB8B" d="M367,283 L460,266 L457,365 L365,384 Z"/>
     </g>
     <g id="cad" fill="none" stroke-linecap="round" stroke-linejoin="round">
-      <path stroke="#0B4450" stroke-width="31" d="M152,119 L108,372 M55,268 L238,196"/>
       <path stroke="#F5A000" stroke-width="19" d="M152,119 L108,372 M55,268 L238,196"/>
-      <path stroke="#0B4450" stroke-width="43" d="M258,96 L60,140 L50,340 L214,428 L258,410 L272,310 L238,196 Z"/>
       <path stroke="#F5A000" stroke-width="29" d="M258,96 L60,140 L50,340 L214,428 L258,410 L272,310 L238,196 Z"/>
     </g>
-    <g id="grips" fill="#F5A000" stroke="#0B4450" stroke-width="5">
+    <g id="grips" fill="#F5A000">
       <rect x="44" y="124" width="32" height="32" rx="4"/>
       <rect x="242" y="80" width="32" height="32" rx="4"/>
       <rect x="222" y="180" width="32" height="32" rx="4"/>

@@ -49,6 +49,7 @@ class Zero2CadGis:
     def unload(self) -> None:
         if self._dock:
             self.iface.removeDockWidget(self._dock)
+            self._dock.setParent(None)
             self._dock.deleteLater()
             self._dock = None
 
@@ -58,6 +59,7 @@ class Zero2CadGis:
 
         if self.toolbar:
             self.iface.mainWindow().removeToolBar(self.toolbar)
+            self.toolbar.setParent(None)
             self.toolbar.deleteLater()
             self.toolbar = None
 

@@ -5,10 +5,15 @@ from __future__ import annotations
 import os
 import tempfile
 import unittest
+from datetime import datetime, timezone
 
 from zero2cadgis.core.export_utils import (
     atomic_output,
     verified_export_result,
+)
+from zero2cadgis.core.conversion_receipt import (
+    ConvertedLayer,
+    build_conversion_receipt,
 )
 
 
@@ -69,6 +74,24 @@ class TestAtomicExport(unittest.TestCase):
         self.assertEqual(result.feature_count, 17)
         self.assertEqual(result.bytes_written, 6)
         self.assertEqual(result.target_crs, "EPSG:4326")
+
+    def test_conversion_receipt_is_copy_ready_and_deterministic(self):
+        receipt = build_conversion_receipt(
+            source=r"C:\data\izmir.geojson",
+            mode="Atomic GeoPackage",
+            destination=r"C:\delivery\izmir.gpkg",
+            target_crs="EPSG:32635",
+            layers=[
+                ConvertedLayer("parcels", "Polygon", 12, "EPSG:32635"),
+                ConvertedLayer("roads", "LineString", 30, "EPSG:32635"),
+            ],
+            warnings=["One empty geometry was skipped."],
+            completed_at=datetime(2026, 9, 6, 12, 0, tzinfo=timezone.utc),
+        )
+        self.assertIn("2026-09-06T12:00:00+00:00", receipt)
+        self.assertIn("Result: 2 layer(s), 42 feature(s)", receipt)
+        self.assertIn("parcels | Polygon | 12 features | EPSG:32635", receipt)
+        self.assertIn("Warnings:\n- One empty geometry was skipped.", receipt)
 
 
 if __name__ == "__main__":

@@ -1,5 +1,29 @@
 # Changelog
 
+## [3.1.0] - 2026-09-06
+
+- Made GeoPackage imports transactional: every selected layer is written to a
+  sibling staging database, verified, and only then atomically published. A
+  failed conversion no longer deletes or partially replaces an existing
+  delivery.
+- Hardened KMZ ingestion against archive path traversal and decompression abuse
+  with bounded entry count, bounded expanded size, and validated extraction
+  targets.
+- Added a copy-ready conversion receipt to the dock with source, mode,
+  destination, CRS, per-layer geometry and feature counts, completion time, and
+  warnings.
+- Fixed stale delimited-text CRS settings leaking into non-CSV CAD/GIS imports,
+  which could place otherwise valid source data in the wrong coordinate system.
+- Fixed conversion of multipart Access line and polygon geometries without
+  flattening or losing parts.
+- Fixed toolbar and dock teardown so plugin reloads do not retain orphan QGIS
+  UI objects.
+- Added genuine QGIS 3.44 and QGIS 4.2 conversion tests covering İzmir GeoJSON
+  reprojection, GeoPackage reopening, rollback preservation, hostile KMZ
+  rejection, and multipart geometry coercion.
+- Refreshed the full-bleed toolbar icon for improved silhouette and color
+  separation at small QGIS toolbar sizes.
+
 ## [3.0.0] - 2026-08-21
 
 - Rebuilt the CAD/GIS exporter as a delivery-grade workflow:
