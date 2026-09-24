@@ -17,11 +17,13 @@ from __future__ import annotations
 import os
 import re
 import math
+import shutil
+import time
 from contextlib import suppress
 from dataclasses import dataclass, field
 
 from qgis.PyQt.QtCore import QMetaType, Qt, QSettings
-from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtGui import QBrush, QColor, QIcon
 from qgis.PyQt.QtWidgets import (
     QApplication,
     QDockWidget,
@@ -58,7 +60,11 @@ from qgis.core import (
     QgsGeometry,
     QgsPointXY,
     QgsCoordinateReferenceSystem,
-    QgsVectorFileWriter
+    QgsCoordinateTransform,
+    QgsRectangle,
+    QgsVectorFileWriter,
+    QgsLayoutItemMap,
+    QgsWkbTypes,
 )
 from qgis.gui import QgsProjectionSelectionWidget
 
@@ -83,6 +89,15 @@ from ..core.qgis_compat import (
     memory_geometry_type_name,
 )
 from ..core.conversion_receipt import ConvertedLayer, build_conversion_receipt
+from ..core.spatial_filter import (
+    ExtentBox,
+    ExtentInspectionResult,
+    SUPPORTED_FILTER_EXTENSIONS,
+    discover_files,
+    inspect_file_extent,
+    evaluate_qgis_spatial_match,
+    scan_and_filter_files,
+)
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Dock stylesheet — every text colour, background and border is *pinned* so
@@ -533,6 +548,9 @@ class Zero2CadGisDockWidget(QDockWidget):
         self.src_csv_profile: CsvGeometryProfile | None = None
         self._cad_split_field: str = ""
         self._export_selection_connections: set[str] = set()
+        self._spatial_filter_results: list[ExtentInspectionResult] = []
+        self._filter_discovered_files: list[str] = []
+        self._poly_selection_connections: set[str] = set()
 
         self._build_ui()
         self._restore_persistent_options()
@@ -542,6 +560,9 @@ class Zero2CadGisDockWidget(QDockWidget):
         with suppress(Exception):
             project.layersAdded.connect(self._populate_layers_combo)
             project.layersRemoved.connect(self._populate_layers_combo)
+            if hasattr(self.iface, "mapCanvas") and self.iface.mapCanvas():
+                self.iface.mapCanvas().extentsChanged.connect(
+                    self._on_map_canvas_extent_changed)
 
     def closeEvent(self, event):
         if self.gis_converter:
@@ -562,6 +583,15 @@ class Zero2CadGisDockWidget(QDockWidget):
             event.ignore()
             return
         event.acceptProposedAction()
+
+        # If dropped a directory or multiple mixed files, open spatial filter sub-dialog
+        if (any(os.path.isdir(p) and not p.lower().endswith(".gdb") for p in paths)
+                or (len(paths) > 1 and not all(p.lower().endswith(NCZ_EXTENSIONS) for p in paths))):
+            self._apply_filter_source_paths(paths)
+            self.spatial_filter_dialog.show()
+            self.spatial_filter_dialog.raise_()
+            self.spatial_filter_dialog.activateWindow()
+            return
 
         ncz_paths = [p for p in paths
                      if p.lower().endswith(NCZ_EXTENSIONS)]
@@ -585,8 +615,10 @@ class Zero2CadGisDockWidget(QDockWidget):
             local = url.toLocalFile()
             if not local:
                 continue
-            if local.lower().endswith(NCZ_EXTENSIONS) \
-                    or format_for_path(local) is not None:
+            if (os.path.isdir(local)
+                    or local.lower().endswith(NCZ_EXTENSIONS)
+                    or local.lower().endswith(SUPPORTED_FILTER_EXTENSIONS)
+                    or format_for_path(local) is not None):
                 paths.append(local)
         return paths
 
@@ -655,6 +687,13 @@ class Zero2CadGisDockWidget(QDockWidget):
         self.btn_browse_src.setObjectName("browse_btn")
         self.btn_browse_src.clicked.connect(self._browse_src_dataset)
         path_layout.addWidget(self.btn_browse_src)
+
+        self.btn_cad_filter_extent = QPushButton("Filter by Extent...")
+        self.btn_cad_filter_extent.setToolTip(
+            "Filter candidate CAD & GIS datasets by current map canvas or boundary.")
+        self.btn_cad_filter_extent.clicked.connect(
+            self._filter_current_cad_by_extent)
+        path_layout.addWidget(self.btn_cad_filter_extent)
         src_layout.addLayout(path_layout)
 
         self.lbl_src_status = QLabel(
@@ -899,6 +938,14 @@ class Zero2CadGisDockWidget(QDockWidget):
         self.btn_browse_ncz.clicked.connect(self._select_ncz_file)
         ncz_file_layout.addWidget(self.btn_browse_ncz)
 
+        self.btn_ncz_filter_extent = QPushButton("Filter by Extent...")
+        self.btn_ncz_filter_extent.setToolTip(
+            "Filter the selected Netcad drawings down to only those that "
+            "intersect the current map canvas or selected polygon.")
+        self.btn_ncz_filter_extent.clicked.connect(
+            self._filter_current_ncz_by_extent)
+        ncz_file_layout.addWidget(self.btn_ncz_filter_extent)
+
         self.btn_clear_ncz_cache = QPushButton("Clear cache")
         self.btn_clear_ncz_cache.setToolTip(
             "Delete the local NCZ index cache. The cache also rebuilds "
@@ -1059,6 +1106,22 @@ class Zero2CadGisDockWidget(QDockWidget):
                     self.icon_dir,
                     "icon_ncz.png")),
             "Netcad NCZ/NCA Importer")
+
+        # ───────────────────────── Spatial Filter Sub-Dialog (shared by CAD & NCZ) ───
+        self.spatial_filter_dialog = QDialog(self)
+        self.spatial_filter_dialog.setWindowTitle("02CadGis — Batch Spatial Filter")
+        self.spatial_filter_dialog.setWindowIcon(
+            QIcon(
+                os.path.join(
+                    self.icon_dir,
+                    "icon_filter.png")))
+        self.spatial_filter_dialog.resize(760, 680)
+        dlg_layout = QVBoxLayout(self.spatial_filter_dialog)
+        dlg_layout.setContentsMargins(4, 4, 4, 4)
+        tab_filter_inner = QWidget()
+        self._build_spatial_filter_tab(tab_filter_inner)
+        dlg_scroll = self._make_scroll_tab(tab_filter_inner)
+        dlg_layout.addWidget(dlg_scroll)
 
         # ───────────────────────── TAB 3: CAD & GIS Exporter ─────────────────
         tab3_inner = QWidget()
@@ -1236,7 +1299,18 @@ class Zero2CadGisDockWidget(QDockWidget):
         </ol>
         <p><b>Netcad QA tip:</b> If expected layers are missing, retry with cleanup disabled and a smaller closure tolerance, then compare the raw and optimized outputs.</p>
 
-        <h3>3. Export QGIS Layers</h3>
+        <h3>3. Batch Spatial Extent Filter</h3>
+        <p>When working with hundreds of CAD, Netcad, or GIS files (e.g. municipal sheets/paftas) where only a subset intersect your project area, use the <b>Batch Spatial Filter</b> tab:</p>
+        <ol>
+          <li>Select the folder containing candidate drawings (or pick specific files). Subfolders are scanned recursively by default.</li>
+          <li>Choose your spatial boundary: <b>Active Map Canvas</b>, <b>Selected Feature(s) in Polygon Layer</b>, <b>Print Layout Map</b>, or a manual bounding box.</li>
+          <li>Optionally set a buffer distance (e.g. 50 m margin) and spatial predicate (intersects or within).</li>
+          <li>Click <b>Scan &amp; Filter Extents</b>. Candidate file headers/extents are inspected in milliseconds without loading full layers into memory or crashing QGIS.</li>
+          <li>Click <b>Preview Footprints on Canvas</b> to see a labeled visual overlay of sheet extents directly on the map.</li>
+          <li>Click <b>Import Matched Files</b> to load the matching files into QGIS, merge them into a single GeoPackage, or copy them to a dedicated folder.</li>
+        </ol>
+
+        <h3>4. Export QGIS Layers</h3>
         <ol>
           <li>Select an active vector layer from the current QGIS project.</li>
           <li>Choose DXF, KML, or KMZ.</li>
@@ -2759,6 +2833,8 @@ class Zero2CadGisDockWidget(QDockWidget):
             self.cmb_exp_layer.setCurrentIndex(previous_index)
         self._on_export_layer_changed(self.cmb_exp_layer.currentIndex())
         self._update_export_button_state()
+        self._populate_filter_polygon_layers()
+        self._populate_filter_layouts()
 
     def _on_export_format_changed(self, index: int) -> None:
         self.txt_exp_path.clear()
@@ -2902,3 +2978,1318 @@ class Zero2CadGisDockWidget(QDockWidget):
                 self,
                 "Export Error",
                 f"Failed exporting QGIS layer:\n{exc}")
+
+    # ───────────────────────── TAB 3: Batch Spatial Filter Methods ───────────
+
+    def _build_spatial_filter_tab(self, inner_widget: QWidget) -> None:
+        filter_layout = QVBoxLayout(inner_widget)
+        filter_layout.setContentsMargins(4, 4, 4, 4)
+        filter_layout.setSpacing(4)
+
+        # ── Group 1: Source Files / Directory ──
+        src_group = QGroupBox("1. Candidate Drawings / GIS Datasets")
+        src_vbox = QVBoxLayout(src_group)
+        src_vbox.setContentsMargins(6, 10, 6, 6)
+        src_vbox.setSpacing(3)
+
+        mode_row = QHBoxLayout()
+        self.rb_filter_src_dir = QRadioButton("Directory / Folder (Batch)")
+        self.rb_filter_src_dir.setChecked(True)
+        self.rb_filter_src_files = QRadioButton("Specific Files")
+        self.filter_src_group = QButtonGroup(self)
+        self.filter_src_group.addButton(self.rb_filter_src_dir)
+        self.filter_src_group.addButton(self.rb_filter_src_files)
+        self.filter_src_group.buttonToggled.connect(
+            lambda *_: self._on_filter_source_mode_changed())
+        mode_row.addWidget(self.rb_filter_src_dir)
+        mode_row.addWidget(self.rb_filter_src_files)
+        mode_row.addStretch(1)
+        src_vbox.addLayout(mode_row)
+
+        path_row = QHBoxLayout()
+        self.txt_filter_source_path = QLineEdit()
+        self.txt_filter_source_path.setPlaceholderText(
+            "Select folder or drop files/folder here...")
+        self.txt_filter_source_path.textChanged.connect(
+            self._refresh_filter_discovered_files)
+        path_row.addWidget(self.txt_filter_source_path, 1)
+
+        self.btn_browse_filter_dir = QPushButton("Browse Folder...")
+        self.btn_browse_filter_dir.clicked.connect(self._browse_filter_source_dir)
+        path_row.addWidget(self.btn_browse_filter_dir)
+
+        self.btn_browse_filter_files = QPushButton("Browse Files...")
+        self.btn_browse_filter_files.setVisible(False)
+        self.btn_browse_filter_files.clicked.connect(self._browse_filter_source_files)
+        path_row.addWidget(self.btn_browse_filter_files)
+        src_vbox.addLayout(path_row)
+
+        opts_row = QHBoxLayout()
+        self.chk_filter_recursive = QCheckBox("Scan subfolders recursively")
+        self.chk_filter_recursive.setChecked(True)
+        self.chk_filter_recursive.toggled.connect(
+            self._refresh_filter_discovered_files)
+        opts_row.addWidget(self.chk_filter_recursive)
+
+        opts_row.addSpacing(10)
+        opts_row.addWidget(QLabel("Format filter:"))
+        self.cmb_filter_type = QComboBox()
+        self.cmb_filter_type.addItem(
+            "All Supported (*.ncz, *.dxf, *.dwg, *.kml, *.shp, *.gdb...)", "all")
+        self.cmb_filter_type.addItem("Netcad Only (*.ncz, *.nca)", "netcad")
+        self.cmb_filter_type.addItem("CAD Drawings (*.dxf, *.dwg, *.dgn)", "cad")
+        self.cmb_filter_type.addItem(
+            "GIS Vectors (*.shp, *.kml, *.kmz, *.gdb, *.geojson...)", "gis")
+        self.cmb_filter_type.currentIndexChanged.connect(
+            self._refresh_filter_discovered_files)
+        opts_row.addWidget(self.cmb_filter_type, 1)
+        src_vbox.addLayout(opts_row)
+
+        self.lbl_filter_discovered = QLabel("0 candidate files ready for scanning.")
+        self.lbl_filter_discovered.setObjectName("dock_subtitle")
+        src_vbox.addWidget(self.lbl_filter_discovered)
+
+        filter_layout.addWidget(src_group)
+
+        # ── Group 2: Spatial Boundary Criteria ──
+        bound_group = QGroupBox("2. Target Boundary Criteria")
+        bound_vbox = QVBoxLayout(bound_group)
+        bound_vbox.setContentsMargins(6, 10, 6, 6)
+        bound_vbox.setSpacing(3)
+
+        mode_row2 = QHBoxLayout()
+        mode_row2.addWidget(QLabel("Boundary Source:"))
+        self.cmb_filter_boundary_mode = QComboBox()
+        self.cmb_filter_boundary_mode.addItem("Active Map Canvas Extent", "canvas")
+        self.cmb_filter_boundary_mode.addItem(
+            "Selected Feature(s) in Polygon Layer", "polygon")
+        self.cmb_filter_boundary_mode.addItem("Print Layout Map Extent", "layout")
+        self.cmb_filter_boundary_mode.addItem("Manual Bounding Box", "manual")
+        self.cmb_filter_boundary_mode.currentIndexChanged.connect(
+            self._on_filter_boundary_mode_changed)
+        mode_row2.addWidget(self.cmb_filter_boundary_mode, 1)
+        bound_vbox.addLayout(mode_row2)
+
+        # A) Canvas info
+        self.widget_filter_canvas = QWidget()
+        canvas_layout = QHBoxLayout(self.widget_filter_canvas)
+        canvas_layout.setContentsMargins(0, 2, 0, 2)
+        self.lbl_canvas_extent_info = QLabel("Canvas extent: Loading...")
+        self.lbl_canvas_extent_info.setObjectName("dock_subtitle")
+        self.lbl_canvas_extent_info.setWordWrap(True)
+        canvas_layout.addWidget(self.lbl_canvas_extent_info, 1)
+        self.btn_refresh_canvas_extent = QPushButton("Refresh Canvas")
+        self.btn_refresh_canvas_extent.clicked.connect(self._refresh_canvas_extent_info)
+        canvas_layout.addWidget(self.btn_refresh_canvas_extent)
+        bound_vbox.addWidget(self.widget_filter_canvas)
+
+        # B) Polygon layer selector
+        self.widget_filter_poly = QWidget()
+        self.widget_filter_poly.setVisible(False)
+        poly_layout = QVBoxLayout(self.widget_filter_poly)
+        poly_layout.setContentsMargins(0, 2, 0, 2)
+        poly_layout.setSpacing(2)
+        poly_row = QHBoxLayout()
+        poly_row.addWidget(QLabel("Polygon Layer:"))
+        self.cmb_filter_poly_layer = QComboBox()
+        self.cmb_filter_poly_layer.currentIndexChanged.connect(
+            self._on_filter_poly_layer_changed)
+        poly_row.addWidget(self.cmb_filter_poly_layer, 1)
+        self.btn_zoom_filter_poly = QPushButton("Zoom to Layer")
+        self.btn_zoom_filter_poly.clicked.connect(self._zoom_to_selected_polygon)
+        poly_row.addWidget(self.btn_zoom_filter_poly)
+        poly_layout.addLayout(poly_row)
+
+        poly_opts = QHBoxLayout()
+        self.chk_filter_use_selected_only = QCheckBox("Use only selected polygon features")
+        self.chk_filter_use_selected_only.setChecked(True)
+        self.chk_filter_use_selected_only.toggled.connect(
+            self._update_filter_poly_selection_status)
+        poly_opts.addWidget(self.chk_filter_use_selected_only)
+        self.lbl_poly_selection_status = QLabel("0 features selected")
+        self.lbl_poly_selection_status.setObjectName("dock_subtitle")
+        poly_opts.addWidget(self.lbl_poly_selection_status)
+        poly_opts.addStretch(1)
+        poly_layout.addLayout(poly_opts)
+        bound_vbox.addWidget(self.widget_filter_poly)
+
+        # C) Print Layout selector
+        self.widget_filter_layout = QWidget()
+        self.widget_filter_layout.setVisible(False)
+        layout_box = QVBoxLayout(self.widget_filter_layout)
+        layout_box.setContentsMargins(0, 2, 0, 2)
+        layout_row = QHBoxLayout()
+        layout_row.addWidget(QLabel("Print Layout:"))
+        self.cmb_filter_layout = QComboBox()
+        self.cmb_filter_layout.currentIndexChanged.connect(
+            self._on_filter_layout_changed)
+        layout_row.addWidget(self.cmb_filter_layout, 1)
+        layout_box.addLayout(layout_row)
+        self.lbl_layout_extent_info = QLabel("Select a print layout.")
+        self.lbl_layout_extent_info.setObjectName("dock_subtitle")
+        layout_box.addWidget(self.lbl_layout_extent_info)
+        bound_vbox.addWidget(self.widget_filter_layout)
+
+        # D) Manual Bbox
+        self.widget_filter_manual = QWidget()
+        self.widget_filter_manual.setVisible(False)
+        manual_box = QVBoxLayout(self.widget_filter_manual)
+        manual_box.setContentsMargins(0, 2, 0, 2)
+        m_row1 = QHBoxLayout()
+        m_row1.addWidget(QLabel("Min X:"))
+        self.txt_filter_minx = QLineEdit()
+        m_row1.addWidget(self.txt_filter_minx)
+        m_row1.addWidget(QLabel("Min Y:"))
+        self.txt_filter_miny = QLineEdit()
+        m_row1.addWidget(self.txt_filter_miny)
+        manual_box.addLayout(m_row1)
+        m_row2 = QHBoxLayout()
+        m_row2.addWidget(QLabel("Max X:"))
+        self.txt_filter_maxx = QLineEdit()
+        m_row2.addWidget(self.txt_filter_maxx)
+        m_row2.addWidget(QLabel("Max Y:"))
+        self.txt_filter_maxy = QLineEdit()
+        m_row2.addWidget(self.txt_filter_maxy)
+        manual_box.addLayout(m_row2)
+        m_row3 = QHBoxLayout()
+        m_row3.addWidget(QLabel("Manual CRS:"))
+        self.crs_filter_manual = QgsProjectionSelectionWidget(self)
+        if QgsProject.instance().crs().isValid():
+            self.crs_filter_manual.setCrs(QgsProject.instance().crs())
+        m_row3.addWidget(self.crs_filter_manual, 1)
+        self.btn_capture_manual_bbox = QPushButton("Capture Canvas")
+        self.btn_capture_manual_bbox.clicked.connect(self._capture_manual_bbox_from_canvas)
+        m_row3.addWidget(self.btn_capture_manual_bbox)
+        manual_box.addLayout(m_row3)
+        bound_vbox.addWidget(self.widget_filter_manual)
+
+        # Spatial Predicate & Buffer distance
+        match_params = QHBoxLayout()
+        match_params.addWidget(QLabel("Predicate:"))
+        self.cmb_filter_predicate = QComboBox()
+        self.cmb_filter_predicate.addItem("Intersects (Any overlap)", "intersects")
+        self.cmb_filter_predicate.addItem("Within (Completely inside)", "within")
+        match_params.addWidget(self.cmb_filter_predicate, 1)
+
+        match_params.addSpacing(10)
+        match_params.addWidget(QLabel("Buffer:"))
+        self.spin_filter_buffer = QDoubleSpinBox()
+        self.spin_filter_buffer.setRange(-50000.0, 50000.0)
+        self.spin_filter_buffer.setValue(0.0)
+        self.spin_filter_buffer.setSuffix(" m")
+        self.spin_filter_buffer.setSingleStep(10.0)
+        self.spin_filter_buffer.setToolTip(
+            "Expand or shrink search boundary by this distance (in meters) before testing.")
+        match_params.addWidget(self.spin_filter_buffer)
+        bound_vbox.addLayout(match_params)
+
+        filter_layout.addWidget(bound_group)
+
+        # ── Group 3: Filter Scan & Results ──
+        res_group = QGroupBox("3. Spatial Scan & Matched Files")
+        res_vbox = QVBoxLayout(res_group)
+        res_vbox.setContentsMargins(6, 10, 6, 6)
+        res_vbox.setSpacing(3)
+
+        scan_btn_row = QHBoxLayout()
+        self.btn_run_filter_scan = QPushButton("Scan & Filter Extents")
+        self.btn_run_filter_scan.setObjectName("convert_btn")
+        self.btn_run_filter_scan.clicked.connect(self._run_spatial_filter_scan)
+        scan_btn_row.addWidget(self.btn_run_filter_scan, 1)
+
+        self.btn_preview_footprints = QPushButton("Preview Footprints on Canvas")
+        self.btn_preview_footprints.setEnabled(False)
+        self.btn_preview_footprints.setToolTip(
+            "Create a temporary polygon overlay on the map showing all file bounding boxes "
+            "with labels, color-coded by match status.")
+        self.btn_preview_footprints.clicked.connect(self._preview_footprints_on_canvas)
+        scan_btn_row.addWidget(self.btn_preview_footprints)
+        res_vbox.addLayout(scan_btn_row)
+
+        self.progress_spatial_filter = QProgressBar()
+        self.progress_spatial_filter.setVisible(False)
+        res_vbox.addWidget(self.progress_spatial_filter)
+
+        self.lbl_filter_scan_status = QLabel("Ready to scan.")
+        self.lbl_filter_scan_status.setObjectName("dock_subtitle")
+        res_vbox.addWidget(self.lbl_filter_scan_status)
+
+        res_tools = QHBoxLayout()
+        self.chk_filter_show_only_matched = QCheckBox("Show only matching files")
+        self.chk_filter_show_only_matched.setChecked(True)
+        self.chk_filter_show_only_matched.toggled.connect(
+            self._on_filter_show_matched_toggled)
+        res_tools.addWidget(self.chk_filter_show_only_matched)
+
+        res_tools.addStretch(1)
+        self.btn_filter_sel_all = QPushButton("Select All")
+        self.btn_filter_sel_all.clicked.connect(
+            lambda: self._set_filter_tree_checked_state(True))
+        res_tools.addWidget(self.btn_filter_sel_all)
+
+        self.btn_filter_desel_all = QPushButton("Deselect All")
+        self.btn_filter_desel_all.clicked.connect(
+            lambda: self._set_filter_tree_checked_state(False))
+        res_tools.addWidget(self.btn_filter_desel_all)
+        res_vbox.addLayout(res_tools)
+
+        self.tree_filter_results = QTreeWidget()
+        self.tree_filter_results.setHeaderLabels([
+            "Status", "File Name", "Format", "Size", "CRS",
+            "Extent (Xmin, Ymin, Xmax, Ymax)", "Path"
+        ])
+        self.tree_filter_results.setAlternatingRowColors(True)
+        self.tree_filter_results.setRootIsDecorated(False)
+        self.tree_filter_results.setSortingEnabled(True)
+        self.tree_filter_results.itemChanged.connect(self._on_filter_tree_item_changed)
+        self.tree_filter_results.itemDoubleClicked.connect(
+            self._on_filter_tree_double_clicked)
+        self.tree_filter_results.setMinimumHeight(180)
+        res_vbox.addWidget(self.tree_filter_results)
+
+        filter_layout.addWidget(res_group)
+
+        # ── Group 4: Import / Action ──
+        act_group = QGroupBox("4. Import Matched Files")
+        act_vbox = QVBoxLayout(act_group)
+        act_vbox.setContentsMargins(6, 10, 6, 6)
+        act_vbox.setSpacing(3)
+
+        out_mode_row = QHBoxLayout()
+        self.rb_filter_out_qgis = QRadioButton("Directly into QGIS Canvas")
+        self.rb_filter_out_qgis.setChecked(True)
+        self.rb_filter_out_gpkg = QRadioButton("Unified GeoPackage")
+        self.rb_filter_out_copy = QRadioButton("Copy matched files to folder")
+        self.filter_out_group = QButtonGroup(self)
+        self.filter_out_group.addButton(self.rb_filter_out_qgis)
+        self.filter_out_group.addButton(self.rb_filter_out_gpkg)
+        self.filter_out_group.addButton(self.rb_filter_out_copy)
+        self.filter_out_group.buttonToggled.connect(
+            lambda *_: self._on_filter_output_mode_changed())
+        out_mode_row.addWidget(self.rb_filter_out_qgis)
+        out_mode_row.addWidget(self.rb_filter_out_gpkg)
+        out_mode_row.addWidget(self.rb_filter_out_copy)
+        out_mode_row.addStretch(1)
+        act_vbox.addLayout(out_mode_row)
+
+        self.widget_filter_target = QWidget()
+        self.widget_filter_target.setVisible(False)
+        target_row = QHBoxLayout(self.widget_filter_target)
+        target_row.setContentsMargins(0, 2, 0, 2)
+        self.txt_filter_target_path = QLineEdit()
+        self.txt_filter_target_path.setPlaceholderText("Select output destination...")
+        target_row.addWidget(self.txt_filter_target_path, 1)
+        self.btn_browse_filter_target = QPushButton("Browse...")
+        self.btn_browse_filter_target.clicked.connect(self._browse_filter_target)
+        target_row.addWidget(self.btn_browse_filter_target)
+        act_vbox.addWidget(self.widget_filter_target)
+
+        fallback_crs_row = QHBoxLayout()
+        fallback_crs_row.addWidget(QLabel("Fallback / CAD CRS:"))
+        self.cmb_filter_cad_crs = QComboBox()
+        self.cmb_filter_cad_crs.addItem("Auto-detect / Project CRS", "")
+        self.cmb_filter_cad_crs.addItem("EPSG:5254 (TUREF / TM30)", "EPSG:5254")
+        self.cmb_filter_cad_crs.addItem("EPSG:7932 (ITRF96 / TM30)", "EPSG:7932")
+        self.cmb_filter_cad_crs.addItem("EPSG:5255 (TUREF / TM33)", "EPSG:5255")
+        self.cmb_filter_cad_crs.addItem("EPSG:5256 (TUREF / TM36)", "EPSG:5256")
+        self.cmb_filter_cad_crs.addItem("EPSG:4326 (WGS 84)", "EPSG:4326")
+        self.cmb_filter_cad_crs.addItem("EPSG:3857 (Web Mercator)", "EPSG:3857")
+        self.cmb_filter_cad_crs.setToolTip(
+            "Used for CAD/Netcad files that lack CRS headers or projection files.")
+        fallback_crs_row.addWidget(self.cmb_filter_cad_crs, 1)
+        act_vbox.addLayout(fallback_crs_row)
+
+        import_row = QHBoxLayout()
+        self.btn_filter_import = QPushButton("Import 0 Matched Files")
+        self.btn_filter_import.setObjectName("convert_btn")
+        self.btn_filter_import.setEnabled(False)
+        self.btn_filter_import.clicked.connect(self._import_filtered_files)
+        import_row.addWidget(self.btn_filter_import, 1)
+
+        self.btn_filter_send_cad = QPushButton("Send to CAD Tab")
+        self.btn_filter_send_cad.setToolTip(
+            "Send the matched CAD/GIS files to the CAD & GIS Converter tab.")
+        self.btn_filter_send_cad.setEnabled(False)
+        self.btn_filter_send_cad.clicked.connect(self._send_filtered_to_cad_tab)
+        import_row.addWidget(self.btn_filter_send_cad)
+
+        self.btn_filter_send_ncz = QPushButton("Send to Netcad Tab")
+        self.btn_filter_send_ncz.setToolTip(
+            "Send only the matched Netcad files to Tab 2 for layer-by-layer inspection or official PlanGML styling.")
+        self.btn_filter_send_ncz.setEnabled(False)
+        self.btn_filter_send_ncz.clicked.connect(self._send_filtered_to_ncz_tab)
+        import_row.addWidget(self.btn_filter_send_ncz)
+        act_vbox.addLayout(import_row)
+
+        filter_layout.addWidget(act_group)
+        filter_layout.addStretch(1)
+
+        self._refresh_canvas_extent_info()
+
+    def _on_filter_source_mode_changed(self) -> None:
+        is_dir = self.rb_filter_src_dir.isChecked()
+        self.btn_browse_filter_dir.setVisible(is_dir)
+        self.btn_browse_filter_files.setVisible(not is_dir)
+        self.chk_filter_recursive.setEnabled(is_dir)
+        self.txt_filter_source_path.clear()
+        self.txt_filter_source_path.setPlaceholderText(
+            "Select folder or drop folder here..." if is_dir else "Select files or drop files here..."
+        )
+        self._filter_discovered_files = []
+        self._refresh_filter_discovered_files()
+
+    def _browse_filter_source_dir(self) -> None:
+        folder = QFileDialog.getExistingDirectory(
+            self, "Select Directory Containing Drawings", self._last_import_dir()
+        )
+        if folder:
+            self._remember_import_dir(folder)
+            self.txt_filter_source_path.setText(folder)
+
+    def _browse_filter_source_files(self) -> None:
+        ext_pattern = " ".join(f"*{ext}" for ext in SUPPORTED_FILTER_EXTENSIONS)
+        filter_str = (
+            f"All Supported Files ({ext_pattern});;"
+            "Netcad Drawings (*.ncz *.nca);;"
+            "AutoCAD DXF/DWG (*.dxf *.dwg);;"
+            "GIS Vectors (*.shp *.kml *.kmz *.geojson *.json *.gml *.sqlite *.gdb);;"
+            "All Files (*.*)"
+        )
+        files, _ = QFileDialog.getOpenFileNames(
+            self, "Select Candidate Files", self._last_import_dir(), filter_str
+        )
+        if files:
+            self._remember_import_dir(files[0])
+            self._apply_filter_source_paths(files)
+
+    def _apply_filter_source_paths(self, paths: list[str]) -> None:
+        if not paths:
+            return
+        if len(paths) == 1 and os.path.isdir(paths[0]) and not paths[0].lower().endswith(".gdb"):
+            self.rb_filter_src_dir.setChecked(True)
+            self.txt_filter_source_path.setText(paths[0])
+        else:
+            self.rb_filter_src_files.setChecked(True)
+            valid = [
+                p for p in paths
+                if os.path.isfile(p) or (os.path.isdir(p) and p.lower().endswith(".gdb"))
+            ]
+            self._filter_discovered_files = valid
+            self.txt_filter_source_path.setText(f"{len(valid)} candidate files selected")
+            self._refresh_filter_discovered_files()
+
+    def _refresh_filter_discovered_files(self, *_) -> None:
+        type_key = self.cmb_filter_type.currentData() or "all"
+        if type_key == "netcad":
+            exts = (".ncz", ".nca")
+        elif type_key == "cad":
+            exts = (".dxf", ".dwg", ".dgn")
+        elif type_key == "gis":
+            exts = (
+                ".shp", ".kml", ".kmz", ".gdb", ".geojson",
+                ".json", ".gml", ".sqlite", ".db", ".gpx"
+            )
+        else:
+            exts = SUPPORTED_FILTER_EXTENSIONS
+
+        if self.rb_filter_src_dir.isChecked():
+            folder = self.txt_filter_source_path.text().strip()
+            if os.path.isdir(folder) and not folder.lower().endswith(".gdb"):
+                self._filter_discovered_files = discover_files(
+                    folder,
+                    recursive=self.chk_filter_recursive.isChecked(),
+                    extensions=exts,
+                )
+            else:
+                self._filter_discovered_files = []
+        else:
+            if type_key != "all":
+                self._filter_discovered_files = [
+                    p for p in self._filter_discovered_files
+                    if any(p.lower().endswith(ext) for ext in exts)
+                ]
+
+        count = len(self._filter_discovered_files)
+        self.lbl_filter_discovered.setText(
+            f"{count:,} candidate files discovered and ready to scan.")
+        self.btn_run_filter_scan.setEnabled(count > 0)
+
+    def _on_filter_boundary_mode_changed(self) -> None:
+        mode = self.cmb_filter_boundary_mode.currentData()
+        self.widget_filter_canvas.setVisible(mode == "canvas")
+        self.widget_filter_poly.setVisible(mode == "polygon")
+        self.widget_filter_layout.setVisible(mode == "layout")
+        self.widget_filter_manual.setVisible(mode == "manual")
+
+        if mode == "canvas":
+            self._refresh_canvas_extent_info()
+        elif mode == "polygon":
+            self._populate_filter_polygon_layers()
+        elif mode == "layout":
+            self._populate_filter_layouts()
+
+    def _on_map_canvas_extent_changed(self) -> None:
+        if (hasattr(self, "cmb_filter_boundary_mode")
+                and self.cmb_filter_boundary_mode.currentData() == "canvas"):
+            self._refresh_canvas_extent_info()
+
+    def _refresh_canvas_extent_info(self) -> None:
+        if not hasattr(self, "lbl_canvas_extent_info"):
+            return
+        info_text = "Canvas extent unavailable."
+        with suppress(Exception):
+            if self.iface and hasattr(self.iface, "mapCanvas") and self.iface.mapCanvas():
+                canvas = self.iface.mapCanvas()
+                rect = canvas.extent()
+                crs = canvas.mapSettings().destinationCrs()
+                authid = crs.authid() if (hasattr(crs, "isValid") and crs.isValid()) else "Unknown CRS"
+                xmin = float(rect.xMinimum())
+                ymin = float(rect.yMinimum())
+                xmax = float(rect.xMaximum())
+                ymax = float(rect.yMaximum())
+                info_text = (
+                    f"Canvas Bounds: [{xmin:.2f}, {ymin:.2f}] - "
+                    f"[{xmax:.2f}, {ymax:.2f}] ({authid})"
+                )
+        self.lbl_canvas_extent_info.setText(info_text)
+
+    def _populate_filter_polygon_layers(self) -> None:
+        if not hasattr(self, "cmb_filter_poly_layer"):
+            return
+        self.cmb_filter_poly_layer.blockSignals(True)
+        prev_data = self.cmb_filter_poly_layer.currentData()
+        self.cmb_filter_poly_layer.clear()
+
+        for lyr_id in list(self._poly_selection_connections):
+            lyr = QgsProject.instance().mapLayer(lyr_id)
+            if lyr:
+                with suppress(Exception):
+                    lyr.selectionChanged.disconnect(
+                        self._update_filter_poly_selection_status)
+        self._poly_selection_connections.clear()
+
+        for lyr in QgsProject.instance().mapLayers().values():
+            if isinstance(lyr, QgsVectorLayer) and lyr.isValid():
+                if QgsWkbTypes.geometryType(lyr.wkbType()) == QgsWkbTypes.GeometryType.Polygon:
+                    self.cmb_filter_poly_layer.addItem(lyr.name(), lyr.id())
+                    with suppress(Exception):
+                        lyr.selectionChanged.connect(
+                            self._update_filter_poly_selection_status)
+                        self._poly_selection_connections.add(lyr.id())
+
+        if prev_data is not None:
+            idx = self.cmb_filter_poly_layer.findData(prev_data)
+            if idx >= 0:
+                self.cmb_filter_poly_layer.setCurrentIndex(idx)
+        self.cmb_filter_poly_layer.blockSignals(False)
+        self._update_filter_poly_selection_status()
+
+    def _on_filter_poly_layer_changed(self, idx: int = -1) -> None:
+        self._update_filter_poly_selection_status()
+
+    def _update_filter_poly_selection_status(self) -> None:
+        if (not hasattr(self, "cmb_filter_poly_layer")
+                or not hasattr(self, "lbl_poly_selection_status")):
+            return
+        layer_id = self.cmb_filter_poly_layer.currentData()
+        lyr = QgsProject.instance().mapLayer(layer_id) if layer_id else None
+        if isinstance(lyr, QgsVectorLayer) and lyr.isValid():
+            tot = lyr.featureCount()
+            sel = lyr.selectedFeatureCount()
+            if sel > 0:
+                self.lbl_poly_selection_status.setText(
+                    f"{tot:,} features ({sel:,} selected)")
+            else:
+                self.lbl_poly_selection_status.setText(
+                    f"{tot:,} features (none selected -- using all features)")
+        else:
+            self.lbl_poly_selection_status.setText("No polygon layer in project.")
+
+    def _zoom_to_selected_polygon(self) -> None:
+        layer_id = self.cmb_filter_poly_layer.currentData()
+        lyr = QgsProject.instance().mapLayer(layer_id) if layer_id else None
+        if (isinstance(lyr, QgsVectorLayer) and lyr.isValid()
+                and self.iface and self.iface.mapCanvas()):
+            canvas = self.iface.mapCanvas()
+            if (self.chk_filter_use_selected_only.isChecked()
+                    and lyr.selectedFeatureCount() > 0):
+                box = lyr.boundingBoxOfSelected()
+            else:
+                box = lyr.extent()
+            dest_crs = canvas.mapSettings().destinationCrs()
+            if lyr.crs().isValid() and dest_crs.isValid() and lyr.crs() != dest_crs:
+                transform = QgsCoordinateTransform(
+                    lyr.crs(), dest_crs, QgsProject.instance())
+                box = transform.transformBoundingBox(box)
+            canvas.setExtent(box)
+            canvas.refresh()
+
+    def _populate_filter_layouts(self) -> None:
+        if not hasattr(self, "cmb_filter_layout"):
+            return
+        self.cmb_filter_layout.blockSignals(True)
+        self.cmb_filter_layout.clear()
+        layouts = QgsProject.instance().layoutManager().printLayouts()
+        for lay in layouts:
+            self.cmb_filter_layout.addItem(lay.name(), lay.name())
+        self.cmb_filter_layout.blockSignals(False)
+        self._on_filter_layout_changed()
+
+    def _on_filter_layout_changed(self, idx: int = -1) -> None:
+        if not hasattr(self, "lbl_layout_extent_info"):
+            return
+        name = self.cmb_filter_layout.currentText()
+        if not name:
+            self.lbl_layout_extent_info.setText("No print layouts in project.")
+            return
+        layout = QgsProject.instance().layoutManager().layoutByName(name)
+        if not layout:
+            self.lbl_layout_extent_info.setText("Layout not found.")
+            return
+        map_item = layout.referenceMap()
+        if not map_item:
+            for item in layout.items():
+                if isinstance(item, QgsLayoutItemMap):
+                    map_item = item
+                    break
+        if map_item:
+            ext = map_item.extent()
+            crs = map_item.crs()
+            self.lbl_layout_extent_info.setText(
+                f"Map Item Bounds: [{ext.xMinimum():.1f}, {ext.yMinimum():.1f}] - "
+                f"[{ext.xMaximum():.1f}, {ext.yMaximum():.1f}] "
+                f"({crs.authid() if crs.isValid() else 'Unknown'})"
+            )
+        else:
+            self.lbl_layout_extent_info.setText("Layout has no map item.")
+
+    def _capture_manual_bbox_from_canvas(self) -> None:
+        with suppress(Exception):
+            if self.iface and hasattr(self.iface, "mapCanvas") and self.iface.mapCanvas():
+                canvas = self.iface.mapCanvas()
+                ext = canvas.extent()
+                crs = canvas.mapSettings().destinationCrs()
+                self.txt_filter_minx.setText(f"{float(ext.xMinimum()):.4f}")
+                self.txt_filter_miny.setText(f"{float(ext.yMinimum()):.4f}")
+                self.txt_filter_maxx.setText(f"{float(ext.xMaximum()):.4f}")
+                self.txt_filter_maxy.setText(f"{float(ext.yMaximum()):.4f}")
+                if hasattr(crs, "isValid") and crs.isValid():
+                    self.crs_filter_manual.setCrs(crs)
+
+    def _get_current_boundary_geometry(
+            self) -> tuple[QgsGeometry | None, QgsCoordinateReferenceSystem | None]:
+        mode = self.cmb_filter_boundary_mode.currentData()
+
+        if mode == "canvas":
+            if not self.iface or not hasattr(self.iface, "mapCanvas") or not self.iface.mapCanvas():
+                raise ValueError("Map canvas is not available.")
+            canvas = self.iface.mapCanvas()
+            rect = canvas.extent()
+            crs = canvas.mapSettings().destinationCrs()
+            return QgsGeometry.fromRect(rect), crs
+
+        if mode == "polygon":
+            layer_id = self.cmb_filter_poly_layer.currentData()
+            lyr = QgsProject.instance().mapLayer(layer_id) if layer_id else None
+            if not isinstance(lyr, QgsVectorLayer) or not lyr.isValid():
+                raise ValueError("Please select a valid polygon layer.")
+
+            use_selected = self.chk_filter_use_selected_only.isChecked()
+            if use_selected and lyr.selectedFeatureCount() > 0:
+                features = list(lyr.selectedFeatures())
+            else:
+                features = list(lyr.getFeatures())
+
+            geoms = [
+                f.geometry() for f in features
+                if f.hasGeometry() and not f.geometry().isEmpty()
+            ]
+            if not geoms:
+                raise ValueError("Selected layer has no valid polygon geometries.")
+
+            union_geom = QgsGeometry.unaryUnion(geoms)
+            return union_geom, lyr.crs()
+
+        if mode == "layout":
+            name = self.cmb_filter_layout.currentText()
+            if not name:
+                raise ValueError("Please select a print layout.")
+            layout = QgsProject.instance().layoutManager().layoutByName(name)
+            if not layout:
+                raise ValueError(f"Layout '{name}' not found.")
+            map_item = layout.referenceMap()
+            if not map_item:
+                for item in layout.items():
+                    if isinstance(item, QgsLayoutItemMap):
+                        map_item = item
+                        break
+            if not map_item:
+                raise ValueError(f"Layout '{name}' contains no map items.")
+            rect = map_item.extent()
+            crs = map_item.crs()
+            return QgsGeometry.fromRect(rect), crs
+
+        if mode == "manual":
+            try:
+                x_min = float(self.txt_filter_minx.text().strip())
+                y_min = float(self.txt_filter_miny.text().strip())
+                x_max = float(self.txt_filter_maxx.text().strip())
+                y_max = float(self.txt_filter_maxy.text().strip())
+            except ValueError:
+                raise ValueError(
+                    "Please enter valid numeric coordinates for Min/Max X and Y.")
+            rect = QgsRectangle(x_min, y_min, x_max, y_max)
+            crs = self.crs_filter_manual.crs()
+            return QgsGeometry.fromRect(rect), crs
+
+        return None, None
+
+    def _run_spatial_filter_scan(self) -> None:
+        if not self._filter_discovered_files:
+            self._refresh_filter_discovered_files()
+            if not self._filter_discovered_files:
+                QMessageBox.warning(
+                    self, "No Files",
+                    "Please select a directory or candidate files to scan.")
+                return
+
+        try:
+            boundary_geom, boundary_crs = self._get_current_boundary_geometry()
+        except Exception as exc:
+            QMessageBox.warning(self, "Invalid Boundary", str(exc))
+            return
+
+        if boundary_geom is None or boundary_geom.isEmpty():
+            QMessageBox.warning(
+                self, "Empty Boundary",
+                "The specified boundary geometry is empty.")
+            return
+
+        predicate = self.cmb_filter_predicate.currentData() or "intersects"
+        buffer_dist = self.spin_filter_buffer.value()
+        fallback_crs = self.cmb_filter_cad_crs.currentData()
+        if not fallback_crs and boundary_crs and boundary_crs.isValid():
+            fallback_crs = boundary_crs.authid()
+
+        total = len(self._filter_discovered_files)
+        self.progress_spatial_filter.setVisible(True)
+        self.progress_spatial_filter.setValue(0)
+        self.lbl_filter_scan_status.setText(
+            f"Scanning {total} candidate files...")
+        QApplication.processEvents()
+
+        t0 = time.monotonic()
+
+        def on_progress(done: int, tot: int, filename: str) -> None:
+            pct = int((done / max(tot, 1)) * 100)
+            self.progress_spatial_filter.setValue(pct)
+            self.progress_spatial_filter.setFormat(
+                f"Scanning {done}/{tot}: {filename}...")
+            QApplication.processEvents()
+
+        try:
+            self._spatial_filter_results = scan_and_filter_files(
+                self._filter_discovered_files,
+                target_geometry=boundary_geom,
+                target_crs=boundary_crs,
+                predicate=predicate,
+                buffer_distance=buffer_dist,
+                fallback_crs=fallback_crs,
+                progress_callback=on_progress,
+            )
+            elapsed = time.monotonic() - t0
+            self.progress_spatial_filter.setValue(100)
+            self.progress_spatial_filter.setVisible(False)
+
+            self._populate_filter_results_tree()
+
+            matched_count = sum(1 for r in self._spatial_filter_results if r.matches)
+            self.lbl_filter_scan_status.setText(
+                f"Scan complete in {elapsed:.2f}s: {matched_count:,} matched out of "
+                f"{total:,} candidate files ({total - matched_count:,} excluded)."
+            )
+            self.btn_preview_footprints.setEnabled(
+                len(self._spatial_filter_results) > 0)
+
+        except Exception as exc:
+            self.progress_spatial_filter.setVisible(False)
+            QMessageBox.critical(
+                self, "Scan Error",
+                f"Failed scanning candidate files:\n{exc}")
+
+    def _populate_filter_results_tree(self) -> None:
+        self.tree_filter_results.blockSignals(True)
+        self.tree_filter_results.clear()
+
+        show_only_matched = self.chk_filter_show_only_matched.isChecked()
+
+        for res in self._spatial_filter_results:
+            item = QTreeWidgetItem()
+            status_text = (
+                "Matched" if res.matches
+                else ("Error" if res.error else "Outside")
+            )
+            item.setText(0, status_text)
+            item.setCheckState(
+                0,
+                Qt.CheckState.Checked if res.matches else Qt.CheckState.Unchecked)
+
+            if res.matches:
+                item.setForeground(0, QBrush(QColor("#2e7d32")))
+                item.setForeground(1, QBrush(QColor("#1b5e20")))
+            elif res.error:
+                item.setForeground(0, QBrush(QColor("#c62828")))
+                item.setForeground(1, QBrush(QColor("#b71c1c")))
+            else:
+                item.setForeground(0, QBrush(QColor("#78909c")))
+                item.setForeground(1, QBrush(QColor("#546e7a")))
+
+            item.setText(1, res.file_name)
+            item.setText(2, res.format_key.upper())
+            item.setText(3, res.formatted_size)
+            item.setText(4, res.crs_authid or "Unknown")
+            if res.box.is_valid:
+                ext_str = (
+                    f"[{res.box.min_x:.1f}, {res.box.min_y:.1f}] - "
+                    f"[{res.box.max_x:.1f}, {res.box.max_y:.1f}]"
+                )
+            else:
+                ext_str = res.error or "Invalid extent"
+            item.setText(5, ext_str)
+            item.setText(6, res.file_path)
+            item.setData(0, Qt.ItemDataRole.UserRole, res)
+
+            if show_only_matched and not res.matches:
+                item.setHidden(True)
+
+            self.tree_filter_results.addTopLevelItem(item)
+
+        for col in range(5):
+            self.tree_filter_results.resizeColumnToContents(col)
+
+        self.tree_filter_results.blockSignals(False)
+        self._update_filter_import_button_count()
+
+    def _on_filter_tree_item_changed(
+            self, item: QTreeWidgetItem, column: int) -> None:
+        if column == 0:
+            self._update_filter_import_button_count()
+
+    def _update_filter_import_button_count(self) -> None:
+        count = 0
+        has_ncz = False
+        for idx in range(self.tree_filter_results.topLevelItemCount()):
+            it = self.tree_filter_results.topLevelItem(idx)
+            if it.checkState(0) == Qt.CheckState.Checked:
+                count += 1
+                if it.text(2) in ("NCZ", "NCA"):
+                    has_ncz = True
+
+        self.btn_filter_import.setText(f"Import {count} Checked Files")
+        self.btn_filter_import.setEnabled(count > 0)
+        self.btn_filter_send_cad.setEnabled(count > 0)
+        self.btn_filter_send_ncz.setEnabled(has_ncz)
+
+    def _on_filter_show_matched_toggled(self, checked: bool) -> None:
+        for idx in range(self.tree_filter_results.topLevelItemCount()):
+            item = self.tree_filter_results.topLevelItem(idx)
+            res = item.data(0, Qt.ItemDataRole.UserRole)
+            if checked:
+                item.setHidden(not (res and res.matches))
+            else:
+                item.setHidden(False)
+
+    def _set_filter_tree_checked_state(self, select_matched: bool) -> None:
+        self.tree_filter_results.blockSignals(True)
+        for idx in range(self.tree_filter_results.topLevelItemCount()):
+            item = self.tree_filter_results.topLevelItem(idx)
+            res = item.data(0, Qt.ItemDataRole.UserRole)
+            if select_matched:
+                item.setCheckState(
+                    0,
+                    Qt.CheckState.Checked if (res and res.matches)
+                    else Qt.CheckState.Unchecked)
+            else:
+                item.setCheckState(0, Qt.CheckState.Unchecked)
+        self.tree_filter_results.blockSignals(False)
+        self._update_filter_import_button_count()
+
+    def _on_filter_tree_double_clicked(
+            self, item: QTreeWidgetItem, column: int) -> None:
+        res = item.data(0, Qt.ItemDataRole.UserRole)
+        if not res or not res.box.is_valid:
+            return
+        if self.iface and hasattr(self.iface, "mapCanvas") and self.iface.mapCanvas():
+            canvas = self.iface.mapCanvas()
+            rect = QgsRectangle(
+                res.box.min_x, res.box.min_y, res.box.max_x, res.box.max_y)
+            src_crs = (
+                QgsCoordinateReferenceSystem(res.crs_authid)
+                if res.crs_authid
+                else canvas.mapSettings().destinationCrs()
+            )
+            dest_crs = canvas.mapSettings().destinationCrs()
+            if src_crs.isValid() and dest_crs.isValid() and src_crs != dest_crs:
+                with suppress(Exception):
+                    transform = QgsCoordinateTransform(
+                        src_crs, dest_crs, QgsProject.instance())
+                    rect = transform.transformBoundingBox(rect)
+            canvas.setExtent(rect)
+            canvas.refresh()
+
+    def _preview_footprints_on_canvas(self) -> None:
+        if not self._spatial_filter_results:
+            return
+
+        target_crs = QgsProject.instance().crs()
+        if not target_crs.isValid():
+            target_crs = QgsCoordinateReferenceSystem("EPSG:4326")
+
+        layer = QgsVectorLayer(
+            f"Polygon?crs={target_crs.authid()}",
+            "02CadGis Filter Footprints", "memory")
+        provider = layer.dataProvider()
+        provider.addAttributes([
+            QgsField("filename", QMetaType.Type.QString),
+            QgsField("status", QMetaType.Type.QString),
+            QgsField("format", QMetaType.Type.QString),
+            QgsField("size", QMetaType.Type.QString),
+            QgsField("crs", QMetaType.Type.QString),
+            QgsField("path", QMetaType.Type.QString),
+        ])
+        layer.updateFields()
+
+        features = []
+        for res in self._spatial_filter_results:
+            if not res.box.is_valid:
+                continue
+            rect = QgsRectangle(
+                res.box.min_x, res.box.min_y, res.box.max_x, res.box.max_y)
+            geom = QgsGeometry.fromRect(rect)
+            src_crs = (
+                QgsCoordinateReferenceSystem(res.crs_authid)
+                if res.crs_authid
+                else target_crs
+            )
+            if src_crs.isValid() and target_crs.isValid() and src_crs != target_crs:
+                with suppress(Exception):
+                    transform = QgsCoordinateTransform(
+                        src_crs, target_crs, QgsProject.instance())
+                    geom.transform(transform)
+
+            feat = QgsFeature(layer.fields())
+            feat.setGeometry(geom)
+            status = "Matched" if res.matches else "Outside"
+            feat.setAttribute("filename", res.file_name)
+            feat.setAttribute("status", status)
+            feat.setAttribute("format", res.format_key.upper())
+            feat.setAttribute("size", res.formatted_size)
+            feat.setAttribute("crs", res.crs_authid or "Unknown")
+            feat.setAttribute("path", res.file_path)
+            features.append(feat)
+
+        if features:
+            provider.addFeatures(features)
+            layer.updateExtents()
+
+        from qgis.core import (
+            QgsCategorizedSymbolRenderer,
+            QgsRendererCategory,
+            QgsFillSymbol,
+            QgsPalLayerSettings,
+            QgsVectorLayerSimpleLabeling,
+            QgsTextFormat,
+            QgsTextBufferSettings,
+        )
+
+        sym_match = QgsFillSymbol.createSimple({
+            "color": "46,125,50,45",
+            "outline_color": "46,125,50,230",
+            "outline_width": "0.6",
+        })
+        cat_match = QgsRendererCategory(
+            "Matched", sym_match, "Matched (Inside boundary)")
+
+        sym_out = QgsFillSymbol.createSimple({
+            "color": "158,158,158,20",
+            "outline_color": "120,144,156,150",
+            "outline_width": "0.3",
+        })
+        cat_out = QgsRendererCategory("Outside", sym_out, "Outside boundary")
+
+        renderer = QgsCategorizedSymbolRenderer("status", [cat_match, cat_out])
+        layer.setRenderer(renderer)
+
+        pal = QgsPalLayerSettings()
+        pal.fieldName = "filename"
+        text_fmt = QgsTextFormat()
+        text_fmt.setSize(8.5)
+        text_fmt.setColor(QColor("#263238"))
+        buf = QgsTextBufferSettings()
+        buf.setEnabled(True)
+        buf.setSize(1.0)
+        buf.setColor(QColor(255, 255, 255, 220))
+        text_fmt.setBuffer(buf)
+        pal.setFormat(text_fmt)
+        layer.setLabeling(QgsVectorLayerSimpleLabeling(pal))
+        layer.setLabelsEnabled(True)
+
+        QgsProject.instance().addMapLayer(layer)
+        if self.iface:
+            self.iface.messageBar().pushMessage(
+                "02CadGis",
+                f"Footprint preview layer added with {len(features)} drawing extents.",
+                Qgis.MessageLevel.Success, 5,
+            )
+
+    def _on_filter_output_mode_changed(self) -> None:
+        is_qgis = self.rb_filter_out_qgis.isChecked()
+        self.widget_filter_target.setVisible(not is_qgis)
+        if self.rb_filter_out_gpkg.isChecked():
+            self.txt_filter_target_path.setPlaceholderText(
+                "Select destination GeoPackage (.gpkg)...")
+        else:
+            self.txt_filter_target_path.setPlaceholderText(
+                "Select destination directory...")
+
+    def _browse_filter_target(self) -> None:
+        if self.rb_filter_out_gpkg.isChecked():
+            file_path, _ = QFileDialog.getSaveFileName(
+                self, "Select Destination GeoPackage",
+                self._last_import_dir(), "GeoPackage (*.gpkg)"
+            )
+            if file_path:
+                if not file_path.lower().endswith(".gpkg"):
+                    file_path += ".gpkg"
+                self.txt_filter_target_path.setText(file_path)
+        else:
+            folder = QFileDialog.getExistingDirectory(
+                self, "Select Destination Directory", self._last_import_dir()
+            )
+            if folder:
+                self.txt_filter_target_path.setText(folder)
+
+    def _send_filtered_to_ncz_tab(self) -> None:
+        ncz_paths = []
+        for idx in range(self.tree_filter_results.topLevelItemCount()):
+            it = self.tree_filter_results.topLevelItem(idx)
+            if it.checkState(0) == Qt.CheckState.Checked and it.text(2) in ("NCZ", "NCA"):
+                res = it.data(0, Qt.ItemDataRole.UserRole)
+                if res and res.file_path:
+                    ncz_paths.append(res.file_path)
+
+        if not ncz_paths:
+            QMessageBox.information(
+                self, "No Netcad Files",
+                "No checked Netcad drawing files found in the results.")
+            return
+
+        self._load_ncz_paths(ncz_paths)
+        self.main_tab.setCurrentIndex(1)
+        if hasattr(self, "spatial_filter_dialog") and self.spatial_filter_dialog.isVisible():
+            self.spatial_filter_dialog.hide()
+        if self.iface:
+            self.iface.messageBar().pushMessage(
+                "02CadGis",
+                f"Transferred {len(ncz_paths)} matched Netcad drawings to Netcad tab.",
+                Qgis.MessageLevel.Success, 5,
+            )
+
+    def _send_filtered_to_cad_tab(self) -> None:
+        cad_paths = []
+        for idx in range(self.tree_filter_results.topLevelItemCount()):
+            it = self.tree_filter_results.topLevelItem(idx)
+            if it.checkState(0) == Qt.CheckState.Checked:
+                res = it.data(0, Qt.ItemDataRole.UserRole)
+                if res and res.file_path:
+                    cad_paths.append(res.file_path)
+
+        if not cad_paths:
+            QMessageBox.information(
+                self, "No Files Selected",
+                "No checked drawing or GIS files found in the results.")
+            return
+
+        fmt = format_for_path(cad_paths[0]) or SOURCE_FORMATS[0]
+        self._apply_source_path(cad_paths[0], fmt)
+        self.main_tab.setCurrentIndex(0)
+        if hasattr(self, "spatial_filter_dialog") and self.spatial_filter_dialog.isVisible():
+            self.spatial_filter_dialog.hide()
+        if self.iface:
+            self.iface.messageBar().pushMessage(
+                "02CadGis",
+                f"Transferred {len(cad_paths)} matched files to CAD tab (primary: {os.path.basename(cad_paths[0])}).",
+                Qgis.MessageLevel.Success, 5,
+            )
+
+    def _filter_current_cad_by_extent(self) -> None:
+        src = self.txt_src_path.text().strip()
+        if src:
+            self._apply_filter_source_paths([src])
+            self._run_spatial_filter_scan()
+        self.cmb_filter_type.setCurrentIndex(0)
+        self.spatial_filter_dialog.show()
+        self.spatial_filter_dialog.raise_()
+        self.spatial_filter_dialog.activateWindow()
+
+    def _filter_current_ncz_by_extent(self) -> None:
+        if self.current_netcad_paths:
+            self._apply_filter_source_paths(self.current_netcad_paths)
+            self._run_spatial_filter_scan()
+        elif self.txt_ncz_path.text().strip():
+            self._apply_filter_source_paths([self.txt_ncz_path.text().strip()])
+            self._run_spatial_filter_scan()
+        self.cmb_filter_type.setCurrentIndex(1)
+        self.spatial_filter_dialog.show()
+        self.spatial_filter_dialog.raise_()
+        self.spatial_filter_dialog.activateWindow()
+
+    def _import_filtered_files(self) -> None:
+        checked_results = []
+        for idx in range(self.tree_filter_results.topLevelItemCount()):
+            it = self.tree_filter_results.topLevelItem(idx)
+            if it.checkState(0) == Qt.CheckState.Checked:
+                res = it.data(0, Qt.ItemDataRole.UserRole)
+                if res:
+                    checked_results.append(res)
+
+        if not checked_results:
+            QMessageBox.warning(
+                self, "No Selection",
+                "Please check at least one file to import.")
+            return
+
+        fallback_crs = self.cmb_filter_cad_crs.currentData() or ""
+
+        # Mode 3: Copy to folder
+        if self.rb_filter_out_copy.isChecked():
+            dest_dir = self.txt_filter_target_path.text().strip()
+            if not dest_dir or not os.path.isdir(dest_dir):
+                QMessageBox.warning(
+                    self, "Invalid Directory",
+                    "Please select a valid destination directory.")
+                return
+
+            copied = 0
+            for r in checked_results:
+                src_path = r.file_path
+                base = os.path.basename(src_path)
+                target_file = os.path.join(dest_dir, base)
+                with suppress(Exception):
+                    if os.path.isdir(src_path) and src_path.lower().endswith(".gdb"):
+                        shutil.copytree(src_path, target_file, dirs_exist_ok=True)
+                    else:
+                        shutil.copy2(src_path, target_file)
+                        if src_path.lower().endswith(".shp"):
+                            stem = os.path.splitext(src_path)[0]
+                            for ext in (".dbf", ".shx", ".prj", ".cpg", ".qpj"):
+                                sidecar = stem + ext
+                                if os.path.exists(sidecar):
+                                    shutil.copy2(
+                                        sidecar,
+                                        os.path.join(
+                                            dest_dir, os.path.basename(sidecar)))
+                    copied += 1
+
+            QMessageBox.information(
+                self,
+                "Copy Complete",
+                f"Successfully copied {copied} of {len(checked_results)} files to:\n{dest_dir}"
+            )
+            return
+
+        # Mode 2: Unified GeoPackage
+        if self.rb_filter_out_gpkg.isChecked():
+            dst_gpkg = self.txt_filter_target_path.text().strip()
+            if not dst_gpkg:
+                QMessageBox.warning(
+                    self, "Invalid GeoPackage",
+                    "Please choose a target .gpkg file path.")
+                return
+            if not dst_gpkg.lower().endswith(".gpkg"):
+                dst_gpkg += ".gpkg"
+
+            self.progress_spatial_filter.setVisible(True)
+            self.progress_spatial_filter.setValue(10)
+            self.progress_spatial_filter.setFormat(
+                "Converting matched files to GeoPackage...")
+            QApplication.processEvents()
+
+            target_crs = QgsProject.instance().crs()
+            if not target_crs.isValid():
+                target_crs = QgsCoordinateReferenceSystem("EPSG:4326")
+
+            success_count = 0
+            for idx, r in enumerate(checked_results):
+                self.progress_spatial_filter.setValue(
+                    10 + int((idx / len(checked_results)) * 80))
+                self.progress_spatial_filter.setFormat(
+                    f"Writing {r.file_name} to GeoPackage...")
+                QApplication.processEvents()
+
+                with suppress(Exception):
+                    if r.file_path.lower().endswith(NCZ_EXTENSIONS):
+                        layers = self._import_single_ncz_file_to_layers(
+                            r.file_path, fallback_crs)
+                        for lyr in layers:
+                            safe_name = self._sanitize_name(lyr.name())
+                            opts = QgsVectorFileWriter.SaveVectorOptions()
+                            opts.driverName = "GPKG"
+                            opts.layerName = safe_name
+                            opts.actionOnExistingFile = (
+                                QgsVectorFileWriter.ActionOnExistingFile.CreateOrOverwriteLayer
+                            )
+                            opts.fileEncoding = "UTF-8"
+                            QgsVectorFileWriter.writeAsVectorFormatV3(
+                                lyr, dst_gpkg,
+                                QgsProject.instance().transformContext(), opts
+                            )
+                        success_count += 1
+                    else:
+                        converter = GisConverterEngine(
+                            r.file_path, dst_gpkg, target_crs,
+                            source_crs=target_crs
+                        )
+                        converter.convert_to_gpkg()
+                        success_count += 1
+
+            self.progress_spatial_filter.setValue(100)
+            self.progress_spatial_filter.setVisible(False)
+
+            import_group = QgsProject.instance().layerTreeRoot().addGroup(
+                f"02CadGis GeoPackage ({os.path.basename(dst_gpkg)})"
+            )
+            loaded_gpkg = QgsVectorLayer(
+                dst_gpkg, os.path.basename(dst_gpkg), "ogr")
+            if loaded_gpkg.isValid():
+                sublayers = loaded_gpkg.dataProvider().subLayers()
+                for sub in sublayers:
+                    parts = sub.split("!!::!!")
+                    sub_uri = parts[0]
+                    sub_name = parts[1] if len(parts) > 1 else "layer"
+                    sub_lyr = QgsVectorLayer(sub_uri, sub_name, "ogr")
+                    if sub_lyr.isValid():
+                        QgsProject.instance().addMapLayer(sub_lyr, False)
+                        import_group.addLayer(sub_lyr)
+
+            QMessageBox.information(
+                self,
+                "GeoPackage Created",
+                f"Successfully converted {success_count} of {len(checked_results)} files into:\n{dst_gpkg}"
+            )
+            return
+
+        # Mode 1: Directly into QGIS canvas
+        self.progress_spatial_filter.setVisible(True)
+        self.progress_spatial_filter.setValue(10)
+        self.progress_spatial_filter.setFormat(
+            "Loading matched files into canvas...")
+        QApplication.processEvents()
+
+        root = QgsProject.instance().layerTreeRoot()
+        import_group = root.addGroup(
+            f"02CadGis Filtered ({len(checked_results)} files)")
+        success_count = 0
+
+        for idx, r in enumerate(checked_results):
+            self.progress_spatial_filter.setValue(
+                10 + int((idx / len(checked_results)) * 80))
+            self.progress_spatial_filter.setFormat(
+                f"Importing {r.file_name}...")
+            QApplication.processEvents()
+
+            with suppress(Exception):
+                if r.file_path.lower().endswith(NCZ_EXTENSIONS):
+                    layers = self._import_single_ncz_file_to_layers(
+                        r.file_path, fallback_crs)
+                    if layers:
+                        sub_group = import_group.addGroup(r.file_name)
+                        for lyr in layers:
+                            QgsProject.instance().addMapLayer(lyr, False)
+                            sub_group.addLayer(lyr)
+                        success_count += 1
+                else:
+                    vlayer = QgsVectorLayer(r.file_path, r.file_name, "ogr")
+                    if vlayer.isValid():
+                        sublayers = vlayer.dataProvider().subLayers()
+                        if len(sublayers) > 1:
+                            sub_group = import_group.addGroup(r.file_name)
+                            for sub in sublayers:
+                                parts = sub.split("!!::!!")
+                                sub_uri = parts[0]
+                                sub_name = (
+                                    parts[1] if len(parts) > 1 else r.file_name
+                                )
+                                sub_lyr = QgsVectorLayer(
+                                    sub_uri, f"{r.file_name} - {sub_name}", "ogr")
+                                if sub_lyr.isValid():
+                                    QgsProject.instance().addMapLayer(
+                                        sub_lyr, False)
+                                    sub_group.addLayer(sub_lyr)
+                        else:
+                            QgsProject.instance().addMapLayer(vlayer, False)
+                            import_group.addLayer(vlayer)
+                        success_count += 1
+
+        self.progress_spatial_filter.setValue(100)
+        self.progress_spatial_filter.setVisible(False)
+
+        if self.iface and hasattr(self.iface, "mapCanvas") and self.iface.mapCanvas():
+            self.iface.mapCanvas().refresh()
+
+        self._populate_layers_combo()
+
+        QMessageBox.information(
+            self,
+            "Import Complete",
+            f"Successfully imported {success_count} of {len(checked_results)} datasets into QGIS canvas."
+        )
+
+    def _import_single_ncz_file_to_layers(
+            self, file_path: str, fallback_crs: str) -> list[QgsVectorLayer]:
+        reader = NetcadLazyReader(file_path)
+        entities = reader.entities()
+        if not entities:
+            return []
+
+        detected = reader.detect_crs()
+        authid = (
+            detected.authid if detected and detected.epsg
+            else (fallback_crs or "EPSG:5254")
+        )
+        target_crs = QgsCoordinateReferenceSystem(authid)
+        if not target_crs.isValid():
+            target_crs = QgsProject.instance().crs()
+
+        base_name = os.path.splitext(os.path.basename(file_path))[0]
+        grouped: dict = {}
+        for entity in entities:
+            family = entity.geometry_kind
+            if family == "Point":
+                geom_type = "Point"
+            elif family in ("Line", "Polyline", "Circle", "Arc", "Spiral"):
+                geom_type = "Line"
+            elif family in ("Polygon", "Triangle"):
+                geom_type = "Polygon"
+            else:
+                geom_type = "Point"
+
+            group_name = f"{base_name}_{family}"
+            bucket_key = (entity.layer_code, entity.layer_name or "LAYER", family)
+            bucket = grouped.setdefault(group_name, {}).setdefault(
+                bucket_key,
+                LayerBucket(
+                    display_name=f"{base_name}_{entity.layer_name or 'LAYER'}_{family}",
+                    geometry_type=geom_type,
+                ),
+            )
+            bucket.entities.append(entity)
+            bucket.source_files[id(entity)] = base_name
+
+        layer_groups = self._build_layer_groups_from_buckets(
+            grouped, target_crs)
+        result_layers = []
+        for g in layer_groups:
+            result_layers.extend(g.layers)
+        return result_layers
+

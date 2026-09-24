@@ -1,5 +1,24 @@
 # Changelog
 
+## [3.2.0] - 2026-09-24
+
+- Added **Batch Spatial Extent Filter** Sub-Feature Dialog:
+  - Accessible via "Filter by Extent..." directly inside both **CAD & GIS Converter** and **Netcad NCZ Importer** tabs.
+  - Streamlines the main dock to 3 clean, uncluttered tabs (`CAD & GIS Converter`, `Netcad NCZ/NCA Importer`, `CAD & GIS Exporter`) while providing a dedicated, spacious dialog for large file collections.
+  - Fast coordinate header and spatial index extraction for Netcad (`.ncz`, `.nca`), AutoCAD (`.dxf`, `.dwg`), Bentley (`.dgn`), and GIS formats (`.shp`, `.kml`, `.kmz`, `.gdb`, `.geojson`, `.gml`, `.sqlite`, `.gpx`).
+  - Allows scanning folders containing hundreds of drawing sheets (e.g. municipal cadastral paftas) in 1–5 ms per file without loading layers into memory or causing QGIS memory crashes.
+  - Supports 4 spatial boundary modes: Active Map Canvas Extent, Selected Feature(s) in Polygon Vector Layer, Print Layout Map Extent, and Manual Bounding Box coordinates.
+  - Spatial predicates (`intersects` or `within`) with configurable buffer distance (meters).
+  - Multi-threaded / responsive progress reporting with instant status summary.
+  - Results tree with color-coded status, format, file size, CRS, extent coordinates, and single-click filter to display only matching files.
+  - Double-click navigation: instantly zoom map canvas to candidate drawing extents.
+  - **Preview Footprints on Canvas**: creates a styled and labeled temporary polygon overlay showing file extents on the map canvas.
+  - Actions: transfer matched files directly to CAD or Netcad tabs, add matched datasets to QGIS canvas grouped by file, convert matched files into a unified GeoPackage, or copy matched files to a target directory.
+- Fixed **Netcad 8 Smart Object Binary Alignment**:
+  - Netcad 8 appends dynamic property bag trailers (81–166 bytes of Pascal strings: `drawBorderInGridMode`, `taks`, `kaks`, `HmaxType`) after Smart Objects (type 15) without updating block header sizes.
+  - Added lookahead geometry realignment in the v2 parser, preventing massive multi-megabyte stream desynchronization.
+  - Recovers thousands of previously invisible plan layers and geometries across multi-sheet municipal archives.
+
 ## [3.1.1] - 2026-09-17
 
 - Upgraded official plugin icon to high-end tactile 3D brand identity (isometric 45°, slim teal pedestal, full bleed transparent canvas).

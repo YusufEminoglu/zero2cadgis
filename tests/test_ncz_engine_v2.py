@@ -385,6 +385,21 @@ class TestNczEngineV2Safety(unittest.TestCase):
         payload = parse_file(path)
         self.assertGreaterEqual(len(payload["entities"]), 8)
 
+    def test_smart_object_uncounted_trailer_alignment(self):
+        # Netcad 8 appends 81+ bytes of uncounted properties after smart objects.
+        # Ensure the stream recovers alignment and decodes subsequent entities.
+        trailer = b"\x14drawBorderInGridMode\x03\x04True" + b"\x00" * 53
+        data = (fx.layer_table_block([b"0", b"PLAN"])
+                + fx.smart_object_block(layer=1)
+                + trailer
+                + fx.line_block(layer=1))
+        payload = parse_bytes(data)
+        entities = payload["entities"]
+        self.assertEqual(len(entities), 2)
+        kinds = {e["geometry_kind"] for e in entities}
+        self.assertIn("SmartObject", kinds)
+        self.assertIn("Line", kinds)
+
 
 if __name__ == "__main__":
     unittest.main()

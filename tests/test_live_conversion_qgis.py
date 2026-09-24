@@ -111,9 +111,57 @@ class TestLiveConversion(unittest.TestCase):
             os.path.dirname(__file__), "..", "icons"))
         dock = Zero2CadGisDockWidget(iface, icon_dir, window)
         self.assertEqual(dock.main_tab.count(), 3)
+        self.assertEqual(dock.main_tab.tabText(0), "CAD & GIS Converter")
+        self.assertEqual(dock.main_tab.tabText(1), "Netcad NCZ/NCA Importer")
+        self.assertEqual(dock.main_tab.tabText(2), "CAD & GIS Exporter")
         self.assertEqual(
             dock.conversion_receipt_group.title(), "Last Conversion Receipt")
         self.assertEqual(dock.btn_copy_receipt.text(), "Copy Receipt")
+        dock.close()
+        dock.setParent(None)
+
+    def test_spatial_filter_tab_components_and_flow(self):
+        from zero2cadgis.dialogs.dock import Zero2CadGisDockWidget
+
+        window = QMainWindow()
+        iface = MagicMock()
+        iface.mainWindow.return_value = window
+        icon_dir = os.path.abspath(os.path.join(
+            os.path.dirname(__file__), "..", "icons"))
+        dock = Zero2CadGisDockWidget(iface, icon_dir, window)
+
+        # Spatial filter sub-dialog and tab buttons
+        self.assertIsNotNone(dock.btn_cad_filter_extent)
+        self.assertIsNotNone(dock.btn_ncz_filter_extent)
+        self.assertIsNotNone(dock.spatial_filter_dialog)
+        self.assertIsNotNone(dock.btn_run_filter_scan)
+        self.assertIsNotNone(dock.tree_filter_results)
+        self.assertEqual(dock.tree_filter_results.columnCount(), 7)
+
+        # Boundary mode switching
+        dock.cmb_filter_boundary_mode.setCurrentIndex(1)  # polygon
+        self.assertFalse(dock.widget_filter_poly.isHidden())
+        self.assertTrue(dock.widget_filter_canvas.isHidden())
+
+        dock.cmb_filter_boundary_mode.setCurrentIndex(3)  # manual
+        self.assertFalse(dock.widget_filter_manual.isHidden())
+        dock.txt_filter_minx.setText("100.0")
+        dock.txt_filter_miny.setText("200.0")
+        dock.txt_filter_maxx.setText("300.0")
+        dock.txt_filter_maxy.setText("400.0")
+        geom, crs = dock._get_current_boundary_geometry()
+        self.assertIsNotNone(geom)
+        self.assertFalse(geom.isEmpty())
+        self.assertAlmostEqual(geom.boundingBox().xMinimum(), 100.0)
+
+        # Source paths application
+        dock._apply_filter_source_paths([self.source])
+        self.assertEqual(len(dock._filter_discovered_files), 1)
+        self.assertTrue(dock.btn_run_filter_scan.isEnabled())
+
+        # Tab 2 filter extent button exists
+        self.assertIsNotNone(dock.btn_ncz_filter_extent)
+
         dock.close()
         dock.setParent(None)
 

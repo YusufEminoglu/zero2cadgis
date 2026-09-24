@@ -18,14 +18,16 @@
 
 <table>
   <tr>
-    <td align="center" width="33%"><img src="icons/icon_cad.png" width="84" alt="CAD converter"><br><strong>Import & Convert</strong><br>CAD/GIS files to GeoPackage or scratch layers.</td>
-    <td align="center" width="33%"><img src="icons/icon_ncz.png" width="84" alt="Netcad importer"><br><strong>Netcad NCZ/NCA</strong><br>Batch import drawings, layers, text and tables.</td>
-    <td align="center" width="33%"><img src="icons/icon_gis.png" width="84" alt="GIS exporter"><br><strong>Export</strong><br>Write active QGIS vector layers to DXF, KML or KMZ.</td>
+    <td align="center" width="25%"><img src="icons/icon_cad.png" width="72" alt="CAD converter"><br><strong>Import & Convert</strong><br>CAD/GIS files to GeoPackage or scratch layers.</td>
+    <td align="center" width="25%"><img src="icons/icon_ncz.png" width="72" alt="Netcad importer"><br><strong>Netcad NCZ/NCA</strong><br>Batch import drawings, layers, text and tables.</td>
+    <td align="center" width="25%"><img src="icons/icon_filter.png" width="72" alt="Spatial filter"><br><strong>Spatial Filter</strong><br>Scan 300+ drawings in seconds; import only extent matches.</td>
+    <td align="center" width="25%"><img src="icons/icon_gis.png" width="72" alt="GIS exporter"><br><strong>Export</strong><br>Write active QGIS vector layers to DXF, KML or KMZ.</td>
   </tr>
 </table>
 
 ## What It Does
 
+- **Fast Batch Spatial Extent Filter**: Scan hundreds of CAD sheets / paftas (NCZ, DXF, DWG, DGN, SHP, KML, GDB) in 1–5 ms per file without loading layers into memory or causing QGIS to freeze/crash, filtering down to only files that match your active canvas, print layout, or selected polygon boundary. Includes interactive footprint preview on the map canvas and unified GeoPackage or folder export.
 - Converts **AutoCAD DWG (*.dwg), DXF, KML, KMZ, GML, GeoJSON, CSV/TSV, SpatiaLite/SQLite, GPX, DGN, FileGDB, Personal GDB, NCZ and compatible NCA** files into `.gpkg` layers.
 - Accepts **drag & drop**: drop any supported file onto the dock and the dataset type is detected automatically (Netcad files jump to the NCZ tab).
 - Shows a **pre-conversion layer preview** with geometry types and feature counts, so you convert only the layers you check.

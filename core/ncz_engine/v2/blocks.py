@@ -7,7 +7,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Iterator
 
-from .binary import Cursor
+from .binary import Cursor, finite_pair_in_range
 
 BLOCK_LAYER_TABLE = 6
 BLOCK_GEOMETRY_PLAIN = 21
@@ -35,6 +35,25 @@ class RawBlock:
         return self.offset + self.size + 1
 
 
+def _is_aligned_geometry_record(cursor: Cursor, pos: int) -> bool:
+    """True if *pos* points to a plausible kind 21/22 geometry record."""
+    if pos + 24 >= cursor.size:
+        return False
+    if cursor.u8(pos) not in GEOMETRY_BLOCK_KINDS:
+        return False
+    inner_len = cursor.u32(pos + 1)
+    if inner_len < 10 or pos + 5 + inner_len > cursor.size:
+        return False
+    gtype = cursor.u8(pos + 6)
+    if gtype not in range(1, 16):
+        return False
+    y = cursor.f64(pos + 8)
+    x = cursor.f64(pos + 16)
+    return (finite_pair_in_range(x, y)
+            and (abs(x) >= 10.0 or x == 0.0)
+            and (abs(y) >= 10.0 or y == 0.0))
+
+
 def scan_blocks(cursor: Cursor) -> Iterator[RawBlock]:
     """Walk the top-level block sequence, resynchronizing on bad lengths."""
     position = 0
@@ -44,6 +63,20 @@ def scan_blocks(cursor: Cursor) -> Iterator[RawBlock]:
         if size < 4 or position + size + 1 > limit:
             position += 1
             continue
+
+        # Netcad 8 Smart Objects (kind 21/22, geom type 15) may be followed by
+        # an uncounted trailing property bag (e.g. 81-166 bytes of Pascal
+        # strings such as drawBorderInGridMode, taks, kaks) before the next
+        # record. If the declared end lands mid-property rather than on a
+        # valid record, absorb the trailer so the block stream stays aligned.
+        if cursor.u8(position) in GEOMETRY_BLOCK_KINDS and cursor.u8(position + 6) == 15:
+            next_pos = position + size + 1
+            if not _is_aligned_geometry_record(cursor, next_pos):
+                for shift in range(1, 512):
+                    if _is_aligned_geometry_record(cursor, next_pos + shift):
+                        size += shift
+                        break
+
         yield RawBlock(cursor.u8(position), position, size)
         position += size + 1
 
