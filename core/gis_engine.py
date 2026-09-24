@@ -16,18 +16,23 @@ from typing import Optional
 
 from osgeo import ogr, osr, gdal
 from qgis.core import (
-    QgsProject,
-    QgsVectorLayer,
-    QgsRasterLayer,
-    QgsFeature,
-    QgsField,
-    QgsGeometry,
-    QgsPointXY,
+    QgsApplication,
     QgsCoordinateReferenceSystem,
     QgsCoordinateTransform,
-    QgsVectorFileWriter,
+    QgsFeature,
+    QgsField,
     QgsFields,
-    QgsWkbTypes
+    QgsGeometry,
+    QgsMapLayer,
+    QgsPointXY,
+    QgsProcessingContext,
+    QgsProcessingFeedback,
+    QgsProject,
+    QgsRasterLayer,
+    QgsRectangle,
+    QgsVectorFileWriter,
+    QgsVectorLayer,
+    QgsWkbTypes,
 )
 from qgis.PyQt.QtCore import QMetaType
 from qgis.PyQt.QtXml import QDomDocument
@@ -44,6 +49,7 @@ from .dgn_v8_reader import DgnV8Reader, is_dgn_v8 as _is_dgn_v8, check_dgn_drive
 from .msaccess_reader import MsAccessDbReader, is_msaccess_available
 from .crs_detect import detect_crs
 from .export_utils import (
+    ExportResult,
     atomic_output,
     exported_feature_count,
     verified_export_result,
@@ -1669,6 +1675,134 @@ class GisConverterEngine:
         authid = effective_crs.authid() if effective_crs.isValid() else "Unknown"
         return verified_export_result(
             output_path, format_name.upper(), feature_count, authid)
+
+    @classmethod
+    def export_to_mbtiles(
+            cls,
+            output_path: str,
+            layer: Optional[QgsMapLayer] = None,
+            project: Optional[QgsProject] = None,
+            extent: Optional[QgsRectangle] = None,
+            min_zoom: int = 12,
+            max_zoom: int = 16,
+            tile_format: str = "PNG",
+            dpi: int = 96,
+            metatile_size: int = 4,
+            quality: int = 75,
+            feedback: Optional[QgsProcessingFeedback] = None) -> ExportResult:
+        """Render vector/raster layers to web map raster tiles in MBTiles format.
+
+        Uses QGIS's native:tilesxyzmbtiles engine with automated EPSG:3857
+        reprojection and tile pyramid indexing.
+        """
+        dest_crs = QgsCoordinateReferenceSystem("EPSG:3857")
+        if not dest_crs.isValid():
+            raise RuntimeError(
+                "EPSG:3857 coordinate reference system is not available.")
+
+        effective_project = project or QgsProject.instance()
+        context = QgsProcessingContext()
+
+        if project is not None:
+            context.setProject(project)
+        elif layer is not None:
+            temp_project = QgsProject()
+            temp_project.setCrs(dest_crs)
+            temp_project.addMapLayer(layer)
+            context.setProject(temp_project)
+            effective_project = temp_project
+        else:
+            context.setProject(effective_project)
+
+        if extent is not None and not extent.isEmpty():
+            extent_3857 = extent
+        elif layer is not None:
+            source_extent = layer.extent()
+            source_crs = layer.crs()
+            if source_extent.isEmpty():
+                raise ValueError(
+                    f"Layer '{layer.name()}' has empty spatial extents.")
+            if source_crs.isValid() and source_crs != dest_crs:
+                ct = QgsCoordinateTransform(
+                    source_crs, dest_crs, effective_project)
+                extent_3857 = ct.transformBoundingBox(source_extent)
+            else:
+                extent_3857 = source_extent
+        else:
+            combined_3857 = None
+            for lyr in effective_project.mapLayers().values():
+                if not lyr.isValid() or lyr.extent().isEmpty():
+                    continue
+                lyr_ext = lyr.extent()
+                lyr_crs = lyr.crs()
+                if lyr_crs.isValid() and lyr_crs != dest_crs:
+                    with contextlib.suppress(Exception):
+                        ct = QgsCoordinateTransform(
+                            lyr_crs, dest_crs, effective_project)
+                        lyr_ext = ct.transformBoundingBox(lyr_ext)
+                if combined_3857 is None:
+                    combined_3857 = QgsRectangle(lyr_ext)
+                else:
+                    combined_3857.combineExtentWith(lyr_ext)
+            if combined_3857 is None or combined_3857.isEmpty():
+                raise ValueError(
+                    "No valid layer extents found in the active project.")
+            extent_3857 = combined_3857
+
+        extent_str = (
+            f"{extent_3857.xMinimum():.6f},{extent_3857.xMaximum():.6f},"
+            f"{extent_3857.yMinimum():.6f},{extent_3857.yMaximum():.6f} [EPSG:3857]"
+        )
+
+        min_z = max(0, min(int(min_zoom), 25))
+        max_z = max(min_z, min(int(max_zoom), 25))
+
+        registry = QgsApplication.processingRegistry()
+        alg = registry.algorithmById("native:tilesxyzmbtiles")
+        if not alg:
+            from qgis.analysis import QgsNativeAlgorithms
+            registry.addProvider(QgsNativeAlgorithms())
+            alg = registry.algorithmById("native:tilesxyzmbtiles")
+        if not alg:
+            raise RuntimeError(
+                "QGIS algorithm 'native:tilesxyzmbtiles' is not available.")
+
+        format_code = 1 if str(tile_format).upper() in ("JPG", "JPEG") else 0
+        bg_color = "rgba(255, 255, 255, 0)" if format_code == 0 else "white"
+
+        if feedback is None:
+            feedback = QgsProcessingFeedback()
+
+        with atomic_output(output_path) as temporary_path:
+            params = {
+                "EXTENT": extent_str,
+                "ZOOM_MIN": min_z,
+                "ZOOM_MAX": max_z,
+                "DPI": int(dpi),
+                "BACKGROUND_COLOR": bg_color,
+                "ANTIALIAS": True,
+                "TILE_FORMAT": format_code,
+                "QUALITY": int(quality),
+                "METATILESIZE": int(metatile_size),
+                "OUTPUT_FILE": temporary_path,
+            }
+            res, ok = alg.run(params, context, feedback)
+            if not ok:
+                raise RuntimeError(
+                    "Failed to generate MBTiles pyramid with native:tilesxyzmbtiles.")
+
+        tile_count = 0
+        with contextlib.suppress(Exception):
+            import sqlite3
+            with sqlite3.connect(output_path) as conn:
+                cursor = conn.cursor()
+                row = cursor.execute("SELECT count(*) FROM tiles").fetchone()
+                if row:
+                    tile_count = int(row[0])
+
+        return verified_export_result(
+            output_path, "MBTiles", tile_count, "EPSG:3857")
+
 
     def _expand_html_descriptions(
             self, layer: QgsVectorLayer) -> QgsVectorLayer:

@@ -21,7 +21,7 @@
     <td align="center" width="25%"><img src="icons/icon_cad.png" width="72" alt="CAD converter"><br><strong>Import & Convert</strong><br>CAD/GIS files to GeoPackage or scratch layers.</td>
     <td align="center" width="25%"><img src="icons/icon_ncz.png" width="72" alt="Netcad importer"><br><strong>Netcad NCZ/NCA</strong><br>Batch import drawings, layers, text and tables.</td>
     <td align="center" width="25%"><img src="icons/icon_filter.png" width="72" alt="Spatial filter"><br><strong>Spatial Filter</strong><br>Scan 300+ drawings in seconds; import only extent matches.</td>
-    <td align="center" width="25%"><img src="icons/icon_gis.png" width="72" alt="GIS exporter"><br><strong>Export</strong><br>Write active QGIS vector layers to DXF, KML or KMZ.</td>
+    <td align="center" width="25%"><img src="icons/icon_gis.png" width="72" alt="GIS exporter"><br><strong>Export</strong><br>Write QGIS vector layers to DXF, KML, KMZ or MBTiles.</td>
   </tr>
 </table>
 
@@ -44,10 +44,7 @@
 - Simplifies collinear CAD vertices, removes duplicate nodes, and closes small polygon gaps by tolerance.
 - Preserves CAD color intent with QGIS renderers and optional buffered labels for text elements.
 - **Draws imar plans with the official e-Plan symbology.** In PlanGML mode, each CAD tabaka is matched against the plan gösterimleri style set published by the Ministry on [eplan.csb.gov.tr](https://eplan.csb.gov.tr/) and rendered with its official color, tarama pattern and line type. The rules and the tarama tiles are compiled into the plugin, so nothing is downloaded and no style server is needed. The gösterim is the official standard, not 02CadGis artwork — see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
-- Exports active QGIS vector layers to **DXF, KML or KMZ**, either in full or
-  from the current feature selection. DXF has an explicit output CRS; KML/KMZ
-  is safely transformed to WGS 84. Atomic publishing protects an existing
-  deliverable from a failed or empty writer result.
+- Exports active QGIS vector layers and map canvases to **DXF, KML, KMZ, or Web Map Tiles (MBTiles / TMS / XYZ)**, either for individual layers or the entire active project canvas. Features automated Web Mercator (EPSG:3857) reprojection, configurable zoom pyramids, PNG transparency, and 1-click Netcad-to-MBTiles workflow. Atomic publishing protects existing deliverables from interrupted writes.
 - Publishes imported GeoPackages transactionally as well: all selected layers
   must finish before the existing destination is replaced.
 - Produces a copy-ready **conversion receipt** with source, destination, mode,

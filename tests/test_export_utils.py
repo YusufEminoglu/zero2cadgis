@@ -75,6 +75,16 @@ class TestAtomicExport(unittest.TestCase):
         self.assertEqual(result.bytes_written, 6)
         self.assertEqual(result.target_crs, "EPSG:4326")
 
+    def test_verified_result_reports_mbtiles(self):
+        with open(self.output_path, "wb") as handle:
+            handle.write(b"mbtiles_binary_data")
+        result = verified_export_result(
+            self.output_path, "MBTiles", 128, "EPSG:3857")
+        self.assertEqual(result.feature_count, 128)
+        self.assertEqual(result.driver, "MBTiles")
+        self.assertEqual(result.target_crs, "EPSG:3857")
+        self.assertEqual(result.bytes_written, 19)
+
     def test_conversion_receipt_is_copy_ready_and_deterministic(self):
         receipt = build_conversion_receipt(
             source=r"C:\data\izmir.geojson",

@@ -1,5 +1,15 @@
 # Changelog
 
+## [3.3.0] - 2026-09-24
+
+- Added **Web Map Tiles MBTiles Exporter** (XYZ / TMS Tile Pyramids):
+  - Added "Web Map Tiles MBTiles (*.mbtiles)" to the CAD & GIS Exporter tab.
+  - Supports rendering both individual vector layers and entire multi-layer project canvases (`[All Visible Canvas Layers / Project]`) with full native styling, symbology, and labels.
+  - Automated CRS reprojection to the EPSG:3857 (Web Mercator) tile standard from any source CRS.
+  - Configurable tile parameters: Min/Max Zoom levels (0–24), Tile format (PNG with transparency or JPEG for compact size), DPI resolution (96 standard web, retina support), and metatile buffering to eliminate truncated border labels.
+  - Directly bridges with the Netcad Importer via a new "Export Canvas to Web Map Tiles (MBTiles)..." button, allowing municipal urban plans to be converted to publishable web map caches in a 2-click workflow without requiring intermediate GeoTIFF export steps.
+  - Transactional atomic file writing and SQLite tile index verification.
+
 ## [3.2.0] - 2026-09-24
 
 - Added **Batch Spatial Extent Filter** Sub-Feature Dialog:

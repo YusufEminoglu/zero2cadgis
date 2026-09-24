@@ -41,6 +41,7 @@ from qgis.PyQt.QtWidgets import (
     QRadioButton,
     QButtonGroup,
     QDoubleSpinBox,
+    QSpinBox,
     QProgressBar,
     QMessageBox,
     QFileDialog,
@@ -1098,6 +1099,15 @@ class Zero2CadGisDockWidget(QDockWidget):
         self.btn_convert_ncz.clicked.connect(self._import_netcad_dataset)
         ncz_layout.addWidget(self.btn_convert_ncz)
 
+        self.btn_ncz_to_mbtiles = QPushButton(
+            "Export Canvas to Web Map Tiles (MBTiles)...")
+        self.btn_ncz_to_mbtiles.setToolTip(
+            "Send styled Netcad plan layers directly to the MBTiles exporter "
+            "for web map and TMS publishing.")
+        self.btn_ncz_to_mbtiles.clicked.connect(
+            self._send_ncz_to_mbtiles_exporter)
+        ncz_layout.addWidget(self.btn_ncz_to_mbtiles)
+
         tab_ncz = self._make_scroll_tab(tab2_inner)
         main_tab.addTab(
             tab_ncz,
@@ -1140,11 +1150,67 @@ class Zero2CadGisDockWidget(QDockWidget):
         exp_form.addRow("Select Source Layer:", self.cmb_exp_layer)
 
         self.cmb_exp_format = QComboBox()
-        self.cmb_exp_format.addItems(
-            ["AutoCAD DXF (*.dxf)", "Google Earth KML (*.kml)", "Google Earth KMZ (*.kmz)"])
+        self.cmb_exp_format.addItems([
+            "AutoCAD DXF (*.dxf)",
+            "Google Earth KML (*.kml)",
+            "Google Earth KMZ (*.kmz)",
+            "Web Map Tiles MBTiles (*.mbtiles)",
+        ])
         self.cmb_exp_format.currentIndexChanged.connect(
             self._on_export_format_changed)
         exp_form.addRow("Target Export Format:", self.cmb_exp_format)
+
+        # MBTiles options group
+        self.widget_mbtiles_opts = QWidget()
+        self.widget_mbtiles_opts.setVisible(False)
+        mbtiles_layout = QVBoxLayout(self.widget_mbtiles_opts)
+        mbtiles_layout.setContentsMargins(0, 2, 0, 2)
+        mbtiles_layout.setSpacing(2)
+
+        zoom_row = QHBoxLayout()
+        zoom_row.addWidget(QLabel("Min Zoom:"))
+        self.spn_mbtiles_min_zoom = QSpinBox()
+        self.spn_mbtiles_min_zoom.setRange(0, 24)
+        self.spn_mbtiles_min_zoom.setValue(12)
+        self.spn_mbtiles_min_zoom.setToolTip(
+            "Minimum zoom level for the tile pyramid (lower = wider overview).")
+        zoom_row.addWidget(self.spn_mbtiles_min_zoom)
+
+        zoom_row.addWidget(QLabel("Max Zoom:"))
+        self.spn_mbtiles_max_zoom = QSpinBox()
+        self.spn_mbtiles_max_zoom.setRange(0, 24)
+        self.spn_mbtiles_max_zoom.setValue(16)
+        self.spn_mbtiles_max_zoom.setToolTip(
+            "Maximum zoom level for the tile pyramid (higher = finer detail).")
+        zoom_row.addWidget(self.spn_mbtiles_max_zoom)
+        mbtiles_layout.addLayout(zoom_row)
+
+        opts_row = QHBoxLayout()
+        self.cmb_mbtiles_tile_format = QComboBox()
+        self.cmb_mbtiles_tile_format.addItems(
+            ["PNG (Transparent)", "JPEG (Opaque)"])
+        self.cmb_mbtiles_tile_format.setToolTip(
+            "PNG supports transparent background overlays; JPEG is smaller.")
+        opts_row.addWidget(self.cmb_mbtiles_tile_format, 1)
+
+        opts_row.addWidget(QLabel("DPI:"))
+        self.spn_mbtiles_dpi = QSpinBox()
+        self.spn_mbtiles_dpi.setRange(72, 600)
+        self.spn_mbtiles_dpi.setValue(96)
+        self.spn_mbtiles_dpi.setToolTip(
+            "Tile resolution (96 is standard web map DPI).")
+        opts_row.addWidget(self.spn_mbtiles_dpi)
+
+        opts_row.addWidget(QLabel("Metatile:"))
+        self.spn_mbtiles_metatile = QSpinBox()
+        self.spn_mbtiles_metatile.setRange(1, 8)
+        self.spn_mbtiles_metatile.setValue(4)
+        self.spn_mbtiles_metatile.setToolTip(
+            "Metatile buffer size (reduces cut-off labels across tile borders).")
+        opts_row.addWidget(self.spn_mbtiles_metatile)
+        mbtiles_layout.addLayout(opts_row)
+
+        exp_form.addRow("Tile Settings:", self.widget_mbtiles_opts)
 
         self.export_crs = QgsProjectionSelectionWidget()
         self.export_crs.setOptionVisible(
@@ -2820,6 +2886,9 @@ class Zero2CadGisDockWidget(QDockWidget):
         """Fills vector layers into exporter combobox."""
         previous_id = self.cmb_exp_layer.currentData()
         self.cmb_exp_layer.clear()
+        if self.cmb_exp_format.currentIndex() == 3:  # MBTiles
+            self.cmb_exp_layer.addItem(
+                "[All Visible Canvas Layers / Project]", "__ALL_PROJECT_LAYERS__")
         layers = QgsProject.instance().mapLayers().values()
         for layer in layers:
             if isinstance(layer, QgsVectorLayer) and layer.isValid():
@@ -2831,6 +2900,8 @@ class Zero2CadGisDockWidget(QDockWidget):
         previous_index = self.cmb_exp_layer.findData(previous_id)
         if previous_index >= 0:
             self.cmb_exp_layer.setCurrentIndex(previous_index)
+        elif self.cmb_exp_layer.count() > 0:
+            self.cmb_exp_layer.setCurrentIndex(0)
         self._on_export_layer_changed(self.cmb_exp_layer.currentIndex())
         self._update_export_button_state()
         self._populate_filter_polygon_layers()
@@ -2838,23 +2909,42 @@ class Zero2CadGisDockWidget(QDockWidget):
 
     def _on_export_format_changed(self, index: int) -> None:
         self.txt_exp_path.clear()
-        if index in (1, 2):
+        if index == 3:  # MBTiles
+            if hasattr(self, "widget_mbtiles_opts"):
+                self.widget_mbtiles_opts.setVisible(True)
+            self.chk_export_selected.setVisible(False)
+            self.export_crs.setCrs(QgsCoordinateReferenceSystem("EPSG:3857"))
+            self.export_crs.setEnabled(False)
+            self.lbl_export_crs_hint.setText(
+                "Web Map Tiles MBTiles standard uses EPSG:3857 (Web Mercator) "
+                "with automated tile pyramid generation (TMS / XYZ).")
+        elif index in (1, 2):
+            if hasattr(self, "widget_mbtiles_opts"):
+                self.widget_mbtiles_opts.setVisible(False)
+            self.chk_export_selected.setVisible(True)
             self.export_crs.setCrs(QgsCoordinateReferenceSystem("EPSG:4326"))
             self.export_crs.setEnabled(False)
             self.lbl_export_crs_hint.setText(
                 "KML/KMZ is always exported as WGS 84 (EPSG:4326) for "
                 "standards-compliant Google Earth positioning.")
         else:
+            if hasattr(self, "widget_mbtiles_opts"):
+                self.widget_mbtiles_opts.setVisible(False)
+            self.chk_export_selected.setVisible(True)
             self.export_crs.setEnabled(True)
             layer = self._selected_export_layer()
             if layer is not None and layer.crs().isValid():
                 self.export_crs.setCrs(layer.crs())
             self.lbl_export_crs_hint.setText(
                 "DXF uses the chosen engineering/project CRS.")
+        self._populate_layers_combo()
         self._update_export_button_state()
 
     def _selected_export_layer(self) -> QgsVectorLayer | None:
-        layer = QgsProject.instance().mapLayer(self.cmb_exp_layer.currentData())
+        data = self.cmb_exp_layer.currentData()
+        if data == "__ALL_PROJECT_LAYERS__":
+            return None
+        layer = QgsProject.instance().mapLayer(data)
         if isinstance(layer, QgsVectorLayer) and layer.isValid():
             return layer
         return None
@@ -2905,11 +2995,16 @@ class Zero2CadGisDockWidget(QDockWidget):
                 self, "Export to KML File", self._last_export_dir(), "Google Earth KML (*.kml)"
             )
             file_path = ensure_extension(file_path, ".kml")
-        else:
+        elif idx == 2:
             file_path, _ = QFileDialog.getSaveFileName(
                 self, "Export to KMZ Package", self._last_export_dir(), "Google Earth KMZ (*.kmz)"
             )
             file_path = ensure_extension(file_path, ".kmz")
+        else:
+            file_path, _ = QFileDialog.getSaveFileName(
+                self, "Export to Web Map Tiles (MBTiles)", self._last_export_dir(), "Web Map Tiles MBTiles (*.mbtiles)"
+            )
+            file_path = ensure_extension(file_path, ".mbtiles")
 
         if file_path:
             self.txt_exp_path.setText(file_path)
@@ -2921,13 +3016,29 @@ class Zero2CadGisDockWidget(QDockWidget):
         has_path = bool(self.txt_exp_path.text().strip())
         self.btn_run_export.setEnabled(has_layer and has_path)
 
+    def _send_ncz_to_mbtiles_exporter(self) -> None:
+        """Switch to Exporter tab preset for MBTiles export of current plan canvas."""
+        self.main_tab.setCurrentIndex(2)
+        self.cmb_exp_format.setCurrentIndex(3)
+        self._populate_layers_combo()
+        if self.cmb_exp_layer.count() > 0:
+            self.cmb_exp_layer.setCurrentIndex(0)
+        src_path = self.txt_ncz_path.text().strip()
+        if src_path:
+            base = os.path.splitext(os.path.basename(src_path))[0]
+            out_dir = os.path.dirname(src_path)
+            default_out = os.path.join(out_dir, f"{base}.mbtiles")
+            self.txt_exp_path.setText(default_out)
+        self._update_export_button_state()
+
     def _run_export_layer(self) -> None:
         layer_id = self.cmb_exp_layer.currentData()
         output_path = self.txt_exp_path.text()
         format_idx = self.cmb_exp_format.currentIndex()
 
-        layer = QgsProject.instance().mapLayer(layer_id)
-        if not layer or not isinstance(layer, QgsVectorLayer):
+        is_all_project = (layer_id == "__ALL_PROJECT_LAYERS__")
+        layer = None if is_all_project else QgsProject.instance().mapLayer(layer_id)
+        if not is_all_project and (not layer or not isinstance(layer, QgsVectorLayer)):
             QMessageBox.warning(
                 self,
                 "Export Warning",
@@ -2935,13 +3046,13 @@ class Zero2CadGisDockWidget(QDockWidget):
             return
 
         try:
-            selected_only = self.chk_export_selected.isChecked()
-            if selected_only and layer.selectedFeatureCount() == 0:
+            selected_only = self.chk_export_selected.isChecked() and not is_all_project
+            if selected_only and layer and layer.selectedFeatureCount() == 0:
                 raise ValueError(
                     "Selected-features mode is enabled, but the layer no "
                     "longer has a selection.")
             target_crs = self.export_crs.crs()
-            if not target_crs.isValid():
+            if not target_crs.isValid() and format_idx != 3:
                 raise ValueError("Choose a valid output CRS before exporting.")
 
             if format_idx == 0:  # DXF
@@ -2954,24 +3065,61 @@ class Zero2CadGisDockWidget(QDockWidget):
                     layer, output_path, "KML",
                     target_crs=target_crs,
                     selected_only=selected_only)
-            else:  # KMZ
+            elif format_idx == 2:  # KMZ
                 result = GisConverterEngine.export_layer_to_gis(
                     layer, output_path, "KMZ",
                     target_crs=target_crs,
                     selected_only=selected_only)
+            else:  # MBTiles
+                min_zoom = self.spn_mbtiles_min_zoom.value()
+                max_zoom = self.spn_mbtiles_max_zoom.value()
+                if min_zoom > max_zoom:
+                    raise ValueError(
+                        f"Minimum zoom ({min_zoom}) cannot exceed maximum zoom ({max_zoom}).")
+                tile_format = "PNG" if self.cmb_mbtiles_tile_format.currentIndex() == 0 else "JPEG"
+                dpi = self.spn_mbtiles_dpi.value()
+                metatile = self.spn_mbtiles_metatile.value()
+                result = GisConverterEngine.export_to_mbtiles(
+                    output_path=output_path,
+                    layer=layer,
+                    project=QgsProject.instance() if is_all_project else None,
+                    min_zoom=min_zoom,
+                    max_zoom=max_zoom,
+                    tile_format=tile_format,
+                    dpi=dpi,
+                    metatile_size=metatile
+                )
 
             size_mb = result.bytes_written / (1024 * 1024)
-            scope = "selected features" if selected_only else "all features"
+            if format_idx == 3:
+                scope = (
+                    "all project layers" if is_all_project
+                    else f"layer '{layer.name()}'"
+                )
+                details = (
+                    f"Verified {result.driver} export complete.\n\n"
+                    f"Scope: {scope}\n"
+                    f"Zoom Levels: {self.spn_mbtiles_min_zoom.value()} - {self.spn_mbtiles_max_zoom.value()}\n"
+                    f"Tiles: {result.feature_count:,}\n"
+                    f"Output CRS: {result.target_crs}\n"
+                    f"File size: {size_mb:.2f} MB\n"
+                    f"Path: {result.path}"
+                )
+            else:
+                scope = "selected features" if selected_only else "all features"
+                details = (
+                    f"Verified {result.driver} export complete.\n\n"
+                    f"Layer: {layer.name()}\n"
+                    f"Scope: {scope}\n"
+                    f"Features: {result.feature_count:,}\n"
+                    f"Output CRS: {result.target_crs}\n"
+                    f"File size: {size_mb:.2f} MB\n"
+                    f"Path: {result.path}"
+                )
             QMessageBox.information(
                 self,
                 "Export Complete",
-                f"Verified {result.driver} export complete.\n\n"
-                f"Layer: {layer.name()}\n"
-                f"Scope: {scope}\n"
-                f"Features: {result.feature_count:,}\n"
-                f"Output CRS: {result.target_crs}\n"
-                f"File size: {size_mb:.2f} MB\n"
-                f"Path: {result.path}")
+                details)
 
         except Exception as exc:
             QMessageBox.critical(

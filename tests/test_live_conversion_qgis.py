@@ -162,9 +162,52 @@ class TestLiveConversion(unittest.TestCase):
         # Tab 2 filter extent button exists
         self.assertIsNotNone(dock.btn_ncz_filter_extent)
 
+        # Tab 2 MBTiles export button exists
+        self.assertIsNotNone(dock.btn_ncz_to_mbtiles)
+
+        # Tab 3 MBTiles format switching and options
+        dock.cmb_exp_format.setCurrentIndex(3)
+        self.assertFalse(dock.widget_mbtiles_opts.isHidden())
+        self.assertTrue(dock.chk_export_selected.isHidden())
+        self.assertEqual(dock.export_crs.crs().authid(), "EPSG:3857")
+        self.assertEqual(
+            dock.cmb_exp_layer.itemText(0),
+            "[All Visible Canvas Layers / Project]")
+
+        # Test bridge from Tab 2 to MBTiles exporter
+        dock.txt_ncz_path.setText(os.path.join(self.work, "sample_plan.ncz"))
+        dock._send_ncz_to_mbtiles_exporter()
+        self.assertEqual(dock.main_tab.currentIndex(), 2)
+        self.assertEqual(dock.cmb_exp_format.currentIndex(), 3)
+        self.assertTrue(dock.txt_exp_path.text().endswith("sample_plan.mbtiles"))
+
         dock.close()
         dock.setParent(None)
+
+    def test_mbtiles_export_engine(self):
+        engine = self._engine()
+        layers = engine.convert()
+        self.converted_layers.extend(layers)
+        self.assertEqual(len(layers), 1)
+        layer = layers[0]
+        self.assertTrue(layer.isValid())
+
+        mbtiles_target = os.path.join(self.work, "points_pyramid.mbtiles")
+        result = GisConverterEngine.export_to_mbtiles(
+            output_path=mbtiles_target,
+            layer=layer,
+            min_zoom=10,
+            max_zoom=11,
+            tile_format="PNG",
+            metatile_size=1
+        )
+        self.assertEqual(result.driver, "MBTiles")
+        self.assertEqual(result.target_crs, "EPSG:3857")
+        self.assertTrue(os.path.isfile(mbtiles_target))
+        self.assertGreater(result.bytes_written, 0)
+        self.assertGreater(result.feature_count, 0)
 
 
 if __name__ == "__main__":
     unittest.main()
+
