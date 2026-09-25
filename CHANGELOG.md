@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.3.2] - 2026-09-25
+
+- Protect MBTiles exporter against global basemap runaway extents, add live tile estimator, set metatile 1 and zoom 14-16 fast defaults
+
 ## [3.3.1] - 2026-09-25
 
 - Harden Netcad SmartObject binary bounds, optimize spatial filter origin artifact protection, and polish dialog contrast

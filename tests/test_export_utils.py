@@ -103,6 +103,25 @@ class TestAtomicExport(unittest.TestCase):
         self.assertIn("parcels | Polygon | 12 features | EPSG:32635", receipt)
         self.assertIn("Warnings:\n- One empty geometry was skipped.", receipt)
 
+    def test_estimate_mbtiles_tile_count(self):
+        from zero2cadgis.core.export_utils import estimate_mbtiles_tile_count
+        from zero2cadgis.core.spatial_filter import ExtentBox
+
+        # 1000m urban block in Web Mercator
+        ext = ExtentBox(3924000.0, 4679000.0, 3925000.0, 4680000.0)
+        count_15_16 = estimate_mbtiles_tile_count(ext, 15, 16)
+        self.assertGreater(count_15_16, 0)
+        self.assertLess(count_15_16, 50)
+
+        # Global extent triggers huge count
+        global_ext = ExtentBox(-20037508.0, -20037508.0, 20037508.0, 20037508.0)
+        global_count = estimate_mbtiles_tile_count(global_ext, 12, 16)
+        self.assertGreater(global_count, 1000000)
+
+        # Tuple extent support
+        tup_ext = (3924000.0, 4679000.0, 3925000.0, 4680000.0)
+        self.assertEqual(estimate_mbtiles_tile_count(tup_ext, 15, 16), count_15_16)
+
 
 if __name__ == "__main__":
     unittest.main()

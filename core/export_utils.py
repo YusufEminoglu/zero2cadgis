@@ -72,3 +72,48 @@ def verified_export_result(
         target_crs=target_crs,
         bytes_written=size,
     )
+
+
+def estimate_mbtiles_tile_count(extent, min_zoom: int, max_zoom: int) -> int:
+    """Estimate total number of Web Mercator raster tiles for a bounding box.
+
+    Supports QgsRectangle, ExtentBox, tuple/list (min_x, min_y, max_x, max_y),
+    or any object exposing min_x/max_x or xMinimum()/xMaximum().
+    """
+    if extent is None:
+        return 0
+    if hasattr(extent, "isEmpty") and extent.isEmpty():
+        return 0
+    if hasattr(extent, "xMinimum"):
+        min_x = extent.xMinimum()
+        max_x = extent.xMaximum()
+        min_y = extent.yMinimum()
+        max_y = extent.yMaximum()
+    elif hasattr(extent, "min_x"):
+        min_x = extent.min_x
+        max_x = extent.max_x
+        min_y = extent.min_y
+        max_y = extent.max_y
+    elif isinstance(extent, (tuple, list)) and len(extent) >= 4:
+        min_x, min_y, max_x, max_y = extent[:4]
+    else:
+        return 0
+
+    x_min_world = -20037508.342789244
+    world_size = 40075016.68557849
+    total = 0
+    min_x = max(float(min_x), -20037508.34)
+    max_x = min(float(max_x), 20037508.34)
+    min_y = max(float(min_y), -20037508.34)
+    max_y = min(float(max_y), 20037508.34)
+    if min_x >= max_x or min_y >= max_y:
+        return 0
+    for z in range(int(min_zoom), int(max_zoom) + 1):
+        num_tiles = 1 << z
+        tile_size = world_size / num_tiles
+        c_min = max(0, min(num_tiles - 1, int((min_x - x_min_world) / tile_size)))
+        c_max = max(0, min(num_tiles - 1, int((max_x - x_min_world) / tile_size)))
+        r_min = max(0, min(num_tiles - 1, int((min_y - x_min_world) / tile_size)))
+        r_max = max(0, min(num_tiles - 1, int((max_y - x_min_world) / tile_size)))
+        total += (c_max - c_min + 1) * (r_max - r_min + 1)
+    return total

@@ -24,6 +24,7 @@ from qgis.core import (
     QgsFields,
     QgsGeometry,
     QgsMapLayer,
+    QgsMapLayerType,
     QgsPointXY,
     QgsProcessingContext,
     QgsProcessingFeedback,
@@ -51,6 +52,7 @@ from .crs_detect import detect_crs
 from .export_utils import (
     ExportResult,
     atomic_output,
+    estimate_mbtiles_tile_count,
     exported_feature_count,
     verified_export_result,
 )
@@ -1683,11 +1685,11 @@ class GisConverterEngine:
             layer: Optional[QgsMapLayer] = None,
             project: Optional[QgsProject] = None,
             extent: Optional[QgsRectangle] = None,
-            min_zoom: int = 12,
+            min_zoom: int = 14,
             max_zoom: int = 16,
             tile_format: str = "PNG",
             dpi: int = 96,
-            metatile_size: int = 4,
+            metatile_size: int = 1,
             quality: int = 75,
             feedback: Optional[QgsProcessingFeedback] = None) -> ExportResult:
         """Render vector/raster layers to web map raster tiles in MBTiles format.
@@ -1729,8 +1731,18 @@ class GisConverterEngine:
             else:
                 extent_3857 = source_extent
         else:
+            # When combining project extents, prioritize vector layers
+            # so that global raster basemaps (e.g. OpenStreetMap, Google Satellite)
+            # do not expand the export area to the entire planet Earth (billions of tiles).
+            all_layers = list(effective_project.mapLayers().values())
+            vector_layers = [
+                lyr for lyr in all_layers
+                if lyr.isValid() and lyr.type() == QgsMapLayerType.VectorLayer and not lyr.extent().isEmpty()
+            ]
+            candidate_layers = vector_layers if vector_layers else all_layers
+
             combined_3857 = None
-            for lyr in effective_project.mapLayers().values():
+            for lyr in candidate_layers:
                 if not lyr.isValid() or lyr.extent().isEmpty():
                     continue
                 lyr_ext = lyr.extent()
@@ -1740,10 +1752,28 @@ class GisConverterEngine:
                         ct = QgsCoordinateTransform(
                             lyr_crs, dest_crs, effective_project)
                         lyr_ext = ct.transformBoundingBox(lyr_ext)
+
+                # Skip runaway global extents (> 1,000,000m width/height in 3857)
+                if lyr_ext.width() > 1000000.0 or lyr_ext.height() > 1000000.0:
+                    continue
+
                 if combined_3857 is None:
                     combined_3857 = QgsRectangle(lyr_ext)
                 else:
                     combined_3857.combineExtentWith(lyr_ext)
+
+            if combined_3857 is None or combined_3857.isEmpty():
+                for lyr in all_layers:
+                    if lyr.isValid() and not lyr.extent().isEmpty():
+                        lyr_ext = lyr.extent()
+                        if lyr.crs().isValid() and lyr.crs() != dest_crs:
+                            with contextlib.suppress(Exception):
+                                ct = QgsCoordinateTransform(
+                                    lyr.crs(), dest_crs, effective_project)
+                                lyr_ext = ct.transformBoundingBox(lyr_ext)
+                        combined_3857 = QgsRectangle(lyr_ext)
+                        break
+
             if combined_3857 is None or combined_3857.isEmpty():
                 raise ValueError(
                     "No valid layer extents found in the active project.")
@@ -1756,6 +1786,16 @@ class GisConverterEngine:
 
         min_z = max(0, min(int(min_zoom), 25))
         max_z = max(min_z, min(int(max_zoom), 25))
+
+        estimated_tiles = estimate_mbtiles_tile_count(extent_3857, min_z, max_z)
+        if estimated_tiles > 25000:
+            raise ValueError(
+                f"The requested MBTiles export would generate ~{estimated_tiles:,} tiles "
+                f"for extent at zoom levels {min_z}–{max_z}. This exceeds the safe limit (25,000 tiles) "
+                f"and would cause severe disk usage and system freeze. "
+                f"Please narrow the zoom range (e.g. 14–16), select a specific vector layer, "
+                f"or zoom in on the map canvas."
+            )
 
         registry = QgsApplication.processingRegistry()
         alg = registry.algorithmById("native:tilesxyzmbtiles")

@@ -19,6 +19,7 @@ import re
 import math
 import shutil
 import time
+import contextlib
 from contextlib import suppress
 from dataclasses import dataclass, field
 
@@ -66,6 +67,7 @@ from qgis.core import (
     QgsVectorFileWriter,
     QgsLayoutItemMap,
     QgsWkbTypes,
+    QgsMapLayerType,
 )
 from qgis.gui import QgsProjectionSelectionWidget
 
@@ -1197,7 +1199,7 @@ class Zero2CadGisDockWidget(QDockWidget):
         zoom_row.addWidget(QLabel("Min Zoom:"))
         self.spn_mbtiles_min_zoom = QSpinBox()
         self.spn_mbtiles_min_zoom.setRange(0, 24)
-        self.spn_mbtiles_min_zoom.setValue(12)
+        self.spn_mbtiles_min_zoom.setValue(14)
         self.spn_mbtiles_min_zoom.setToolTip(
             "Minimum zoom level for the tile pyramid (lower = wider overview).")
         zoom_row.addWidget(self.spn_mbtiles_min_zoom)
@@ -1230,11 +1232,35 @@ class Zero2CadGisDockWidget(QDockWidget):
         opts_row.addWidget(QLabel("Metatile:"))
         self.spn_mbtiles_metatile = QSpinBox()
         self.spn_mbtiles_metatile.setRange(1, 8)
-        self.spn_mbtiles_metatile.setValue(4)
+        self.spn_mbtiles_metatile.setValue(1)
         self.spn_mbtiles_metatile.setToolTip(
-            "Metatile buffer size (reduces cut-off labels across tile borders).")
+            "Metatile buffer size (1 is fastest and lightest on memory).")
         opts_row.addWidget(self.spn_mbtiles_metatile)
         mbtiles_layout.addLayout(opts_row)
+
+        extent_row = QHBoxLayout()
+        extent_row.addWidget(QLabel("Extent:"))
+        self.cmb_mbtiles_extent = QComboBox()
+        self.cmb_mbtiles_extent.addItems([
+            "CAD / Vector Data Extent (Auto)",
+            "Current Map Canvas Extent",
+        ])
+        self.cmb_mbtiles_extent.setToolTip(
+            "CAD/Vector extent exports only the drawing area (fast & compact).\n"
+            "Canvas extent exports what is currently visible on your screen."
+        )
+        extent_row.addWidget(self.cmb_mbtiles_extent, 1)
+        mbtiles_layout.addLayout(extent_row)
+
+        self.lbl_mbtiles_estimate = QLabel("Estimated tiles: calculating...")
+        self.lbl_mbtiles_estimate.setStyleSheet(
+            "font-size: 11px; font-weight: bold; color: #2e7d32; padding: 3px 6px; background: #e8f5e9; border-radius: 3px;"
+        )
+        mbtiles_layout.addWidget(self.lbl_mbtiles_estimate)
+
+        self.spn_mbtiles_min_zoom.valueChanged.connect(self._update_mbtiles_estimate)
+        self.spn_mbtiles_max_zoom.valueChanged.connect(self._update_mbtiles_estimate)
+        self.cmb_mbtiles_extent.currentIndexChanged.connect(self._update_mbtiles_estimate)
 
         exp_form.addRow("Tile Settings:", self.widget_mbtiles_opts)
 
@@ -2945,6 +2971,7 @@ class Zero2CadGisDockWidget(QDockWidget):
             self.lbl_export_crs_hint.setText(
                 "Web Map Tiles MBTiles standard uses EPSG:3857 (Web Mercator) "
                 "with automated tile pyramid generation (TMS / XYZ).")
+            self._update_mbtiles_estimate()
         elif index in (1, 2):
             if hasattr(self, "widget_mbtiles_opts"):
                 self.widget_mbtiles_opts.setVisible(False)
@@ -2983,6 +3010,85 @@ class Zero2CadGisDockWidget(QDockWidget):
                 and layer.crs().isValid():
             self.export_crs.setCrs(layer.crs())
         self._update_export_button_state()
+        self._update_mbtiles_estimate()
+
+    def _update_mbtiles_estimate(self, *_args) -> None:
+        """Dynamically compute and display estimated tile count for MBTiles export."""
+        if not hasattr(self, "lbl_mbtiles_estimate") or not hasattr(self, "spn_mbtiles_min_zoom"):
+            return
+        min_z = self.spn_mbtiles_min_zoom.value()
+        max_z = self.spn_mbtiles_max_zoom.value()
+        if min_z > max_z:
+            self.lbl_mbtiles_estimate.setText("Min Zoom cannot exceed Max Zoom!")
+            self.lbl_mbtiles_estimate.setStyleSheet(
+                "font-size: 11px; font-weight: bold; color: #c62828; padding: 3px 6px; background: #ffebee; border-radius: 3px;"
+            )
+            return
+
+        extent_mode = self.cmb_mbtiles_extent.currentIndex() if hasattr(self, "cmb_mbtiles_extent") else 0
+        extent_3857 = None
+        dest_crs = QgsCoordinateReferenceSystem("EPSG:3857")
+
+        if extent_mode == 1:  # Canvas extent
+            canvas = getattr(self, "iface", None) and self.iface.mapCanvas()
+            if canvas:
+                c_ext = canvas.extent()
+                c_crs = canvas.mapSettings().destinationCrs()
+                if c_crs.isValid() and c_crs != dest_crs:
+                    with contextlib.suppress(Exception):
+                        ct = QgsCoordinateTransform(c_crs, dest_crs, QgsProject.instance())
+                        extent_3857 = ct.transformBoundingBox(c_ext)
+                else:
+                    extent_3857 = c_ext
+        else:
+            layer = self._selected_export_layer()
+            if layer and layer.isValid() and not layer.extent().isEmpty():
+                l_ext = layer.extent()
+                l_crs = layer.crs()
+                if l_crs.isValid() and l_crs != dest_crs:
+                    with contextlib.suppress(Exception):
+                        ct = QgsCoordinateTransform(l_crs, dest_crs, QgsProject.instance())
+                        extent_3857 = ct.transformBoundingBox(l_ext)
+                else:
+                    extent_3857 = l_ext
+            else:
+                for lyr in QgsProject.instance().mapLayers().values():
+                    if lyr.isValid() and lyr.type() == QgsMapLayerType.VectorLayer and not lyr.extent().isEmpty():
+                        l_ext = lyr.extent()
+                        if lyr.crs().isValid() and lyr.crs() != dest_crs:
+                            with contextlib.suppress(Exception):
+                                ct = QgsCoordinateTransform(lyr.crs(), dest_crs, QgsProject.instance())
+                                l_ext = ct.transformBoundingBox(l_ext)
+                        if l_ext.width() > 1000000.0 or l_ext.height() > 1000000.0:
+                            continue
+                        if extent_3857 is None:
+                            extent_3857 = QgsRectangle(l_ext)
+                        else:
+                            extent_3857.combineExtentWith(l_ext)
+
+        from ..core.gis_engine import estimate_mbtiles_tile_count
+        count = estimate_mbtiles_tile_count(extent_3857, min_z, max_z) if extent_3857 else 0
+
+        if count == 0:
+            self.lbl_mbtiles_estimate.setText("Estimated: ~0 tiles (No active data extent)")
+            self.lbl_mbtiles_estimate.setStyleSheet(
+                "font-size: 11px; font-weight: normal; color: #546e7a; padding: 3px 6px; background: #eceff1; border-radius: 3px;"
+            )
+        elif count <= 250:
+            self.lbl_mbtiles_estimate.setText(f"Estimated: ~{count:,} tiles (Fast, < 5 sec)")
+            self.lbl_mbtiles_estimate.setStyleSheet(
+                "font-size: 11px; font-weight: bold; color: #2e7d32; padding: 3px 6px; background: #e8f5e9; border-radius: 3px;"
+            )
+        elif count <= 2500:
+            self.lbl_mbtiles_estimate.setText(f"Estimated: ~{count:,} tiles (Moderate, ~10-30 sec)")
+            self.lbl_mbtiles_estimate.setStyleSheet(
+                "font-size: 11px; font-weight: bold; color: #ef6c00; padding: 3px 6px; background: #fff3e0; border-radius: 3px;"
+            )
+        else:
+            self.lbl_mbtiles_estimate.setText(f"⚠️ Warning: ~{count:,} tiles! (Reduce zoom range or use canvas extent)")
+            self.lbl_mbtiles_estimate.setStyleSheet(
+                "font-size: 11px; font-weight: bold; color: #c62828; padding: 3px 6px; background: #ffebee; border-radius: 3px;"
+            )
 
     def _update_export_selection_scope(self, *_signal_args) -> None:
         """Keep selected-feature scope live as the canvas selection changes."""
@@ -3106,10 +3212,25 @@ class Zero2CadGisDockWidget(QDockWidget):
                 tile_format = "PNG" if self.cmb_mbtiles_tile_format.currentIndex() == 0 else "JPEG"
                 dpi = self.spn_mbtiles_dpi.value()
                 metatile = self.spn_mbtiles_metatile.value()
+                extent_to_pass = None
+                if getattr(self, "cmb_mbtiles_extent", None) and self.cmb_mbtiles_extent.currentIndex() == 1:
+                    canvas = getattr(self, "iface", None) and self.iface.mapCanvas()
+                    if canvas:
+                        c_ext = canvas.extent()
+                        c_crs = canvas.mapSettings().destinationCrs()
+                        dest_crs = QgsCoordinateReferenceSystem("EPSG:3857")
+                        if c_crs.isValid() and c_crs != dest_crs:
+                            with contextlib.suppress(Exception):
+                                ct = QgsCoordinateTransform(c_crs, dest_crs, QgsProject.instance())
+                                extent_to_pass = ct.transformBoundingBox(c_ext)
+                        else:
+                            extent_to_pass = c_ext
+
                 result = GisConverterEngine.export_to_mbtiles(
                     output_path=output_path,
                     layer=layer,
                     project=QgsProject.instance() if is_all_project else None,
+                    extent=extent_to_pass,
                     min_zoom=min_zoom,
                     max_zoom=max_zoom,
                     tile_format=tile_format,
