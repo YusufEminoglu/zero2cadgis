@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.3.1] - 2026-09-25
+
+- Harden Netcad SmartObject binary bounds, optimize spatial filter origin artifact protection, and polish dialog contrast
+
 ## [3.3.0] - 2026-09-24
 
 - Added **Web Map Tiles MBTiles Exporter** (XYZ / TMS Tile Pyramids):

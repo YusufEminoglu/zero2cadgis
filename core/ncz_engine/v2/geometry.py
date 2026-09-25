@@ -349,9 +349,12 @@ def decode_polyline(record: GeometryRecord) -> dict | None:
         vertex = shifted + 113 + index * 24
         if vertex + 24 > cursor.size:
             break
+        v_first = cursor.f64(vertex)
+        v_second = cursor.f64(vertex + 8)
+        if not finite_pair_in_range(v_first, v_second):
+            continue
         points.append(map_point(
-            cursor.f64(vertex), cursor.f64(vertex + 8),
-            cursor.f64(vertex + 16)))
+            v_first, v_second, cursor.f64(vertex + 16)))
     if len(points) < 2:
         return None
 
@@ -564,15 +567,20 @@ def decode_smart_object(record: GeometryRecord) -> dict | None:
     height = bounded_f64(177)
     grid_x = bounded_f64(185)
     grid_y = bounded_f64(193)
-    if width <= 0.0 or height <= 0.0:
+    if not (0.001 <= width <= 100000.0 and 0.001 <= height <= 100000.0):
         first_b = cursor.f64(record.base + 66)
         second_b = cursor.f64(record.base + 74)
         if not finite_pair_in_range(first_b, second_b):
             return None
-        width = abs(first_b - first_a)
-        height = abs(second_b - second_a)
-    if width < 0.001 or height < 0.001:
+        width = abs(second_b - second_a)
+        height = abs(first_b - first_a)
+    if width < 0.001 or height < 0.001 or width > 100000.0 or height > 100000.0:
         return None
+
+    if not (math.isfinite(grid_x) and 0.0 <= grid_x <= 100000.0):
+        grid_x = 0.0
+    if not (math.isfinite(grid_y) and 0.0 <= grid_y <= 100000.0):
+        grid_y = 0.0
 
     angle_grads = cursor.f32(record.base + 82)
     rotation = (angle_grads * 0.9) % 360.0 \

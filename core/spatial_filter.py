@@ -12,6 +12,7 @@ unmatched files into memory.
 from __future__ import annotations
 
 import os
+import math
 from contextlib import suppress
 from dataclasses import dataclass, field
 from typing import Callable, Iterable, Sequence
@@ -182,19 +183,23 @@ def inspect_ncz_extent(file_path: str, fallback_crs: str = "") -> ExtentInspecti
 
         catalog = NczCatalog(data).index()
         entities = catalog.decode_all()
+        raw_coords = []
         if not entities:
             # Fallback to v1 parser if v2 decoded zero entities
             fallback_res = parse_netcad_binary_stream(file_path)
             raw_entities = fallback_res.get("entities", [])
-            coords = []
             for e in raw_entities:
                 for c in getattr(e, "coordinates", []):
-                    coords.append((c.x, c.y))
+                    raw_coords.append((c.x, c.y))
         else:
-            coords = []
             for entity in entities:
                 for pt in entity.get("coordinates", []):
-                    coords.append((pt["x"], pt["y"]))
+                    raw_coords.append((pt["x"], pt["y"]))
+
+        coords = [
+            (x, y) for (x, y) in raw_coords
+            if math.isfinite(x) and math.isfinite(y) and abs(x) <= 1e8 and abs(y) <= 1e8
+        ]
 
         if not coords:
             return ExtentInspectionResult(
@@ -203,6 +208,13 @@ def inspect_ncz_extent(file_path: str, fallback_crs: str = "") -> ExtentInspecti
                 box=ExtentBox(0.0, 0.0, 0.0, 0.0),
                 error="No coordinates found in drawing",
             )
+
+        # In CAD files, block/symbol definitions are frequently placed at origin (0, 0)
+        # while the actual project drawing is in projected coordinates (e.g. > 5,000).
+        # If the majority of points are projected, discard origin artifact outliers.
+        proj_coords = [p for p in coords if abs(p[0]) > 5000.0 or abs(p[1]) > 5000.0]
+        if proj_coords and len(proj_coords) >= 0.5 * len(coords):
+            coords = proj_coords
 
         min_x = min(p[0] for p in coords)
         max_x = max(p[0] for p in coords)

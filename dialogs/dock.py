@@ -141,11 +141,22 @@ QTabBar::tab:hover {
     color: #01579b;
 }
 
+/* ── dialogs & sub-windows: pinned white so top-level child windows never
+      render black on dark-themed QGIS or Windows ── */
+QDialog {
+    background-color: #ffffff;
+    color: #263238;
+}
+QDialog QScrollArea,
+QDialog QScrollArea > QWidget > QWidget {
+    background-color: #ffffff;
+}
+
 /* ── group boxes ── */
 QGroupBox {
     font-weight: bold;
     color: #37474f;
-    background: #ffffff;
+    background-color: #ffffff;
     border: 1px solid #cfd8dc;
     border-radius: 6px;
     margin-top: 6px;
@@ -157,6 +168,7 @@ QGroupBox::title {
     left: 8px;
     padding: 0 4px;
     color: #0277bd;
+    background-color: #ffffff;
 }
 
 /* ── scroll area ── */
@@ -295,6 +307,7 @@ QTreeWidget {
     border: 1px solid #cfd8dc;
     border-radius: 4px;
     background-color: #ffffff;
+    alternate-background-color: #f8fafc;
     color: #263238;
 }
 QTreeWidget::item {
@@ -326,8 +339,9 @@ QPushButton#convert_btn:hover {
     background-color: #1b5e20;
 }
 QPushButton#convert_btn:disabled {
-    background-color: #b0bec5;
-    color: #78909c;
+    background-color: #cfd8dc;
+    color: #546e7a;
+    border: 1px solid #b0bec5;
 }
 
 /* ── browse / save-as buttons ── */
@@ -355,9 +369,9 @@ QPushButton:hover {
     background: #e0e4e8;
 }
 QPushButton:disabled {
-    background: #f5f5f5;
-    color: #90a4ae;
-    border-color: #e0e4e8;
+    background: #eceff1;
+    color: #78909c;
+    border: 1px solid #cfd8dc;
 }
 
 /* ── progress bar ── */
@@ -999,7 +1013,7 @@ class Zero2CadGisDockWidget(QDockWidget):
         ncz_layout.addWidget(ncz_tree_group)
 
         # Advanced CAD Options
-        ncz_opt_group = QGroupBox("CAD Optimization & Styling")
+        ncz_opt_group = QGroupBox("CAD Optimization && Styling")
         ncz_opt_form = QFormLayout(ncz_opt_group)
         ncz_opt_form.setContentsMargins(6, 10, 6, 6)
         ncz_opt_form.setSpacing(3)
@@ -1093,20 +1107,28 @@ class Zero2CadGisDockWidget(QDockWidget):
         self.progress_ncz.setVisible(False)
         ncz_layout.addWidget(self.progress_ncz)
 
-        self.btn_convert_ncz = QPushButton("Convert Netcad & Load to Canvas")
+        self.btn_convert_ncz = QPushButton("Convert Netcad && Load to Canvas")
         self.btn_convert_ncz.setObjectName("convert_btn")
         self.btn_convert_ncz.setEnabled(False)
         self.btn_convert_ncz.clicked.connect(self._import_netcad_dataset)
         ncz_layout.addWidget(self.btn_convert_ncz)
 
-        self.btn_ncz_to_mbtiles = QPushButton(
-            "Export Canvas to Web Map Tiles (MBTiles)...")
+        # Subtle, compact MBTiles bridge link without cluttering the UI
+        mbtiles_link_row = QHBoxLayout()
+        mbtiles_link_row.setContentsMargins(2, 2, 2, 0)
+        mbtiles_link_row.addStretch(1)
+        self.btn_ncz_to_mbtiles = QPushButton("Need raster tiles? Open MBTiles Exporter →")
         self.btn_ncz_to_mbtiles.setToolTip(
-            "Send styled Netcad plan layers directly to the MBTiles exporter "
-            "for web map and TMS publishing.")
+            "Open the CAD & GIS Exporter tab pre-configured to generate an MBTiles pyramid from current canvas layers.")
+        self.btn_ncz_to_mbtiles.setFlat(True)
+        self.btn_ncz_to_mbtiles.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_ncz_to_mbtiles.setStyleSheet(
+            "color: #0277bd; font-size: 11px; text-decoration: underline; background: transparent; border: none; padding: 1px 4px;"
+        )
         self.btn_ncz_to_mbtiles.clicked.connect(
             self._send_ncz_to_mbtiles_exporter)
-        ncz_layout.addWidget(self.btn_ncz_to_mbtiles)
+        mbtiles_link_row.addWidget(self.btn_ncz_to_mbtiles)
+        ncz_layout.addLayout(mbtiles_link_row)
 
         tab_ncz = self._make_scroll_tab(tab2_inner)
         main_tab.addTab(
@@ -1119,16 +1141,20 @@ class Zero2CadGisDockWidget(QDockWidget):
 
         # ───────────────────────── Spatial Filter Sub-Dialog (shared by CAD & NCZ) ───
         self.spatial_filter_dialog = QDialog(self)
+        self.spatial_filter_dialog.setObjectName("spatial_filter_dialog")
         self.spatial_filter_dialog.setWindowTitle("02CadGis — Batch Spatial Filter")
         self.spatial_filter_dialog.setWindowIcon(
             QIcon(
                 os.path.join(
                     self.icon_dir,
                     "icon_filter.png")))
-        self.spatial_filter_dialog.resize(760, 680)
+        self.spatial_filter_dialog.resize(800, 800)
+        self.spatial_filter_dialog.setMinimumSize(680, 520)
+        self.spatial_filter_dialog.setStyleSheet(self.styleSheet())
         dlg_layout = QVBoxLayout(self.spatial_filter_dialog)
-        dlg_layout.setContentsMargins(4, 4, 4, 4)
+        dlg_layout.setContentsMargins(6, 6, 6, 6)
         tab_filter_inner = QWidget()
+        tab_filter_inner.setObjectName("tab_filter_inner")
         self._build_spatial_filter_tab(tab_filter_inner)
         dlg_scroll = self._make_scroll_tab(tab_filter_inner)
         dlg_layout.addWidget(dlg_scroll)
@@ -1316,6 +1342,7 @@ class Zero2CadGisDockWidget(QDockWidget):
     def _show_guide(self) -> None:
         dialog = QDialog(self)
         dialog.setWindowTitle("02CadGis Guide")
+        dialog.setStyleSheet(self.styleSheet())
         dialog.resize(560, 520)
 
         layout = QVBoxLayout(dialog)
@@ -3131,13 +3158,13 @@ class Zero2CadGisDockWidget(QDockWidget):
 
     def _build_spatial_filter_tab(self, inner_widget: QWidget) -> None:
         filter_layout = QVBoxLayout(inner_widget)
-        filter_layout.setContentsMargins(4, 4, 4, 4)
-        filter_layout.setSpacing(4)
+        filter_layout.setContentsMargins(6, 6, 6, 6)
+        filter_layout.setSpacing(6)
 
         # ── Group 1: Source Files / Directory ──
         src_group = QGroupBox("1. Candidate Drawings / GIS Datasets")
         src_vbox = QVBoxLayout(src_group)
-        src_vbox.setContentsMargins(6, 10, 6, 6)
+        src_vbox.setContentsMargins(8, 12, 8, 8)
         src_vbox.setSpacing(3)
 
         mode_row = QHBoxLayout()
@@ -3202,7 +3229,7 @@ class Zero2CadGisDockWidget(QDockWidget):
         # ── Group 2: Spatial Boundary Criteria ──
         bound_group = QGroupBox("2. Target Boundary Criteria")
         bound_vbox = QVBoxLayout(bound_group)
-        bound_vbox.setContentsMargins(6, 10, 6, 6)
+        bound_vbox.setContentsMargins(8, 12, 8, 8)
         bound_vbox.setSpacing(3)
 
         mode_row2 = QHBoxLayout()
@@ -3334,13 +3361,13 @@ class Zero2CadGisDockWidget(QDockWidget):
         filter_layout.addWidget(bound_group)
 
         # ── Group 3: Filter Scan & Results ──
-        res_group = QGroupBox("3. Spatial Scan & Matched Files")
+        res_group = QGroupBox("3. Spatial Scan && Matched Files")
         res_vbox = QVBoxLayout(res_group)
-        res_vbox.setContentsMargins(6, 10, 6, 6)
+        res_vbox.setContentsMargins(8, 12, 8, 8)
         res_vbox.setSpacing(3)
 
         scan_btn_row = QHBoxLayout()
-        self.btn_run_filter_scan = QPushButton("Scan & Filter Extents")
+        self.btn_run_filter_scan = QPushButton("Scan && Filter Extents")
         self.btn_run_filter_scan.setObjectName("convert_btn")
         self.btn_run_filter_scan.clicked.connect(self._run_spatial_filter_scan)
         scan_btn_row.addWidget(self.btn_run_filter_scan, 1)
@@ -3392,7 +3419,7 @@ class Zero2CadGisDockWidget(QDockWidget):
         self.tree_filter_results.itemChanged.connect(self._on_filter_tree_item_changed)
         self.tree_filter_results.itemDoubleClicked.connect(
             self._on_filter_tree_double_clicked)
-        self.tree_filter_results.setMinimumHeight(180)
+        self.tree_filter_results.setMinimumHeight(140)
         res_vbox.addWidget(self.tree_filter_results)
 
         filter_layout.addWidget(res_group)
@@ -3400,7 +3427,7 @@ class Zero2CadGisDockWidget(QDockWidget):
         # ── Group 4: Import / Action ──
         act_group = QGroupBox("4. Import Matched Files")
         act_vbox = QVBoxLayout(act_group)
-        act_vbox.setContentsMargins(6, 10, 6, 6)
+        act_vbox.setContentsMargins(8, 12, 8, 8)
         act_vbox.setSpacing(3)
 
         out_mode_row = QHBoxLayout()
@@ -4395,39 +4422,40 @@ class Zero2CadGisDockWidget(QDockWidget):
 
     def _import_single_ncz_file_to_layers(
             self, file_path: str, fallback_crs: str) -> list[QgsVectorLayer]:
-        reader = NetcadLazyReader(file_path)
-        entities = reader.entities()
+        reader = NetcadLazyReader(file_path).index()
+        summaries = reader.layer_summaries()
+        wanted_codes = {s.layer_code for s in summaries if s.record_count > 0}
+        if not wanted_codes:
+            return []
+        entities = reader.decode_layers(wanted_codes)
         if not entities:
             return []
 
-        detected = reader.detect_crs()
+        from ..core.crs_detect import detect_crs
+        detection = detect_crs(reader.projection_text, reader.sample_coordinates())
         authid = (
-            detected.authid if detected and detected.epsg
+            detection.authid if detection and detection.epsg
             else (fallback_crs or "EPSG:5254")
         )
         target_crs = QgsCoordinateReferenceSystem(authid)
         if not target_crs.isValid():
             target_crs = QgsProject.instance().crs()
 
-        base_name = os.path.splitext(os.path.basename(file_path))[0]
+        base_name = self._sanitize_name(
+            os.path.splitext(os.path.basename(file_path))[0])
         grouped: dict = {}
         for entity in entities:
-            family = entity.geometry_kind
-            if family == "Point":
-                geom_type = "Point"
-            elif family in ("Line", "Polyline", "Circle", "Arc", "Spiral"):
-                geom_type = "Line"
-            elif family in ("Polygon", "Triangle"):
-                geom_type = "Polygon"
-            else:
-                geom_type = "Point"
+            family, geom_type = self._geometry_family(
+                entity.geometry_kind, entity.is_closed, entity.coordinates)
+            if not family:
+                continue
 
             group_name = f"{base_name}_{family}"
             bucket_key = (entity.layer_code, entity.layer_name or "LAYER", family)
             bucket = grouped.setdefault(group_name, {}).setdefault(
                 bucket_key,
                 LayerBucket(
-                    display_name=f"{base_name}_{entity.layer_name or 'LAYER'}_{family}",
+                    display_name=f"{base_name}_{self._sanitize_name(entity.layer_name or 'LAYER')}_{family}",
                     geometry_type=geom_type,
                 ),
             )
