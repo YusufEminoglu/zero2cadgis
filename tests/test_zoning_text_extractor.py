@@ -234,5 +234,24 @@ class TestZoningTextExtractor(unittest.TestCase):
         self.assertTrue(is_helper_or_noise_layer("PAFTA_GRID"))
 
 
+    def test_netcad_smart_object_values_become_the_same_notation(self):
+        from zero2cadgis.core.zoning_text_extractor import notation_texts
+        self.assertEqual(notation_texts({"nizam": "BİTİŞİK", "kat": "4"}), ["B-4"])
+        self.assertEqual(notation_texts({"nizam": "AYRIK", "kat": "5", "txtOn": "7", "txtYan": "5"}),
+                         ["A-5", "ÖN=7", "YAN=5"])
+        # choiceType 1 = TAKS/KAKS, 0 = Emsal: only the chosen pair is stated
+        self.assertEqual(notation_texts({"choiceType": "1", "taks": "0.3", "kaks": "1.2", "emsal": "9"}),
+                         ["TAKS=0.3", "KAKS=1.2"])
+        self.assertEqual(notation_texts({"choiceType": "0", "emsal": "1.6", "taks": "9"}), ["EMSAL=1.6"])
+        self.assertEqual(notation_texts({"hmax": "4", "HmaxType": "Kat"}), ["KAT=4"])
+        self.assertEqual(notation_texts({"genislik": "12"}), ["YOL=12"])
+        p = parse_zoning_parameters(notation_texts({"choiceType": "1", "taks": "0.3", "kaks": "1.2", "hmax": "9.5"}))
+        d = p.as_attribute_dict()
+        self.assertEqual((d["Taks"], d["EmsalKaks"], d["YapiYuksekligi"]), (0.3, 1.2, 9.5))
+        # a stated value is an MPYY "Deger"; an unstated one is left to the planner
+        self.assertEqual((d["TaksTip"], d["EmsalKaksTip"], d["YapiYuksekligiTip"]), ("Deger", "Deger", "Deger"))
+        self.assertEqual(parse_zoning_parameters(["A-3"]).as_attribute_dict()["TaksTip"], "")
+
+
 if __name__ == "__main__":
     unittest.main()

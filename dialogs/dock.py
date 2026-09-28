@@ -870,6 +870,25 @@ class Zero2CadGisDockWidget(QDockWidget):
         self.chk_conv_load.setChecked(True)
         opt_form.addRow(self.chk_conv_load)
 
+        self.chk_conv_mpyy = QCheckBox(
+            "Plan modu (DXF / DWG): MPYY yapısı ve stilleri")
+        self.chk_conv_mpyy.setToolTip(
+            "For imar plan drawings in DXF or DWG. Each CAD layer (tabaka) is "
+            "written to its MPYY 1.1.7 type and drawn with the MPYY style of the "
+            "plan level, exactly as in the Netcad importer: exact names, confirmed "
+            "mappings and meaning-preserving spelling rules resolve by themselves, "
+            "anything else is only proposed for you to confirm.")
+        self.chk_conv_mpyy.setChecked(False)
+        opt_form.addRow(self.chk_conv_mpyy)
+        self.cmb_conv_plan_type = QComboBox()
+        self.cmb_conv_plan_type.addItems([
+            "Auto (detect from file name)",
+            "Uygulama İmar Planı (1/1000)",
+            "Nazım İmar Planı (1/5000)",
+            "Çevre Düzeni Planı (1/25.000+)",
+        ])
+        opt_form.addRow("Plan kademesi:", self.cmb_conv_plan_type)
+
 
         cad_gis_layout.addWidget(opt_group)
 
@@ -1862,6 +1881,22 @@ class Zero2CadGisDockWidget(QDockWidget):
                 for rl in raster_layers:
                     QgsProject.instance().addMapLayer(rl)
 
+            mpyy_note = ""
+            if self.chk_conv_mpyy.isChecked() and loaded_layers:
+                if fmt.key not in ("dxf", "dwg"):
+                    self.iface.messageBar().pushMessage(
+                        "02CadGis", "Plan modu yalnız DXF / DWG çizimleri için: "
+                        "tabaka adı bu biçimlerde okunur.", Qgis.MessageLevel.Warning, 8)
+                else:
+                    self.progress_conv.setValue(80)
+                    self.progress_conv.setFormat("MPYY çalışma alanına aktarılıyor...")
+                    QApplication.processEvents()
+                    result = self._transfer_converted_to_mpyy(
+                        loaded_layers, src, is_temp or is_live, dst)
+                    if result is not None:
+                        loaded_layers = list(result.leftovers)
+                        mpyy_note = " " + result.summary()
+
             self.progress_conv.setValue(85)
             self.progress_conv.setFormat("Adding vector layers to canvas...")
             QApplication.processEvents()
@@ -1903,7 +1938,7 @@ class Zero2CadGisDockWidget(QDockWidget):
                                else os.path.basename(dst))
                 message = (
                     f"Converted {len(loaded_layers)} layer(s) from "
-                    f"{src_label} to {destination}.")
+                    f"{src_label} to {destination}." + mpyy_note)
             self.iface.messageBar().pushMessage(
                 "02CadGis", message, Qgis.MessageLevel.Success, 7)
 
@@ -2555,6 +2590,51 @@ class Zero2CadGisDockWidget(QDockWidget):
                 "Import Error",
                 f"Failed to import Netcad dataset:\n{exc}")
 
+    def _conv_plan_type(self, source: str) -> str:
+        choice = {1: "UIP", 2: "NIP", 3: "CDP"}.get(self.cmb_conv_plan_type.currentIndex())
+        if choice:
+            return choice
+        from ..core.symbology import detect_plan_type
+        return detect_plan_type(os.path.basename(source)) or "UIP"
+
+    def _transfer_converted_to_mpyy(self, layers: list, source: str, temporary: bool,
+                                    destination: str):
+        """DXF / DWG layers -> MPYY workspace; returns the transfer result.
+
+        OGR reads a CAD layer's name into the ``Layer`` field. The workspace goes
+        next to the chosen GeoPackage (``<name>_mpyy_<level>.gpkg``) or, for a
+        temporary or live import, into a temporary folder. Unmatched features
+        come back as ``result.leftovers`` and carry the plan reference scale.
+        """
+        import tempfile
+        from ..core.mpyy_transfer import mpyy_level_for, transfer_to_mpyy
+
+        level = mpyy_level_for(self._conv_plan_type(source)) or "UIP"
+        spatial = [lyr for lyr in layers if lyr is not None and lyr.isSpatial()]
+        field = next((name for name in ("Layer", "layer", "layer_name")
+                      if spatial and spatial[0].fields().indexFromName(name) >= 0), None)
+        if field is None:
+            self.iface.messageBar().pushMessage(
+                "02CadGis", "Plan modu: katmanlarda tabaka adı alanı (Layer) yok.",
+                Qgis.MessageLevel.Warning, 8)
+            return None
+        base = self._sanitize_name(os.path.splitext(os.path.basename(source.rstrip("/\\")))[0])
+        if temporary or not destination:
+            folder = tempfile.mkdtemp(prefix="zero2cadgis_mpyy_")
+        else:
+            folder = os.path.dirname(os.path.abspath(destination))
+        workspace = os.path.join(folder, f"{base.lower()}_mpyy_{level.lower()}.gpkg")
+        if os.path.exists(workspace):
+            os.remove(workspace)
+        self._confirm_proposed_tabaka(spatial, level, tabaka_field=field)
+        result = transfer_to_mpyy(spatial, level, workspace, f"{base}_MPYY_{level}",
+                                  tabaka_field=field)
+        for leftover in result.leftovers:
+            if leftover.renderer() is not None:
+                leftover.renderer().setReferenceScale(PLAN_REFERENCE_SCALES[level])
+        self.last_mpyy_result = result
+        return result
+
     #: Set False to import without asking (tests, batch runs): proposals then
     #: stay unapplied, exactly as if every row were left unticked.
     ask_tabaka_confirmation = True
@@ -2664,14 +2744,24 @@ class Zero2CadGisDockWidget(QDockWidget):
         text_pts = []
         if is_plan_mode:
             from ..core.cad_engine import is_helper_or_noise_layer
+            from ..core.zoning_text_extractor import notation_texts
             for buckets in grouped_entities.values():
                 for bkt in buckets.values():
-                    if bkt.geometry_type != "Point":
-                        continue
                     for e in bkt.entities:
+                        if not e.coordinates or is_helper_or_noise_layer(e.layer_name):
+                            continue
+                        # Netcad 8 building-rights / road-width Smart Objects carry
+                        # their values as properties: placed at the object's centre.
+                        if e.properties:
+                            cx = sum(c.x for c in e.coordinates) / len(e.coordinates)
+                            cy = sum(c.y for c in e.coordinates) / len(e.coordinates)
+                            for text in notation_texts(e.properties):
+                                text_pts.append((cx, cy, text))
+                            continue
+                        if bkt.geometry_type != "Point":
+                            continue
                         txt = e.label_text or e.name
-                        if (txt and e.coordinates
-                                and not is_helper_or_noise_layer(e.layer_name)):
+                        if txt:
                             text_pts.append(
                                 (e.coordinates[0].x, e.coordinates[0].y, str(txt)))
         for group_name in sorted(grouped_entities.keys()):

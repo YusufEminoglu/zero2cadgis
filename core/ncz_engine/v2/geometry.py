@@ -13,6 +13,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
+from .properties import PROPERTY_SEARCH_START, parse_property_bag
 from .binary import Cursor, finite_pair_in_range
 
 RAD_TO_DEG = 180.0 / math.pi
@@ -592,6 +593,8 @@ def decode_smart_object(record: GeometryRecord) -> dict | None:
     payload = cursor.raw(record.base, record.end - record.base)
     label = "BASIC" if b"BASIC" in payload else _ascii_token(
         cursor, record.base + 145, record.end)
+    # Netcad 8 notation values (nizam, kat, TAKS, KAKS, Hmax, road width ...).
+    properties = parse_property_bag(payload[PROPERTY_SEARCH_START:])
     return _entity(
         record, "SmartObject",
         _smart_object_ring(first_a, second_a, width, height, rotation),
@@ -602,7 +605,8 @@ def decode_smart_object(record: GeometryRecord) -> dict | None:
         scale=scale,
         grid_x=grid_x,
         grid_y=grid_y,
-        label_text=label)
+        label_text=label,
+        properties=properties)
 
 
 def _ascii_token(cursor: Cursor, start: int, end: int) -> str:

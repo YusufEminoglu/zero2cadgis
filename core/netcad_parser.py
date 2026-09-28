@@ -1283,6 +1283,7 @@ class NetcadBinaryReader:
                 NetcadCoordinate(x=coord["x"], y=coord["y"], z=coord.get("z", 0.0))
                 for coord in payload.get("coordinates", [])
             ],
+            properties=dict(payload.get("properties") or {}),
         )
 
     def _attribute_table_from_dict(self, payload) -> NetcadAttributeTable:

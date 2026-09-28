@@ -2,11 +2,11 @@
  "files": {
   "core/db_factory.py": "96c12a68be60f7773ea5172e90a0997c0820dc46d5fd803f1a173f25d59ca01d",
   "core/fonts.py": "8289d4f4a3026abbb5dda1b26dd52cef20debb91940ff35152ba104d905a3e39",
-  "core/form_rules.py": "7a4262022bda1beb50f5e247e3257796f6db914382f8357453cc1713a5a7ec17",
+  "core/form_rules.py": "7018b4cdc02bef99669861efa9a15e896ecca229143462eff57fa210956adedb",
   "core/legend_scope.py": "efaa78cd359947b4c9c21bbc6b30f30cacbc2a1002262f2f682597523b072adc",
   "core/mpyy_detail_catalog.py": "8903b29657dff0fcc71835cf65e16478a094653c3e060e5e5a19856d940d8af3",
   "core/mpyy_detail_hierarchy.py": "d791954f54e75273293e2384cb5bd776bfc4c503d9ed1c8ca59b666833628ed7",
-  "core/mpyy_import.py": "d6bb0f2afd6ac21936ff03bfc26351c5d63ddfbc25abed888e173df1ba66a259",
+  "core/mpyy_import.py": "8d9e5ff98a5b3589d4b9108ce7a80eaf3ff9e69d0c4d7ab729014be38293333b",
   "core/mpyy_workspace.py": "5c4d05d6f0bd399348e01b77634b7b34009c5e0a61313f4fd4570e9f4f228228",
   "core/schema.py": "f087eb753f58d9beb1a0b099d92c6db0b8332d91023f6cda335ab41e7faa1d38",
   "core/tabaka_matching.py": "86599361e27f533c52c7ebaf9343d8316b5847431cb23df19e2c74fcc7a30244",

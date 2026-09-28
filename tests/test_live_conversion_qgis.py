@@ -363,6 +363,42 @@ class TestMpyyStructureImportQgis(unittest.TestCase):
         self.assertEqual(tabaka_matching.load_user_mappings()["UIP"]["PL_DINI_TESIS"], "PL_CAMI")
         self.assertIn("onaylı", result.summary())
 
+    def test_dxf_layers_go_to_mpyy_through_the_converter_path(self):
+        from osgeo import ogr
+        from qgis.core import QgsVectorLayer
+        from zero2cadgis.dialogs.dock import Zero2CadGisDockWidget
+
+        dxf = os.path.join(self.work, "1000_TEST_UIP.dxf")
+        ds = ogr.GetDriverByName("DXF").CreateDataSource(dxf)
+        entities = ds.CreateLayer("entities")
+        for tabaka, x in (("PL_KONUT", 0), ("PL_ILKOKUL", 200), ("CIZPEN", 400)):
+            feature = ogr.Feature(entities.GetLayerDefn())
+            feature.SetField("Layer", tabaka)
+            x0, y0 = 500000 + x, 4250000
+            feature.SetGeometry(ogr.CreateGeometryFromWkt(
+                f"LINESTRING({x0} {y0},{x0 + 100} {y0},{x0 + 100} {y0 + 100},{x0} {y0 + 100},{x0} {y0})"))
+            entities.CreateFeature(feature)
+        ds = None
+        layer = QgsVectorLayer(dxf, "entities", "ogr")
+        self.assertTrue(layer.isValid())
+        layer.setCrs(QgsCoordinateReferenceSystem("EPSG:5253"))
+
+        window = QMainWindow()
+        iface = MagicMock()
+        iface.mainWindow.return_value = window
+        icon_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "icons"))
+        dock = Zero2CadGisDockWidget(iface, icon_dir, window)
+        self.addCleanup(lambda: (dock.close(), dock.setParent(None)))
+        dock.ask_tabaka_confirmation = False
+        result = dock._transfer_converted_to_mpyy([layer], dxf, True, "")
+        self.assertIsNotNone(result)
+        self.assertEqual(result.level, "UIP")
+        self.assertEqual({l.name() for l in result.layers}, {"Konut", "EgitimTesisAlani"})
+        self.assertEqual([r["tabaka"] for r in result.unmatched], ["CIZPEN"])
+        self.assertEqual(sum(l.featureCount() for l in result.leftovers), 1)
+        for leftover in result.leftovers:
+            self.assertEqual(leftover.renderer().referenceScale(), 1000)
+
     def test_ncz_import_in_mpyy_structure(self):
         dock = self._import()
         dock.ask_tabaka_confirmation = False

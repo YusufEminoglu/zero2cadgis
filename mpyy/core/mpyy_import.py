@@ -84,6 +84,42 @@ def _fit_geometry(geometry, target):
     return [part for part in geometry.asGeometryCollection()] if geometry.isMultipart() else [geometry]
 
 
+def _fold(text) -> str:
+    return normalize_tabaka(text).replace("_", "")
+
+
+def carry_value(value, field, codelists):
+    """(value to write, reason when skipped) for one plan value from the source.
+
+    NULL is simply absent (reason None). A code-list value is written as the
+    list's own code when it folds onto exactly one (``AYRIK`` -> ``Ayrik``);
+    a number only when the form's bounds accept it, so a TAKS read as ``35``
+    never lands in the workspace as a plan decision.
+    """
+    if value is None or str(value) in ("", "NULL"):
+        return None, None
+    kind = field["type"]
+    if kind == "enum":
+        codes = [c for c in codelists.get(field["codelist"], []) if _fold(c) == _fold(value)]
+        return (codes[0], None) if len(codes) == 1 else (None, "kod listesinde karşılığı yok")
+    if kind in ("double", "int", "long"):
+        try:
+            number = float(str(value).replace(",", "."))
+        except ValueError:
+            return None, "sayı değil"
+        rule = rule_for(field)
+        if rule is not None and not value_in_rule(number, rule):
+            return None, rule.reason
+        if kind in ("int", "long"):
+            if number != int(number):
+                return None, "tam sayı değil"
+            return int(number), None
+        return number, None
+    if kind == "string":
+        return str(value), None
+    return None, None
+
+
 def import_cad_layer(source, tabaka_field, workspace, feedback=None, project=None):
     """Write ``source`` features into the MPYY workspace by their tabaka name.
 
@@ -95,7 +131,9 @@ def import_cad_layer(source, tabaka_field, workspace, feedback=None, project=Non
         raise ValueError(f'Kaynakta tabaka alanı yok: {tabaka_field}')
     table = crosswalk(level)
     user_mappings = load_user_mappings()
-    types = {t["name"]: t for t in level_schema(level)["feature_types"]}
+    schema = level_schema(level)
+    types = {t["name"]: t for t in schema["feature_types"]}
+    source_names = set(source.fields().names())
     groups = {}
     for feature in source.getFeatures(QgsFeatureRequest()):
         groups.setdefault(str(feature[tabaka_field] or ""), []).append(feature)
@@ -130,6 +168,13 @@ def import_cad_layer(source, tabaka_field, workspace, feedback=None, project=Non
                 raise RuntimeError('Hedef tablo açılamadı: ' + type_name)
             targets[type_name] = target
         transform = QgsCoordinateTransform(source.crs(), target.crs(), project)
+        # Plan values the source already carries under the schema's own field
+        # names (KatAdedi, Taks, YapiDuzeni ... read from the drawing's texts):
+        # carried over, but only as the form would accept them.
+        carried = [f for f in types[type_name]["fields"]
+                   if f["name"] in source_names and f["name"] not in entry["attrs"]]
+        row["tasinan_deger"] = 0
+        row["atlanan_deger"] = []
         new_features = []
         for feature in features:
             geometry = QgsGeometry(feature.geometry())
@@ -147,6 +192,13 @@ def import_cad_layer(source, tabaka_field, workspace, feedback=None, project=Non
                 out.setGeometry(part)
                 for field, value in entry["attrs"].items():
                     out[field] = value
+                for field in carried:
+                    value, why = carry_value(feature[field["name"]], field, schema["codelists"])
+                    if value is not None:
+                        out[field["name"]] = value
+                        row["tasinan_deger"] += 1
+                    elif why and len(row["atlanan_deger"]) < 10:
+                        row["atlanan_deger"].append(f'{field["name"]}={feature[field["name"]]}: {why}')
                 new_features.append(out)
         if new_features:
             ok, _ = target.dataProvider().addFeatures(new_features)

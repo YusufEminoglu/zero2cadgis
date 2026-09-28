@@ -419,5 +419,35 @@ class TestNczEngineV2Safety(unittest.TestCase):
         self.assertIn((fx.BASE_X + 30.0, fx.BASE_Y + 20.0), ring)
 
 
+class TestSmartObjectPropertyBag(unittest.TestCase):
+    """Netcad 8 building-rights values stored after a Smart Object."""
+
+    @staticmethod
+    def _entry(key, kind, value, display):
+        k, v, d = key.encode(), value.encode("utf-8"), display.encode("utf-8")
+        return bytes([len(k)]) + k + bytes([kind, len(v)]) + v + bytes([len(d)]) + d + bytes([1, 0, 0, 0, 0, 0, 1])
+
+    def test_values_are_read_and_unset_ones_dropped_by_display_name(self):
+        from zero2cadgis.core.ncz_engine.v2.properties import parse_property_bag
+        raw = bytes(7) + b"".join([
+            self._entry("nizam", 0x12, "BİTİŞİK", "Nizam"),
+            self._entry("kat", 0x09, "4", "Kat"),
+            self._entry("chkKatIsNull", 0x03, "False", "Kat"),
+            # key "txtOn" and flag "chkOnIsNull" only share the display name "Ön"
+            self._entry("txtOn", 0x0F, "0", "Ön"),
+            self._entry("chkOnIsNull", 0x03, "True", "Ön"),
+            self._entry("txtArka", 0x12, "", "Arka"),
+        ])
+        self.assertEqual(parse_property_bag(raw), {"nizam": "BİTİŞİK", "kat": "4"})
+
+    def test_a_smart_object_record_carries_its_properties(self):
+        body = bytearray(fx.smart_object_block(layer=1)[5:])
+        trailer = b"".join([self._entry("taks", 0x0F, "0.3", "Taks"),
+                            self._entry("chkTaksIsNull", 0x03, "False", "Taks")])
+        data = fx.layer_table_block([b"0", b"SM_YAPILASMA"]) + fx.block(21, bytes(body) + trailer)
+        entity = parse_bytes(data)["entities"][0]
+        self.assertEqual(entity["properties"].get("taks"), "0.3")
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -36,7 +36,9 @@ class NumericRule:
     step: float
     precision: int
     suffix: str = ""
-    style: str = "SpinBox"                 # QGIS Range widget: SpinBox | Slider
+    # QGIS Range widget style. Always SpinBox: the "Slider" style is an integer
+    # QSlider even on a double field, so TAKS (0-1) could only be 0 or 1.
+    style: str = "SpinBox"
     lower_open: bool = False               # True: the minimum itself is not allowed
     reason: str = ""
 
@@ -44,7 +46,7 @@ class NumericRule:
 # Field name -> rule. The names are the XSD's own; one rule serves every level
 # and feature type that carries the field.
 NUMERIC_RULES = {
-    "Taks": NumericRule(0.0, 1.0, 0.01, 2, style="Slider", lower_open=True,
+    "Taks": NumericRule(0.0, 1.0, 0.01, 2, lower_open=True,
                         reason="TAKS bir oran: 0'dan büyük, en çok 1 olmalı (0,35 gibi)."),
     "EmsalKaks": NumericRule(0.0, 100.0, 0.05, 2, lower_open=True,
                              reason="Emsal (KAKS) 0'dan büyük olmalı."),

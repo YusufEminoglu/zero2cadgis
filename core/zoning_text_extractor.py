@@ -74,6 +74,12 @@ class ZoningParameters:
             "AdaNo": self.ada_no or "",
             "ParselNo": self.parsel_no or "",
             "YolGenisligi": self.yol_genisligi if self.yol_genisligi is not None else None,
+            # MPYY DegerTip: the drawing states a number -> "Deger". Left empty
+            # otherwise: whether an absent value is Serbest or GecerliDegil is
+            # a planning decision the drawing does not record.
+            "EmsalKaksTip": "Deger" if self.emsal_kaks is not None else "",
+            "TaksTip": "Deger" if self.taks is not None else "",
+            "YapiYuksekligiTip": "Deger" if self.yapi_yuksekligi is not None else "",
             "PlanNotu": "; ".join(self.raw_texts)[:_PLAN_NOTU_MAX_CHARS],
         }
 
@@ -256,6 +262,57 @@ _MERGED_FIELDS = (
     "yol_genisligi",
 )
 _PLAN_NOTU_MAX_CHARS = 1000
+
+
+_NIZAM_LETTER = {"AYRIK": "A", "BITISIK": "B", "BLOK": "BL", "IKIZ": "İ", "SERBEST": "S"}
+_FOLD = str.maketrans({"İ": "I", "ı": "I", "Ş": "S", "ş": "S", "Ç": "C", "ç": "C",
+                       "Ğ": "G", "ğ": "G", "Ö": "O", "ö": "O", "Ü": "U", "ü": "U"})
+
+
+def notation_texts(properties: Dict[str, str]) -> List[str]:
+    """A Netcad 8 building-rights / road-width Smart Object as plan-notation text.
+
+    The object stores what the planner typed into its form (``nizam``, ``kat``,
+    ``taks``, ``kaks``, ``emsal``, ``hmax`` + ``HmaxType``, ``txtOn``, ``txtYan``,
+    ``genislik``). Written back as the notation the plan prints ("A-4",
+    "TAKS=0.30", "ÖN=5" ...), it goes through the same parser and the same
+    agreement rule as the drawing's loose texts. ``choiceType`` says which pair
+    the planner chose: 1 = TAKS/KAKS, 0 = Emsal.
+    """
+    p = {k: str(v).strip() for k, v in (properties or {}).items() if str(v).strip()}
+    out: List[str] = []
+    nizam = p.get("nizam", "").upper().translate(_FOLD)
+    kat = p.get("kat")
+    if nizam in _NIZAM_LETTER and kat:
+        out.append(f"{_NIZAM_LETTER[nizam]}-{kat}")
+    else:
+        if nizam in _NIZAM_LETTER:
+            out.append(nizam)
+        if kat:
+            out.append(f"KAT={kat}")
+    choice = p.get("choiceType")
+    if choice != "0":
+        if "taks" in p:
+            out.append(f"TAKS={p['taks']}")
+        if "kaks" in p:
+            out.append(f"KAKS={p['kaks']}")
+    if choice != "1" and "emsal" in p:
+        out.append(f"EMSAL={p['emsal']}")
+    if "hmax" in p:
+        if p.get("HmaxType", "M").upper().translate(_FOLD).startswith("KAT"):
+            if not kat:
+                out.append(f"KAT={p['hmax']}")
+        else:
+            out.append(f"HMAX={p['hmax']}")
+    elif "yEncok" in p:
+        out.append(f"YENCOK={p['yEncok']}")
+    if "txtOn" in p:
+        out.append(f"ÖN={p['txtOn']}")
+    if "txtYan" in p:
+        out.append(f"YAN={p['txtYan']}")
+    if "genislik" in p:
+        out.append(f"YOL={p['genislik']}")
+    return out
 
 
 def parse_zoning_parameters(texts: Iterable[str]) -> ZoningParameters:
@@ -494,6 +551,9 @@ def assign_zoning_parameters_to_polygons(
             ("ParselNo", QMetaType.Type.QString),
             ("YolGenisligi", QMetaType.Type.Double),
             ("PlanNotu", QMetaType.Type.QString),
+            ("EmsalKaksTip", QMetaType.Type.QString),
+            ("TaksTip", QMetaType.Type.QString),
+            ("YapiYuksekligiTip", QMetaType.Type.QString),
         ]
         for name, qtype in schema_specs:
             if name not in existing_names:
@@ -532,7 +592,12 @@ def assign_zoning_parameters_to_polygons(
         polygon_layer.startEditing()
 
     layer_field_names = [f.name() for f in polygon_layer.fields()]
-    tabaka_field = "uip_tabaka" if "uip_tabaka" in layer_field_names else None
+    # The drawing's tabaka: PlanGML-era layers named it uip_tabaka, CAD layers
+    # carry it as layer_name. Without one, no feature can be told apart from a
+    # contour or a boundary, so nothing is enriched rather than everything.
+    tabaka_field = next((f for f in ("uip_tabaka", "layer_name") if f in layer_field_names), None)
+    if tabaka_field is None:
+        return 0
 
     for feat in polygon_layer.getFeatures():
         geom = feat.geometry()
