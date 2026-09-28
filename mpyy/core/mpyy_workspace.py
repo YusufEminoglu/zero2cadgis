@@ -43,6 +43,7 @@ from qgis.core import (
 from qgis.PyQt.QtGui import QColor, QFont
 
 from .schema import SCHEMA_VERSION
+from .legend_scope import limit_to_present, watch as watch_legend
 
 gdal.UseExceptions()
 
@@ -274,6 +275,11 @@ def configure_mpyy_layer(layer, feature_type, codelists):
                     index, f'"{field["name"]}" IS NULL OR "{field["name"]}" IN ({allowed})',
                     f'{caption(field["name"])}: MPYY kod listesinde olmayan değer.',
                 )
+    from .form_rules import apply_numeric_rules
+
+    # Range widgets and bounds for the numeric fields the XSD leaves untyped beyond
+    # double/int (TAKS 0-1, non-negative distances, >= 1 storey ...).
+    apply_numeric_rules(layer, feature_type)
     layer.setCustomProperty("mpyy/schema_missing_fields", ", ".join(missing))
     layer.setCustomProperty("mpyy/form", "MPYY şeması: " + feature_type["name"])
     layer.setCustomProperty("mpyy/template", "mpyy:" + feature_type["name"])
@@ -325,6 +331,10 @@ def load_mpyy_layers(path, project=None, dataset_id=None, level=None):
                 apply_eplan_symbology(layer, level, feature_type["name"])  # default style missing or replaced
             if not layer.labelsEnabled() and not apply_line_labels(layer, level, feature_type["name"]):
                 apply_building_notation(layer)
+            # Legend lists only the symbols this plan uses; the full set returns
+            # while the layer is edited (see core/legend_scope.py).
+            limit_to_present(layer)
+            watch_legend(layer)
             if dataset_id:
                 layer.setCustomProperty("mpyy/dataset_id", dataset_id)
             project.addMapLayer(layer, False)

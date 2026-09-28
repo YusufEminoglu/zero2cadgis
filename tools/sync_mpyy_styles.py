@@ -41,8 +41,8 @@ PLUGIN_ROOT = os.path.dirname(HERE)
 TARGET = os.path.join(PLUGIN_ROOT, "mpyy")
 
 MODULES = (
-    "db_factory", "fonts", "mpyy_detail_catalog", "mpyy_detail_hierarchy",
-    "mpyy_import", "mpyy_workspace", "schema",
+    "db_factory", "fonts", "form_rules", "legend_scope", "mpyy_detail_catalog",
+    "mpyy_detail_hierarchy", "mpyy_import", "mpyy_workspace", "schema",
 )
 STYLE_FILES = (
     "mpyy_schema.json", "mpyy_m_schema.json", "mpyy_tabaka_crosswalk.json",
@@ -104,6 +104,27 @@ def plan(studio: str) -> dict:
     return files
 
 
+def _check_closure(studio: str) -> None:
+    """Every relative import of a copied module must itself be copied.
+
+    MPYY Studio's modules grow new helpers; a copy that misses one would import
+    fine in MPYY Studio and fail only inside 02CadGis, at import time.
+    """
+    import ast
+
+    missing = set()
+    for mod in MODULES:
+        with open(os.path.join(studio, "core", f"{mod}.py"), encoding="utf-8") as handle:
+            tree = ast.parse(handle.read())
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ImportFrom) and node.level == 1 and node.module:
+                name = node.module.split(".")[0]
+                if name not in MODULES:
+                    missing.add(f"{mod} -> {name}")
+    if missing:
+        raise SystemExit("MPYY closure incomplete, add to MODULES: " + ", ".join(sorted(missing)))
+
+
 def main() -> None:
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     check = "--check" in sys.argv
@@ -111,6 +132,7 @@ def main() -> None:
     if not os.path.isdir(os.path.join(studio, "core")):
         raise SystemExit(f"MPYY Studio not found: {studio}")
     files = plan(studio)
+    _check_closure(studio)
     manifest = {rel: _sha(src) for rel, src in sorted(files.items())}
 
     manifest_path = os.path.join(TARGET, "SYNC_MANIFEST.json")

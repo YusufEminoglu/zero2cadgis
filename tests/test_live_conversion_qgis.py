@@ -359,6 +359,17 @@ class TestMpyyStructureImportQgis(unittest.TestCase):
                 self.assertTrue(str(layer.customProperty("mpyy/symbology")).startswith("e-Plan SLD: UIP/"),
                                 layer.name())
                 self.assertIsNone(layer.customProperty("mpyy/missing_symbols"), layer.name())
+            # The legend lists only what this plan uses: both konut types, and no
+            # "no official symbol" fallback because every feature has its code.
+            konut_rules = " ".join(r.filterExpression() + "|" + r.label()
+                                   for r in by_name["Konut"].renderer().rootRule().descendants())
+            self.assertIn("YerlesikKonut", konut_rules)
+            self.assertIn("GelismeKonut", konut_rules)
+            self.assertNotIn("Kodu girilmemiş", konut_rules)
+            self.assertEqual(by_name["Konut"].customProperty("mpyy/legend"), "mevcut")
+            # A numeric field gets a bounded widget (TAKS 0-1) from the MPYY forms.
+            taks = by_name["Konut"].fields().indexFromName("Taks")
+            self.assertEqual(by_name["Konut"].editorWidgetSetup(taks).type(), "Range")
             # Not in the crosswalk: reported and kept, never guessed.
             self.assertEqual([r["tabaka"] for r in result.unmatched], ["CIZPEN"])
             self.assertEqual(sum(l.featureCount() for l in result.leftovers), 1)

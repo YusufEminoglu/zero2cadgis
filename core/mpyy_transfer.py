@@ -115,6 +115,8 @@ def transfer_to_mpyy(
 def _load_filled_types(mpyy_workspace, workspace_path, level, filled, group_name, project):
     from qgis.core import QgsVectorLayer
 
+    from ..mpyy.core import legend_scope
+
     schema = mpyy_workspace.level_schema(level)
     root = project.layerTreeRoot()
     base = root.insertGroup(0, group_name)
@@ -138,6 +140,10 @@ def _load_filled_types(mpyy_workspace, workspace_path, level, filled, group_name
             if not layer.labelsEnabled() and not mpyy_workspace.apply_line_labels(
                     layer, level, feature_type["name"]):
                 mpyy_workspace.apply_building_notation(layer)
+            # Legend lists only the values this plan uses; the full set returns
+            # while the layer is edited (MPYY Studio's legend_scope).
+            legend_scope.limit_to_present(layer)
+            legend_scope.watch(layer)
             project.addMapLayer(layer, False)
             group.addLayer(layer)
             loaded.append(layer)

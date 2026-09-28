@@ -26,6 +26,7 @@ from qgis.core import (
     QgsWkbTypes,
 )
 
+from .form_rules import cross_field_findings, rule_for, value_in_rule
 from .mpyy_workspace import all_levels, level_schema
 
 CROSSWALK_PATH = Path(__file__).resolve().parents[1] / "styles" / "mpyy_tabaka_crosswalk.json"
@@ -220,6 +221,16 @@ def audit_mpyy_workspace(path, level=None):
                 elif field["type"] == "enum" and str(value) not in schema["codelists"][field["codelist"]]:
                     findings.append({"katman": type_name, "fid": fid, "sorun": "Kod listesinde olmayan değer",
                                      "ayrinti": f'{field["name"]}={value}'})
+                else:
+                    rule = rule_for(field)
+                    if rule is not None and not value_in_rule(value, rule):
+                        # Data that came in past the form (GML, CAD transfer, SQL).
+                        findings.append({"katman": type_name, "fid": fid, "sorun": "Değer aralık dışında",
+                                         "ayrinti": f'{field["name"]}={value}: {rule.reason}'})
+            names = [f["name"] for f in fields if f["name"] in columns[type_name]]
+            for message in cross_field_findings(feature, names):
+                findings.append({"katman": type_name, "fid": fid, "sorun": "Tutarsız değer (uyarı)",
+                                 "ayrinti": message})
     return findings
 
 
