@@ -49,19 +49,147 @@ NO_TABAKA = {"", "YOK", "NULL", "-"}
 # an empty cell. Tabaka with no unambiguous official counterpart (PL_KDKCA,
 # PL_REFUJ, a generic PL_TURIZM, PL_YATILI_BOLGE_OKUL, SNR_FONKSIYON) are left
 # out on purpose and simply resolve to nothing.
+#
+# Not needed here: spellings that only drop the ``PL_`` prefix or add/drop the
+# ``_ALANI`` ending — ``plangml_schema.lookup_tabaka`` derives those itself, and
+# a test fails if an alias here disagrees with what it derives.
+#
+# Also left out on purpose, each for a stated reason:
+#   generic -> one specific function (invents a precision the drawing lacks):
+#     EGITIM (ilkokul? lise?), IBADET (cami? kilise?), TARIM (4 official
+#     kinds), PL_ENERJI, PL_KAMU*, AKARYAKIT (servis istasyonu 110002 or
+#     ürün depolama 106001), SNR_PLAN (onama or değişiklik sınırı);
+#   a different function: BISIKLET_YOLU is not 109001 BİSİKLET PARKI,
+#     PL_KATLI_OTOPARK is not 109003 GENEL OTOPARK (109100 exists, untabaka'd);
+#   ambiguous abbreviation: KOP (Kamu Ortaklık Payı as often as Küçük Sanayi);
+#   roads: the Ministry defines 133002-133005 (taşıt, bisiklet, yaya yolu)
+#     with NO tabaka name, so no local road layer can claim one.
 # ---------------------------------------------------------------------------
 ALIASES = {
-    "PL_BELEDIYE": "PL_BHA",                 # 110004 Belediye Hizmet Alanı
-    "PL_OYUN_ALANI": "PL_COCUK_BAHCESI",     # 101003 Çocuk Bahçesi VE Oyun Alanı
-    "PL_SAGLIK_OCAGI": "PL_AILE_SAGL_MER",   # 115001 Aile Sağlığı Merkezi
-    "PL_SOSYOKULTUREL": "PL_SOSYAL_TESIS",   # 116014 Sosyal Tesis Alanı
-    "PL_SPOR_TESISLERI": "PL_ACIK_SPOR_TES",  # 116001 Açık Spor Tesisi Alanı
-    "PL_DERE": "PL_SU_YUZEYI",               # 117005 Su Yüzeyi
-    "PL_HAL": "PL_TOPTAN_TICARET",           # 110024 Toptan Ticaret Alanı
-    "PL_MEZARLIK_ALANI": "PL_MEZARLIK",      # 101011 Mezarlık Alanı
-    "PL_ORMAN": "PL_ORMAN_ALANI",            # 103008 Orman Alanı
-    "PL_MERA": "PL_MERA_ALANI",              # 103006 Mera Alanı
-    "PL_ZEYTINLIK": "PL_ZEYTINLIK_ALAN",     # 103011 Zeytinlik Alan
+    "ADA_KENARI": "ADAKENARI",                  # 130100 Adakenari
+    "AGACLANDIRILACAK_ALAN": "PL_AGACLANDIRILACAK",# 101001 Ağaçlandirilacak Alan
+    "AILE_SAGLIGI": "PL_AILE_SAGL_MER",         # 115001 Ai̇le Sağliği Merkezi̇
+    "AKARSU": "PL_SU_YUZEYI",                   # 117005 Su Yüzeyi̇
+    "AKARYAKIT_LPG": "PL_BAKIM_AKARYAKIT",      # 110002 Akaryakit Ve Servi̇s İstasyonu Alani
+    "ARITMA": "PL_ATIKSU_TESISI",               # 117001 Atiksu Tesi̇sleri̇ Alani (Aritma, Terfi̇ Merkezi̇)
+    "ASKERI_YASAK": "KST_ASKERI_YASAK",         # 114001 Askeri̇ Yasak Ve Güvenli̇k Bölgesi̇
+    "BELEDIYE_HIZMET": "PL_BHA",                # 110004 Beledi̇ye Hi̇zmet Alani
+    "BELEDIYE_HIZMET_ALANI": "PL_BHA",          # 110004 Beledi̇ye Hi̇zmet Alani
+    "BELEDIYE_SINIRI": "SNR_BELEDIYE",          # 121101 Beledi̇ye Siniri
+    "DENIZ": "PL_SU_YUZEYI",                    # 117005 Su Yüzeyi̇
+    "DERE": "PL_SU_YUZEYI",                     # 117005 Su Yüzeyi̇
+    "ETAPLAMA_SINIRI": "SNR_ETAPLAMA",          # 122103 Etaplama Siniri
+    "GECEKONDU_ONLEME": "SNR_GOB",              # 114105 Gecekondu Önleme Bölgesi̇ Siniri
+    "GOL": "PL_SU_YUZEYI",                      # 117005 Su Yüzeyi̇
+    "HEYELAN_ALANI": "KST_HEYELAN",             # 102001 Heyelan Alani
+    "IFRAZ_HATTI": "HAT_IFRAZ",                 # 132102 İfraz Hatti
+    "ILCE_SINIRI": "SNR_ILCE",                  # 121103 İlçe Siniri
+    "IL_SINIRI": "SNR_IL",                      # 121102 İl Siniri
+    "IMAR_HAKKI_AKT_SINIRI": "SNR_IMAR_HAKKI_AKT",# 122105 İmar Hakki Aktarim Alani Siniri
+    "KADEME_HATTI": "HAT_KADEME",               # 132101 Kademe Hatti
+    "KATI_ATIK": "PL_KATI_ATIK_TESISI",         # 117003 Kati Atik Tesi̇sleri̇ Alani (Boşaltma, Bertaraf, İşleme, Transfer Ve Depolama)
+    "KENTSEL_TASARIM_SINIRI": "SNR_KENTSEL_TASARIM",# 122106 Kentsel Tasarim Projesi̇ Siniri
+    "KIYI_KENAR": "SNR_KIYI_KENAR",             # 114106 Kiyi Kenar Çi̇zgi̇si̇
+    "KIYI_KENAR_CIZGISI": "SNR_KIYI_KENAR",     # 114106 Kiyi Kenar Çi̇zgi̇si̇
+    "KOY_SINIRI": "SNR_KOY",                    # 121104 Köy Siniri
+    "KSA": "PL_KUCUK_SANAYI",                   # 110010 Küçük Sanayi̇ Alani
+    "KST_ONLEMLI": "KST_ONLEMLI_ALAN",          # 102002 Önlemli̇ Alan
+    "LOJISTIK": "PL_LOJISTIK_TESIS",            # 110011 Loji̇sti̇k Tesi̇s Alani
+    "MAHALLE_SINIRI": "SNR_MAHALLE",            # 121105 Mahalle Siniri
+    "MESIRE": "PL_MESIRE_YERI",                 # 101009 Mesi̇re Yeri̇
+    "MESKUN_KONUT": "PL_KONUT",                 # 112002 Yerleşi̇k Konut Alani
+    "MUCAVIR_ALAN": "SNR_MUCAVIR",              # 121106 Mücavi̇r Alan Siniri
+    "MUCAVIR_ALAN_SINIRI": "SNR_MUCAVIR",       # 121106 Mücavi̇r Alan Siniri
+    "NEHIR": "PL_SU_YUZEYI",                    # 117005 Su Yüzeyi̇
+    "ONLEMLI_ALAN": "KST_ONLEMLI_ALAN",         # 102002 Önlemli̇ Alan
+    "ORGANIZE_SANAYI": "PL_OSB",                # 114003 Organi̇ze Sanayi̇ Bölgesi̇
+    "OYUN_ALANI": "PL_COCUK_BAHCESI",           # 101003 Çocuk Bahçesi̇ Ve Oyun Alani
+    "PLAN_DEGISIKLIGI": "SNR_PLAN_DEGISIKLIGI", # 122108 Plan Deği̇şi̇kli̇ği̇ Onama Siniri
+    "PLAN_DEGISIKLIK": "SNR_PLAN_DEGISIKLIGI",  # 122108 Plan Deği̇şi̇kli̇ği̇ Onama Siniri
+    "PLAN_ONAMA": "SNR_PLANONAMA",              # 122109 Plan Onama Siniri
+    "PLAN_ONAMA_SINIRI": "SNR_PLANONAMA",       # 122109 Plan Onama Siniri
+    "PL_ACIK_OTOPARK": "PL_OTOPARK",            # 109003 Genel Otopark Alani
+    "PL_AGACLANDIRILACAK_ALAN": "PL_AGACLANDIRILACAK",# 101001 Ağaçlandirilacak Alan
+    "PL_AILE_SAGLIGI": "PL_AILE_SAGL_MER",      # 115001 Ai̇le Sağliği Merkezi̇
+    "PL_AKARSU": "PL_SU_YUZEYI",                # 117005 Su Yüzeyi̇
+    "PL_AKARYAKIT_LPG": "PL_BAKIM_AKARYAKIT",   # 110002 Akaryakit Ve Servi̇s İstasyonu Alani
+    "PL_ANAOKUL": "PL_ANAOKULU",                # 105001 Anaokulu Alani
+    "PL_ARITMA": "PL_ATIKSU_TESISI",            # 117001 Atiksu Tesi̇sleri̇ Alani (Aritma, Terfi̇ Merkezi̇)
+    "PL_ATIKSU": "PL_ATIKSU_TESISI",            # 117001 Atiksu Tesi̇sleri̇ Alani (Aritma, Terfi̇ Merkezi̇)
+    "PL_BELEDIYE": "PL_BHA",                    # 110004 Beledi̇ye Hi̇zmet Alani
+    "PL_BELEDIYE_HIZMET": "PL_BHA",             # 110004 Beledi̇ye Hi̇zmet Alani
+    "PL_DENIZ": "PL_SU_YUZEYI",                 # 117005 Su Yüzeyi̇
+    "PL_DERE": "PL_SU_YUZEYI",                  # 117005 Su Yüzeyi̇
+    "PL_EGITIM_ILK": "PL_ILKOKUL_ALANI",        # 105003 İlkokul Alani
+    "PL_EGITIM_ILKOKUL": "PL_ILKOKUL_ALANI",    # 105003 İlkokul Alani
+    "PL_EGITIM_LISE": "PL_LISE_ALANI",          # 105004 Li̇se Alani
+    "PL_EGITIM_MESLEK": "PL_TEKNIK_OGRETIM",    # 105008 Mesleki̇ Ve Tekni̇k Öğreti̇m Tesi̇si̇ Alani
+    "PL_EGITIM_ORTA": "PL_ORTAOKUL_ALANI",      # 105005 Ortaokul Alani
+    "PL_ENDUSTRI_MESLEK": "PL_TEKNIK_OGRETIM",  # 105008 Mesleki̇ Ve Tekni̇k Öğreti̇m Tesi̇si̇ Alani
+    "PL_GECEKONDU_ONLEME": "SNR_GOB",           # 114105 Gecekondu Önleme Bölgesi̇ Siniri
+    "PL_GOL": "PL_SU_YUZEYI",                   # 117005 Su Yüzeyi̇
+    "PL_HAL": "PL_TOPTAN_TICARET",              # 110024 Toptan Ti̇caret Alani
+    "PL_HEYELAN": "KST_HEYELAN",                # 102001 Heyelan Alani
+    "PL_KATI_ATIK": "PL_KATI_ATIK_TESISI",      # 117003 Kati Atik Tesi̇sleri̇ Alani (Boşaltma, Bertaraf, İşleme, Transfer Ve Depolama)
+    "PL_KONUT_GELISME": "PL_GELISME_KONUT",     # 112001 Geli̇şme Konut Alani
+    "PL_KSA": "PL_KUCUK_SANAYI",                # 110010 Küçük Sanayi̇ Alani
+    "PL_KULTUR": "PL_KULTUREL_TESIS",           # 116005 Kültürel Tesi̇s Alani
+    "PL_KULTUREL": "PL_KULTUREL_TESIS",         # 116005 Kültürel Tesi̇s Alani
+    "PL_LOJISTIK": "PL_LOJISTIK_TESIS",         # 110011 Loji̇sti̇k Tesi̇s Alani
+    "PL_MESIRE": "PL_MESIRE_YERI",              # 101009 Mesi̇re Yeri̇
+    "PL_MESIRE_ALANI": "PL_MESIRE_YERI",        # 101009 Mesi̇re Yeri̇
+    "PL_MESKUN_KONUT": "PL_KONUT",              # 112002 Yerleşi̇k Konut Alani
+    "PL_NEHIR": "PL_SU_YUZEYI",                 # 117005 Su Yüzeyi̇
+    "PL_ORGANIZE_SANAYI": "PL_OSB",             # 114003 Organi̇ze Sanayi̇ Bölgesi̇
+    "PL_OYUN_ALANI": "PL_COCUK_BAHCESI",        # 101003 Çocuk Bahçesi̇ Ve Oyun Alani
+    "PL_SAGLIK": "PL_SAGLIK_TESISI",            # 115004 Sağlik Tesi̇si̇ Alani
+    "PL_SAGLIK_OCAGI": "PL_AILE_SAGL_MER",      # 115001 Ai̇le Sağliği Merkezi̇
+    "PL_SANAYI": "PL_SANAYI_TESIS",             # 110014 Sanayi̇ Tesi̇s Alani
+    "PL_SANAYI_ALANI": "PL_SANAYI_TESIS",       # 110014 Sanayi̇ Tesi̇s Alani
+    "PL_SOSYAL": "PL_SOSYAL_TESIS",             # 116014 Sosyal Tesi̇s Alani
+    "PL_SOSYAL_TESISI": "PL_SOSYAL_TESIS",      # 116014 Sosyal Tesi̇s Alani
+    "PL_SOSYOKULTUREL": "PL_SOSYAL_TESIS",      # 116014 Sosyal Tesi̇s Alani
+    "PL_SPOR_TESISLERI": "PL_ACIK_SPOR_TES",    # 116001 Açik Spor Tesi̇si̇ Alani
+    "PL_SUYUZEYI": "PL_SU_YUZEYI",              # 117005 Su Yüzeyi̇
+    "PL_TASKIN": "KST_TASKIN",                  # 102003 Taşkina Maruz Alan
+    "PL_TERMINAL": "PL_OTOGAR",                 # 109002 Termi̇nal (Otogar)
+    "PL_TICARET_KONUT": "PL_KONUT_TICARET",     # 110009 Ti̇caret - Konut Alani
+    "PL_TICK": "PL_KONUT_TICARET",              # 110009 Ti̇caret - Konut Alani
+    "PL_TICKONUT": "PL_KONUT_TICARET",          # 110009 Ti̇caret - Konut Alani
+    "PL_TOPLU_ISYERI": "PL_TOPLU_ISYERLERI",    # 110023 Toplu İşyerleri̇
+    "PL_TURIZM_TICARET": "PL_TICARET_TURIZM",   # 110022 Ti̇caret - Turi̇zm Alani
+    "PL_UNIVERSITE": "PL_YUKSEKOGRETIM",        # 105009 Yüksek Öğreti̇m Alani
+    "PL_ZEYTINLIK": "PL_ZEYTINLIK_ALAN",        # 103011 Zeyti̇nli̇k Alan
+    "SAGLIK": "PL_SAGLIK_TESISI",               # 115004 Sağlik Tesi̇si̇ Alani
+    "SAGLIK_OCAGI": "PL_AILE_SAGL_MER",         # 115001 Ai̇le Sağliği Merkezi̇
+    "SAGLIK_TESIS_ALANI": "PL_SAGLIK_TESISI",   # 115004 Sağlik Tesi̇si̇ Alani
+    "SAHIL_SERIDI": "SNR_SAHIL_SERIDI",         # 114200 Sahi̇l Şeri̇di̇
+    "SANAYI": "PL_SANAYI_TESIS",                # 110014 Sanayi̇ Tesi̇s Alani
+    "SANAYI_ALANI": "PL_SANAYI_TESIS",          # 110014 Sanayi̇ Tesi̇s Alani
+    "SNR_ONAMA": "SNR_PLANONAMA",               # 122109 Plan Onama Siniri
+    "SNR_PLANDEGISIK": "SNR_PLAN_DEGISIKLIGI",  # 122108 Plan Deği̇şi̇kli̇ği̇ Onama Siniri
+    "SNR_PLAN_DEG": "SNR_PLAN_DEGISIKLIGI",     # 122108 Plan Deği̇şi̇kli̇ği̇ Onama Siniri
+    "SNR_PLAN_DEGISIK": "SNR_PLAN_DEGISIKLIGI", # 122108 Plan Deği̇şi̇kli̇ği̇ Onama Siniri
+    "SNR_PLAN_ONAMA": "SNR_PLANONAMA",          # 122109 Plan Onama Siniri
+    "SNR_PLAN_ONAMA_ILAVE": "SNR_PLANONAMA",    # 122109 Plan Onama Siniri
+    "SNR_YAPIYAKLASMA": "SNR_YAPIYAK",          # 122110 Yapi Yaklaşma Siniri
+    "SNR_YAPI_YAK": "SNR_YAPIYAK",              # 122110 Yapi Yaklaşma Siniri
+    "SNR_YAPI_YAKLASMA": "SNR_YAPIYAK",         # 122110 Yapi Yaklaşma Siniri
+    "SUYUZEYI": "PL_SU_YUZEYI",                 # 117005 Su Yüzeyi̇
+    "TASKIN_ALANI": "KST_TASKIN",               # 102003 Taşkina Maruz Alan
+    "TERMINAL": "PL_OTOGAR",                    # 109002 Termi̇nal (Otogar)
+    "TICARET_KONUT": "PL_KONUT_TICARET",        # 110009 Ti̇caret - Konut Alani
+    "TICK": "PL_KONUT_TICARET",                 # 110009 Ti̇caret - Konut Alani
+    "TICKONUT": "PL_KONUT_TICARET",             # 110009 Ti̇caret - Konut Alani
+    "TOPLU_ISYERI": "PL_TOPLU_ISYERLERI",       # 110023 Toplu İşyerleri̇
+    "TURIZM_TICARET": "PL_TICARET_TURIZM",      # 110022 Ti̇caret - Turi̇zm Alani
+    "ULKE_SINIRI": "SNR_ULKE",                  # 121107 Ülke Siniri
+    "UNIVERSITE": "PL_YUKSEKOGRETIM",           # 105009 Yüksek Öğreti̇m Alani
+    "YAPI_YAKLASMA": "SNR_YAPIYAK",             # 122110 Yapi Yaklaşma Siniri
+    "YAPI_YAKLASMA_SINIRI": "SNR_YAPIYAK",      # 122110 Yapi Yaklaşma Siniri
+    "YAPI_YASAKLI_ALAN": "KST_YAPI_YASAK",      # 102004 Yapi Yasakli Alan
+    "YOL_KALDIRIM": "KALDIRIM",                 # 130103 Kaldirim
+    "ZEYTINLIK": "PL_ZEYTINLIK_ALAN",           # 103011 Zeyti̇nli̇k Alan
 }
 
 

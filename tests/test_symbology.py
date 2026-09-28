@@ -390,6 +390,66 @@ class TestPlanSymbologyMatcher(unittest.TestCase):
         res = apply_plan_symbology(None)
         self.assertFalse(res)
 
+    def test_netcad_aliases_match_official_rule(self):
+        # Shorthand CAD layers used by Netcad and municipalities
+        shorthands = ["TICKONUT", "SAGLIK", "BHA", "PARK", "SNR_PLANONAMA", "HAT_IFRAZ"]
+        for name in shorthands:
+            with self.subTest(layer=name):
+                rule = match_official_rule(name)
+                self.assertIsNotNone(rule, f"Layer {name} should match an official rule")
+                self.assertTrue(rule.official)
+                self.assertTrue(rule.fill_color.startswith("#"))
+
+    def test_pattern_fallback_color_resolved(self):
+        from zero2cadgis.core.pattern_colors import PATTERN_FALLBACK_COLORS
+        self.assertGreater(len(PATTERN_FALLBACK_COLORS), 800)
+        # Check that TICKONUT resolved fill color matches Ministry background
+        rule = match_official_rule("TICKONUT")
+        self.assertIsNotNone(rule)
+        self.assertEqual(rule.fill_color.lower(), "#e3ba45")
+
+
+    def test_palette_fallback_is_not_presented_as_official(self):
+        # mpyy_palettes are authored defaults, not the regulation's colours.
+        from zero2cadgis.core.mpyy_catalog import MPYY_TABAKA
+        seen = 0
+        for tabaka in MPYY_TABAKA:
+            rule = match_official_rule(tabaka)
+            if rule is not None and rule.category_id.startswith("MPYY_"):
+                seen += 1
+                self.assertFalse(rule.official, tabaka)
+        self.assertGreater(seen, 0)
+
+    def test_label_expressions_only_name_existing_fields(self):
+        import itertools
+        import re as _re
+        from zero2cadgis.core.symbology import plan_label_expression
+        fields = ["YapiDuzeni", "KatAdedi", "EmsalKaks", "Yencok", "AdaNo",
+                  "ParselNo", "TAM_ADI", "label", "YolGenisligi"]
+        for r in range(len(fields) + 1):
+            for combo in itertools.combinations(fields, r):
+                for geom in (0, 1, 2):
+                    spec = plan_label_expression(
+                        geom, combo, "label" if "label" in combo else None)
+                    if spec is None:
+                        continue
+                    text, is_expr = spec
+                    named = set(_re.findall(r'"([^"]+)"', text)) if is_expr else {text}
+                    self.assertLessEqual(named, set(combo), (geom, combo, text))
+                    self.assertNotIn("concat_ws", text)
+
+    def test_unmatched_rule_is_neutral(self):
+        from zero2cadgis.core.symbology import UNMATCHED_RULE
+        self.assertFalse(UNMATCHED_RULE.official)
+        self.assertEqual(UNMATCHED_RULE.category_id, "UNMATCHED")
+
+    def test_match_rule_is_memoized_by_name(self):
+        from zero2cadgis.core.symbology import PlanSymbologyMatcher
+        a = PlanSymbologyMatcher.match_rule("SOME_UNKNOWN_LAYER", plan_type="UIP")
+        b = PlanSymbologyMatcher.match_rule("SOME_UNKNOWN_LAYER", plan_type="UIP")
+        self.assertIs(a, b)
+
 
 if __name__ == "__main__":
     unittest.main()
+

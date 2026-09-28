@@ -9,6 +9,7 @@ the matches.
 """
 from __future__ import annotations
 
+import os
 import unittest
 
 from zero2cadgis.core.mpyy_catalog import MPYY_ALIASES, MPYY_TABAKA
@@ -181,6 +182,67 @@ class TestCatalogIntegrity(unittest.TestCase):
 
     def test_lookup_returns_the_documented_shape(self):
         self.assertIsInstance(lookup_tabaka("PL_PARK"), TabakaIdentity)
+
+
+class TestLocalSpellings(unittest.TestCase):
+    """What a local tabaka name may and may not be resolved to."""
+
+    def test_prefix_and_alani_variants_resolve_exactly(self):
+        cases = {
+            "REKREASYON": "101015",        # PL_REKREASYON, not PARK
+            "PASIF_YESIL": "101014",       # PL_PASIF_YESIL, not PARK
+            "RESMI_KURUM": "110013",       # PL_RESMI_KURUM, not IHA
+            "PARK_ALANI": "101013",
+            "PL_KONUT_ONERI": "112002",    # a proposed function is that function
+        }
+        for name, code in cases.items():
+            with self.subTest(name=name):
+                ident = lookup_tabaka(name)
+                self.assertIsNotNone(ident)
+                self.assertEqual(ident.fonksiyon_kodu, code)
+
+    def test_ambiguous_or_different_functions_resolve_to_nothing(self):
+        for name in ("YOL", "TASIT_YOLU", "YAYA_YOLU", "YOL_PLATFORMU",
+                     "BISIKLET_YOLU", "PL_KATLI_OTOPARK", "KOP", "PL_KOP",
+                     "EGITIM", "IBADET", "TARIM", "PL_ENERJI", "AKARYAKIT",
+                     "SNR_PLAN", "PL_KONUT_IPTAL", "PL_KONUT_ITIRAZ"):
+            with self.subTest(name=name):
+                self.assertIsNone(lookup_tabaka(name))
+
+    def test_no_alias_contradicts_what_the_rules_derive(self):
+        from zero2cadgis.core import plangml_schema as ps
+        from zero2cadgis.core.mpyy_catalog import MPYY_ALIASES
+        saved = getattr(ps._alias_index, "_cache", None)
+        try:
+            ps._alias_index._cache = {}
+            ps.lookup_tabaka.cache_clear()
+            for alias, target in MPYY_ALIASES.items():
+                derived = ps.lookup_tabaka(alias)
+                with self.subTest(alias=alias):
+                    self.assertTrue(derived is None or derived.tabaka == target,
+                                    f"{alias}: alias says {target}, rules derive "
+                                    f"{derived.tabaka if derived else None}")
+        finally:
+            if saved is None:
+                del ps._alias_index._cache
+            else:
+                ps._alias_index._cache = saved
+            ps.lookup_tabaka.cache_clear()
+
+    @unittest.skipUnless(os.environ.get("ZERO2CADGIS_MPYY_DB"),
+                         "set ZERO2CADGIS_MPYY_DB to the Ministry MpyyUipDb .gpkg")
+    def test_every_catalog_record_is_in_the_ministry_database(self):
+        import sqlite3
+        from zero2cadgis.core.mpyy_catalog import MPYY_TABAKA
+        db = sqlite3.connect(os.environ["ZERO2CADGIS_MPYY_DB"])
+        official = {}
+        for table in ("uipPolygonTable", "uipLineTable"):
+            for tabaka, code in db.execute(f"SELECT uip_tabaka, id2 FROM {table}"):
+                official.setdefault((tabaka or "").strip().upper(), set()).add(str(code).strip())
+        db.close()
+        for name, record in MPYY_TABAKA.items():
+            with self.subTest(tabaka=name):
+                self.assertIn(record["fonksiyon_kodu"], official.get(name, set()))
 
 
 if __name__ == "__main__":

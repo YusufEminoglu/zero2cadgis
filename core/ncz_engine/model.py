@@ -41,6 +41,9 @@ class NetcadEntity:
     end_angle: float = 0.0
     is_closed: bool = False
     coordinates: list[NetcadCoordinate] = field(default_factory=list)
+    # Holes of a polygon built from line work (cad_polygonizer); the NCZ
+    # decoder itself never produces them, so it is empty for every decoded entity.
+    interior_rings: list[list[NetcadCoordinate]] = field(default_factory=list)
 
 
 @dataclass

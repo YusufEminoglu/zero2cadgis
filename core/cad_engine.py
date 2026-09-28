@@ -5,25 +5,29 @@ Provides vertex thinning, polyline closure tolerance, attribute augmentation, an
 from __future__ import annotations
 
 import math
-from qgis.core import (
-    QgsProject,
-    QgsVectorLayer,
-    QgsFeature,
-    QgsField,
-    QgsMarkerSymbol,
-    QgsLineSymbol,
-    QgsFillSymbol,
-    QgsSingleSymbolRenderer,
-    QgsPalLayerSettings,
-    QgsVectorLayerSimpleLabeling,
-    QgsTextFormat,
-    QgsTextBufferSettings,
-    QgsVectorFileWriter,
-    QgsFields,
-    QgsCoordinateTransform,
-)
-from qgis.PyQt.QtCore import QMetaType
-from qgis.PyQt.QtGui import QColor, QFont
+from contextlib import suppress
+from functools import lru_cache
+
+with suppress(ImportError):
+    from qgis.core import (
+        QgsProject,
+        QgsVectorLayer,
+        QgsFeature,
+        QgsField,
+        QgsMarkerSymbol,
+        QgsLineSymbol,
+        QgsFillSymbol,
+        QgsSingleSymbolRenderer,
+        QgsPalLayerSettings,
+        QgsVectorLayerSimpleLabeling,
+        QgsTextFormat,
+        QgsTextBufferSettings,
+        QgsVectorFileWriter,
+        QgsFields,
+        QgsCoordinateTransform,
+    )
+    from qgis.PyQt.QtCore import QMetaType
+    from qgis.PyQt.QtGui import QColor, QFont
 
 from .qgis_compat import add_features_or_raise, memory_geometry_type_name
 from .export_utils import (
@@ -31,6 +35,60 @@ from .export_utils import (
     exported_feature_count,
     verified_export_result,
 )
+
+# Standard CAD drafting helper tokens that clutter spatial plans
+NOISE_LAYER_KEYWORDS = (
+    "CIZPEN", "CIZ_PEN", "PEN", "KALEM", "CIZGI_PEN", "PLOT_PEN", "COLOR_PEN",
+    "GRID", "KAREYAJ", "PAFTA", "PAFTA_GRID", "PAFTA_SINIRI", "PAFTA_INDEKS",
+    "PAFTA_INDEX", "PAFTA_KENAR", "PAFTA_YAZI", "PINDEX", "P_INDEX", "GRID_PINDEX",
+    "PINDEX_GRID", "GRIDPINDEX", "INDEX", "KOORDINAT", "KOORD",
+    "TAMPON", "TEMP", "DRAFT", "YARDIMCI", "CALISMA", "ESKI", "DENEME", "YEDEK",
+    "TARAMA_CIZGI", "TARAMA", "HATCH", "HATCHES",
+    "KOT", "ROPER", "POLIGON_NOKTA", "NIRENGI", "MIHENK",
+    "ROL_CEPHE", "Z_ADAPARSEL_PL", "SNR_GIS", "SM_AGAC",
+    "ANTET", "LEJANT", "LEGEND", "CERCEVE", "BORDER", "FRAME",
+    "MUELLIF", "ONAMA", "ONAY",
+)
+
+
+def is_helper_or_noise_layer(layer_name: str) -> bool:
+    """True if the layer represents CAD draft, pen, grid or helper entities that should be hidden by default.
+
+    A tabaka the official MPYY catalog recognizes is never noise, whatever its
+    tokens: ``SNR_PLAN_ONAMA`` contains ONAMA and ``KST_SULAK_TAMPON`` contains
+    TAMPON, and hiding either would hide a legally binding plan boundary.
+    """
+    if not layer_name:
+        return False
+    return _is_noise_name(str(layer_name))
+
+
+@lru_cache(maxsize=4096)
+def _is_noise_name(layer_name: str) -> bool:
+    from .plangml_schema import lookup_tabaka
+    if lookup_tabaka(layer_name) is not None:
+        return False
+    upper = layer_name.strip().upper()
+    tr_map = str.maketrans({"Ç": "C", "Ğ": "G", "İ": "I", "Ö": "O", "Ş": "S", "Ü": "U"})
+    upper = upper.translate(tr_map)
+    clean = upper.replace("-", "_").replace(".", "_")
+    tokens = [t for t in clean.split("_") if t]
+
+    # Prominent substring check for notorious CAD drafting noise layers
+    prominent_substrings = (
+        "PINDEX", "CIZPEN", "CIZ_PEN", "KAREYAJ", "PAFTA_GRID", "GRID_PINDEX",
+        "PINDEX_GRID", "PAFTA_INDEX", "PAFTA_INDEKS", "CAD_DRAFT",
+    )
+    for sub in prominent_substrings:
+        if sub in upper or sub in clean:
+            return True
+
+    for kw in NOISE_LAYER_KEYWORDS:
+        if kw in tokens or kw == upper:
+            return True
+        if clean.startswith(f"{kw}_") or clean.endswith(f"_{kw}"):
+            return True
+    return False
 
 
 class CadCleanupEngine:
@@ -130,17 +188,17 @@ class CadFeatureAugmenter:
         prov.addAttributes(fields)
         enriched_layer.updateFields()
 
+        from .qgis_compat import fix_mojibake
         features = []
         for feat in layer.getFeatures():
             geom = feat.geometry()
             new_feat = QgsFeature(enriched_layer.fields())
             new_feat.setGeometry(geom)
 
-            # Copy original values
-            from .qgis_compat import fix_mojibake
-            for field in layer.fields():
-                val = feat[field.name()]
-                new_feat[field.name()] = fix_mojibake(val) if isinstance(val, str) else val
+            # Copy original values in field order (the enriched layer starts
+            # with the same fields); one list, not a by-name lookup per cell.
+            values = [fix_mojibake(val) if isinstance(val, str) else val
+                      for val in feat.attributes()]
 
             # Perform calculations
             length = 0.0
@@ -156,10 +214,8 @@ class CadFeatureAugmenter:
                     cx = centroid.asPoint().x()
                     cy = centroid.asPoint().y()
 
-            new_feat["geom_len"] = round(length, 3)
-            new_feat["geom_area"] = round(area, 3)
-            new_feat["cent_x"] = round(cx, 6)
-            new_feat["cent_y"] = round(cy, 6)
+            values.extend((round(length, 3), round(area, 3), round(cx, 6), round(cy, 6)))
+            new_feat.setAttributes(values)
             features.append(new_feat)
 
         add_features_or_raise(

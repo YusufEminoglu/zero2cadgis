@@ -20,6 +20,7 @@ from __future__ import annotations
 
 from contextlib import suppress
 from dataclasses import dataclass
+from functools import lru_cache
 import os
 import re
 from typing import Any, Dict, List, Optional, Tuple
@@ -640,6 +641,55 @@ def match_official_rule(layer_name: str, plan_type: str = "UIP") -> Optional[Pla
         if entry is None:
             continue
         return _rule_from_entry(key, entry, plan_type)
+
+    # 2. Match via MPYY Tabaka / Alias catalog lookup
+    with suppress(Exception):
+        from .plangml_schema import lookup_tabaka
+        identity = lookup_tabaka(layer_name)
+        if identity is not None:
+            for cand in (identity.fonksiyon_adi, identity.tabaka, identity.fonksiyon_kodu):
+                if not cand:
+                    continue
+                cand_norm = PlanSymbologyMatcher.normalize_string(cand)
+                if not cand_norm:
+                    continue
+                cand_tokens = [t for t in cand_norm.split("_") if t]
+                for key_tokens, key in _eplan_match_keys():
+                    if _contains_subsequence(cand_tokens, key_tokens) or key == cand_norm:
+                        entry = _eplan_entry_for(key, plan_type)
+                        if entry is not None:
+                            return _rule_from_entry(key, entry, plan_type)
+
+            # No e-Plan style for this function: fall back to a renderer
+            # default chosen per upper group. The tabaka's identity is
+            # official; these colours are not (see mpyy_palettes), so the
+            # rule must not claim to be.
+            grp_code = int(identity.ust_grup_id or 0)
+            geom_kind = (identity.geometri or "POLYGON").upper()
+            from .mpyy_palettes import MPYY_GROUP_PALETTES, MPYY_FUNCTION_PALETTES
+            func_key = identity.fonksiyon_adi.upper().replace(" ", "_")
+            palette = MPYY_FUNCTION_PALETTES.get(func_key) or MPYY_GROUP_PALETTES.get((grp_code, geom_kind))
+            if palette:
+                fill = palette.get("fill", "#FFE082" if geom_kind == "POLYGON" else "#000000")
+                stroke = palette.get("stroke", palette.get("line_color", "#333333"))
+                stroke_w = float(palette.get("stroke_width", palette.get("line_width", 0.35)))
+                dash = palette.get("dash")
+                return PlanStyleRule(
+                    category_id=f"MPYY_{identity.fonksiyon_kodu}",
+                    display_name=identity.fonksiyon_adi,
+                    fill_color=fill,
+                    fill_opacity=1.0 if geom_kind == "POLYGON" else 0.0,
+                    stroke_color=stroke,
+                    stroke_width=stroke_w,
+                    keywords=[],
+                    ust_grup_adi=identity.ust_grup_adi or "PLAN ALANLARI",
+                    alt_grup_adi=identity.fonksiyon_adi,
+                    stroke_style="solid",
+                    dash_pattern=[float(d) for d in dash] if dash else None,
+                    official=False,
+                    plan_type=plan_type,
+                )
+
     return None
 
 
@@ -654,6 +704,11 @@ def _rule_from_entry(token_key: str, entry: Dict[str, Any], plan_type: str) -> P
             tarama_size = (int(size[0]), int(size[1])) if size else None
 
     fill = entry.get("fill")
+    if not fill and entry.get("tarama"):
+        with suppress(Exception):
+            from .pattern_colors import PATTERN_FALLBACK_COLORS
+            fill = PATTERN_FALLBACK_COLORS.get(entry["tarama"])
+
     line_color = entry.get("line_color")
     has_area = bool(fill or tarama_path)
     stroke = entry.get("stroke") or line_color or "#000000"
@@ -683,6 +738,20 @@ def _rule_from_entry(token_key: str, entry: Dict[str, Any], plan_type: str) -> P
     )
 
 
+_MATCH_RULE_CACHE: Dict[Tuple[Any, ...], "PlanStyleRule"] = {}
+_TR_FOLD = str.maketrans({"Ç": "C", "Ğ": "G", "I": "I", "İ": "I", "Ö": "O", "Ş": "S", "Ü": "U"})
+
+
+@lru_cache(maxsize=16384)
+def _normalize_cached(val: str) -> str:
+    s = val.strip().upper()
+    s = re.sub(r"^(\d+[\._-]*)?(UIP_|NIP_|CDP_|MUIP_|MNIP_|KDP_|PL_|PLAN_|NCZ_LAYER_|LAYER_)", "", s, flags=re.IGNORECASE)
+    s = re.sub(r"(_POLYGON|_LINESTRING|_LINE|_POINT|_TEXT|_TABLE)$", "", s, flags=re.IGNORECASE)
+    s = s.translate(_TR_FOLD)
+    s = re.sub(r"[^A-Z0-9]+", "_", s)
+    return s.strip("_")
+
+
 class PlanSymbologyMatcher:
     """Adaptive matcher for identifying planning land-use styles from layer metadata."""
 
@@ -691,15 +760,7 @@ class PlanSymbologyMatcher:
         """Clean and normalize a layer name or attribute string."""
         if not val:
             return ""
-        s = str(val).strip().upper()
-        s = re.sub(r"^(\d+[\._-]*)?(UIP_|NIP_|CDP_|MUIP_|MNIP_|KDP_|PL_|PLAN_|NCZ_LAYER_|LAYER_)", "", s, flags=re.IGNORECASE)
-        s = re.sub(r"(_POLYGON|_LINESTRING|_LINE|_POINT|_TEXT|_TABLE)$", "", s, flags=re.IGNORECASE)
-        tr_map = str.maketrans({
-            "Ç": "C", "Ğ": "G", "I": "I", "İ": "I", "Ö": "O", "Ş": "S", "Ü": "U"
-        })
-        s = s.translate(tr_map)
-        s = re.sub(r"[^A-Z0-9]+", "_", s)
-        return s.strip("_")
+        return _normalize_cached(str(val))
 
     @classmethod
     def match_rule(
@@ -714,7 +775,30 @@ class PlanSymbologyMatcher:
         The official e-Plan SLD catalog (per plan type UIP/NIP/CDP) has priority;
         the legacy PASE keyword catalog is the fallback for names the Ministry
         style set does not cover.
+
+        A name-only match is memoized: an import asks once per *feature*, a
+        drawing has a few dozen tabaka, and an unmatched name walks every
+        catalog keyword — 99k features took ~130 s here before this cache.
         """
+        if attributes:
+            return cls._match_rule_uncached(layer_name, scale, attributes, plan_type)
+        key = (layer_name, scale, plan_type)
+        cached = _MATCH_RULE_CACHE.get(key)
+        if cached is None:
+            if len(_MATCH_RULE_CACHE) > 4096:
+                _MATCH_RULE_CACHE.clear()
+            cached = cls._match_rule_uncached(layer_name, scale, None, plan_type)
+            _MATCH_RULE_CACHE[key] = cached
+        return cached
+
+    @classmethod
+    def _match_rule_uncached(
+        cls,
+        layer_name: str,
+        scale: str = "1000",
+        attributes: Optional[Dict[str, Any]] = None,
+        plan_type: Optional[str] = None,
+    ) -> PlanStyleRule:
         official = match_official_rule(
             layer_name, plan_type or detect_plan_type(layer_name) or "UIP")
         if official is not None:
@@ -804,6 +888,17 @@ def create_qgis_fill_symbol(rule: PlanStyleRule) -> Any:
                 if rule.tarama_size:
                     raster_layer.setWidth(float(rule.tarama_size[0]))
                     raster_layer.setWidthUnit(QgsUnitTypes.RenderUnit.RenderPixels)
+
+            # Authentic base background color under the tarama tile
+            if rule.fill_color and rule.fill_color.upper() != "#FFFFFF":
+                bg_layer = QgsSimpleFillSymbolLayer()
+                bg_qcolor = QColor(rule.fill_color)
+                bg_layer.setColor(bg_qcolor)
+                bg_layer.setFillColor(bg_qcolor)
+                bg_layer.setBrushStyle(Qt.BrushStyle.SolidPattern)
+                bg_layer.setStrokeStyle(Qt.PenStyle.NoPen)
+                symbol.appendSymbolLayer(bg_layer)
+
             symbol.appendSymbolLayer(raster_layer)
 
             outline_layer = QgsSimpleFillSymbolLayer()
@@ -941,9 +1036,17 @@ def pick_label_field(qgis_layer: Any) -> Optional[str]:
             continue
         with suppress(Exception):
             index = qgis_layer.fields().indexOf(field)
-            for value in qgis_layer.uniqueValues(index, 25):
+            vals = qgis_layer.uniqueValues(index, 25)
+            for value in vals:
                 if value is not None and str(value).strip():
                     return field
+            if not vals and hasattr(qgis_layer, "getFeatures"):
+                for idx, feat in enumerate(qgis_layer.getFeatures()):
+                    if idx >= 25:
+                        break
+                    val = feat[field]
+                    if val is not None and str(val).strip():
+                        return field
     return None
 
 
@@ -984,6 +1087,79 @@ def create_qgis_marker_symbol(rule: PlanStyleRule, text_anchor: bool = False) ->
 
     symbol.appendSymbolLayer(marker_layer)
     return symbol
+
+
+UNMATCHED_RULE = PlanStyleRule(
+    category_id="UNMATCHED",
+    display_name="Diğer (eşleşmeyen tabaka)",
+    fill_color="#D9D9D9",
+    fill_opacity=0.35,
+    stroke_color="#7A7A7A",
+    stroke_width=0.2,
+    keywords=[],
+    ust_grup_adi="DİĞER PLAN ALANLARI",
+    alt_grup_adi="Diğer (eşleşmeyen tabaka)",
+)
+
+
+def _q(field: str) -> str:
+    return '"' + field.replace('"', '""') + '"'
+
+
+def plan_label_expression(
+    geom_type: int,
+    field_names: Any,
+    label_field: Optional[str] = None,
+) -> Optional[Tuple[str, bool]]:
+    """Label definition for a plan layer, or None when it has nothing to say.
+
+    Returns ``(text, is_expression)``. Every field an expression names is
+    one the layer actually has: an expression that mentions a missing field
+    does not fall back quietly, it labels nothing at all.
+    ``geom_type``: 0 point, 1 line, 2 polygon.
+    """
+    names = set(field_names or ())
+
+    def has(field: str) -> bool:
+        return field in names
+
+    if geom_type == 2:
+        parts = []
+        if has("YapiDuzeni") or has("KatAdedi"):
+            nizam = f"nullif({_q('YapiDuzeni')}, '')" if has("YapiDuzeni") else "NULL"
+            kat = f"to_string({_q('KatAdedi')})" if has("KatAdedi") else "NULL"
+            parts.append(
+                f"nullif(concat({nizam}, if({nizam} is not null and {kat} is not null, '-', ''), {kat}), '')")
+        if has("EmsalKaks"):
+            parts.append(f"'E=' || format_number({_q('EmsalKaks')}, 2)")
+        if has("Yencok"):
+            parts.append(f"nullif({_q('Yencok')}, '')")
+        chain = []
+        if parts:
+            chain.append("nullif(trim(concat(" + ", ".join(p + " || '\n'" for p in parts) + ")), '')")
+        if has("AdaNo"):
+            parsel = f", '/' || nullif({_q('ParselNo')}, '')" if has("ParselNo") else ""
+            chain.append(f"nullif(concat(nullif({_q('AdaNo')}, ''){parsel}), '')")
+        if label_field and has(label_field):
+            chain.append(f"nullif({_q(label_field)}, '')")
+        if has("TAM_ADI"):
+            chain.append(f"nullif({_q('TAM_ADI')}, '')")
+        if not chain:
+            return None
+        return ("coalesce(" + ", ".join(chain) + ")" if len(chain) > 1 else chain[0]), True
+
+    if geom_type == 1:
+        if has("YolGenisligi"):
+            width = _q("YolGenisligi")
+            return (f"if({width} > 0, format_number({width}, "
+                    f"if({width} = floor({width}), 0, 1)) || ' m', NULL)"), True
+        if label_field and has(label_field):
+            return label_field, False
+        return None
+
+    if label_field and has(label_field):
+        return label_field, False
+    return None
 
 
 def apply_plan_symbology(
@@ -1085,19 +1261,28 @@ def apply_plan_symbology(
                     break
 
     applied_categorized = False
-    if category_field and hasattr(qgis_layer, "uniqueValues"):
+    if category_field and hasattr(qgis_layer, "fields"):
         idx = qgis_layer.fields().indexOf(category_field)
-        unique_vals = qgis_layer.uniqueValues(idx)
-        # A single value is still worth categorising: the symbol has to come
-        # from the tabaka. Falling through to the layer name for a one-tabaka
-        # layer only ever worked when the layer name happened to contain the
-        # tabaka's keyword, which official group names generally do not — a
-        # layer of PL_DERE named SU_ATIKSU_VE_ATIK_SISTEMLERI matched nothing
-        # and came out grey.
-        if 1 <= len(unique_vals) <= 300:
+        unique_vals = set()
+        with suppress(Exception):
+            if hasattr(qgis_layer, "uniqueValues"):
+                unique_vals = set(qgis_layer.uniqueValues(idx))
+        if not unique_vals and hasattr(qgis_layer, "getFeatures"):
+            # Providers that cannot answer uniqueValues(); bounded so an
+            # all-empty field on a huge layer is not a full table scan.
+            with suppress(Exception):
+                for scanned, feat in enumerate(qgis_layer.getFeatures()):
+                    if scanned >= 5000 or len(unique_vals) > 300:
+                        break
+                    v = feat[category_field]
+                    if v is not None and str(v).strip():
+                        unique_vals.add(v)
+
+        clean_vals = [v for v in unique_vals if v is not None and str(v).strip()]
+        if 1 <= len(clean_vals) <= 300:
             categories = []
-            for val in unique_vals:
-                val_str = str(val) if val is not None else ""
+            for val in clean_vals:
+                val_str = str(val)
                 matched_rule = PlanSymbologyMatcher.match_rule(
                     val_str,
                     scale=plan_scale,
@@ -1109,6 +1294,13 @@ def apply_plan_symbology(
                     cat_label = matched_rule.display_name if matched_rule else val_str
                     categories.append(QgsRendererCategory(val, sym, cat_label))
             if categories:
+                # "All other values": a feature whose tabaka is empty or was
+                # not seen when the categories were built. Neutral on purpose —
+                # borrowing the layer-name rule here would paint unknown
+                # features as whatever the group name happens to resemble.
+                fallback_sym = build_symbol(UNMATCHED_RULE)
+                if fallback_sym:
+                    categories.append(QgsRendererCategory("", fallback_sym, UNMATCHED_RULE.display_name))
                 renderer = QgsCategorizedSymbolRenderer(category_field, categories)
                 qgis_layer.setRenderer(renderer)
                 applied_categorized = True
@@ -1119,19 +1311,34 @@ def apply_plan_symbology(
         if sym:
             qgis_layer.setRenderer(QgsSingleSymbolRenderer(sym))
 
-    # Text annotations: the drawing's own text, drawn where the CAD put it.
-    if label_field:
+    # Labels: zoning values on plan areas, widths on roads, the drawing's own
+    # text on points — each only from fields this layer really has.
+    field_names = {f.name() for f in qgis_layer.fields()} if hasattr(qgis_layer, "fields") else set()
+    label_spec = plan_label_expression(int(geom_type), field_names, label_field)
+    if label_spec is not None:
+        expression, is_expression = label_spec
         layer_settings = QgsPalLayerSettings()
-        layer_settings.fieldName = label_field
-        layer_settings.isExpression = False
-        with suppress(Exception):
-            layer_settings.placement = QgsPalLayerSettings.Placement.OverPoint
+        layer_settings.fieldName = expression
+        layer_settings.isExpression = is_expression
         text_format = QgsTextFormat()
-        text_format.setSize(9.5)
-        text_format.setColor(QColor("#1A1A1A"))
+        text_format.setColor(QColor("#111111"))
+        with suppress(Exception):
+            if geom_type == 2:
+                layer_settings.placement = QgsPalLayerSettings.Placement.AroundPoint
+                layer_settings.centroidWhole = True
+                layer_settings.centroidInside = True
+            elif geom_type == 1:
+                layer_settings.placement = QgsPalLayerSettings.Placement.Line
+            else:
+                layer_settings.placement = QgsPalLayerSettings.Placement.OverPoint
+        text_format.setSize({2: 8.5, 1: 8.0}.get(int(geom_type), 9.0))
+        with suppress(Exception):
+            font = text_format.font()
+            font.setBold(True)
+            text_format.setFont(font)
         buffer_settings = QgsTextBufferSettings()
         buffer_settings.setEnabled(True)
-        buffer_settings.setSize(1.0)
+        buffer_settings.setSize(1.2)
         buffer_settings.setColor(QColor("#FFFFFF"))
         text_format.setBuffer(buffer_settings)
         layer_settings.setFormat(text_format)

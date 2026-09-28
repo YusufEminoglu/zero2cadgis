@@ -1,0 +1,480 @@
+{
+ "version": 1,
+ "source": "Resmi sınır çizgisi kataloğu (detay kataloğu çizgi tanımları)",
+ "levels": {
+  "UIP": {
+   "AskeriYasakBolge": {
+    "feature": "AskeriYasakBolge",
+    "field": null,
+    "code": null,
+    "text": "AYB",
+    "color": "#FF0000",
+    "kaynak": "ASKERİ YASAK VE GÜVENLİK BÖLGESİ"
+   },
+   "KorumaKusaklari|KusakTip=BoruHattiKorumaKusagi": {
+    "feature": "KorumaKusaklari",
+    "field": "KusakTip",
+    "code": "BoruHattiKorumaKusagi",
+    "text": "BHK",
+    "color": "#FF0000",
+    "kaynak": "BORU HATTI KORUMA KUŞAĞI"
+   },
+   "KorumaKusaklari|KusakTip=DemiryoluKorumaKusagi": {
+    "feature": "KorumaKusaklari",
+    "field": "KusakTip",
+    "code": "DemiryoluKorumaKusagi",
+    "text": "DKK",
+    "color": "#FF0000",
+    "kaynak": "DEMİRYOLLARI KORUMA KUŞAĞI"
+   },
+   "KorumaKusaklari|KusakTip=EnerjiNakilHattiKorumaKusagi": {
+    "feature": "KorumaKusaklari",
+    "field": "KusakTip",
+    "code": "EnerjiNakilHattiKorumaKusagi",
+    "text": "ENH",
+    "color": "#FF0000",
+    "kaynak": "ENERJİ NAKİL HATTI KORUMA KUŞAĞI"
+   },
+   "KorumaKusaklari|KusakTip=HavaalaniKorumaKusagi": {
+    "feature": "KorumaKusaklari",
+    "field": "KusakTip",
+    "code": "HavaalaniKorumaKusagi",
+    "text": "HKK",
+    "color": "#FF0000",
+    "kaynak": "HAVAALANI/HAVALİMANI KORUMA KUŞAĞI"
+   },
+   "KorumaKusaklari|KusakTip=IcmesuyuKorumaKusagi": {
+    "feature": "KorumaKusaklari",
+    "field": "KusakTip",
+    "code": "IcmesuyuKorumaKusagi",
+    "text": "İSK",
+    "color": "#FF0000",
+    "kaynak": "İÇME SUYU ANA İLETİM HATTI KORUMA KUŞAĞI"
+   },
+   "KorumaKusaklari|KusakTip=KarayoluKorumaKusagi": {
+    "feature": "KorumaKusaklari",
+    "field": "KusakTip",
+    "code": "KarayoluKorumaKusagi",
+    "text": "YKK",
+    "color": "#FF0000",
+    "kaynak": "KARAYOLLARI YOL KENARI KORUMA KUŞAĞI"
+   },
+   "KorumaKusaklari|KusakTip=SaglikKorumaBandi": {
+    "feature": "KorumaKusaklari",
+    "field": "KusakTip",
+    "code": "SaglikKorumaBandi",
+    "text": "SKB",
+    "color": "#FF0000",
+    "kaynak": "SAĞLIK KORUMA BANDI"
+   },
+   "KorumaKusaklari|KusakTip=SuKanaliKorumaKusagi": {
+    "feature": "KorumaKusaklari",
+    "field": "KusakTip",
+    "code": "SuKanaliKorumaKusagi",
+    "text": "SKK",
+    "color": "#FF0000",
+    "kaynak": "SU KANALLARI KORUMA KUŞAĞI"
+   },
+   "KorumaKusaklari|KusakTip=YaniciPatlayiciMaddeKorumaKusagi": {
+    "feature": "KorumaKusaklari",
+    "field": "KusakTip",
+    "code": "YaniciPatlayiciMaddeKorumaKusagi",
+    "text": "YPK",
+    "color": "#FF0000",
+    "kaynak": "YANICI PARLAYICI ve PATLAYICI MADDELER KORUMA KUŞAĞI (GÜVENLİK MESAFESİ)"
+   },
+   "KorumaKusaklari|KusakTip=YeraltiSuKorumaKusagi": {
+    "feature": "KorumaKusaklari",
+    "field": "KusakTip",
+    "code": "YeraltiSuKorumaKusagi",
+    "text": "YSK",
+    "color": "#FF0000",
+    "kaynak": "YER ALTI SU KAYNAKLARI KORUMA KUŞAĞI"
+   },
+   "SitAlanlari|SitTip=1DereceArkeolojikSit": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "1DereceArkeolojikSit",
+    "text": "A1",
+    "color": "#FF0000",
+    "kaynak": "1.DERECE ARKEOLOJİK SİT ALANI"
+   },
+   "SitAlanlari|SitTip=1DereceDogalSit": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "1DereceDogalSit",
+    "text": "D1",
+    "color": "#FF0000",
+    "kaynak": "1.DERECE DOĞAL SİT ALANI"
+   },
+   "SitAlanlari|SitTip=2DereceArkeolojikSit": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "2DereceArkeolojikSit",
+    "text": "A2",
+    "color": "#FF0000",
+    "kaynak": "2.DERECE ARKEOLOJİK SİT ALANI"
+   },
+   "SitAlanlari|SitTip=2DereceDogalSit": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "2DereceDogalSit",
+    "text": "D2",
+    "color": "#FF0000",
+    "kaynak": "2.DERECE DOĞAL SİT ALANI"
+   },
+   "SitAlanlari|SitTip=3DereceArkeolojikSit": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "3DereceArkeolojikSit",
+    "text": "A3",
+    "color": "#FF0000",
+    "kaynak": "3.DERECE ARKEOLOJİK SİT ALANI"
+   },
+   "SitAlanlari|SitTip=3DereceDogalSit": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "3DereceDogalSit",
+    "text": "D3",
+    "color": "#FF0000",
+    "kaynak": "3.DERECE DOĞAL SİT ALANI"
+   },
+   "SitAlanlari|SitTip=KentselArkeolojikSit": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "KentselArkeolojikSit",
+    "text": "KA",
+    "color": "#FF0000",
+    "kaynak": "KENTSEL ARKEOLOJİK SİT ALANI"
+   },
+   "SitAlanlari|SitTip=KentselSit": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "KentselSit",
+    "text": "KS",
+    "color": "#FF0000",
+    "kaynak": "KENTSEL SİT ALANI"
+   },
+   "SitAlanlari|SitTip=KesinKorunacakHassasAlan": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "KesinKorunacakHassasAlan",
+    "text": "KK",
+    "color": "#FF0000",
+    "kaynak": "KESİN KORUNACAK HASSAS ALAN"
+   },
+   "SitAlanlari|SitTip=NitelikliDogalKorumaAlani": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "NitelikliDogalKorumaAlani",
+    "text": "ND",
+    "color": "#FF0000",
+    "kaynak": "NİTELİKLİ DOĞAL KORUMA ALANI"
+   },
+   "SitAlanlari|SitTip=SitEtkilesimAlani": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "SitEtkilesimAlani",
+    "text": "SEG",
+    "color": "#FF0000",
+    "kaynak": "SİT ETKİLEŞİM GEÇİŞ ALANI SINIRI"
+   },
+   "SitAlanlari|SitTip=SurdurulebilirKorumaKontrolluKullanimAlani": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "SurdurulebilirKorumaKontrolluKullanimAlani",
+    "text": "SK",
+    "color": "#FF0000",
+    "kaynak": "SÜRDÜRÜLEBİLİR KORUMA VE KONTROLLÜ KULLANIM ALANI"
+   },
+   "SitAlanlari|SitTip=TarihiSit": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "TarihiSit",
+    "text": "TS",
+    "color": "#FF0000",
+    "kaynak": "TARİHİ SİT ALANI"
+   },
+   "SogutmaSuyuAlmaHatti": {
+    "feature": "SogutmaSuyuAlmaHatti",
+    "field": null,
+    "code": null,
+    "text": "S",
+    "color": "#000000",
+    "kaynak": "SOĞUTMA SUYU ALMA HATTI"
+   },
+   "TunelEtkiAlani": {
+    "feature": "TunelEtkiAlani",
+    "field": null,
+    "code": null,
+    "text": "TEA",
+    "color": "#F57A7A",
+    "kaynak": "TÜNEL ETKİ ALANI"
+   },
+   "YeraltiSuKaynakKoruma": {
+    "feature": "YeraltiSuKaynakKoruma",
+    "field": null,
+    "code": null,
+    "text": "YSK",
+    "color": "#FF0000",
+    "kaynak": "YER ALTI SU KAYNAKLARI KORUMA ALANLARI"
+   }
+  },
+  "NIP": {
+   "AskeriYasakBolge": {
+    "feature": "AskeriYasakBolge",
+    "field": null,
+    "code": null,
+    "text": "AYB",
+    "color": "#FF0000",
+    "kaynak": "ASKERİ YASAK VE GÜVENLİK BÖLGESİ"
+   },
+   "KentselDonusumSinirlari|KentselDonusumSinirlariTip=RezervYapiAlanSiniri": {
+    "feature": "KentselDonusumSinirlari",
+    "field": "KentselDonusumSinirlariTip",
+    "code": "RezervYapiAlanSiniri",
+    "text": "RYA",
+    "color": "#000000",
+    "kaynak": "REZERV YAPI ALANI SINIRI"
+   },
+   "KentselDonusumSinirlari|KentselDonusumSinirlariTip=RiskliAlanSiniri": {
+    "feature": "KentselDonusumSinirlari",
+    "field": "KentselDonusumSinirlariTip",
+    "code": "RiskliAlanSiniri",
+    "text": "RA",
+    "color": "#000000",
+    "kaynak": "RİSKLİ ALAN SINIRI"
+   },
+   "KentselDonusumSinirlari|KentselDonusumSinirlariTip=YenilemeAlanSiniri": {
+    "feature": "KentselDonusumSinirlari",
+    "field": "KentselDonusumSinirlariTip",
+    "code": "YenilemeAlanSiniri",
+    "text": "YENİLEME",
+    "color": "#000000",
+    "kaynak": "YENİLEME ALANI SINIRI"
+   },
+   "SitAlanlari|SitTip=1DereceArkeolojikSit": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "1DereceArkeolojikSit",
+    "text": "A1",
+    "color": "#FF0000",
+    "kaynak": "1.DERECE ARKEOLOJİK SİT ALANI"
+   },
+   "SitAlanlari|SitTip=1DereceDogalSit": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "1DereceDogalSit",
+    "text": "D1",
+    "color": "#FF0000",
+    "kaynak": "1.DERECE DOĞAL SİT ALANI"
+   },
+   "SitAlanlari|SitTip=2DereceArkeolojikSit": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "2DereceArkeolojikSit",
+    "text": "A2",
+    "color": "#FF0000",
+    "kaynak": "2.DERECE ARKEOLOJİK SİT ALANI"
+   },
+   "SitAlanlari|SitTip=2DereceDogalSit": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "2DereceDogalSit",
+    "text": "D2",
+    "color": "#FF0000",
+    "kaynak": "2.DERECE DOĞAL SİT ALANI"
+   },
+   "SitAlanlari|SitTip=3DereceArkeolojikSit": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "3DereceArkeolojikSit",
+    "text": "A3",
+    "color": "#FF0000",
+    "kaynak": "3.DERECE ARKEOLOJİK SİT ALANI"
+   },
+   "SitAlanlari|SitTip=3DereceDogalSit": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "3DereceDogalSit",
+    "text": "D3",
+    "color": "#FF0000",
+    "kaynak": "3.DERECE DOĞAL SİT ALANI"
+   },
+   "SitAlanlari|SitTip=KentselArkeolojikSit": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "KentselArkeolojikSit",
+    "text": "KA",
+    "color": "#FF0000",
+    "kaynak": "KENTSEL ARKEOLOJİK SİT ALANI"
+   },
+   "SitAlanlari|SitTip=KentselSit": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "KentselSit",
+    "text": "KS",
+    "color": "#FF0000",
+    "kaynak": "KENTSEL SİT ALANI"
+   },
+   "SitAlanlari|SitTip=KesinKorunacakHassasAlan": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "KesinKorunacakHassasAlan",
+    "text": "KK",
+    "color": "#FF0000",
+    "kaynak": "KESİN KORUNACAK HASSAS ALAN"
+   },
+   "SitAlanlari|SitTip=NitelikliDogalKorumaAlani": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "NitelikliDogalKorumaAlani",
+    "text": "ND",
+    "color": "#FF0000",
+    "kaynak": "NİTELİKLİ DOĞAL KORUMA ALANI"
+   },
+   "SitAlanlari|SitTip=SurdurulebilirKorumaKontrolluKullanimAlani": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "SurdurulebilirKorumaKontrolluKullanimAlani",
+    "text": "SK",
+    "color": "#FF0000",
+    "kaynak": "SÜRDÜRÜLEBİLİR KORUMA VE KONTROLLÜ KULLANIM ALANI"
+   },
+   "SitAlanlari|SitTip=TarihiSit": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "TarihiSit",
+    "text": "TS",
+    "color": "#FF0000",
+    "kaynak": "TARİHİ SİT ALANI"
+   },
+   "SogutmaSuyuAlmaHatti": {
+    "feature": "SogutmaSuyuAlmaHatti",
+    "field": null,
+    "code": null,
+    "text": "S",
+    "color": "#000000",
+    "kaynak": "SOĞUTMA SUYU ALMA HATTI"
+   },
+   "YeraltiSuKaynakKoruma": {
+    "feature": "YeraltiSuKaynakKoruma",
+    "field": null,
+    "code": null,
+    "text": "YSK",
+    "color": "#FF0000",
+    "kaynak": "YER ALTI SU KAYNAKLARI KORUMA ALANLARI"
+   }
+  },
+  "CDP": {
+   "AskeriYskGuvenlikBlg": {
+    "feature": "AskeriYskGuvenlikBlg",
+    "field": null,
+    "code": null,
+    "text": "AYB",
+    "color": "#FF0000",
+    "kaynak": "ASKERİ YASAK VE GÜVENLİK BÖLGESİ"
+   },
+   "SitAlanlari|SitTip=1DereceArkeolojikSit": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "1DereceArkeolojikSit",
+    "text": "A1",
+    "color": "#FF0000",
+    "kaynak": "1.DERECE ARKEOLOJİK SİT ALANI"
+   },
+   "SitAlanlari|SitTip=1DereceDogalSit": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "1DereceDogalSit",
+    "text": "D1",
+    "color": "#FF0000",
+    "kaynak": "1.DERECE DOĞAL SİT ALANI"
+   },
+   "SitAlanlari|SitTip=2DereceArkeolojikSit": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "2DereceArkeolojikSit",
+    "text": "A2",
+    "color": "#FF0000",
+    "kaynak": "2.DERECE ARKEOLOJİK SİT ALANI"
+   },
+   "SitAlanlari|SitTip=2DereceDogalSit": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "2DereceDogalSit",
+    "text": "D2",
+    "color": "#FF0000",
+    "kaynak": "2.DERECE DOĞAL SİT ALANI"
+   },
+   "SitAlanlari|SitTip=3DereceArkeolojikSit": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "3DereceArkeolojikSit",
+    "text": "A3",
+    "color": "#FF0000",
+    "kaynak": "3.DERECE ARKEOLOJİK SİT ALANI"
+   },
+   "SitAlanlari|SitTip=3DereceDogalSit": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "3DereceDogalSit",
+    "text": "D3",
+    "color": "#FF0000",
+    "kaynak": "3.DERECE DOĞAL SİT ALANI"
+   },
+   "SitAlanlari|SitTip=KentselArkeolojikSit": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "KentselArkeolojikSit",
+    "text": "KA",
+    "color": "#FF0000",
+    "kaynak": "KENTSEL ARKEOLOJİK SİT ALANI"
+   },
+   "SitAlanlari|SitTip=KentselSit": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "KentselSit",
+    "text": "KS",
+    "color": "#FF0000",
+    "kaynak": "KENTSEL SİT ALANI"
+   },
+   "SitAlanlari|SitTip=KesinKorunacakHassasAlan": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "KesinKorunacakHassasAlan",
+    "text": "KK",
+    "color": "#FF0000",
+    "kaynak": "KESİN KORUNACAK HASSAS ALAN"
+   },
+   "SitAlanlari|SitTip=NitelikliDogalKorumaAlani": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "NitelikliDogalKorumaAlani",
+    "text": "ND",
+    "color": "#FF0000",
+    "kaynak": "NİTELİKLİ DOĞAL KORUMA ALANI"
+   },
+   "SitAlanlari|SitTip=SurdurulebilirKorumaKontrolluKullanimAlani": {
+    "feature": "SitAlanlari",
+    "field": "SitTip",
+    "code": "SurdurulebilirKorumaKontrolluKullanimAlani",
+    "text": "SK",
+    "color": "#FF0000",
+    "kaynak": "SÜRDÜRÜLEBİLİR KORUMA VE KONTROLLÜ KULLANIM ALANI"
+   },
+   "YeraltiSuKaynakKoruma": {
+    "feature": "YeraltiSuKaynakKoruma",
+    "field": null,
+    "code": null,
+    "text": "YSK",
+    "color": "#FF0000",
+    "kaynak": "YER ALTI SU KAYNAKLARI KORUMA ALANLARI"
+   }
+  }
+ },
+ "skipped": {
+  "NIP YER ALTI SU KAYNAKLARI KORUMA KUŞAĞI": "bu kademede MPYY karşılığı yok",
+  "CDP YER ALTI SU KAYNAKLARI KORUMA KUŞAĞI": "bu kademede MPYY karşılığı yok"
+ }
+}

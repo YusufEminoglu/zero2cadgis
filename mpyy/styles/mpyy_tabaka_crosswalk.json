@@ -1,0 +1,4618 @@
+{
+ "version": 1,
+ "source": "Resmi tabaka tabloları, MPYY 1.1.7 XSD ile denetlendi",
+ "levels": {
+  "UIP": {
+   "entries": {
+    "ADAKENARI": {
+     "feature": "AdaKenari",
+     "attrs": {
+      "AdaKenariCizgiTip": "Onerilen"
+     }
+    },
+    "ADA_KENARI": {
+     "feature": "AdaKenari",
+     "attrs": {
+      "AdaKenariCizgiTip": "Onerilen"
+     }
+    },
+    "AGACLANDIRILACAK": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "AcikYesilTip": "AgaclandirilacakAlan"
+     }
+    },
+    "ETAPLAMA_SINIRI": {
+     "feature": "EtaplamaSiniri",
+     "attrs": {},
+     "duzeltme": "karar: Etaplama sınırı plan onama sınırı değildir; şemada ayrı 'EtaplamaSiniri' tipi var."
+    },
+    "GELISMEKONUT": {
+     "feature": "Konut",
+     "attrs": {
+      "KonutTip": "GelismeKonut"
+     }
+    },
+    "GELISME_KONUT": {
+     "feature": "Konut",
+     "attrs": {
+      "KonutTip": "GelismeKonut"
+     }
+    },
+    "HAT_AKARYAKIT_BORU": {
+     "feature": "IletimHatti",
+     "attrs": {
+      "EnerjiHatTip": "AkaryakitBoruHatti"
+     }
+    },
+    "HAT_ANA_ICME_SUYU": {
+     "feature": "TeknikAltyapi",
+     "attrs": {
+      "AltyapiTur": "Icmesuyu"
+     }
+    },
+    "HAT_ATIKSU_DESARJ": {
+     "feature": "AtiksuSistemi",
+     "attrs": {
+      "AtiksuSistemTip": "AtiksuDerinDenizDesarjHatti"
+     }
+    },
+    "HAT_ATIKSU_KOLLEKTOR": {
+     "feature": "AtiksuSistemi",
+     "attrs": {
+      "AtiksuSistemTip": "AtiksuAnaKollektoru"
+     }
+    },
+    "HAT_BORU_HATTI": {
+     "feature": "IletimHatti",
+     "attrs": {
+      "EnerjiHatTip": "BoruHatti"
+     }
+    },
+    "HAT_CEBRI_BORU": {
+     "feature": "IletimHatti",
+     "attrs": {
+      "EnerjiHatTip": "CebriBoruHatti"
+     }
+    },
+    "HAT_DEMIRYOLU": {
+     "feature": "Demiryolu",
+     "attrs": {}
+    },
+    "HAT_DOGALGAZ": {
+     "feature": "IletimHatti",
+     "attrs": {
+      "EnerjiHatTip": "DogalgazBoruHatti"
+     }
+    },
+    "HAT_ENERJI_NAKIL_HAT": {
+     "feature": "EnerjiNakilHatti",
+     "attrs": {}
+    },
+    "HAT_HAVAI": {
+     "feature": "TopluTasimaHatti",
+     "attrs": {
+      "TopluHatTip": "HavaiHat"
+     }
+    },
+    "HAT_HAVARAY": {
+     "feature": "TopluTasimaHatti",
+     "attrs": {
+      "TopluHatTip": "Havaray"
+     }
+    },
+    "HAT_HIZLI_TREN": {
+     "feature": "Demiryolu",
+     "attrs": {
+      "DemirTip": "HizliTrenHat"
+     },
+     "duzeltme": "kod HizliTren → HizliTrenHat"
+    },
+    "HAT_IFRAZ": {
+     "feature": "AdaKenari",
+     "attrs": {
+      "AdaKenariCizgiTip": "IfrazHatti"
+     }
+    },
+    "HAT_ILETIM_TUNELI": {
+     "feature": "IletimHatti",
+     "attrs": {
+      "EnerjiHatTip": "IletimTuneli"
+     }
+    },
+    "HAT_KADEME": {
+     "feature": "AdaKenari",
+     "attrs": {
+      "AdaKenariCizgiTip": "KademeHatti"
+     }
+    },
+    "HAT_RAYLI_TOPLU_TAS": {
+     "feature": "TopluTasimaHatti",
+     "attrs": {
+      "TopluHatTip": "RayliTopluTasimaYerUstu"
+     }
+    },
+    "HAT_SOGUTMA_SUYU": {
+     "feature": "SogutmaSuyuAlmaHatti",
+     "attrs": {}
+    },
+    "HAT_TRIYAJ": {
+     "feature": "Demiryolu",
+     "attrs": {
+      "DemirTip": "TriyajAlani"
+     }
+    },
+    "IMAR_HAKKI_AKT_SINIRI": {
+     "feature": "ImarHakkiAktarimSiniri",
+     "attrs": {}
+    },
+    "IMAR_HAKKI_SINIRI": {
+     "feature": "ImarHakkiAktarimSiniri",
+     "attrs": {}
+    },
+    "JEOETUD": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "JEOETUT": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "JEOLOJIK": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "JEOLOJIKETUD": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "JEOLOJIKETUT": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "JEOLOJIK_ETUD": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "JEOLOJIK_ETUT": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "JEOLOJIK_SINIRI": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "JEOTEKNIK": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "JEOTEKNIK_ETUD": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "JEOTEKNIK_ETUT": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "JEO_ETUD": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "JEO_ETUT": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "KALDIRIM": {
+     "feature": "DigerYolNesneleri",
+     "attrs": {
+      "DigerYolNesneTip": "Kaldirim"
+     }
+    },
+    "KA_1DER_ARK_SIT": {
+     "feature": "SitAlanlari",
+     "attrs": {
+      "SitTip": "1DereceArkeolojikSit"
+     }
+    },
+    "KA_1DER_DGL_SIT": {
+     "feature": "SitAlanlari",
+     "attrs": {
+      "SitTip": "1DereceDogalSit"
+     }
+    },
+    "KA_2DER_ARK_SIT": {
+     "feature": "SitAlanlari",
+     "attrs": {
+      "SitTip": "2DereceArkeolojikSit"
+     }
+    },
+    "KA_2DER_DGL_SIT": {
+     "feature": "SitAlanlari",
+     "attrs": {
+      "SitTip": "2DereceDogalSit"
+     }
+    },
+    "KA_3DER_ARK_SIT": {
+     "feature": "SitAlanlari",
+     "attrs": {
+      "SitTip": "3DereceArkeolojikSit"
+     }
+    },
+    "KA_3DER_DGL_SIT": {
+     "feature": "SitAlanlari",
+     "attrs": {
+      "SitTip": "3DereceDogalSit"
+     }
+    },
+    "KA_EKOLOJIK_KORU": {
+     "feature": "OzelEkosistem",
+     "attrs": {
+      "EkosistemTip": "EkolojikKoruma"
+     }
+    },
+    "KA_ENDEMIK_BIYOTOP": {
+     "feature": "OzelEkosistem",
+     "attrs": {
+      "EkosistemTip": "EndemikBiyotop"
+     }
+    },
+    "KA_FLORA_FAUNA": {
+     "feature": "OzelEkosistem",
+     "attrs": {
+      "EkosistemTip": "FloraFauna"
+     }
+    },
+    "KA_KENTSEL_SIT": {
+     "feature": "SitAlanlari",
+     "attrs": {
+      "SitTip": "KentselSit"
+     }
+    },
+    "KA_KESIN_KOR_HAS": {
+     "feature": "SitAlanlari",
+     "attrs": {
+      "SitTip": "KesinKorunacakHassasAlan"
+     }
+    },
+    "KA_NITELIKLI_DOG_KOR": {
+     "feature": "SitAlanlari",
+     "attrs": {
+      "SitTip": "NitelikliDogalKorumaAlani"
+     }
+    },
+    "KA_OCK_A": {
+     "feature": "OckHassasAlan",
+     "attrs": {
+      "HassaslikDerecesi": "OckBolgesiHassasAlanA"
+     }
+    },
+    "KA_OCK_B": {
+     "feature": "OckHassasAlan",
+     "attrs": {
+      "HassaslikDerecesi": "OckBolgesiHassasAlanB"
+     }
+    },
+    "KA_OCK_C": {
+     "feature": "OckHassasAlan",
+     "attrs": {
+      "HassaslikDerecesi": "OckBolgesiHassasAlanC"
+     }
+    },
+    "KA_OZEL_CEVRE_KORUMA": {
+     "feature": "OckBolge",
+     "attrs": {}
+    },
+    "KA_SURDURULEBILIR_KO": {
+     "feature": "SitAlanlari",
+     "attrs": {
+      "SitTip": "SurdurulebilirKorumaKontrolluKullanimAlani"
+     }
+    },
+    "KA_TABIATI_KORUMA": {
+     "feature": "MilliPark",
+     "attrs": {
+      "MilliParkTip": "TabiatiKorumaAlani"
+     }
+    },
+    "KA_TARIHI_SIT": {
+     "feature": "SitAlanlari",
+     "attrs": {
+      "SitTip": "TarihiSit"
+     }
+    },
+    "KA_ULUSLARARASI_KOR": {
+     "feature": "SozlesmeKoruma",
+     "attrs": {}
+    },
+    "KA_YABAN_HAYATI_KORU": {
+     "feature": "MilliPark",
+     "attrs": {
+      "MilliParkTip": "YabanHayatiKorumaGelistirmeAlani"
+     }
+    },
+    "KA_YOR_MIMARI_KORU": {
+     "feature": "YoreselMimariKoruma",
+     "attrs": {}
+    },
+    "KENTSELGELISMEKONUT": {
+     "feature": "Konut",
+     "attrs": {
+      "KonutTip": "GelismeKonut"
+     }
+    },
+    "KENTSEL_TASARIM_SINIRI": {
+     "feature": "KentselTasarimProjeSiniri",
+     "attrs": {},
+     "duzeltme": "karar: Kentsel tasarım projesi sınırı için şemada ayrı tip var."
+    },
+    "KONUT_GELISME": {
+     "feature": "Konut",
+     "attrs": {
+      "KonutTip": "GelismeKonut"
+     }
+    },
+    "KST_ASKERI_YASAK": {
+     "feature": "AskeriYasakBolge",
+     "attrs": {}
+    },
+    "KST_BORU_HATTI_KORU": {
+     "feature": "KorumaKusaklari",
+     "attrs": {
+      "KusakTip": "BoruHattiKorumaKusagi"
+     }
+    },
+    "KST_DEMIRYOLU_KORU": {
+     "feature": "KorumaKusaklari",
+     "attrs": {
+      "KusakTip": "DemiryoluKorumaKusagi"
+     }
+    },
+    "KST_ENERJI_NAKIL_HAT": {
+     "feature": "KorumaKusaklari",
+     "attrs": {
+      "KusakTip": "EnerjiNakilHattiKorumaKusagi"
+     }
+    },
+    "KST_HAVAALANI_KORUMA": {
+     "feature": "KorumaKusaklari",
+     "attrs": {
+      "KusakTip": "HavaalaniKorumaKusagi"
+     }
+    },
+    "KST_HAVA_KORIDORU": {
+     "feature": "HavaalaniHavaKoridoru",
+     "attrs": {}
+    },
+    "KST_HEYELAN": {
+     "feature": "AfetTehlikeliAlanlar",
+     "attrs": {
+      "AfetTip": "HeyelanAlani"
+     }
+    },
+    "KST_ICME_SUYU_KORU": {
+     "feature": "TeknikAltyapi",
+     "attrs": {
+      "AltyapiTur": "Icmesuyu"
+     }
+    },
+    "KST_JEOTERMAL_KORU": {
+     "feature": "KorumaKusaklari",
+     "attrs": {
+      "KusakTip": "JeotermalKorumaKusagi"
+     }
+    },
+    "KST_KARAYOLU_KORUMA": {
+     "feature": "KorumaKusaklari",
+     "attrs": {
+      "KusakTip": "KarayoluKorumaKusagi"
+     }
+    },
+    "KST_KORUMA_KISA": {
+     "feature": "IcmeKullanmaSuyuKoruma",
+     "attrs": {
+      "KorumaDerecesi": "KisaMesafeliKorumaAlani"
+     }
+    },
+    "KST_KORUMA_MUTLAK": {
+     "feature": "IcmeKullanmaSuyuKoruma",
+     "attrs": {
+      "KorumaDerecesi": "MutlakKorumaAlani"
+     }
+    },
+    "KST_KORUMA_ORTA": {
+     "feature": "IcmeKullanmaSuyuKoruma",
+     "attrs": {
+      "KorumaDerecesi": "OrtaMesafeliKorumaAani"
+     }
+    },
+    "KST_KORUMA_UZUN": {
+     "feature": "IcmeKullanmaSuyuKoruma",
+     "attrs": {
+      "KorumaDerecesi": "UzunMesafeliKorumaAlani"
+     }
+    },
+    "KST_NUKLEER_EN_KORU": {
+     "feature": "KorumaKusaklari",
+     "attrs": {
+      "KusakTip": "NukleerEnerjiKorumaKusagi"
+     },
+     "duzeltme": "karar: Nükleer enerji koruma kuşağıdır, üretim alanı değil."
+    },
+    "KST_ONLEMLI": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "KST_ONLEMLI_ALAN": {
+     "feature": "OnlemliAlan",
+     "attrs": {
+      "OnlemliTip": "OnlemliAlan"
+     }
+    },
+    "KST_SAGLIK_KORUMA": {
+     "feature": "KorumaKusaklari",
+     "attrs": {
+      "KusakTip": "SaglikKorumaBandi"
+     }
+    },
+    "KST_SULAK_ALAN_BOLGE": {
+     "feature": "SulakAlan",
+     "attrs": {
+      "SulakTip": "SulakAlanBolgesi"
+     }
+    },
+    "KST_SULAK_EKO_ETKI": {
+     "feature": "SulakAlan",
+     "attrs": {
+      "SulakTip": "SulakAlanEkolojikEtkilenmeBolgesi"
+     }
+    },
+    "KST_SULAK_MUTLAK": {
+     "feature": "SulakAlan",
+     "attrs": {
+      "SulakTip": "SulakAlanMutlakKorumaBolgesi"
+     }
+    },
+    "KST_SULAK_OZEL_HUKUM": {
+     "feature": "SulakAlan",
+     "attrs": {
+      "SulakTip": "SulakAlanOzelHukumBolgesi"
+     }
+    },
+    "KST_SULAK_TAMPON": {
+     "feature": "SulakAlan",
+     "attrs": {
+      "SulakTip": "SulakAlanTamponBolgesi"
+     }
+    },
+    "KST_SU_KANAL_KORUMA": {
+     "feature": "KorumaKusaklari",
+     "attrs": {
+      "KusakTip": "SuKanaliKorumaKusagi"
+     }
+    },
+    "KST_TASKIN": {
+     "feature": "AfetTehlikeliAlanlar",
+     "attrs": {
+      "AfetTip": "TaskinaMaruzAlan"
+     }
+    },
+    "KST_YANICI_PATLAYICI": {
+     "feature": "KorumaKusaklari",
+     "attrs": {
+      "KusakTip": "YaniciPatlayiciMaddeKorumaKusagi"
+     }
+    },
+    "KST_YAPI_YASAK": {
+     "feature": "AfetTehlikeliAlanlar",
+     "attrs": {
+      "AfetTip": "YapiYasakliAlan"
+     }
+    },
+    "KST_YERALTI_SUYU_KOR": {
+     "feature": "KorumaKusaklari",
+     "attrs": {
+      "KusakTip": "YeraltiSuKorumaKusagi"
+     }
+    },
+    "KST_YSK_KORUMA_ALANI": {
+     "feature": "YeraltiSuKaynakKoruma",
+     "attrs": {}
+    },
+    "MAHALLE_SINIRI": {
+     "feature": "MahalleSiniri",
+     "attrs": {},
+     "duzeltme": "karar: Mahalle sınırı için şemada 'MahalleSiniri' tipi var."
+    },
+    "ONAMA_SINIRI": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "ONLEMLI": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "ONLEMLI_ALAN": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "OTOGAR": {
+     "feature": "Durak",
+     "attrs": {
+      "DurakTip": "TerminalOtogar"
+     }
+    },
+    "OZEL_PROJE_SINIRI": {
+     "feature": "OzelProjeAlanSiniri",
+     "attrs": {},
+     "duzeltme": "tip adı yazımı düzeltildi (OzelProjeAlaniSiniri → OzelProjeAlanSiniri)"
+    },
+    "PLANDEGISIKLIK": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "PLANONAMA": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "PLANONAMA_SINIRI": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "PLAN_DEGISIKLIGI": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "PLAN_DEGISIKLIK": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "PLAN_DEGISIKLIK_ONAMA_SINIRI": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "PLAN_DEGISIKLIK_SINIRI": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "PLAN_ONAMA": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "PLAN_ONAMA_SINIRI": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "PLAN_ONAMA_SNR": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "PL_ACIK_SPOR_TES": {
+     "feature": "SosyalKulturelAlan",
+     "attrs": {
+      "SosyalKulturelTip": "AcikSporTesisiAlani"
+     }
+    },
+    "PL_AGACLANDIRILACAK": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "AcikYesilTip": "AgaclandirilacakAlan"
+     }
+    },
+    "PL_AILE_SAGL_MER": {
+     "feature": "SaglikTesisAlani",
+     "attrs": {
+      "SaglikTip": "AileSagligiMerkezi"
+     }
+    },
+    "PL_AKARSU": {
+     "feature": "SuYuzeyi",
+     "attrs": {
+      "SuYuzeyiTip": "NehirDere"
+     }
+    },
+    "PL_AKARYAKIT_DEPO": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "DepolamaAlani"
+     }
+    },
+    "PL_AKDENIZ_FOKU_YASA": {
+     "feature": "OzelEkosistem",
+     "attrs": {
+      "EkosistemTip": "AkdenizFoku"
+     }
+    },
+    "PL_ANAOKULU": {
+     "feature": "EgitimTesisAlani",
+     "attrs": {
+      "EgitimTesisTip": "AnaokuluAlani"
+     }
+    },
+    "PL_ANA_ISTASYON": {
+     "feature": "Durak",
+     "attrs": {
+      "DurakTip": "AnaIstasyonGar"
+     }
+    },
+    "PL_APART_OTEL": {
+     "feature": "TurizmAlani",
+     "attrs": {
+      "TurizmTip": "ApartOtelAlani"
+     }
+    },
+    "PL_ARA_ISTASYON": {
+     "feature": "Durak",
+     "attrs": {
+      "DurakTip": "AraIstasyon"
+     }
+    },
+    "PL_ARBORETUM_ALANI": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "AcikYesilTip": "ArboretumBotanikParki"
+     }
+    },
+    "PL_ASKERI_ALAN": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "AskeriAlan"
+     }
+    },
+    "PL_ATIKSU_TESISI": {
+     "feature": "AtiksuTesis",
+     "attrs": {}
+    },
+    "PL_BAKIM_AKARYAKIT": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "AkaryakitServisIstasyonu"
+     }
+    },
+    "PL_BALIKCI_BARINAK": {
+     "feature": "KiyiYapilari",
+     "attrs": {
+      "KiyiYapiTip": "BalikciBarinagi"
+     }
+    },
+    "PL_BARINAK": {
+     "feature": "KiyiYapilari",
+     "attrs": {
+      "KiyiYapiTip": "Barinak"
+     }
+    },
+    "PL_BETON_SANTRALI": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "BetonSantrali"
+     }
+    },
+    "PL_BHA": {
+     "feature": "FonksiyonluCalisma",
+     "attrs": {
+      "FonksiyonluCalismaTip": "BelediyeHizmetAlani"
+     }
+    },
+    "PL_BISIKLET_PARKI": {
+     "feature": "KarayoluTesisleri",
+     "attrs": {
+      "KaraTesisTip": "BisikletParki"
+     }
+    },
+    "PL_CAMI": {
+     "feature": "IbadetAlani",
+     "attrs": {
+      "IbadetTip": "Cami"
+     }
+    },
+    "PL_CEKEK_YERI": {
+     "feature": "KiyiYapilari",
+     "attrs": {
+      "KiyiYapiTip": "TekneImalCekekYeri"
+     }
+    },
+    "PL_COCUK_BAHCESI": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "AcikYesilTip": "CocukBahcesiOyunAlani"
+     }
+    },
+    "PL_DENIZ": {
+     "feature": "SuYuzeyi",
+     "attrs": {
+      "SuYuzeyiTip": "Deniz"
+     }
+    },
+    "PL_DENIZ_KAPLM_KORU": {
+     "feature": "SuYuzeyi",
+     "attrs": {
+      "SuYuzeyiTip": "Deniz"
+     }
+    },
+    "PL_DEPOLAMA": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "DepolamaAlani"
+     }
+    },
+    "PL_DERE": {
+     "feature": "SuYuzeyi",
+     "attrs": {
+      "SuYuzeyiTip": "NehirDere"
+     }
+    },
+    "PL_DOGALGAZ_DAGITIM": {
+     "feature": "EnerjiDagitimDepolama",
+     "attrs": {
+      "EnerjiTesisTip": "DogalgazDagitimTesisAlani"
+     }
+    },
+    "PL_DOGAL_KARKT_KORU": {
+     "feature": "DogalKarakter",
+     "attrs": {
+      "DogalKarakterTip": "Diger"
+     }
+    },
+    "PL_DOLFEN_PLATFORM": {
+     "feature": "KiyiYapilari",
+     "attrs": {
+      "KiyiYapiTip": "DolfenPlatform"
+     }
+    },
+    "PL_EGITIM_ILK": {
+     "feature": "EgitimTesisAlani",
+     "attrs": {
+      "EgitimTesisTip": "IlkokulAlani"
+     }
+    },
+    "PL_EGITIM_MESLEK": {
+     "feature": "EgitimTesisAlani",
+     "attrs": {
+      "EgitimTesisTip": "MeslekiTeknikOgretimTesisAlani"
+     }
+    },
+    "PL_ENDUSTRIYEL_GEL": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "EndustriyelGelismeBolgesi"
+     }
+    },
+    "PL_ENDUSTRI_BOL": {
+     "feature": "IlanEdilenClsmaAlan",
+     "attrs": {}
+    },
+    "PL_ENERJI_URETIM": {
+     "feature": "EnerjiUretim",
+     "attrs": {
+      "EnerjiTip": "EnerjiUretimAlani"
+     }
+    },
+    "PL_FUAR": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "AcikYesilTip": "FuarPanayirFestivalAlani"
+     }
+    },
+    "PL_GELISME_KONUT": {
+     "feature": "Konut",
+     "attrs": {
+      "KonutTip": "GelismeKonut"
+     }
+    },
+    "PL_GELISME_KONUT_ALANI": {
+     "feature": "Konut",
+     "attrs": {
+      "KonutTip": "GelismeKonut"
+     }
+    },
+    "PL_GEMI_SOKUM": {
+     "feature": "KiyiYapilari",
+     "attrs": {
+      "KiyiYapiTip": "GemiSokumYeri"
+     }
+    },
+    "PL_GOL": {
+     "feature": "SuYuzeyi",
+     "attrs": {
+      "SuYuzeyiTip": "Gol"
+     }
+    },
+    "PL_GOLF_ALANI": {
+     "feature": "TurizmAlani",
+     "attrs": {
+      "TurizmTip": "GolfAlani"
+     }
+    },
+    "PL_GUNUBIRLIK_TESIS": {
+     "feature": "TurizmAlani",
+     "attrs": {
+      "TurizmTip": "GunubirlikTesisAlani"
+     }
+    },
+    "PL_HABERLESME_ALTYPI": {
+     "feature": "EnerjiDagitimDepolama",
+     "attrs": {
+      "EnerjiTesisTip": "ElektronikHaberlesmeAltyapiAlani"
+     }
+    },
+    "PL_HALK_EGITIM": {
+     "feature": "EgitimTesisAlani",
+     "attrs": {
+      "EgitimTesisTip": "HalkEgitimMerkezi"
+     }
+    },
+    "PL_HASTANE": {
+     "feature": "SaglikTesisAlani",
+     "attrs": {
+      "SaglikTip": "Hastane"
+     }
+    },
+    "PL_HAVAALANI": {
+     "feature": "HavayoluTesisleri",
+     "attrs": {
+      "HavaTip": "HavalimaniHavaalani"
+     }
+    },
+    "PL_HAVAI": {
+     "feature": "Durak",
+     "attrs": {
+      "DurakTip": "HavaiHatIstasyonu"
+     }
+    },
+    "PL_HAVARAY_ISTASYONU": {
+     "feature": "Durak",
+     "attrs": {
+      "DurakTip": "HavarayIstasyonu"
+     }
+    },
+    "PL_HAYVANAT_BAHCESI": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "AcikYesilTip": "HayvanatBahcesi"
+     }
+    },
+    "PL_HELIKOPTER_INIS": {
+     "feature": "HavayoluTesisleri",
+     "attrs": {
+      "HavaTip": "HelikopterInisAlani"
+     }
+    },
+    "PL_HIPODROM": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "AcikYesilTip": "Hipodrom"
+     }
+    },
+    "PL_HOSTEL_ALANI": {
+     "feature": "TurizmAlani",
+     "attrs": {
+      "TurizmTip": "HostelAlani"
+     }
+    },
+    "PL_ICME_SUYU_TESIS": {
+     "feature": "IcmesuTesis",
+     "attrs": {
+      "IcmesuTur": "TerfiMerkezi"
+     }
+    },
+    "PL_IHA": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "IdariHizmetAlani"
+     }
+    },
+    "PL_ILKOKUL_ALANI": {
+     "feature": "EgitimTesisAlani",
+     "attrs": {
+      "EgitimTesisTip": "IlkokulAlani"
+     }
+    },
+    "PL_IMALATHANE": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "ImalathaneTesisAlani"
+     }
+    },
+    "PL_INIS_RAMPA": {
+     "feature": "KiyiYapilari",
+     "attrs": {
+      "KiyiYapiTip": "DenizInisRampasi"
+     }
+    },
+    "PL_ISKELE": {
+     "feature": "KiyiYapilari",
+     "attrs": {
+      "KiyiYapiTip": "Iskele"
+     }
+    },
+    "PL_KAMPING_ALANI": {
+     "feature": "TurizmAlani",
+     "attrs": {
+      "TurizmTip": "KampingAlani"
+     }
+    },
+    "PL_KAPALI_SPOR_TES": {
+     "feature": "SosyalKulturelAlan",
+     "attrs": {
+      "SosyalKulturelTip": "KapaliSporTesisiAlani"
+     }
+    },
+    "PL_KATI_ATIK_TESISI": {
+     "feature": "KatiAtikTesis",
+     "attrs": {
+      "KatiAtikTur": "Depolama"
+     }
+    },
+    "PL_KENT_ORMANI": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "AcikYesilTip": "KentOrmani"
+     }
+    },
+    "PL_KILISE": {
+     "feature": "IbadetAlani",
+     "attrs": {
+      "IbadetTip": "Kilise"
+     }
+    },
+    "PL_KIS_SPORLARI": {
+     "feature": "TurizmAlani",
+     "attrs": {
+      "TurizmTip": "KisSporlariKayakTesisAlani"
+     }
+    },
+    "PL_KIYI_KORUMA": {
+     "feature": "KiyiKorumaYapilari",
+     "attrs": {
+      "KiyiKorumaTip": "KiyiKoruma"
+     }
+    },
+    "PL_KONGRE_SERGI": {
+     "feature": "SosyalKulturelAlan",
+     "attrs": {
+      "SosyalKulturelTip": "KongreSergiMerkeziAlani"
+     }
+    },
+    "PL_KONTEYNER_LIMAN": {
+     "feature": "KiyiYapilari",
+     "attrs": {
+      "KiyiYapiTip": "KonteynerLimani"
+     }
+    },
+    "PL_KONUT": {
+     "feature": "Konut",
+     "attrs": {
+      "KonutTip": "YerlesikKonut"
+     }
+    },
+    "PL_KONUT_GEL": {
+     "feature": "Konut",
+     "attrs": {
+      "KonutTip": "GelismeKonut"
+     }
+    },
+    "PL_KONUT_GELISME": {
+     "feature": "Konut",
+     "attrs": {
+      "KonutTip": "GelismeKonut"
+     }
+    },
+    "PL_KONUT_GELISME_ALANI": {
+     "feature": "Konut",
+     "attrs": {
+      "KonutTip": "GelismeKonut"
+     }
+    },
+    "PL_KONUT_TICARET": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "TicaretKonutAlani"
+     }
+    },
+    "PL_KORUNACAK_BAHCE": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "AcikYesilTip": "KorunacakBahce"
+     }
+    },
+    "PL_KRES_BAKIMEVI": {
+     "feature": "SosyalKulturelAlan",
+     "attrs": {
+      "SosyalKulturelTip": "KresGunduzBakimevi"
+     }
+    },
+    "PL_KRUVAZIYER_LIMAN": {
+     "feature": "KiyiYapilari",
+     "attrs": {
+      "KiyiYapiTip": "KruvaziyerLimani"
+     }
+    },
+    "PL_KUCUK_SANAYI": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "KucukSanayiAlani"
+     }
+    },
+    "PL_KULTUREL_TESIS": {
+     "feature": "SosyalKulturelAlan",
+     "attrs": {
+      "SosyalKulturelTip": "KulturelTesisAlani"
+     }
+    },
+    "PL_KUMSAL_PLAJ": {
+     "feature": "KumsalPlaj",
+     "attrs": {}
+    },
+    "PL_LISE_ALANI": {
+     "feature": "EgitimTesisAlani",
+     "attrs": {
+      "EgitimTesisTip": "LiseAlani"
+     }
+    },
+    "PL_LOJISTIK_TESIS": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "LojistikTesisAlani"
+     }
+    },
+    "PL_MAHMUZ": {
+     "feature": "KiyiKorumaYapilari",
+     "attrs": {
+      "KiyiKorumaTip": "Mahmuz"
+     }
+    },
+    "PL_MAKI_FUNDA": {
+     "feature": "DogalKarakter",
+     "attrs": {
+      "DogalKarakterTip": "MakilikFundalik"
+     }
+    },
+    "PL_MENFEZ": {
+     "feature": "KiyiKorumaYapilari",
+     "attrs": {
+      "KiyiKorumaTip": "Menfez"
+     }
+    },
+    "PL_MERA_ALANI": {
+     "feature": "Mera",
+     "attrs": {}
+    },
+    "PL_MESCIT": {
+     "feature": "IbadetAlani",
+     "attrs": {
+      "IbadetTip": "Mescit"
+     }
+    },
+    "PL_MESIRE": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "AcikYesilTip": "MesireYeri"
+     }
+    },
+    "PL_MESIRE_ALANI": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "AcikYesilTip": "MesireYeri"
+     }
+    },
+    "PL_MESIRE_YERI": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "AcikYesilTip": "MesireYeri"
+     }
+    },
+    "PL_MEYDAN": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "AcikYesilTip": "Meydan"
+     }
+    },
+    "PL_MEZARLIK": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "AcikYesilTip": "MezarlikAlani"
+     }
+    },
+    "PL_MILLET_BAHCESI": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "AcikYesilTip": "MilletBahcesi"
+     }
+    },
+    "PL_MILLI_PARK": {
+     "feature": "MilliPark",
+     "attrs": {
+      "MilliParkTip": "MilliPark"
+     }
+    },
+    "PL_MOTEL_ALANI": {
+     "feature": "TurizmAlani",
+     "attrs": {
+      "TurizmTip": "MotelAlani"
+     }
+    },
+    "PL_NEHIR": {
+     "feature": "SuYuzeyi",
+     "attrs": {
+      "SuYuzeyiTip": "NehirDere"
+     }
+    },
+    "PL_NUKLEER_SANTRAL": {
+     "feature": "EnerjiUretim",
+     "attrs": {
+      "EnerjiTip": "NukleerEnerjiSantralAlani"
+     },
+     "duzeltme": "karar: Nükleer santral için EnerjiUretim tipinde kendi kodu var."
+    },
+    "PL_ORGANIK_TARIM": {
+     "feature": "Tarim",
+     "attrs": {
+      "TarimTip": "OrganikTarim"
+     }
+    },
+    "PL_ORMAN_ALANI": {
+     "feature": "Orman",
+     "attrs": {}
+    },
+    "PL_ORTAOKUL_ALANI": {
+     "feature": "EgitimTesisAlani",
+     "attrs": {
+      "EgitimTesisTip": "OrtaokulAlani"
+     }
+    },
+    "PL_ORTU_ALTI_TARIM": {
+     "feature": "Tarim",
+     "attrs": {
+      "TarimTip": "OrtuAltiTarim"
+     }
+    },
+    "PL_OSB": {
+     "feature": "IlanEdilenClsmaAlan",
+     "attrs": {}
+    },
+    "PL_OTEL_ALANI": {
+     "feature": "TurizmAlani",
+     "attrs": {
+      "TurizmTip": "OtelAlani"
+     }
+    },
+    "PL_OTOGAR": {
+     "feature": "Durak",
+     "attrs": {
+      "DurakTip": "TerminalOtogar"
+     }
+    },
+    "PL_OTOPARK": {
+     "feature": "KarayoluTesisleri",
+     "attrs": {
+      "KaraTesisTip": "GenelOtopark"
+     }
+    },
+    "PL_OZEL_ANAOKULU": {
+     "feature": "EgitimTesisAlani",
+     "attrs": {
+      "EgitimTesisTip": "AnaokuluAlani"
+     }
+    },
+    "PL_OZEL_EGITIM": {
+     "feature": "EgitimTesisAlani",
+     "attrs": {
+      "EgitimTesisTip": "OzelEgitimAlani"
+     }
+    },
+    "PL_OZEL_SAGLIK_TES": {
+     "feature": "SaglikTesisAlani",
+     "attrs": {
+      "SaglikTip": "OzelSaglikTesisiAlani"
+     }
+    },
+    "PL_OZEL_SOSYAL_TESIS": {
+     "feature": "SosyalKulturelAlan",
+     "attrs": {
+      "SosyalKulturelTip": "OzelSosyalTesisAlani"
+     }
+    },
+    "PL_OZEL_YURT_ALANI": {
+     "feature": "SosyalKulturelAlan",
+     "attrs": {
+      "SosyalKulturelTip": "YurtAlani"
+     }
+    },
+    "PL_O_ACIK_SPOR_TES": {
+     "feature": "SosyalKulturelAlan",
+     "attrs": {
+      "SosyalKulturelTip": "OzelAcikSporTesisiAlani"
+     }
+    },
+    "PL_O_KAPALI_SPOR_TES": {
+     "feature": "SosyalKulturelAlan",
+     "attrs": {
+      "SosyalKulturelTip": "OzelKapaliSporTesisiAlani"
+     }
+    },
+    "PL_O_KRES_BAKIMEVI": {
+     "feature": "SosyalKulturelAlan",
+     "attrs": {
+      "SosyalKulturelTip": "KresGunduzBakimevi"
+     }
+    },
+    "PL_O_KULTUREL_TESIS": {
+     "feature": "SosyalKulturelAlan",
+     "attrs": {
+      "SosyalKulturelTip": "OzelKulturelTesisAlani"
+     }
+    },
+    "PL_O_SOSYAL_ALTYAPI": {
+     "feature": "SosyalKulturelAlan",
+     "attrs": {
+      "SosyalKulturelTip": "OzelSosyalTesisAlani"
+     }
+    },
+    "PL_PAGACLANDIRILACAK": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "AcikYesilTip": "AgaclandirilacakAlan"
+     }
+    },
+    "PL_PANSIYON_ALANI": {
+     "feature": "TurizmAlani",
+     "attrs": {
+      "TurizmTip": "PansiyonAlani"
+     }
+    },
+    "PL_PARK": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "AcikYesilTip": "Park"
+     }
+    },
+    "PL_PASIF_YESIL": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "AcikYesilTip": "PasifYesilAlan"
+     }
+    },
+    "PL_PAZAR_ALANI": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "PazarAlani"
+     }
+    },
+    "PL_P_GELISME_KONUT": {
+     "feature": "Konut",
+     "attrs": {
+      "KonutTip": "GelismeKonut"
+     }
+    },
+    "PL_P_KONUT_GEL": {
+     "feature": "Konut",
+     "attrs": {
+      "KonutTip": "GelismeKonut"
+     }
+    },
+    "PL_P_KONUT_GELISME": {
+     "feature": "Konut",
+     "attrs": {
+      "KonutTip": "GelismeKonut"
+     }
+    },
+    "PL_P_MESIRE": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "AcikYesilTip": "MesireYeri"
+     }
+    },
+    "PL_P_MESIRE_ALANI": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "AcikYesilTip": "MesireYeri"
+     }
+    },
+    "PL_P_MESIRE_YERI": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "AcikYesilTip": "MesireYeri"
+     }
+    },
+    "PL_P_REKREASYON": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "AcikYesilTip": "RekreasyonAlani"
+     }
+    },
+    "PL_RAY_ISTASYON": {
+     "feature": "Durak",
+     "attrs": {
+      "DurakTip": "RayliTopluTasimaIstasyonu"
+     }
+    },
+    "PL_REGULATOR_ALANI": {
+     "feature": "EnerjiDagitimDepolama",
+     "attrs": {
+      "EnerjiTesisTip": "RegulatorAlani"
+     }
+    },
+    "PL_REKREAKTIF_ALAN": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "AcikYesilTip": "RekreasyonAlani"
+     }
+    },
+    "PL_REKREASYON": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "AcikYesilTip": "RekreasyonAlani"
+     }
+    },
+    "PL_REKREATIF_ALAN": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "AcikYesilTip": "RekreatifAlan"
+     }
+    },
+    "PL_RESMI_KURUM": {
+     "feature": "FonksiyonluCalisma",
+     "attrs": {
+      "FonksiyonluCalismaTip": "ResmiKurumAlani"
+     }
+    },
+    "PL_RIHTIM": {
+     "feature": "KiyiYapilari",
+     "attrs": {
+      "KiyiYapiTip": "Rihtim"
+     }
+    },
+    "PL_RO_RO_LIMAN": {
+     "feature": "KiyiYapilari",
+     "attrs": {
+      "KiyiYapiTip": "RoRoLimani"
+     }
+    },
+    "PL_SAGLIK_TATIL_KOYU": {
+     "feature": "TurizmAlani",
+     "attrs": {
+      "TurizmTip": "SaglikOdakliTatilKoyu"
+     }
+    },
+    "PL_SAGLIK_TESISI": {
+     "feature": "SaglikTesisAlani",
+     "attrs": {
+      "SaglikTip": "SaglikTesisAlani"
+     }
+    },
+    "PL_SANAYI_TESIS": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "SanayiAlani"
+     }
+    },
+    "PL_SAPEL": {
+     "feature": "IbadetAlani",
+     "attrs": {
+      "IbadetTip": "Sapel"
+     }
+    },
+    "PL_SEFKAT_EVI": {
+     "feature": "SosyalKulturelAlan",
+     "attrs": {
+      "SosyalKulturelTip": "SefkatEvleriAlani"
+     }
+    },
+    "PL_SERBEST_BOLGE": {
+     "feature": "IlanEdilenClsmaAlan",
+     "attrs": {}
+    },
+    "PL_SEYIR_TERASI": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "AcikYesilTip": "BakiSeyirTerasi"
+     }
+    },
+    "PL_SINAGOG": {
+     "feature": "IbadetAlani",
+     "attrs": {
+      "IbadetTip": "SinagogHavra"
+     }
+    },
+    "PL_SOSYAL_TESIS": {
+     "feature": "SosyalKulturelAlan",
+     "attrs": {
+      "SosyalKulturelTip": "SosyalTesisAlani"
+     }
+    },
+    "PL_SUYUZEYI": {
+     "feature": "SuYuzeyi",
+     "attrs": {
+      "SuYuzeyiTip": "NehirDere"
+     }
+    },
+    "PL_SU_KAY_TOPLAMA": {
+     "feature": "SuKaptaj",
+     "attrs": {}
+    },
+    "PL_SU_URUNLERI": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "SuUrunleriUretimYetistirmeTesisi"
+     }
+    },
+    "PL_SU_YUZEYI": {
+     "feature": "SuYuzeyi",
+     "attrs": {
+      "SuYuzeyiTip": "NehirDere"
+     }
+    },
+    "PL_TABIAT_PARKI": {
+     "feature": "MilliPark",
+     "attrs": {
+      "MilliParkTip": "TabiatParkiAlani"
+     }
+    },
+    "PL_TARIM": {
+     "feature": "Tarim",
+     "attrs": {}
+    },
+    "PL_TARIMSAL_ALAN": {
+     "feature": "Tarim",
+     "attrs": {
+      "TarimTip": "TarımsalNitelikliAlan"
+     }
+    },
+    "PL_TARIM_HAYVANCILIK": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "TarimHayvancilikTesisAlani"
+     }
+    },
+    "PL_TATIL_KOYU": {
+     "feature": "TurizmAlani",
+     "attrs": {
+      "TurizmTip": "TatilKoyuAlani"
+     }
+    },
+    "PL_TEHLIKELI_ATIK_T": {
+     "feature": "KatiAtikTesis",
+     "attrs": {
+      "KatiAtikTur": "Bertaraf"
+     }
+    },
+    "PL_TEHLIKELI_ATIK_TE": {
+     "feature": "KatiAtikTesis",
+     "attrs": {
+      "KatiAtikTur": "Bertaraf"
+     }
+    },
+    "PL_TEKNE_IMAL": {
+     "feature": "KiyiYapilari",
+     "attrs": {
+      "KiyiYapiTip": "TekneImalBakimYeri"
+     }
+    },
+    "PL_TEKNIK_ALTYAPI": {
+     "feature": "TeknikAltyapi",
+     "attrs": {
+      "AltyapiTur": "Enerji"
+     }
+    },
+    "PL_TEKNIK_OGRETIM": {
+     "feature": "EgitimTesisAlani",
+     "attrs": {
+      "EgitimTesisTip": "MeslekiTeknikOgretimTesisAlani"
+     }
+    },
+    "PL_TERMAL_TURIZM": {
+     "feature": "TurizmAlani",
+     "attrs": {
+      "TurizmTip": "TermalTurizmAlani"
+     }
+    },
+    "PL_TERMIK_SANTRAL": {
+     "feature": "EnerjiUretim",
+     "attrs": {
+      "EnerjiTip": "TermikSantralAlani"
+     }
+    },
+    "PL_TERMINAL": {
+     "feature": "Durak",
+     "attrs": {
+      "DurakTip": "TerminalOtogar"
+     }
+    },
+    "PL_TERMINAL_ALANI": {
+     "feature": "Durak",
+     "attrs": {
+      "DurakTip": "TerminalOtogar"
+     }
+    },
+    "PL_TERSANE_ALANI": {
+     "feature": "KiyiYapilari",
+     "attrs": {
+      "KiyiYapiTip": "TersaneAlani"
+     }
+    },
+    "PL_TGB": {
+     "feature": "IlanEdilenClsmaAlan",
+     "attrs": {}
+    },
+    "PL_TICARET": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "TicaretAlani"
+     }
+    },
+    "PL_TICARET_T1": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "1KademeTicaretAlani"
+     }
+    },
+    "PL_TICARET_T2": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "2KademeTicaretAlani"
+     }
+    },
+    "PL_TICARET_T3": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "3KademeTicaretAlani"
+     }
+    },
+    "PL_TICARET_TURIZM": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "TicaretTurizmAlani"
+     }
+    },
+    "PL_TIC_TURZM_KNT": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "TicaretTurizmKonutAlani"
+     }
+    },
+    "PL_TIR_PARKI": {
+     "feature": "KarayoluTesisleri",
+     "attrs": {
+      "KaraTesisTip": "TirKamyonMakinaParkGarajAlani"
+     }
+    },
+    "PL_TOPLU_ISYERLERI": {
+     "feature": "FonksiyonluCalisma",
+     "attrs": {
+      "FonksiyonluCalismaTip": "TopluIsyeri"
+     }
+    },
+    "PL_TOPTAN_TICARET": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "ToptanTicaretAlani"
+     }
+    },
+    "PL_TRAFO_ALANI": {
+     "feature": "EnerjiDagitimDepolama",
+     "attrs": {
+      "EnerjiTesisTip": "TrafoAlani"
+     }
+    },
+    "PL_TT_AKTARMA": {
+     "feature": "TopluTasimTurleriArasiDegisimAktarmaAlani",
+     "attrs": {}
+    },
+    "PL_TURBIN_ALANI": {
+     "feature": "EnerjiDagitimDepolama",
+     "attrs": {
+      "EnerjiTesisTip": "TurbinAlani"
+     }
+    },
+    "PL_YANICI_MADDE_DEPO": {
+     "feature": "EnerjiDagitimDepolama",
+     "attrs": {
+      "EnerjiTesisTip": "YaniciParlayiciPatlayiciMaddeUretimDepoAlani"
+     }
+    },
+    "PL_YAPAY_ADA": {
+     "feature": "YapayAda",
+     "attrs": {}
+    },
+    "PL_YASLI_BAKIMEVI": {
+     "feature": "SosyalKulturelAlan",
+     "attrs": {
+      "SosyalKulturelTip": "YasliBakimeviAlani"
+     }
+    },
+    "PL_YAT_LIMANI": {
+     "feature": "KiyiYapilari",
+     "attrs": {
+      "KiyiYapiTip": "YatLimani"
+     }
+    },
+    "PL_YENILENEBILIR_EN": {
+     "feature": "EnerjiUretim",
+     "attrs": {
+      "EnerjiTip": "YenilenebilirEnerjiKaynaginaDayaliUretimTesisAlani"
+     },
+     "duzeltme": "karar: Yenilenebilir enerji üretim tesisi için EnerjiUretim tipinde kendi kodu var."
+    },
+    "PL_YUKSEKOGRETIM": {
+     "feature": "EgitimTesisAlani",
+     "attrs": {
+      "EgitimTesisTip": "YuksekOgretimAlani"
+     }
+    },
+    "PL_YURT_ALANI": {
+     "feature": "SosyalKulturelAlan",
+     "attrs": {
+      "SosyalKulturelTip": "YurtAlani"
+     }
+    },
+    "PL_ZEYTINLIK_ALAN": {
+     "feature": "Tarim",
+     "attrs": {
+      "TarimTip": "Zeytinlik"
+     },
+     "duzeltme": "karar: Zeytinlik tabakası Tarim tipinin 'Zeytinlik' koduyla tutulur."
+    },
+    "REFUJ": {
+     "feature": "DigerYolNesneleri",
+     "attrs": {
+      "DigerYolNesneTip": "Refuj"
+     }
+    },
+    "SINIR_ETAPLAMA": {
+     "feature": "EtaplamaSiniri",
+     "attrs": {},
+     "duzeltme": "karar: Etaplama sınırı plan onama sınırı değildir; şemada ayrı 'EtaplamaSiniri' tipi var."
+    },
+    "SINIR_IMAR_HAKKI": {
+     "feature": "ImarHakkiAktarimSiniri",
+     "attrs": {}
+    },
+    "SINIR_JEO": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SINIR_JEOETUD": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SINIR_JEOETUT": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SINIR_JEOLOJIK": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SINIR_JEOLOJIKETUD": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SINIR_JEOLOJIKETUT": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SINIR_JEOLOJIK_ETUD": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SINIR_JEOLOJIK_ETUT": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SINIR_JEOLOJIK_SINIRI": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SINIR_JEOTEKNIK": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SINIR_JEOTEKNIK_ETUD": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SINIR_JEOTEKNIK_ETUT": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SINIR_JEO_ETUD": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SINIR_JEO_ETUT": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SINIR_KENTSEL_TASARIM": {
+     "feature": "KentselTasarimProjeSiniri",
+     "attrs": {},
+     "duzeltme": "karar: Kentsel tasarım projesi sınırı için şemada ayrı tip var."
+    },
+    "SINIR_MAHALLE": {
+     "feature": "MahalleSiniri",
+     "attrs": {},
+     "duzeltme": "karar: Mahalle sınırı için şemada 'MahalleSiniri' tipi var."
+    },
+    "SINIR_ONAMA": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "SINIR_OZEL_PROJE": {
+     "feature": "OzelProjeAlanSiniri",
+     "attrs": {},
+     "duzeltme": "tip adı yazımı düzeltildi (OzelProjeAlaniSiniri → OzelProjeAlanSiniri)"
+    },
+    "SINIR_PLANDEGISIK": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "SINIR_PLANONAMA": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "SINIR_PLAN_DEGISIK": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "SINIR_PLAN_DEGISIKLIGI": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "SINIR_PLAN_ONAMA": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "SINIR_YAPIYAK": {
+     "feature": "YapiYaklasmaSiniri",
+     "attrs": {}
+    },
+    "SINIR_YAPIYAKLASMA": {
+     "feature": "YapiYaklasmaSiniri",
+     "attrs": {}
+    },
+    "SINIR_YAPIYAKLASMASINIRI": {
+     "feature": "YapiYaklasmaSiniri",
+     "attrs": {}
+    },
+    "SINIR_YAPI_YAK": {
+     "feature": "YapiYaklasmaSiniri",
+     "attrs": {}
+    },
+    "SM_JEO": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SM_JEOLOJIK": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SM_JEOTEKNIK": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SM_JEOTERMAL_KAYNAK": {
+     "feature": "JeotermalKaynak",
+     "attrs": {}
+    },
+    "SM_KENTSEL_GOR_OGE": {
+     "feature": "KentselImge",
+     "attrs": {}
+    },
+    "SNR_BELEDIYE": {
+     "feature": "BelediyeSiniri",
+     "attrs": {}
+    },
+    "SNR_BOGAZICI_ETKILNM": {
+     "feature": "BogaziciSinirlari",
+     "attrs": {
+      "BogaziciBolgeTip": "BogaziciEtkilenmeBolgeSiniri"
+     }
+    },
+    "SNR_BOGAZ_GERI_GOR": {
+     "feature": "BogaziciSinirlari",
+     "attrs": {
+      "BogaziciBolgeTip": "BogaziciGeriGorunumBolgeSiniri"
+     }
+    },
+    "SNR_BOGAZ_ON_GOR": {
+     "feature": "BogaziciSinirlari",
+     "attrs": {
+      "BogaziciBolgeTip": "BogaziciOnGorunumBolgeSiniri"
+     }
+    },
+    "SNR_DENIZ_ULASIM": {
+     "feature": "DenizUlasimBaglanti",
+     "attrs": {}
+    },
+    "SNR_DIGER_OZL": {
+     "feature": "DigerOzelSinir",
+     "attrs": {}
+    },
+    "SNR_ETAPLAMA": {
+     "feature": "EtaplamaSiniri",
+     "attrs": {}
+    },
+    "SNR_GOB": {
+     "feature": "DonusumKonutAlanlari",
+     "attrs": {
+      "DonusumTip": "GecekonduOnlemeBolgesi"
+     }
+    },
+    "SNR_IL": {
+     "feature": "IlSiniri",
+     "attrs": {}
+    },
+    "SNR_ILCE": {
+     "feature": "IlceSiniri",
+     "attrs": {}
+    },
+    "SNR_IMAR_HAKKI_AKT": {
+     "feature": "ImarHakkiAktarimSiniri",
+     "attrs": {}
+    },
+    "SNR_JEO": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SNR_JEOETUD": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SNR_JEOETUT": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SNR_JEOLOJIK": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SNR_JEOLOJIKETUD": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SNR_JEOLOJIKETUT": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SNR_JEOLOJIK_ETUD": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SNR_JEOLOJIK_ETUT": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SNR_JEOLOJIK_SINIRI": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SNR_JEOTEKNIK": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SNR_JEOTEKNIK_ETUD": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SNR_JEOTEKNIK_ETUT": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SNR_JEO_ETUD": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SNR_JEO_ETUT": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SNR_KENTSEL_TASARIM": {
+     "feature": "KentselTasarimProjeSiniri",
+     "attrs": {}
+    },
+    "SNR_KIYI_KENAR": {
+     "feature": "KiyiKenarCizgisi",
+     "attrs": {}
+    },
+    "SNR_KOY": {
+     "feature": "KoySiniri",
+     "attrs": {}
+    },
+    "SNR_MAHALLE": {
+     "feature": "MahalleSiniri",
+     "attrs": {}
+    },
+    "SNR_MANIA_PLAN": {
+     "feature": "ManiaSiniri",
+     "attrs": {}
+    },
+    "SNR_MUCAVIR": {
+     "feature": "MucavirAlanSiniri",
+     "attrs": {}
+    },
+    "SNR_ONAMA": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "SNR_OZEL_PROJE_ALANI": {
+     "feature": "OzelProjeAlanSiniri",
+     "attrs": {}
+    },
+    "SNR_PLAN": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "SNR_PLANDEGISIK": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "SNR_PLANONAMA": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "SNR_PLANONAMA_ILAVE": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "SNR_PLAN_DEG": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "SNR_PLAN_DEGISIK": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "SNR_PLAN_DEGISIKLIGI": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "SNR_PLAN_ONAMA": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "SNR_PLAN_ONAMA_ILAVE": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "SNR_SAHIL_SERIDI": {
+     "feature": "SahilSeridi",
+     "attrs": {}
+    },
+    "SNR_SEG": {
+     "feature": "SitAlanlari",
+     "attrs": {
+      "SitTip": "SitEtkilesimAlani"
+     }
+    },
+    "SNR_SULAK_ALAN": {
+     "feature": "SulakAlan",
+     "attrs": {
+      "SulakTip": "SulakAlanSiniri"
+     }
+    },
+    "SNR_TKA": {
+     "feature": "DigerOzelSinir",
+     "attrs": {}
+    },
+    "SNR_TURIZM_KORUMA": {
+     "feature": "TmKtkgbAlan",
+     "attrs": {}
+    },
+    "SNR_ULKE": {
+     "feature": "UlkeSiniri",
+     "attrs": {}
+    },
+    "SNR_YAPIYAK": {
+     "feature": "YapiYaklasmaSiniri",
+     "attrs": {}
+    },
+    "SNR_YAPIYAKLASMA": {
+     "feature": "YapiYaklasmaSiniri",
+     "attrs": {}
+    },
+    "SNR_YAPIYAKLASMASINIRI": {
+     "feature": "YapiYaklasmaSiniri",
+     "attrs": {}
+    },
+    "SNR_YAPI_YAK": {
+     "feature": "YapiYaklasmaSiniri",
+     "attrs": {}
+    },
+    "SNR_YAP_YAK": {
+     "feature": "YapiYaklasmaSiniri",
+     "attrs": {}
+    },
+    "TERMINAL": {
+     "feature": "Durak",
+     "attrs": {
+      "DurakTip": "TerminalOtogar"
+     }
+    },
+    "TESCILLI_ANIT_YAPI": {
+     "feature": "TescilliAlan",
+     "attrs": {
+      "TescilTip": "TescilliAnitYapi"
+     }
+    },
+    "TESCILLI_BINA": {
+     "feature": "TescilliAlan",
+     "attrs": {
+      "TescilTip": "TescilliBina"
+     }
+    },
+    "TESCILLI_PARSEL": {
+     "feature": "TescilliAlan",
+     "attrs": {
+      "TescilTip": "TescilliParsel"
+     }
+    },
+    "TESCILLI_TAB_VARLIGI": {
+     "feature": "TescilliAlan",
+     "attrs": {
+      "TescilTip": "TescilliTabiatVarligi"
+     }
+    },
+    "YAPIYAK": {
+     "feature": "YapiYaklasmaSiniri",
+     "attrs": {}
+    },
+    "YAPIYAKLASMA": {
+     "feature": "YapiYaklasmaSiniri",
+     "attrs": {}
+    },
+    "YAPIYAKLASMASINIRI": {
+     "feature": "YapiYaklasmaSiniri",
+     "attrs": {}
+    },
+    "YAPI_YAK": {
+     "feature": "YapiYaklasmaSiniri",
+     "attrs": {}
+    },
+    "YAPI_YAKLASMA": {
+     "feature": "YapiYaklasmaSiniri",
+     "attrs": {}
+    },
+    "YAPI_YAKLASMA_SINIRI": {
+     "feature": "YapiYaklasmaSiniri",
+     "attrs": {}
+    },
+    "YAP_YAK": {
+     "feature": "YapiYaklasmaSiniri",
+     "attrs": {}
+    }
+   },
+   "skipped": {
+    "CIZPEN": "yardımcı çizim tabakası",
+    "CIZ_PEN": "yardımcı çizim tabakası",
+    "FONKSIYON_SINIRI": "Fonksiyon ayrım çizgisi plan onama sınırı değildir; MPYY 1.1.7'da karşılığı olan bir tip yok.",
+    "PAFTA": "yardımcı çizim tabakası",
+    "SINIR_FONKSIYON": "Fonksiyon ayrım çizgisi plan onama sınırı değildir; MPYY 1.1.7'da karşılığı olan bir tip yok.",
+    "SNR_FONKSIYON": "bu kademede desteklenmiyor"
+   }
+  },
+  "NIP": {
+   "entries": {
+    "ADAKENARI": {
+     "feature": "AdaKenari",
+     "attrs": {
+      "AdaKenariCizgiTip": "Onerilen"
+     }
+    },
+    "ADA_KENARI": {
+     "feature": "AdaKenari",
+     "attrs": {
+      "AdaKenariCizgiTip": "Onerilen"
+     }
+    },
+    "AGACLANDIRILACAK": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "YesilTip": "AgaclandirilacakAlan"
+     },
+     "duzeltme": "alan adı AcikYesilTip → YesilTip"
+    },
+    "ETAPLAMA_SINIRI": {
+     "feature": "EtaplamaSiniri",
+     "attrs": {},
+     "duzeltme": "karar: Etaplama sınırı plan onama sınırı değildir; şemada ayrı 'EtaplamaSiniri' tipi var."
+    },
+    "GELISMEKONUT": {
+     "feature": "GelismeKonut",
+     "attrs": {},
+     "duzeltme": "karar: NİP şeması gelişme konutu ayrı 'GelismeKonut' tipiyle, ÇDP 'KentselGelismeKonut' tipiyle tutar; KonutTip alanı yalnız UİP'te vardır."
+    },
+    "GELISME_KONUT": {
+     "feature": "GelismeKonut",
+     "attrs": {},
+     "duzeltme": "karar: NİP şeması gelişme konutu ayrı 'GelismeKonut' tipiyle, ÇDP 'KentselGelismeKonut' tipiyle tutar; KonutTip alanı yalnız UİP'te vardır."
+    },
+    "HAT_AKARYAKIT_BORU": {
+     "feature": "BoruHatti",
+     "attrs": {
+      "EnerjiHatTip": "PetrolBoruHatti"
+     },
+     "duzeltme": "karar: NİP/ÇDP kod listesinde akaryakıt boru hattı yoktur; en yakın resmî kod 'PetrolBoruHatti'dır. Anlam daraltması olduğundan son kontrolde doğrulanmalıdır."
+    },
+    "HAT_ANA_ICME_SUYU": {
+     "feature": "TeknikAltyapi",
+     "attrs": {
+      "AltyapiTur": "Icmesuyu"
+     }
+    },
+    "HAT_BORU_HATTI": {
+     "feature": "BoruHatti",
+     "attrs": {}
+    },
+    "HAT_DEMIRYOLU": {
+     "feature": "Demiryolu",
+     "attrs": {}
+    },
+    "HAT_DENIZ_ULASIM": {
+     "feature": "SuYuzeyi",
+     "attrs": {
+      "SuYuzeyiTip": "Deniz"
+     }
+    },
+    "HAT_DOGALGAZ": {
+     "feature": "BoruHatti",
+     "attrs": {
+      "EnerjiHatTip": "DogalgazBoruHatti"
+     },
+     "duzeltme": "karar: NİP ve ÇDP şemalarında boru hatları 'BoruHatti' tipindedir; kod aynıdır."
+    },
+    "HAT_ENERJI_NAKIL": {
+     "feature": "TeknikAltyapi",
+     "attrs": {
+      "AltyapiTur": "Enerji"
+     }
+    },
+    "HAT_HAVAI": {
+     "feature": "RayliTopluTasimaHatti",
+     "attrs": {
+      "RayliHatTip": "HavaiHat"
+     }
+    },
+    "HAT_HAVARAY": {
+     "feature": "RayliTopluTasimaHatti",
+     "attrs": {
+      "RayliHatTip": "Havaray"
+     }
+    },
+    "HAT_HIZLI_TREN": {
+     "feature": "Demiryolu",
+     "attrs": {
+      "DemirTip": "HizliTrenHatti"
+     },
+     "duzeltme": "kod HizliTren → HizliTrenHatti"
+    },
+    "HAT_IFRAZ": {
+     "feature": "AdaKenari",
+     "attrs": {
+      "AdaKenariCizgiTip": "IfrazHatti"
+     }
+    },
+    "HAT_KADEME": {
+     "feature": "AdaKenari",
+     "attrs": {
+      "AdaKenariCizgiTip": "KademeHatti"
+     }
+    },
+    "HAT_RAYLI_TOPLU_TAS": {
+     "feature": "RayliTopluTasimaHatti",
+     "attrs": {
+      "RayliHatTip": "RayliTopluTasimaHatti"
+     }
+    },
+    "HAT_SOGUTMA_SUYU": {
+     "feature": "SogutmaSuyuAlmaHatti",
+     "attrs": {}
+    },
+    "HAT_TRIYAJ": {
+     "feature": "Demiryolu",
+     "attrs": {
+      "DemirTip": "TriyajAlani"
+     }
+    },
+    "IMAR_HAKKI_AKT_SINIRI": {
+     "feature": "ImarHakkiAktarimSiniri",
+     "attrs": {}
+    },
+    "IMAR_HAKKI_SINIRI": {
+     "feature": "ImarHakkiAktarimSiniri",
+     "attrs": {}
+    },
+    "JEOETUD": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "JEOETUT": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "JEOLOJIK": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "JEOLOJIKETUD": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "JEOLOJIKETUT": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "JEOLOJIK_ETUD": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "JEOLOJIK_ETUT": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "JEOLOJIK_SINIRI": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "JEOTEKNIK": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "JEOTEKNIK_ETUD": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "JEOTEKNIK_ETUT": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "JEO_ETUD": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "JEO_ETUT": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "KALDIRIM": {
+     "feature": "DigerYolNesneleri",
+     "attrs": {
+      "DigerYolNesneTip": "Kaldirim"
+     }
+    },
+    "KA_1DER_ARK_SIT": {
+     "feature": "SitAlanlari",
+     "attrs": {
+      "SitTip": "1DereceArkeolojikSit"
+     }
+    },
+    "KA_1DER_DGL_SIT": {
+     "feature": "SitAlanlari",
+     "attrs": {
+      "SitTip": "1DereceDogalSit"
+     }
+    },
+    "KA_2DER_ARK_SIT": {
+     "feature": "SitAlanlari",
+     "attrs": {
+      "SitTip": "2DereceArkeolojikSit"
+     }
+    },
+    "KA_2DER_DGL_SIT": {
+     "feature": "SitAlanlari",
+     "attrs": {
+      "SitTip": "2DereceDogalSit"
+     }
+    },
+    "KA_3DER_ARK_SIT": {
+     "feature": "SitAlanlari",
+     "attrs": {
+      "SitTip": "3DereceArkeolojikSit"
+     }
+    },
+    "KA_3DER_DGL_SIT": {
+     "feature": "SitAlanlari",
+     "attrs": {
+      "SitTip": "3DereceDogalSit"
+     }
+    },
+    "KA_EKOLOJIK_KORU": {
+     "feature": "OzelEkosistem",
+     "attrs": {
+      "EkosistemTip": "EkolojikKoruma"
+     }
+    },
+    "KA_FLORA_FAUNA": {
+     "feature": "OzelEkosistem",
+     "attrs": {
+      "EkosistemTip": "FloraFauna"
+     }
+    },
+    "KA_KENTSEL_SIT": {
+     "feature": "SitAlanlari",
+     "attrs": {
+      "SitTip": "KentselSit"
+     }
+    },
+    "KA_KESIN_KOR_HAS": {
+     "feature": "SitAlanlari",
+     "attrs": {
+      "SitTip": "KesinKorunacakHassasAlan"
+     }
+    },
+    "KA_NITELIKLI_DOG_KOR": {
+     "feature": "SitAlanlari",
+     "attrs": {
+      "SitTip": "NitelikliDogalKorumaAlani"
+     }
+    },
+    "KA_OCK_A": {
+     "feature": "OckHassasAlan",
+     "attrs": {
+      "HassaslikDerecesi": "OckBolgesiHassasAlanA"
+     }
+    },
+    "KA_OCK_B": {
+     "feature": "OckHassasAlan",
+     "attrs": {
+      "HassaslikDerecesi": "OckBolgesiHassasAlanB"
+     }
+    },
+    "KA_OCK_C": {
+     "feature": "OckHassasAlan",
+     "attrs": {
+      "HassaslikDerecesi": "OckBolgesiHassasAlanC"
+     }
+    },
+    "KA_OZEL_CEVRE_KORUMA": {
+     "feature": "OckBolge",
+     "attrs": {}
+    },
+    "KA_SURDURULEBILIR_KO": {
+     "feature": "SitAlanlari",
+     "attrs": {
+      "SitTip": "SurdurulebilirKorumaKontrolluKullanimAlani"
+     }
+    },
+    "KA_TABIATI_KORUMA": {
+     "feature": "MilliPark",
+     "attrs": {
+      "MilliParkTip": "TabiatiKorumaAlani"
+     }
+    },
+    "KA_TARIHI_SIT": {
+     "feature": "SitAlanlari",
+     "attrs": {
+      "SitTip": "TarihiSit"
+     }
+    },
+    "KA_ULUSLARARASI_KOR": {
+     "feature": "SozlesmeKoruma",
+     "attrs": {}
+    },
+    "KA_YABAN_HAYATI_KORU": {
+     "feature": "MilliPark",
+     "attrs": {
+      "MilliParkTip": "YabanHayatiKorumaGelistirmeAlani"
+     }
+    },
+    "KENTSELGELISMEKONUT": {
+     "feature": "GelismeKonut",
+     "attrs": {},
+     "duzeltme": "karar: NİP şeması gelişme konutu ayrı 'GelismeKonut' tipiyle, ÇDP 'KentselGelismeKonut' tipiyle tutar; KonutTip alanı yalnız UİP'te vardır."
+    },
+    "KONUT_GELISME": {
+     "feature": "GelismeKonut",
+     "attrs": {},
+     "duzeltme": "karar: NİP şeması gelişme konutu ayrı 'GelismeKonut' tipiyle, ÇDP 'KentselGelismeKonut' tipiyle tutar; KonutTip alanı yalnız UİP'te vardır."
+    },
+    "KST_AFET": {
+     "feature": "AfetTehlikeliAlanlar",
+     "attrs": {
+      "AfetTip": "AfeteMaruzBolge"
+     }
+    },
+    "KST_ASKERI_YASAK": {
+     "feature": "AskeriYasakBolge",
+     "attrs": {}
+    },
+    "KST_HAVA_KORIDORU": {
+     "feature": "HavaalaniHavaKoridoru",
+     "attrs": {}
+    },
+    "KST_KORUMA_KISA": {
+     "feature": "IcmeKullanmaSuyuKoruma",
+     "attrs": {
+      "KorumaDerecesi": "KisaMesafeliKorumaAlani"
+     }
+    },
+    "KST_KORUMA_MUTLAK": {
+     "feature": "IcmeKullanmaSuyuKoruma",
+     "attrs": {
+      "KorumaDerecesi": "MutlakKorumaAlani"
+     }
+    },
+    "KST_KORUMA_ORTA": {
+     "feature": "IcmeKullanmaSuyuKoruma",
+     "attrs": {
+      "KorumaDerecesi": "OrtaMesafeliKorumaAlani"
+     },
+     "duzeltme": "kod OrtaMesafeliKorumaAani → OrtaMesafeliKorumaAlani"
+    },
+    "KST_KORUMA_UZUN": {
+     "feature": "IcmeKullanmaSuyuKoruma",
+     "attrs": {
+      "KorumaDerecesi": "UzunMesafeliKorumaAlani"
+     }
+    },
+    "KST_ONLEMLI": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "KST_SULAK_ALAN": {
+     "feature": "SulakAlan",
+     "attrs": {
+      "SulakTip": "SulakAlanBolgesi"
+     }
+    },
+    "KST_SULAK_EKO_ETKI": {
+     "feature": "SulakAlan",
+     "attrs": {
+      "SulakTip": "SulakAlanEkolojikEtkilenmeBolgesi"
+     }
+    },
+    "KST_SULAK_MUTLAK": {
+     "feature": "SulakAlan",
+     "attrs": {
+      "SulakTip": "SulakAlanMutlakKorumaBolgesi"
+     }
+    },
+    "KST_SULAK_OZEL_HUKUM": {
+     "feature": "SulakAlan",
+     "attrs": {
+      "SulakTip": "SulakAlanOzelHukumBolgesi"
+     }
+    },
+    "KST_SULAK_TAMPON": {
+     "feature": "SulakAlan",
+     "attrs": {
+      "SulakTip": "SulakAlanTamponBolgesi"
+     }
+    },
+    "KST_TASKIN": {
+     "feature": "AfetTehlikeliAlanlar",
+     "attrs": {
+      "AfetTip": "TaskinaMaruzAlan"
+     }
+    },
+    "KST_YAPI_YASAK": {
+     "feature": "AfetTehlikeliAlanlar",
+     "attrs": {
+      "AfetTip": "YapiYasakliAlan"
+     }
+    },
+    "KST_YSK_KORUMA_ALANI": {
+     "feature": "YeraltiSuKaynakKoruma",
+     "attrs": {}
+    },
+    "ONAMA_SINIRI": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "ONLEMLI": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "ONLEMLI_ALAN": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "OZEL_PROJE_SINIRI": {
+     "feature": "OzelProjeAlanSiniri",
+     "attrs": {},
+     "duzeltme": "tip adı yazımı düzeltildi (OzelProjeAlaniSiniri → OzelProjeAlanSiniri)"
+    },
+    "PLANDEGISIKLIK": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "PLANONAMA": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "PLANONAMA_SINIRI": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "PLAN_DEGISIKLIGI": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "PLAN_DEGISIKLIK": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "PLAN_DEGISIKLIK_ONAMA_SINIRI": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "PLAN_DEGISIKLIK_SINIRI": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "PLAN_ONAMA": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "PLAN_ONAMA_SINIRI": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "PLAN_ONAMA_SNR": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "PL_AGACLANDIRILACAK": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "YesilTip": "AgaclandirilacakAlan"
+     },
+     "duzeltme": "alan adı AcikYesilTip → YesilTip"
+    },
+    "PL_AKARSU": {
+     "feature": "SuYuzeyi",
+     "attrs": {
+      "SuYuzeyiTip": "NehirDere"
+     }
+    },
+    "PL_AKDENIZ_FOKU_YASA": {
+     "feature": "OzelEkosistem",
+     "attrs": {
+      "EkosistemTip": "AkdenizFoku"
+     }
+    },
+    "PL_ANA_ISTASYON": {
+     "feature": "Terminal",
+     "attrs": {
+      "TerminalTip": "AnaIstasyonGar"
+     }
+    },
+    "PL_ASKERI_ALAN": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "AskeriAlan"
+     }
+    },
+    "PL_ATIKSU_TESISI": {
+     "feature": "AtiksuTesis",
+     "attrs": {}
+    },
+    "PL_BAKIM_AKARYAKIT": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "AkaryakitServisIstasyonuAlani"
+     },
+     "duzeltme": "kod AkaryakitServisIstasyonu → AkaryakitServisIstasyonuAlani"
+    },
+    "PL_BALIKCI_BARINAK": {
+     "feature": "KiyiYapilari",
+     "attrs": {
+      "KiyiYapiTip": "BalikciBarinagi"
+     }
+    },
+    "PL_BETON_SANTRALI": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "BetonSantrali"
+     }
+    },
+    "PL_BHA": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "BelediyeHizmetAlani"
+     }
+    },
+    "PL_CEKEK_YERI": {
+     "feature": "KiyiYapilari",
+     "attrs": {
+      "KiyiYapiTip": "TekneImalCekekYeri"
+     }
+    },
+    "PL_DENIZ": {
+     "feature": "SuYuzeyi",
+     "attrs": {
+      "SuYuzeyiTip": "Deniz"
+     }
+    },
+    "PL_DENIZ_KAPLM_KORU": {
+     "feature": "SuYuzeyi",
+     "attrs": {
+      "SuYuzeyiTip": "Deniz"
+     }
+    },
+    "PL_DEPOLAMA": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "DepolamaAlani"
+     }
+    },
+    "PL_DERE": {
+     "feature": "SuYuzeyi",
+     "attrs": {
+      "SuYuzeyiTip": "NehirDere"
+     }
+    },
+    "PL_DOGALGAZ_DAGITIM": {
+     "feature": "EnerjiDagitimDepolama",
+     "attrs": {
+      "EnerjiTesisTip": "DogalgazIletimDagitimTesisiAlani"
+     }
+    },
+    "PL_DOGAL_KARKT_KORU": {
+     "feature": "DogalKarakter",
+     "attrs": {
+      "DogalKarakterTip": "Diger"
+     }
+    },
+    "PL_EGITIM": {
+     "feature": "EgitimTesisAlani",
+     "attrs": {
+      "EgitimTesisTip": "EgitimAlani"
+     }
+    },
+    "PL_EGITIM_ILK": {
+     "feature": "EgitimTesisAlani",
+     "attrs": {
+      "EgitimTesisTip": "EgitimAlani"
+     },
+     "duzeltme": "karar: NİP ölçeğinde eğitim kademeleri ayrılmaz; ilkokul 'EgitimAlani' olarak tutulur."
+    },
+    "PL_EGITIM_MESLEK": {
+     "feature": "EgitimTesisAlani",
+     "attrs": {
+      "EgitimTesisTip": "EgitimAlani"
+     },
+     "duzeltme": "karar: NİP ölçeğinde eğitim kademeleri ayrılmaz; mesleki teknik öğretim 'EgitimAlani' olarak tutulur."
+    },
+    "PL_ENDUSTRIYEL_GEL": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "EndustriyelGelismeBolgesi"
+     }
+    },
+    "PL_ENDUSTRI_BOLGESI": {
+     "feature": "IlanEdilenClsmaAlan",
+     "attrs": {}
+    },
+    "PL_ENERJI_DEPOLAMA": {
+     "feature": "EnerjiDagitimDepolama",
+     "attrs": {
+      "EnerjiTesisTip": "EnerjiDepolamaAlani"
+     }
+    },
+    "PL_ENERJI_URETIM": {
+     "feature": "TeknikAltyapi",
+     "attrs": {
+      "AltyapiTur": "Enerji"
+     }
+    },
+    "PL_FUAR": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "YesilTip": "FuarPanayirFestivalAlani"
+     },
+     "duzeltme": "alan adı AcikYesilTip → YesilTip"
+    },
+    "PL_GELISME_KONUT": {
+     "feature": "GelismeKonut",
+     "attrs": {},
+     "duzeltme": "karar: NİP şeması gelişme konutu ayrı 'GelismeKonut' tipiyle, ÇDP 'KentselGelismeKonut' tipiyle tutar; KonutTip alanı yalnız UİP'te vardır."
+    },
+    "PL_GELISME_KONUT_ALANI": {
+     "feature": "GelismeKonut",
+     "attrs": {},
+     "duzeltme": "karar: NİP şeması gelişme konutu ayrı 'GelismeKonut' tipiyle, ÇDP 'KentselGelismeKonut' tipiyle tutar; KonutTip alanı yalnız UİP'te vardır."
+    },
+    "PL_GOL": {
+     "feature": "SuYuzeyi",
+     "attrs": {
+      "SuYuzeyiTip": "Gol"
+     }
+    },
+    "PL_GUNUBIRLIK_TESIS": {
+     "feature": "TurizmAlani",
+     "attrs": {
+      "TurizmTip": "GunubirlikTesisAlani"
+     }
+    },
+    "PL_HAVAALANI": {
+     "feature": "HavaalaniHavalimani",
+     "attrs": {}
+    },
+    "PL_HAVAI_ISTASYONU": {
+     "feature": "Terminal",
+     "attrs": {
+      "TerminalTip": "HavaiHatIstasyonu"
+     }
+    },
+    "PL_HAVARAY_ISTASYONU": {
+     "feature": "Terminal",
+     "attrs": {
+      "TerminalTip": "HavarayIstasyonu"
+     }
+    },
+    "PL_IBADET_ALANI": {
+     "feature": "IbadetAlani",
+     "attrs": {
+      "IbadetTip": "IbadetAlani"
+     }
+    },
+    "PL_ICME_SUYU_TESIS": {
+     "feature": "IcmesuTesis",
+     "attrs": {
+      "IcmesuTur": "TerfiMerkezi"
+     }
+    },
+    "PL_INIS_RAMPA": {
+     "feature": "KiyiYapilari",
+     "attrs": {
+      "KiyiYapiTip": "DenizInisRampasi"
+     }
+    },
+    "PL_ISKELE": {
+     "feature": "KiyiYapilari",
+     "attrs": {
+      "KiyiYapiTip": "Iskele"
+     }
+    },
+    "PL_KATI_ATIK_TESISI": {
+     "feature": "KatiAtikTesis",
+     "attrs": {
+      "KatiAtikTur": "Depolama"
+     }
+    },
+    "PL_KDKCA": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "KonutDisiKentselCalismaAlani"
+     }
+    },
+    "PL_KENT_ORMANI": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "YesilTip": "KentOrmani"
+     }
+    },
+    "PL_KHA": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "KamuHizmetAlani"
+     }
+    },
+    "PL_KONUT_GEL": {
+     "feature": "GelismeKonut",
+     "attrs": {},
+     "duzeltme": "karar: NİP şeması gelişme konutu ayrı 'GelismeKonut' tipiyle, ÇDP 'KentselGelismeKonut' tipiyle tutar; KonutTip alanı yalnız UİP'te vardır."
+    },
+    "PL_KONUT_GELISME": {
+     "feature": "GelismeKonut",
+     "attrs": {},
+     "duzeltme": "karar: NİP şeması gelişme konutu ayrı 'GelismeKonut' tipiyle, ÇDP 'KentselGelismeKonut' tipiyle tutar; KonutTip alanı yalnız UİP'te vardır."
+    },
+    "PL_KONUT_GELISME_ALANI": {
+     "feature": "GelismeKonut",
+     "attrs": {},
+     "duzeltme": "karar: NİP şeması gelişme konutu ayrı 'GelismeKonut' tipiyle, ÇDP 'KentselGelismeKonut' tipiyle tutar; KonutTip alanı yalnız UİP'te vardır."
+    },
+    "PL_KONUT_GEL_COKYUK": {
+     "feature": "GelismeKonut",
+     "attrs": {
+      "GelismeKonutAlaniYogunluk": "CokYuksek401HAUstunde"
+     }
+    },
+    "PL_KONUT_GEL_DUSUK": {
+     "feature": "GelismeKonut",
+     "attrs": {
+      "GelismeKonutAlaniYogunluk": "Dusuk51-120HA"
+     }
+    },
+    "PL_KONUT_GEL_ORTA": {
+     "feature": "GelismeKonut",
+     "attrs": {
+      "GelismeKonutAlaniYogunluk": "Orta121-250HA"
+     }
+    },
+    "PL_KONUT_GEL_SEYREK": {
+     "feature": "GelismeKonut",
+     "attrs": {
+      "GelismeKonutAlaniYogunluk": "Seyrek50HAAltinda"
+     }
+    },
+    "PL_KONUT_GEL_YUKSEK": {
+     "feature": "GelismeKonut",
+     "attrs": {
+      "GelismeKonutAlaniYogunluk": "Yuksek251-400HA"
+     }
+    },
+    "PL_KONUT_MEV_COKYUK": {
+     "feature": "MevcutKonut",
+     "attrs": {
+      "MevcutKonutYogunluk": "CokYuksek601HAUstunde"
+     }
+    },
+    "PL_KONUT_MEV_DUSUK": {
+     "feature": "MevcutKonut",
+     "attrs": {
+      "MevcutKonutYogunluk": "Dusuk51-151HA"
+     }
+    },
+    "PL_KONUT_MEV_ORTA": {
+     "feature": "MevcutKonut",
+     "attrs": {
+      "MevcutKonutYogunluk": "Orta151-300HA"
+     }
+    },
+    "PL_KONUT_MEV_SEYREK": {
+     "feature": "MevcutKonut",
+     "attrs": {
+      "MevcutKonutYogunluk": "Seyrek50HAAltinda"
+     }
+    },
+    "PL_KONUT_MEV_YUKSEK": {
+     "feature": "MevcutKonut",
+     "attrs": {
+      "MevcutKonutYogunluk": "Yuksek301-600HA"
+     }
+    },
+    "PL_KONUT_TICARET": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "TicaretKonutAlani"
+     }
+    },
+    "PL_KUCUK_SANAYI": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "KucukSanayiAlani"
+     }
+    },
+    "PL_KULTUREL_TESIS": {
+     "feature": "SosyalKulturelAlan",
+     "attrs": {
+      "SosyalKulturelTip": "KulturelTesisAlani"
+     }
+    },
+    "PL_KUMSAL_PLAJ": {
+     "feature": "KumsalPlaj",
+     "attrs": {}
+    },
+    "PL_LIMAN": {
+     "feature": "KiyiYapilari",
+     "attrs": {
+      "KiyiYapiTip": "Liman"
+     }
+    },
+    "PL_LOJISTIK_TESIS": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "LojistikTesisAlani"
+     }
+    },
+    "PL_MAKI_FUNDA": {
+     "feature": "DogalKarakter",
+     "attrs": {
+      "DogalKarakterTip": "MakilikFundalik"
+     }
+    },
+    "PL_MERA_ALANI": {
+     "feature": "Mera",
+     "attrs": {
+      "MeraTip": "Mera"
+     }
+    },
+    "PL_MESIRE": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "YesilTip": "MesireYeri"
+     },
+     "duzeltme": "alan adı AcikYesilTip → YesilTip"
+    },
+    "PL_MESIRE_ALANI": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "YesilTip": "MesireYeri"
+     },
+     "duzeltme": "alan adı AcikYesilTip → YesilTip"
+    },
+    "PL_MESIRE_YERI": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "YesilTip": "MesireYeri"
+     },
+     "duzeltme": "alan adı AcikYesilTip → YesilTip"
+    },
+    "PL_MEZARLIK": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "YesilTip": "MezarlikAlani"
+     }
+    },
+    "PL_MIA": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "MerkeziIsAlani"
+     }
+    },
+    "PL_MILLET_BAHCESI": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "YesilTip": "MilletBahcesi"
+     }
+    },
+    "PL_MILLI_PARK": {
+     "feature": "MilliPark",
+     "attrs": {
+      "MilliParkTip": "MilliPark"
+     }
+    },
+    "PL_NEHIR": {
+     "feature": "SuYuzeyi",
+     "attrs": {
+      "SuYuzeyiTip": "NehirDere"
+     }
+    },
+    "PL_ONLEMLI_ALAN": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "PL_ORMAN_ALANI": {
+     "feature": "Orman",
+     "attrs": {}
+    },
+    "PL_OSB": {
+     "feature": "IlanEdilenClsmaAlan",
+     "attrs": {}
+    },
+    "PL_OTOGAR": {
+     "feature": "Terminal",
+     "attrs": {
+      "TerminalTip": "TerminalOtogar"
+     }
+    },
+    "PL_OTOPARK": {
+     "feature": "KarayoluTesisleri",
+     "attrs": {
+      "KarayoluTesisTip": "GenelOtopark"
+     }
+    },
+    "PL_OZEL_EGITIM": {
+     "feature": "EgitimTesisAlani",
+     "attrs": {
+      "EgitimTesisTip": "OzelEgitimAlani"
+     }
+    },
+    "PL_OZEL_SAGLIK_ALANI": {
+     "feature": "SaglikTesisAlani",
+     "attrs": {
+      "SaglikTip": "OzelSaglikTesisiAlani"
+     }
+    },
+    "PL_OZEL_SOSY_ALTYAPI": {
+     "feature": "SosyalKulturelAlan",
+     "attrs": {
+      "SosyalKulturelTip": "OzelSosyalAltyapiAlani"
+     }
+    },
+    "PL_OZEL_SPOR_ALANI": {
+     "feature": "SosyalKulturelAlan",
+     "attrs": {
+      "SosyalKulturelTip": "OzelSporAlani"
+     }
+    },
+    "PL_O_KULTUREL_TESIS": {
+     "feature": "SosyalKulturelAlan",
+     "attrs": {
+      "SosyalKulturelTip": "OzelKulturelTesisAlani"
+     }
+    },
+    "PL_O_YUKSEKOGRETIM": {
+     "feature": "EgitimTesisAlani",
+     "attrs": {
+      "EgitimTesisTip": "YuksekOgretimAlani"
+     }
+    },
+    "PL_PAGACLANDIRILACAK": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "YesilTip": "AgaclandirilacakAlan"
+     },
+     "duzeltme": "alan adı AcikYesilTip → YesilTip"
+    },
+    "PL_PARK": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "YesilTip": "ParkVeYesilAlan"
+     }
+    },
+    "PL_PASIF_YESIL": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "YesilTip": "PasifYesilAlan"
+     }
+    },
+    "PL_PAZAR_ALANI": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "PazarAlani"
+     }
+    },
+    "PL_P_GELISME_KONUT": {
+     "feature": "GelismeKonut",
+     "attrs": {},
+     "duzeltme": "karar: NİP şeması gelişme konutu ayrı 'GelismeKonut' tipiyle, ÇDP 'KentselGelismeKonut' tipiyle tutar; KonutTip alanı yalnız UİP'te vardır."
+    },
+    "PL_P_KONUT_GEL": {
+     "feature": "GelismeKonut",
+     "attrs": {},
+     "duzeltme": "karar: NİP şeması gelişme konutu ayrı 'GelismeKonut' tipiyle, ÇDP 'KentselGelismeKonut' tipiyle tutar; KonutTip alanı yalnız UİP'te vardır."
+    },
+    "PL_P_KONUT_GELISME": {
+     "feature": "GelismeKonut",
+     "attrs": {},
+     "duzeltme": "karar: NİP şeması gelişme konutu ayrı 'GelismeKonut' tipiyle, ÇDP 'KentselGelismeKonut' tipiyle tutar; KonutTip alanı yalnız UİP'te vardır."
+    },
+    "PL_P_MESIRE": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "YesilTip": "MesireYeri"
+     },
+     "duzeltme": "alan adı AcikYesilTip → YesilTip"
+    },
+    "PL_P_MESIRE_ALANI": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "YesilTip": "MesireYeri"
+     },
+     "duzeltme": "alan adı AcikYesilTip → YesilTip"
+    },
+    "PL_P_MESIRE_YERI": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "YesilTip": "MesireYeri"
+     },
+     "duzeltme": "alan adı AcikYesilTip → YesilTip"
+    },
+    "PL_P_REKREASYON": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "YesilTip": "RekreasyonAlani"
+     },
+     "duzeltme": "alan adı AcikYesilTip → YesilTip"
+    },
+    "PL_RAFINERI": {
+     "feature": "EnerjiDagitimDepolama",
+     "attrs": {
+      "EnerjiTesisTip": "RafineriAlani"
+     }
+    },
+    "PL_RAYLI_TOP_TAS_IST": {
+     "feature": "Terminal",
+     "attrs": {
+      "TerminalTip": "RayliTopluTasimaIstasyonu"
+     }
+    },
+    "PL_REGULATOR_ALANI": {
+     "feature": "EnerjiDagitimDepolama",
+     "attrs": {
+      "EnerjiTesisTip": "RegulatorAlani"
+     }
+    },
+    "PL_REKREAKTIF_ALAN": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "YesilTip": "RekreasyonAlani"
+     },
+     "duzeltme": "alan adı AcikYesilTip → YesilTip"
+    },
+    "PL_REKREASYON": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "YesilTip": "RekreasyonAlani"
+     },
+     "duzeltme": "alan adı AcikYesilTip → YesilTip"
+    },
+    "PL_SAGLIK_ALANI": {
+     "feature": "SaglikTesisAlani",
+     "attrs": {
+      "SaglikTip": "SaglikTesisAlani"
+     }
+    },
+    "PL_SANAYI_ALANI": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "SanayiAlani"
+     }
+    },
+    "PL_SERBEST_BOLGE": {
+     "feature": "IlanEdilenClsmaAlan",
+     "attrs": {}
+    },
+    "PL_SOSYAL_TESIS": {
+     "feature": "SosyalKulturelAlan",
+     "attrs": {
+      "SosyalKulturelTip": "SosyalTesisAlani"
+     }
+    },
+    "PL_SPOR_ALANI": {
+     "feature": "SosyalKulturelAlan",
+     "attrs": {
+      "SosyalKulturelTip": "SporAlani"
+     }
+    },
+    "PL_SUYUZEYI": {
+     "feature": "SuYuzeyi",
+     "attrs": {
+      "SuYuzeyiTip": "NehirDere"
+     }
+    },
+    "PL_SU_KAY_TOPLAMA": {
+     "feature": "SuKaptaj",
+     "attrs": {}
+    },
+    "PL_SU_URUN_YET": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "SuUrunleriUretimVeYetistirmeTesisi"
+     }
+    },
+    "PL_SU_YUZEYI": {
+     "feature": "SuYuzeyi",
+     "attrs": {
+      "SuYuzeyiTip": "NehirDere"
+     }
+    },
+    "PL_TABIAT_PARKI": {
+     "feature": "MilliPark",
+     "attrs": {
+      "MilliParkTip": "TabiatParkiAlani"
+     }
+    },
+    "PL_TARIM": {
+     "feature": "Tarim",
+     "attrs": {}
+    },
+    "PL_TARIM_ALANI": {
+     "feature": "Tarim",
+     "attrs": {}
+    },
+    "PL_TARIM_HAYVANCILIK": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "TarimHayvancilikTesisAlani"
+     }
+    },
+    "PL_TEHLIKELI_ATIK_T": {
+     "feature": "KatiAtikTesis",
+     "attrs": {
+      "KatiAtikTur": "Bertaraf"
+     }
+    },
+    "PL_TEHLIKELI_ATIK_TE": {
+     "feature": "KatiAtikTesis",
+     "attrs": {
+      "KatiAtikTur": "Bertaraf"
+     }
+    },
+    "PL_TEKNE_IMAL": {
+     "feature": "KiyiYapilari",
+     "attrs": {
+      "KiyiYapiTip": "TekneImalBakimYeri"
+     }
+    },
+    "PL_TEKNIK_ALTYAPI": {
+     "feature": "TeknikAltyapi",
+     "attrs": {
+      "AltyapiTur": "Enerji"
+     }
+    },
+    "PL_TERMINAL": {
+     "feature": "Terminal",
+     "attrs": {
+      "TerminalTip": "TerminalOtogar"
+     }
+    },
+    "PL_TERSANE_ALANI": {
+     "feature": "KiyiYapilari",
+     "attrs": {
+      "KiyiYapiTip": "TersaneAlani"
+     }
+    },
+    "PL_TGB": {
+     "feature": "IlanEdilenClsmaAlan",
+     "attrs": {}
+    },
+    "PL_TICARET": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "TicaretAlani"
+     }
+    },
+    "PL_TICARET_T1": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "1DereceTicaretAlani"
+     }
+    },
+    "PL_TICARET_T2": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "2DereceTicaretAlani"
+     }
+    },
+    "PL_TICARET_T3": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "3DereceTicaretAlani"
+     }
+    },
+    "PL_TICARET_TURIZM": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "TicaretTurizmAlani"
+     }
+    },
+    "PL_TIC_TUR_KONUT": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "TicaretTurizmKonutAlani"
+     }
+    },
+    "PL_TIR_PARKI": {
+     "feature": "KarayoluTesisleri",
+     "attrs": {
+      "KarayoluTesisTip": "TirKamyonMakinaParkGarajAlani"
+     }
+    },
+    "PL_TOPLU_ISYERI": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "TopluIsyerleri"
+     }
+    },
+    "PL_TOP_TAS_AKTARMA": {
+     "feature": "TopluTasimaAktarimAlani",
+     "attrs": {}
+    },
+    "PL_TURBIN_ALANI": {
+     "feature": "EnerjiDagitimDepolama",
+     "attrs": {
+      "EnerjiTesisTip": "TurbinAlani"
+     }
+    },
+    "PL_TURIZM": {
+     "feature": "TurizmAlani",
+     "attrs": {
+      "TurizmTip": "TurizmAlani"
+     }
+    },
+    "PL_YANICI_MADDE_DEPO": {
+     "feature": "EnerjiDagitimDepolama",
+     "attrs": {
+      "EnerjiTesisTip": "YaniciParlayiciPatlayiciMaddeUretimDepoAlani"
+     }
+    },
+    "PL_YOL_PLATFORMU": {
+     "feature": "DigerYolNesneleri",
+     "attrs": {
+      "DigerYolNesneTip": "TasitYolu"
+     }
+    },
+    "PL_YUKSEKOGRETIM": {
+     "feature": "EgitimTesisAlani",
+     "attrs": {
+      "EgitimTesisTip": "YuksekOgretimAlani"
+     }
+    },
+    "PL_ZEYTINLIK_ALAN": {
+     "feature": "Tarim",
+     "attrs": {
+      "TarimTip": "Zeytinlik"
+     },
+     "duzeltme": "karar: Zeytinlik tabakası Tarim tipinin 'Zeytinlik' koduyla tutulur."
+    },
+    "REFUJ": {
+     "feature": "DigerYolNesneleri",
+     "attrs": {
+      "DigerYolNesneTip": "Refuj"
+     }
+    },
+    "SINIR_ETAPLAMA": {
+     "feature": "EtaplamaSiniri",
+     "attrs": {},
+     "duzeltme": "karar: Etaplama sınırı plan onama sınırı değildir; şemada ayrı 'EtaplamaSiniri' tipi var."
+    },
+    "SINIR_IMAR_HAKKI": {
+     "feature": "ImarHakkiAktarimSiniri",
+     "attrs": {}
+    },
+    "SINIR_JEO": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SINIR_JEOETUD": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SINIR_JEOETUT": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SINIR_JEOLOJIK": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SINIR_JEOLOJIKETUD": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SINIR_JEOLOJIKETUT": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SINIR_JEOLOJIK_ETUD": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SINIR_JEOLOJIK_ETUT": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SINIR_JEOLOJIK_SINIRI": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SINIR_JEOTEKNIK": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SINIR_JEOTEKNIK_ETUD": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SINIR_JEOTEKNIK_ETUT": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SINIR_JEO_ETUD": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SINIR_JEO_ETUT": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SINIR_ONAMA": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "SINIR_OZEL_PROJE": {
+     "feature": "OzelProjeAlanSiniri",
+     "attrs": {},
+     "duzeltme": "tip adı yazımı düzeltildi (OzelProjeAlaniSiniri → OzelProjeAlanSiniri)"
+    },
+    "SINIR_PLANDEGISIK": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "SINIR_PLANONAMA": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "SINIR_PLAN_DEGISIK": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "SINIR_PLAN_DEGISIKLIGI": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "SINIR_PLAN_ONAMA": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "SM_JEO": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SM_JEOLOJIK": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SM_JEOTEKNIK": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SM_YOL_PLATFORMU": {
+     "feature": "DigerYolNesneleri",
+     "attrs": {
+      "DigerYolNesneTip": "TasitYolu"
+     }
+    },
+    "SNR_BELEDIYE": {
+     "feature": "BelediyeSiniri",
+     "attrs": {}
+    },
+    "SNR_BOGAZICI_ETKILNM": {
+     "feature": "BogaziciSinirlari",
+     "attrs": {
+      "BogaziciBolgeTip": "BogaziciEtkilenmeBolgeSiniri"
+     }
+    },
+    "SNR_BOGAZ_GERI_GOR": {
+     "feature": "BogaziciSinirlari",
+     "attrs": {
+      "BogaziciBolgeTip": "BogaziciGeriGorunumBolgeSiniri"
+     }
+    },
+    "SNR_BOGAZ_ON_GOR": {
+     "feature": "BogaziciSinirlari",
+     "attrs": {
+      "BogaziciBolgeTip": "BogaziciOnGorunumBolgeSiniri"
+     }
+    },
+    "SNR_DIGER_OZL": {
+     "feature": "DigerOzelSinir",
+     "attrs": {}
+    },
+    "SNR_DUZENLENECEK": {
+     "feature": "MudahaleSiniri",
+     "attrs": {
+      "MudahaleSiniriTip": "YenidenDuzenlenecekAlanSiniri"
+     }
+    },
+    "SNR_ETAPLAMA": {
+     "feature": "EtaplamaSiniri",
+     "attrs": {}
+    },
+    "SNR_GOB": {
+     "feature": "DonusumKonutAlanlari",
+     "attrs": {
+      "DonusumTip": "GecekonduOnlemeBolgesi"
+     }
+    },
+    "SNR_IL": {
+     "feature": "IlSiniri",
+     "attrs": {}
+    },
+    "SNR_ILCE": {
+     "feature": "IlceSiniri",
+     "attrs": {}
+    },
+    "SNR_IMAR_HAKKI_AKT": {
+     "feature": "ImarHakkiAktarimSiniri",
+     "attrs": {}
+    },
+    "SNR_JEO": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SNR_JEOETUD": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SNR_JEOETUT": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SNR_JEOLOJIK": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SNR_JEOLOJIKETUD": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SNR_JEOLOJIKETUT": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SNR_JEOLOJIK_ETUD": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SNR_JEOLOJIK_ETUT": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SNR_JEOLOJIK_SINIRI": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SNR_JEOTEKNIK": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SNR_JEOTEKNIK_ETUD": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SNR_JEOTEKNIK_ETUT": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SNR_JEO_ETUD": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SNR_JEO_ETUT": {
+     "feature": "OnlemliAlan",
+     "attrs": {}
+    },
+    "SNR_KENTSEL_DONUSUM": {
+     "feature": "KentselDonusumSinirlari",
+     "attrs": {}
+    },
+    "SNR_KIRSAL_YERLESIK": {
+     "feature": "KirsalYerlesikAlanSinir",
+     "attrs": {}
+    },
+    "SNR_KIYI_KENAR": {
+     "feature": "KiyiKenarCizgisi",
+     "attrs": {}
+    },
+    "SNR_KOY": {
+     "feature": "KoySiniri",
+     "attrs": {}
+    },
+    "SNR_MANIA_PLAN": {
+     "feature": "ManiaSiniri",
+     "attrs": {}
+    },
+    "SNR_MEVCUT_KORUNACAK": {
+     "feature": "MudahaleSiniri",
+     "attrs": {
+      "MudahaleSiniriTip": "MevcutPlandakiDurumuKorunacakAlanSiniri"
+     },
+     "duzeltme": "karar: 'Mevcut plandaki durumu korunacak alan sınırı' müdahale sınırı kodudur, plan onama sınırı değil."
+    },
+    "SNR_MUCAVIR": {
+     "feature": "MucavirAlanSiniri",
+     "attrs": {}
+    },
+    "SNR_ONAMA": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "SNR_OZEL_KANUN": {
+     "feature": "StatusuOzelKanunlarlaBelirlenenAlanlar",
+     "attrs": {}
+    },
+    "SNR_OZEL_PROJE": {
+     "feature": "OzelProjeAlanSiniri",
+     "attrs": {}
+    },
+    "SNR_PLAN": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "SNR_PLANDEGISIK": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "SNR_PLANONAMA": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "SNR_PLANONAMA_ILAVE": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "SNR_PLAN_DEG": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "SNR_PLAN_DEGISIK": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "SNR_PLAN_DEGISIKLIGI": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "SNR_PLAN_ONAMA": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "SNR_PLAN_ONAMA_ILAVE": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "SNR_REZERV_YAPI": {
+     "feature": "KentselDonusumSinirlari",
+     "attrs": {
+      "KentselDonusumSinirlariTip": "RezervYapiAlanSiniri"
+     },
+     "duzeltme": "karar: Tip doğru, kod eksikti."
+    },
+    "SNR_RISKLI_ALAN": {
+     "feature": "KentselDonusumSinirlari",
+     "attrs": {
+      "KentselDonusumSinirlariTip": "RiskliAlanSiniri"
+     }
+    },
+    "SNR_SAGLIKLASTIRMA": {
+     "feature": "MudahaleSiniri",
+     "attrs": {
+      "MudahaleSiniriTip": "SagliklastirmaAlanSiniri"
+     }
+    },
+    "SNR_SAHIL_SERIDI": {
+     "feature": "SahilSeridi",
+     "attrs": {}
+    },
+    "SNR_SULAK_ALAN": {
+     "feature": "SulakAlan",
+     "attrs": {
+      "SulakTip": "SulakAlanSiniri"
+     }
+    },
+    "SNR_TKA": {
+     "feature": "DigerOzelSinir",
+     "attrs": {}
+    },
+    "SNR_TURIZM_KORUMA": {
+     "feature": "TmKtkgbAlan",
+     "attrs": {}
+    },
+    "SNR_ULKE": {
+     "feature": "UlkeSiniri",
+     "attrs": {}
+    },
+    "SNR_YENILEME_ALANI": {
+     "feature": "KentselDonusumSinirlari",
+     "attrs": {
+      "KentselDonusumSinirlariTip": "YenilemeAlanSiniri"
+     },
+     "duzeltme": "karar: Tip doğru, kod eksikti."
+    },
+    "YOLPLATFORMU": {
+     "feature": "DigerYolNesneleri",
+     "attrs": {
+      "DigerYolNesneTip": "TasitYolu"
+     }
+    },
+    "YOL_PLATFORMU": {
+     "feature": "DigerYolNesneleri",
+     "attrs": {
+      "DigerYolNesneTip": "TasitYolu"
+     }
+    }
+   },
+   "skipped": {
+    "CIZPEN": "yardımcı çizim tabakası",
+    "CIZ_PEN": "yardımcı çizim tabakası",
+    "FONKSIYON_SINIRI": "Fonksiyon ayrım çizgisi plan onama sınırı değildir; MPYY 1.1.7'da karşılığı olan bir tip yok.",
+    "KENTSEL_TASARIM_SINIRI": "NİP 1.1.7 şemasında kentsel tasarım projesi sınırı tipi yok.",
+    "MAHALLE_SINIRI": "NİP 1.1.7 şemasında mahalle sınırı tipi yok; plan onama sınırı olarak yazılmamalı.",
+    "PAFTA": "yardımcı çizim tabakası",
+    "PL_AKARYAKIT_DEPO": "'EnerjiTesisTip=AkaryakitUrunDepolamaAlani' kod listesinde yok",
+    "PL_KIYI_KORUMA": "bu kademede desteklenmiyor",
+    "PL_YAPAY_ADA": "bu kademede desteklenmiyor",
+    "SINIR_FONKSIYON": "Fonksiyon ayrım çizgisi plan onama sınırı değildir; MPYY 1.1.7'da karşılığı olan bir tip yok.",
+    "SINIR_KENTSEL_TASARIM": "NİP 1.1.7 şemasında kentsel tasarım projesi sınırı tipi yok.",
+    "SINIR_MAHALLE": "NİP 1.1.7 şemasında mahalle sınırı tipi yok; plan onama sınırı olarak yazılmamalı.",
+    "SINIR_YAPIYAK": "'YapiYaklasmaSiniri' bu kademenin şemasında yok",
+    "SINIR_YAPIYAKLASMA": "'YapiYaklasmaSiniri' bu kademenin şemasında yok",
+    "SINIR_YAPIYAKLASMASINIRI": "'YapiYaklasmaSiniri' bu kademenin şemasında yok",
+    "SINIR_YAPI_YAK": "'YapiYaklasmaSiniri' bu kademenin şemasında yok",
+    "SNR_SEG": "'SitTip=SitEtkilesimAlani' kod listesinde yok",
+    "SNR_YAPIYAKLASMA": "'YapiYaklasmaSiniri' bu kademenin şemasında yok",
+    "SNR_YAPIYAKLASMASINIRI": "'YapiYaklasmaSiniri' bu kademenin şemasında yok",
+    "SNR_YAPI_YAK": "'YapiYaklasmaSiniri' bu kademenin şemasında yok",
+    "SNR_YAP_YAK": "'YapiYaklasmaSiniri' bu kademenin şemasında yok",
+    "YAPIYAK": "'YapiYaklasmaSiniri' bu kademenin şemasında yok",
+    "YAPIYAKLASMA": "'YapiYaklasmaSiniri' bu kademenin şemasında yok",
+    "YAPIYAKLASMASINIRI": "'YapiYaklasmaSiniri' bu kademenin şemasında yok",
+    "YAPI_YAK": "'YapiYaklasmaSiniri' bu kademenin şemasında yok",
+    "YAPI_YAKLASMA": "'YapiYaklasmaSiniri' bu kademenin şemasında yok",
+    "YAPI_YAKLASMA_SINIRI": "'YapiYaklasmaSiniri' bu kademenin şemasında yok",
+    "YAP_YAK": "'YapiYaklasmaSiniri' bu kademenin şemasında yok"
+   }
+  },
+  "CDP": {
+   "entries": {
+    "AGACLANDIRILACAK": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "AcikYesilTip": "AgaclandirilacakAlan"
+     }
+    },
+    "ETAPLAMA_SINIRI": {
+     "feature": "EtaplamaSiniri",
+     "attrs": {},
+     "duzeltme": "karar: Etaplama sınırı plan onama sınırı değildir; şemada ayrı 'EtaplamaSiniri' tipi var."
+    },
+    "GELISMEKONUT": {
+     "feature": "KentselGelismeKonut",
+     "attrs": {},
+     "duzeltme": "karar: NİP şeması gelişme konutu ayrı 'GelismeKonut' tipiyle, ÇDP 'KentselGelismeKonut' tipiyle tutar; KonutTip alanı yalnız UİP'te vardır."
+    },
+    "GELISME_KONUT": {
+     "feature": "KentselGelismeKonut",
+     "attrs": {},
+     "duzeltme": "karar: NİP şeması gelişme konutu ayrı 'GelismeKonut' tipiyle, ÇDP 'KentselGelismeKonut' tipiyle tutar; KonutTip alanı yalnız UİP'te vardır."
+    },
+    "HAT_1_DER_YOL": {
+     "feature": "Yolorta",
+     "attrs": {}
+    },
+    "HAT_2_DER_YOL": {
+     "feature": "Yolorta",
+     "attrs": {}
+    },
+    "HAT_3_DER_YOL": {
+     "feature": "Yolorta",
+     "attrs": {}
+    },
+    "HAT_AKARYAKIT_BORU": {
+     "feature": "BoruHatti",
+     "attrs": {
+      "BoruHattiTip": "PetrolBoruHatti"
+     },
+     "duzeltme": "karar: NİP/ÇDP kod listesinde akaryakıt boru hattı yoktur; en yakın resmî kod 'PetrolBoruHatti'dır. Anlam daraltması olduğundan son kontrolde doğrulanmalıdır."
+    },
+    "HAT_ANA_ICME_SUYU": {
+     "feature": "TeknikAltyapi",
+     "attrs": {
+      "AltyapiTur": "Icmesuyu"
+     }
+    },
+    "HAT_BORU_HATTI": {
+     "feature": "BoruHatti",
+     "attrs": {}
+    },
+    "HAT_DEMIRYOLU": {
+     "feature": "Demiryolu",
+     "attrs": {}
+    },
+    "HAT_DENIZ_ULASIM": {
+     "feature": "DenizUlasimBaglanti",
+     "attrs": {
+      "DenizUlasimTip": "DenizUlasimBaglanti"
+     }
+    },
+    "HAT_DOGALGAZ": {
+     "feature": "BoruHatti",
+     "attrs": {
+      "BoruHattiTip": "DogalgazBoruHatti"
+     },
+     "duzeltme": "karar: NİP ve ÇDP şemalarında boru hatları 'BoruHatti' tipindedir; kod aynıdır."
+    },
+    "HAT_ENERJI_NAKIL_HAT": {
+     "feature": "EnerjiNakilHatti",
+     "attrs": {}
+    },
+    "HAT_HIZLI_TREN": {
+     "feature": "Demiryolu",
+     "attrs": {
+      "DemirTip": "HizliTrenHatti"
+     },
+     "duzeltme": "kod HizliTren → HizliTrenHatti"
+    },
+    "HAT_OTOYOL": {
+     "feature": "Yolorta",
+     "attrs": {
+      "YolTip": "ErismeKontrolluKarayolu"
+     }
+    },
+    "KA_1DER_ARK_SIT": {
+     "feature": "SitAlanlari",
+     "attrs": {
+      "SitTip": "1DereceArkeolojikSit"
+     }
+    },
+    "KA_1DER_DGL_SIT": {
+     "feature": "SitAlanlari",
+     "attrs": {
+      "SitTip": "1DereceDogalSit"
+     }
+    },
+    "KA_2DER_ARK_SIT": {
+     "feature": "SitAlanlari",
+     "attrs": {
+      "SitTip": "2DereceArkeolojikSit"
+     }
+    },
+    "KA_2DER_DGL_SIT": {
+     "feature": "SitAlanlari",
+     "attrs": {
+      "SitTip": "2DereceDogalSit"
+     }
+    },
+    "KA_3DER_ARK_SIT": {
+     "feature": "SitAlanlari",
+     "attrs": {
+      "SitTip": "3DereceArkeolojikSit"
+     }
+    },
+    "KA_3DER_DGL_SIT": {
+     "feature": "SitAlanlari",
+     "attrs": {
+      "SitTip": "3DereceDogalSit"
+     }
+    },
+    "KA_EKOLOJIK_KORU": {
+     "feature": "OzelEkosistem",
+     "attrs": {
+      "EkosistemTip": "EkolojikKoruma"
+     }
+    },
+    "KA_FLORA_FAUNA": {
+     "feature": "OzelEkosistem",
+     "attrs": {
+      "EkosistemTip": "FloraFauna"
+     }
+    },
+    "KA_KENTSEL_SIT": {
+     "feature": "SitAlanlari",
+     "attrs": {
+      "SitTip": "KentselSit"
+     }
+    },
+    "KA_KESIN_KOR_HAS": {
+     "feature": "SitAlanlari",
+     "attrs": {
+      "SitTip": "KesinKorunacakHassasAlan"
+     }
+    },
+    "KA_NITELIKLI_DOG_KOR": {
+     "feature": "SitAlanlari",
+     "attrs": {
+      "SitTip": "NitelikliDogalKorumaAlani"
+     }
+    },
+    "KA_OCK_A": {
+     "feature": "OckHassasAlan",
+     "attrs": {
+      "HassaslikDerecesi": "OckBolgesiHassasAlanA"
+     }
+    },
+    "KA_OCK_B": {
+     "feature": "OckHassasAlan",
+     "attrs": {
+      "HassaslikDerecesi": "OckBolgesiHassasAlanB"
+     }
+    },
+    "KA_OCK_C": {
+     "feature": "OckHassasAlan",
+     "attrs": {
+      "HassaslikDerecesi": "OckBolgesiHassasAlanC"
+     }
+    },
+    "KA_OZEL_CEVRE_KORUMA": {
+     "feature": "OckBolge",
+     "attrs": {}
+    },
+    "KA_SURDURULEBILIR_KO": {
+     "feature": "SitAlanlari",
+     "attrs": {
+      "SitTip": "SurdurulebilirKorumaKontrolluKullanimAlani"
+     }
+    },
+    "KA_TABIATI_KORUMA": {
+     "feature": "MilliPark",
+     "attrs": {
+      "MilliParkTip": "TabiatiKorumaAlani"
+     }
+    },
+    "KA_TARIHI_SIT": {
+     "feature": "SitAlanlari",
+     "attrs": {
+      "SitTip": "TarihiSit"
+     }
+    },
+    "KA_ULUSLARARASI_KOR": {
+     "feature": "SozlesmeKoruma",
+     "attrs": {}
+    },
+    "KA_YABAN_HAYATI_KORU": {
+     "feature": "MilliPark",
+     "attrs": {
+      "MilliParkTip": "YabanHayatiKorumaGelistirmeAlani"
+     }
+    },
+    "KENTSELGELISMEKONUT": {
+     "feature": "KentselGelismeKonut",
+     "attrs": {},
+     "duzeltme": "karar: NİP şeması gelişme konutu ayrı 'GelismeKonut' tipiyle, ÇDP 'KentselGelismeKonut' tipiyle tutar; KonutTip alanı yalnız UİP'te vardır."
+    },
+    "KONUT_GELISME": {
+     "feature": "KentselGelismeKonut",
+     "attrs": {},
+     "duzeltme": "karar: NİP şeması gelişme konutu ayrı 'GelismeKonut' tipiyle, ÇDP 'KentselGelismeKonut' tipiyle tutar; KonutTip alanı yalnız UİP'te vardır."
+    },
+    "KST_AFET_RISKLI": {
+     "feature": "AfetTehlikeliAlanlar",
+     "attrs": {}
+    },
+    "KST_ASKERI_YASAK": {
+     "feature": "AskeriYskGuvenlikBlg",
+     "attrs": {}
+    },
+    "KST_KORUMA_KISA": {
+     "feature": "IcmeKullanmaSuyuKoruma",
+     "attrs": {
+      "KorumaDerecesi": "KisaMesafeliKorumaAlani"
+     }
+    },
+    "KST_KORUMA_MUTLAK": {
+     "feature": "IcmeKullanmaSuyuKoruma",
+     "attrs": {
+      "KorumaDerecesi": "MutlakKorumaAlani"
+     }
+    },
+    "KST_KORUMA_ORTA": {
+     "feature": "IcmeKullanmaSuyuKoruma",
+     "attrs": {
+      "KorumaDerecesi": "OrtaMesafeliKorumaAlani"
+     },
+     "duzeltme": "kod OrtaMesafeliKorumaAani → OrtaMesafeliKorumaAlani"
+    },
+    "KST_KORUMA_UZUN": {
+     "feature": "IcmeKullanmaSuyuKoruma",
+     "attrs": {
+      "KorumaDerecesi": "UzunMesafeliKorumaAlani"
+     }
+    },
+    "KST_SULAK_ALAN_BOL": {
+     "feature": "SulakAlan",
+     "attrs": {
+      "SulakTip": "SulakAlanBolgesi"
+     }
+    },
+    "KST_SULAK_EKO_ETKI": {
+     "feature": "SulakAlan",
+     "attrs": {
+      "SulakTip": "SulakAlanEkolojikEtkilenmeBolgesi"
+     }
+    },
+    "KST_SULAK_MUTLAK": {
+     "feature": "SulakAlan",
+     "attrs": {
+      "SulakTip": "SulakAlanMutlakKorumaBolgesi"
+     }
+    },
+    "KST_SULAK_OZEL_HUKUM": {
+     "feature": "SulakAlan",
+     "attrs": {
+      "SulakTip": "SulakAlanOzelHukumBolgesi"
+     }
+    },
+    "KST_SULAK_TAMPON": {
+     "feature": "SulakAlan",
+     "attrs": {
+      "SulakTip": "SulakAlanTamponBolgesi"
+     }
+    },
+    "KST_YSK_KORUMA_ALANI": {
+     "feature": "YeraltiSuKaynakKoruma",
+     "attrs": {}
+    },
+    "MILLET_BAHCESI": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "AcikYesilTip": "MilletBahcesi"
+     }
+    },
+    "ONAMA_SINIRI": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "OZEL_PROJE_SINIRI": {
+     "feature": "OzelProjeAlaniSiniri",
+     "attrs": {}
+    },
+    "PLANDEGISIKLIK": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "PLANONAMA": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "PLANONAMA_SINIRI": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "PLAN_DEGISIKLIGI": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "PLAN_DEGISIKLIK": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "PLAN_DEGISIKLIK_ONAMA_SINIRI": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "PLAN_DEGISIKLIK_SINIRI": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "PLAN_ONAMA": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "PLAN_ONAMA_SINIRI": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "PLAN_ONAMA_SNR": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "PL_AGACLANDIRILACAK": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "AcikYesilTip": "AgaclandirilacakAlan"
+     }
+    },
+    "PL_AKDENIZ_FOKU_YASA": {
+     "feature": "OzelEkosistem",
+     "attrs": {
+      "EkosistemTip": "AkdenizFoku"
+     }
+    },
+    "PL_ATIKSU_TESISI": {
+     "feature": "AtiksuTesis",
+     "attrs": {}
+    },
+    "PL_DENIZ": {
+     "feature": "SuYuzeyi",
+     "attrs": {
+      "SuYuzeyiTip": "Deniz"
+     }
+    },
+    "PL_DENIZ_KAPLM_KORU": {
+     "feature": "SuYuzeyi",
+     "attrs": {
+      "SuYuzeyiTip": "Deniz"
+     }
+    },
+    "PL_DOGAL_KARKT_KORU": {
+     "feature": "DogalKarakter",
+     "attrs": {
+      "DogalKarakterTip": "DogalKarakteriKorunacakAlan"
+     }
+    },
+    "PL_ENDUSTRIYEL_GEL": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "EndüstriyelGelismeBolgesi"
+     }
+    },
+    "PL_ENDUSTRI_BOL": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "EndustriBolgesi"
+     }
+    },
+    "PL_ENERJI_URETIM": {
+     "feature": "EnerjiUretim",
+     "attrs": {
+      "EnerjiTip": "EnerjiUretimAlani"
+     }
+    },
+    "PL_GELISME_KONUT": {
+     "feature": "KentselGelismeKonut",
+     "attrs": {},
+     "duzeltme": "karar: NİP şeması gelişme konutu ayrı 'GelismeKonut' tipiyle, ÇDP 'KentselGelismeKonut' tipiyle tutar; KonutTip alanı yalnız UİP'te vardır."
+    },
+    "PL_GELISME_KONUT_ALANI": {
+     "feature": "KentselGelismeKonut",
+     "attrs": {},
+     "duzeltme": "karar: NİP şeması gelişme konutu ayrı 'GelismeKonut' tipiyle, ÇDP 'KentselGelismeKonut' tipiyle tutar; KonutTip alanı yalnız UİP'te vardır."
+    },
+    "PL_GOL": {
+     "feature": "SuYuzeyi",
+     "attrs": {
+      "SuYuzeyiTip": "Gol"
+     }
+    },
+    "PL_HAVAALANI": {
+     "feature": "HavaalaniHavalimani",
+     "attrs": {}
+    },
+    "PL_ICME_SUYU_TESIS": {
+     "feature": "IcmesuTesis",
+     "attrs": {
+      "IcmesuTur": "TerfiMerkezi"
+     }
+    },
+    "PL_KATI_ATIK_TESISI": {
+     "feature": "KatiAtikTesis",
+     "attrs": {
+      "KatiAtikTur": "Depolama"
+     }
+    },
+    "PL_KB_SOSYAL_ALTYAPI": {
+     "feature": "SosyalKulturelAlan",
+     "attrs": {
+      "SosyalKulturelTip": "KentselBolgeselSosyalAltyapiAlani"
+     },
+     "duzeltme": "karar: Kaynak tabloda yükseköğretim alanına gidiyordu; kentsel/bölgesel sosyal altyapı kendi koduyla tutulur."
+    },
+    "PL_KENTSEL_GELISME": {
+     "feature": "KentselGelismeKonut",
+     "attrs": {}
+    },
+    "PL_KENTSEL_SERVIS": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "KentselServisAlani"
+     }
+    },
+    "PL_KENTSEL_YERLESIK": {
+     "feature": "KentselYerlesik",
+     "attrs": {}
+    },
+    "PL_KIRSAL_YERLESIK": {
+     "feature": "KirsalYerlesikKonut",
+     "attrs": {}
+    },
+    "PL_KIYI_TESISLERI": {
+     "feature": "KiyiYapilari",
+     "attrs": {
+      "KiyiYapiTip": "KiyiTesisAlani"
+     },
+     "duzeltme": "karar: Kaynak tabloda meraya gidiyordu; kıyı tesisleri KiyiYapilari tipinin 'KiyiTesisAlani' kodudur."
+    },
+    "PL_KONUT_GEL": {
+     "feature": "KentselGelismeKonut",
+     "attrs": {},
+     "duzeltme": "karar: NİP şeması gelişme konutu ayrı 'GelismeKonut' tipiyle, ÇDP 'KentselGelismeKonut' tipiyle tutar; KonutTip alanı yalnız UİP'te vardır."
+    },
+    "PL_KONUT_GELISME": {
+     "feature": "KentselGelismeKonut",
+     "attrs": {},
+     "duzeltme": "karar: NİP şeması gelişme konutu ayrı 'GelismeKonut' tipiyle, ÇDP 'KentselGelismeKonut' tipiyle tutar; KonutTip alanı yalnız UİP'te vardır."
+    },
+    "PL_KONUT_GELISME_ALANI": {
+     "feature": "KentselGelismeKonut",
+     "attrs": {},
+     "duzeltme": "karar: NİP şeması gelişme konutu ayrı 'GelismeKonut' tipiyle, ÇDP 'KentselGelismeKonut' tipiyle tutar; KonutTip alanı yalnız UİP'te vardır."
+    },
+    "PL_LOJISTIK_BOL": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "LojistikBolge"
+     }
+    },
+    "PL_MERA_ALANI": {
+     "feature": "Mera",
+     "attrs": {}
+    },
+    "PL_MIA": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "MerkeziIsAlani"
+     }
+    },
+    "PL_MILLI_PARK": {
+     "feature": "MilliPark",
+     "attrs": {
+      "MilliParkTip": "MilliPark"
+     }
+    },
+    "PL_ORG_TARIM_HAY": {
+     "feature": "Tarim",
+     "attrs": {
+      "TarimTip": "OrganizeTarimVeHayvancilikAlani"
+     },
+     "duzeltme": "karar: Kaynak tabloda il idari merkezine gidiyordu. Organize tarım ve hayvancılık alanı Tarim tipinin kendi kodudur (1.1.7'de kod adı düzeltildi)."
+    },
+    "PL_ORMAN_ALANI": {
+     "feature": "Orman",
+     "attrs": {}
+    },
+    "PL_OSB": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "OSB"
+     }
+    },
+    "PL_OTOGAR": {
+     "feature": "TerminalOtogar",
+     "attrs": {}
+    },
+    "PL_PAGACLANDIRILACAK": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "AcikYesilTip": "AgaclandirilacakAlan"
+     }
+    },
+    "PL_P_GELISME_KONUT": {
+     "feature": "KentselGelismeKonut",
+     "attrs": {},
+     "duzeltme": "karar: NİP şeması gelişme konutu ayrı 'GelismeKonut' tipiyle, ÇDP 'KentselGelismeKonut' tipiyle tutar; KonutTip alanı yalnız UİP'te vardır."
+    },
+    "PL_P_KONUT_GEL": {
+     "feature": "KentselGelismeKonut",
+     "attrs": {},
+     "duzeltme": "karar: NİP şeması gelişme konutu ayrı 'GelismeKonut' tipiyle, ÇDP 'KentselGelismeKonut' tipiyle tutar; KonutTip alanı yalnız UİP'te vardır."
+    },
+    "PL_P_KONUT_GELISME": {
+     "feature": "KentselGelismeKonut",
+     "attrs": {},
+     "duzeltme": "karar: NİP şeması gelişme konutu ayrı 'GelismeKonut' tipiyle, ÇDP 'KentselGelismeKonut' tipiyle tutar; KonutTip alanı yalnız UİP'te vardır."
+    },
+    "PL_SANAYI_DEPOLAMA": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "SanayiVeDepolamaBolgesi"
+     }
+    },
+    "PL_SERBEST_BOLGE": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "SerbestBolge"
+     }
+    },
+    "PL_SULAMA_ALANI": {
+     "feature": "Tarim",
+     "attrs": {
+      "TarimTip": "SulamaAlani"
+     }
+    },
+    "PL_SU_KAY_TOPLAMA": {
+     "feature": "SuKaptaj",
+     "attrs": {}
+    },
+    "PL_TABIAT_PARKI": {
+     "feature": "MilliPark",
+     "attrs": {
+      "MilliParkTip": "TabiatParkiAlani"
+     }
+    },
+    "PL_TALI_MERKEZ": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "TaliMerkez"
+     }
+    },
+    "PL_TARIM": {
+     "feature": "Tarim",
+     "attrs": {}
+    },
+    "PL_TARIM_ALANI": {
+     "feature": "Tarim",
+     "attrs": {}
+    },
+    "PL_TEHLIKELI_ATIK_T": {
+     "feature": "KatiAtikTesis",
+     "attrs": {
+      "KatiAtikTur": "Bertaraf"
+     }
+    },
+    "PL_TEHLIKELI_ATIK_TE": {
+     "feature": "KatiAtikTesis",
+     "attrs": {
+      "KatiAtikTur": "Bertaraf"
+     }
+    },
+    "PL_TEKNIK_ALTYAPI": {
+     "feature": "TeknikAltyapi",
+     "attrs": {
+      "AltyapiTur": "Enerji"
+     }
+    },
+    "PL_TERCIHLI_KULLANIM": {
+     "feature": "TercihliKullanimBolgesi",
+     "attrs": {}
+    },
+    "PL_TERSANE_ALANI": {
+     "feature": "KiyiYapilari",
+     "attrs": {
+      "KiyiYapiTip": "TersaneAlani"
+     }
+    },
+    "PL_TGB": {
+     "feature": "KentselCalisma",
+     "attrs": {
+      "CalismaTip": "TeknolojiGelistirmeBolgesi"
+     }
+    },
+    "PL_TURIZM_BOL": {
+     "feature": "TurizmAlani",
+     "attrs": {
+      "TurizmTip": "TurizmBolgesi"
+     }
+    },
+    "PL_UNIVERSITE": {
+     "feature": "SosyalKulturelAlan",
+     "attrs": {
+      "SosyalKulturelTip": "UniversiteAlani"
+     }
+    },
+    "PL_YESIL_SPOR": {
+     "feature": "AcikYesilAlan",
+     "attrs": {
+      "AcikYesilTip": "KentselBolgeselYesilSporAlani"
+     },
+     "duzeltme": "karar: Kaynak tabloda il idari merkezine gidiyordu; kentsel/bölgesel yeşil spor alanı açık yeşil alan kodudur."
+    },
+    "PL_ZEYTINLIK_ALAN": {
+     "feature": "Tarim",
+     "attrs": {
+      "TarimTip": "Zeytinlik"
+     },
+     "duzeltme": "karar: Zeytinlik tabakası Tarim tipinin 'Zeytinlik' koduyla tutulur."
+    },
+    "SINIR_ETAPLAMA": {
+     "feature": "EtaplamaSiniri",
+     "attrs": {},
+     "duzeltme": "karar: Etaplama sınırı plan onama sınırı değildir; şemada ayrı 'EtaplamaSiniri' tipi var."
+    },
+    "SINIR_ONAMA": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "SINIR_OZEL_PROJE": {
+     "feature": "OzelProjeAlaniSiniri",
+     "attrs": {}
+    },
+    "SINIR_PLANDEGISIK": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "SINIR_PLANONAMA": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "SINIR_PLAN_DEGISIK": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "SINIR_PLAN_DEGISIKLIGI": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "SINIR_PLAN_ONAMA": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "SM_ANA_ISTASYON": {
+     "feature": "AnaIstasyonGar",
+     "attrs": {}
+    },
+    "SM_BELDEMRK": {
+     "feature": "IdariMerkez",
+     "attrs": {
+      "IdariMerkezTip": "Belde"
+     }
+    },
+    "SM_ILCEMRK": {
+     "feature": "IdariMerkez",
+     "attrs": {
+      "IdariMerkezTip": "Ilce"
+     }
+    },
+    "SM_ILMRK": {
+     "feature": "IdariMerkez",
+     "attrs": {
+      "IdariMerkezTip": "Il"
+     }
+    },
+    "SM_KOYMRK": {
+     "feature": "IdariMerkez",
+     "attrs": {
+      "IdariMerkezTip": "Koy"
+     }
+    },
+    "SNR_BELEDIYE": {
+     "feature": "BelediyeSiniri",
+     "attrs": {}
+    },
+    "SNR_BOGAZICI_ETKILNM": {
+     "feature": "BogaziciSinirlari",
+     "attrs": {
+      "BogaziciBolgeTip": "BogaziciEtkilenmeBolgeSiniri"
+     }
+    },
+    "SNR_BOGAZ_GERI_GOR": {
+     "feature": "BogaziciSinirlari",
+     "attrs": {
+      "BogaziciBolgeTip": "BogaziciGeriGorunumBolgeSiniri"
+     }
+    },
+    "SNR_BOGAZ_ON_GOR": {
+     "feature": "BogaziciSinirlari",
+     "attrs": {
+      "BogaziciBolgeTip": "BogaziciOnGorunumBolgeSiniri"
+     }
+    },
+    "SNR_DIGER_OZL": {
+     "feature": "DigerOzelSinir",
+     "attrs": {}
+    },
+    "SNR_ETAPLAMA": {
+     "feature": "EtaplamaSiniri",
+     "attrs": {}
+    },
+    "SNR_IL": {
+     "feature": "IlSiniri",
+     "attrs": {}
+    },
+    "SNR_ILCE": {
+     "feature": "IlceSiniri",
+     "attrs": {}
+    },
+    "SNR_MUCAVIR": {
+     "feature": "MucavirAlanSiniri",
+     "attrs": {}
+    },
+    "SNR_ONAMA": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "SNR_OZEL_PROJE_ALANI": {
+     "feature": "OzelProjeAlaniSiniri",
+     "attrs": {}
+    },
+    "SNR_PLAN": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "SNR_PLANDEGISIK": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "SNR_PLANONAMA": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "SNR_PLANONAMA_ILAVE": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "SNR_PLAN_DEG": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "SNR_PLAN_DEGISIK": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "SNR_PLAN_DEGISIKLIGI": {
+     "feature": "PlanDegisiklikSiniri",
+     "attrs": {}
+    },
+    "SNR_PLAN_ONAMA": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "SNR_PLAN_ONAMA_ILAVE": {
+     "feature": "PlanSiniri",
+     "attrs": {}
+    },
+    "SNR_SULAK_ALAN": {
+     "feature": "SulakAlan",
+     "attrs": {
+      "SulakTip": "SulakAlanSiniri"
+     }
+    },
+    "SNR_TURIZM_KORUMA": {
+     "feature": "TmKtkgbAlanlari",
+     "attrs": {}
+    },
+    "SNR_ULKE": {
+     "feature": "UlkeSiniri",
+     "attrs": {}
+    }
+   },
+   "skipped": {
+    "ADAKENARI": "'AdaKenari' bu kademenin şemasında yok",
+    "ADA_KENARI": "'AdaKenari' bu kademenin şemasında yok",
+    "CIZPEN": "yardımcı çizim tabakası",
+    "CIZ_PEN": "yardımcı çizim tabakası",
+    "FONKSIYON_SINIRI": "Fonksiyon ayrım çizgisi plan onama sınırı değildir; MPYY 1.1.7'da karşılığı olan bir tip yok.",
+    "HAT_IFRAZ": "'AdaKenari' bu kademenin şemasında yok",
+    "HAT_KADEME": "'AdaKenari' bu kademenin şemasında yok",
+    "IMAR_HAKKI_AKT_SINIRI": "'ImarHakkiAktarimSiniri' bu kademenin şemasında yok",
+    "IMAR_HAKKI_SINIRI": "'ImarHakkiAktarimSiniri' bu kademenin şemasında yok",
+    "JEOETUD": "'OnlemliAlan' bu kademenin şemasında yok",
+    "JEOETUT": "'OnlemliAlan' bu kademenin şemasında yok",
+    "JEOLOJIK": "'OnlemliAlan' bu kademenin şemasında yok",
+    "JEOLOJIKETUD": "'OnlemliAlan' bu kademenin şemasında yok",
+    "JEOLOJIKETUT": "'OnlemliAlan' bu kademenin şemasında yok",
+    "JEOLOJIK_ETUD": "'OnlemliAlan' bu kademenin şemasında yok",
+    "JEOLOJIK_ETUT": "'OnlemliAlan' bu kademenin şemasında yok",
+    "JEOLOJIK_SINIRI": "'OnlemliAlan' bu kademenin şemasında yok",
+    "JEOTEKNIK": "'OnlemliAlan' bu kademenin şemasında yok",
+    "JEOTEKNIK_ETUD": "'OnlemliAlan' bu kademenin şemasında yok",
+    "JEOTEKNIK_ETUT": "'OnlemliAlan' bu kademenin şemasında yok",
+    "JEO_ETUD": "'OnlemliAlan' bu kademenin şemasında yok",
+    "JEO_ETUT": "'OnlemliAlan' bu kademenin şemasında yok",
+    "KALDIRIM": "'DigerYolNesneleri' bu kademenin şemasında yok",
+    "KENTSEL_TASARIM_SINIRI": "ÇDP 1.1.7 şemasında kentsel tasarım projesi sınırı tipi yok.",
+    "KST_ONLEMLI": "'OnlemliAlan' bu kademenin şemasında yok",
+    "MAHALLE_SINIRI": "ÇDP 1.1.7 şemasında mahalle sınırı tipi yok; plan onama sınırı olarak yazılmamalı.",
+    "ONLEMLI": "'OnlemliAlan' bu kademenin şemasında yok",
+    "ONLEMLI_ALAN": "'OnlemliAlan' bu kademenin şemasında yok",
+    "PAFTA": "yardımcı çizim tabakası",
+    "PL_AKARSU": "'SuYuzeyiTip=NehirDere' kod listesinde yok",
+    "PL_DERE": "'SuYuzeyiTip=NehirDere' kod listesinde yok",
+    "PL_EGITIM_ILK": "'EgitimTesisAlani' bu kademenin şemasında yok",
+    "PL_EGITIM_MESLEK": "'EgitimTesisAlani' bu kademenin şemasında yok",
+    "PL_KIYI_KORUMA": "'KiyiKorumaYapilari' bu kademenin şemasında yok",
+    "PL_MESIRE": "'AcikYesilTip=MesireYeri' kod listesinde yok",
+    "PL_MESIRE_ALANI": "bu kademede desteklenmiyor",
+    "PL_MESIRE_YERI": "'AcikYesilTip=MesireYeri' kod listesinde yok",
+    "PL_NEHIR": "'SuYuzeyiTip=NehirDere' kod listesinde yok",
+    "PL_P_MESIRE": "'AcikYesilTip=MesireYeri' kod listesinde yok",
+    "PL_P_MESIRE_ALANI": "'AcikYesilTip=MesireYeri' kod listesinde yok",
+    "PL_P_MESIRE_YERI": "'AcikYesilTip=MesireYeri' kod listesinde yok",
+    "PL_P_REKREASYON": "'AcikYesilTip=RekreasyonAlani' kod listesinde yok",
+    "PL_REKREAKTIF_ALAN": "'AcikYesilTip=RekreasyonAlani' kod listesinde yok",
+    "PL_REKREASYON": "'AcikYesilTip=RekreasyonAlani' kod listesinde yok",
+    "PL_SUYUZEYI": "'SuYuzeyiTip=NehirDere' kod listesinde yok",
+    "PL_SU_YUZEYI": "bu kademede desteklenmiyor",
+    "PL_TICARET_T1": "'CalismaTip=1KademeTicaretAlani' kod listesinde yok",
+    "PL_TICARET_T2": "'CalismaTip=2KademeTicaretAlani' kod listesinde yok",
+    "PL_TICARET_T3": "'CalismaTip=3KademeTicaretAlani' kod listesinde yok",
+    "PL_YAPAY_ADA": "bu kademede desteklenmiyor",
+    "REFUJ": "'DigerYolNesneleri' bu kademenin şemasında yok",
+    "SINIR_FONKSIYON": "Fonksiyon ayrım çizgisi plan onama sınırı değildir; MPYY 1.1.7'da karşılığı olan bir tip yok.",
+    "SINIR_IMAR_HAKKI": "'ImarHakkiAktarimSiniri' bu kademenin şemasında yok",
+    "SINIR_JEO": "'OnlemliAlan' bu kademenin şemasında yok",
+    "SINIR_JEOETUD": "'OnlemliAlan' bu kademenin şemasında yok",
+    "SINIR_JEOETUT": "'OnlemliAlan' bu kademenin şemasında yok",
+    "SINIR_JEOLOJIK": "'OnlemliAlan' bu kademenin şemasında yok",
+    "SINIR_JEOLOJIKETUD": "'OnlemliAlan' bu kademenin şemasında yok",
+    "SINIR_JEOLOJIKETUT": "'OnlemliAlan' bu kademenin şemasında yok",
+    "SINIR_JEOLOJIK_ETUD": "'OnlemliAlan' bu kademenin şemasında yok",
+    "SINIR_JEOLOJIK_ETUT": "'OnlemliAlan' bu kademenin şemasında yok",
+    "SINIR_JEOLOJIK_SINIRI": "'OnlemliAlan' bu kademenin şemasında yok",
+    "SINIR_JEOTEKNIK": "'OnlemliAlan' bu kademenin şemasında yok",
+    "SINIR_JEOTEKNIK_ETUD": "'OnlemliAlan' bu kademenin şemasında yok",
+    "SINIR_JEOTEKNIK_ETUT": "'OnlemliAlan' bu kademenin şemasında yok",
+    "SINIR_JEO_ETUD": "'OnlemliAlan' bu kademenin şemasında yok",
+    "SINIR_JEO_ETUT": "'OnlemliAlan' bu kademenin şemasında yok",
+    "SINIR_KENTSEL_TASARIM": "ÇDP 1.1.7 şemasında kentsel tasarım projesi sınırı tipi yok.",
+    "SINIR_MAHALLE": "ÇDP 1.1.7 şemasında mahalle sınırı tipi yok; plan onama sınırı olarak yazılmamalı.",
+    "SINIR_YAPIYAK": "'YapiYaklasmaSiniri' bu kademenin şemasında yok",
+    "SINIR_YAPIYAKLASMA": "'YapiYaklasmaSiniri' bu kademenin şemasında yok",
+    "SINIR_YAPIYAKLASMASINIRI": "'YapiYaklasmaSiniri' bu kademenin şemasında yok",
+    "SINIR_YAPI_YAK": "'YapiYaklasmaSiniri' bu kademenin şemasında yok",
+    "SM_JEO": "'OnlemliAlan' bu kademenin şemasında yok",
+    "SM_JEOLOJIK": "'OnlemliAlan' bu kademenin şemasında yok",
+    "SM_JEOTEKNIK": "'OnlemliAlan' bu kademenin şemasında yok",
+    "SNR_JEO": "'OnlemliAlan' bu kademenin şemasında yok",
+    "SNR_JEOETUD": "'OnlemliAlan' bu kademenin şemasında yok",
+    "SNR_JEOETUT": "'OnlemliAlan' bu kademenin şemasında yok",
+    "SNR_JEOLOJIK": "'OnlemliAlan' bu kademenin şemasında yok",
+    "SNR_JEOLOJIKETUD": "'OnlemliAlan' bu kademenin şemasında yok",
+    "SNR_JEOLOJIKETUT": "'OnlemliAlan' bu kademenin şemasında yok",
+    "SNR_JEOLOJIK_ETUD": "'OnlemliAlan' bu kademenin şemasında yok",
+    "SNR_JEOLOJIK_ETUT": "'OnlemliAlan' bu kademenin şemasında yok",
+    "SNR_JEOLOJIK_SINIRI": "'OnlemliAlan' bu kademenin şemasında yok",
+    "SNR_JEOTEKNIK": "'OnlemliAlan' bu kademenin şemasında yok",
+    "SNR_JEOTEKNIK_ETUD": "'OnlemliAlan' bu kademenin şemasında yok",
+    "SNR_JEOTEKNIK_ETUT": "'OnlemliAlan' bu kademenin şemasında yok",
+    "SNR_JEO_ETUD": "'OnlemliAlan' bu kademenin şemasında yok",
+    "SNR_JEO_ETUT": "'OnlemliAlan' bu kademenin şemasında yok",
+    "SNR_SEG": "'SitTip=SitEtkilesimAlani' kod listesinde yok",
+    "SNR_YAPIYAKLASMA": "'YapiYaklasmaSiniri' bu kademenin şemasında yok",
+    "SNR_YAPIYAKLASMASINIRI": "'YapiYaklasmaSiniri' bu kademenin şemasında yok",
+    "SNR_YAPI_YAK": "'YapiYaklasmaSiniri' bu kademenin şemasında yok",
+    "SNR_YAP_YAK": "'YapiYaklasmaSiniri' bu kademenin şemasında yok",
+    "YAPIYAK": "'YapiYaklasmaSiniri' bu kademenin şemasında yok",
+    "YAPIYAKLASMA": "'YapiYaklasmaSiniri' bu kademenin şemasında yok",
+    "YAPIYAKLASMASINIRI": "'YapiYaklasmaSiniri' bu kademenin şemasında yok",
+    "YAPI_YAK": "'YapiYaklasmaSiniri' bu kademenin şemasında yok",
+    "YAPI_YAKLASMA": "'YapiYaklasmaSiniri' bu kademenin şemasında yok",
+    "YAPI_YAKLASMA_SINIRI": "'YapiYaklasmaSiniri' bu kademenin şemasında yok",
+    "YAP_YAK": "'YapiYaklasmaSiniri' bu kademenin şemasında yok"
+   }
+  }
+ }
+}

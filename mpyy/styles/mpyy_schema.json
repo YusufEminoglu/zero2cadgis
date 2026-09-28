@@ -1,0 +1,7345 @@
+{
+ "version": 1,
+ "source": {
+  "file": "planGMLShema_1_7.zip",
+  "url": "https://eplan.csb.gov.tr/e-plan/doc/planGMLShema_1_7.zip",
+  "sha256": "7776af3edf8ceb4945e0f64f97bad681462e58282a5071a6820b9b76d7ca4b6b"
+ },
+ "levels": {
+  "UIP": {
+   "target_namespace": "www.csb.gov.tr",
+   "feature_types": [
+    {
+     "name": "AcikYesilAlan",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "EmsalKaks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "EmsalKaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "KatAdedi",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "MudahaleYontemi",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Taks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "TaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligiTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "SembolPoz",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "AcikYesilTip",
+       "type": "enum",
+       "codelist": "AcikYesilTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "AfetTehlikeliAlanlar",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "AfetTip",
+       "type": "enum",
+       "codelist": "AfetTip",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "AdaKenari",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "AdaKenariCizgiTip",
+       "type": "enum",
+       "codelist": "AdaKenariCizgiTip",
+       "required": true
+      },
+      {
+       "name": "CizgiKalinligi",
+       "type": "double",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "AtiksuSistemi",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "AtiksuSistemTip",
+       "type": "enum",
+       "codelist": "AtiksuSistemTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "AtiksuTesis",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "EmsalKaks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "EmsalKaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "KatAdedi",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "MudahaleYontemi",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Taks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "TaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligiTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "SembolPoz",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "AtiksuTur",
+       "type": "enum",
+       "codelist": "AtiksuTur",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "AskeriYasakBolge",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "BelediyeSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "IlceKod",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "IlKod",
+       "type": "int",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "BisikletYolu",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Genislik",
+       "type": "double",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "BogaziciSinirlari",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "BogaziciBolgeTip",
+       "type": "enum",
+       "codelist": "BogaziciBolgeTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "BuyuksehirSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "IlKod",
+       "type": "int",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "Demiryolu",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "DemirTip",
+       "type": "enum",
+       "codelist": "DemirTip",
+       "required": true
+      },
+      {
+       "name": "GuzergahAdi",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "DenizUlasimBaglanti",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "GuzergahAdi",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "DigerOzelSinir",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "DigerYolNesneleri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "DigerYolNesneTip",
+       "type": "enum",
+       "codelist": "DigerYolNesneTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "DogalKarakter",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "DogalKarakterTip",
+       "type": "enum",
+       "codelist": "DogalKarakterTip",
+       "required": false
+      },
+      {
+       "name": "Tip",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "DonusumKonutAlanlari",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "DonusumTip",
+       "type": "enum",
+       "codelist": "DonusumTip",
+       "required": true
+      },
+      {
+       "name": "IlanTarihi",
+       "type": "dateTime",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "Durak",
+     "geometry": "Polygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "EmsalKaks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "EmsalKaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "KatAdedi",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "MudahaleYontemi",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Taks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "TaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligiTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "SembolPoz",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "DurakTip",
+       "type": "enum",
+       "codelist": "DurakTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "EgitimTesisAlani",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "EmsalKaks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "EmsalKaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "KatAdedi",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "MudahaleYontemi",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Taks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "TaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligiTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "SembolPoz",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "OnBahceMesafesi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YanBahceMesafesi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiDuzeni",
+       "type": "enum",
+       "codelist": "YapiDuzenTip",
+       "required": true
+      },
+      {
+       "name": "EgitimTesisTip",
+       "type": "enum",
+       "codelist": "EgitimTesisTip",
+       "required": true
+      },
+      {
+       "name": "MulkiyetTip",
+       "type": "enum",
+       "codelist": "MulkiyetTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "EnerjiDagitimDepolama",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "EmsalKaks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "EmsalKaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "KatAdedi",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "MudahaleYontemi",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Taks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "TaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligiTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "SembolPoz",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "EnerjiTesisTip",
+       "type": "enum",
+       "codelist": "EnerjiTesisTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "EnerjiNakilHatti",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Gerilim",
+       "type": "enum",
+       "codelist": "GerilimKw",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "EnerjiUretim",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "EmsalKaks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "EmsalKaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "KatAdedi",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "MudahaleYontemi",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Taks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "TaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligiTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "SembolPoz",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "EnerjiTip",
+       "type": "enum",
+       "codelist": "EnerjiTip",
+       "required": false
+      },
+      {
+       "name": "KuruluGuc",
+       "type": "long",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "EtaplamaSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "EtapAdi",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "FonksiyonluCalisma",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "EmsalKaks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "EmsalKaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "KatAdedi",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "MudahaleYontemi",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Taks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "TaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligiTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "SembolPoz",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "OnBahceMesafesi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YanBahceMesafesi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiDuzeni",
+       "type": "enum",
+       "codelist": "YapiDuzenTip",
+       "required": true
+      },
+      {
+       "name": "FonksiyonAdi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "FonksiyonluCalismaTip",
+       "type": "enum",
+       "codelist": "FonksiyonluCalismaTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "HavaalaniHavaKoridoru",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "HavayoluTesisleri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "EmsalKaks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "EmsalKaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "KatAdedi",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "MudahaleYontemi",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Taks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "TaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligiTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "SembolPoz",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "HavaTip",
+       "type": "enum",
+       "codelist": "HavaTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "IbadetAlani",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "EmsalKaks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "EmsalKaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "KatAdedi",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "MudahaleYontemi",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Taks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "TaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligiTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "SembolPoz",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "OnBahceMesafesi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YanBahceMesafesi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiDuzeni",
+       "type": "enum",
+       "codelist": "YapiDuzenTip",
+       "required": true
+      },
+      {
+       "name": "IbadetTip",
+       "type": "enum",
+       "codelist": "IbadetTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "IcmeKullanmaSuyuKoruma",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "HavzaAdi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "KorumaDerecesi",
+       "type": "enum",
+       "codelist": "KorumaDerecesi",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "IcmesuAnaHat",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "IcmesuTesis",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "EmsalKaks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "EmsalKaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "KatAdedi",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "MudahaleYontemi",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Taks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "TaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligiTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "SembolPoz",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "IcmesuTur",
+       "type": "enum",
+       "codelist": "IcmesuTur",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "IlSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "IlKod",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "NutKodD1",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "NutKodD2",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "NutKodD3",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "UlkeKod",
+       "type": "int",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "IlanEdilenClsmaAlan",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "EmsalKaks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "EmsalKaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "KatAdedi",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "MudahaleYontemi",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Taks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "TaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligiTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "SembolPoz",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "OnBahceMesafesi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YanBahceMesafesi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiDuzeni",
+       "type": "enum",
+       "codelist": "YapiDuzenTip",
+       "required": true
+      },
+      {
+       "name": "IlanEdilenCalismaTip",
+       "type": "enum",
+       "codelist": "IlanEdilenCalismaTip",
+       "required": true
+      },
+      {
+       "name": "IlanTarihi",
+       "type": "dateTime",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "IlceSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "IlKod",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "IlceKod",
+       "type": "int",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "IletimHatti",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "EnerjiHatTip",
+       "type": "enum",
+       "codelist": "EnerjiHatTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "ImarHakkiAktarimSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "JeotermalKaynak",
+     "geometry": "Point",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "KarayoluTesisleri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "EmsalKaks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "EmsalKaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "KatAdedi",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "MudahaleYontemi",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Taks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "TaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligiTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "SembolPoz",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "KaraTesisTip",
+       "type": "enum",
+       "codelist": "KaraTesisTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "KatiAtikTesis",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "EmsalKaks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "EmsalKaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "KatAdedi",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "MudahaleYontemi",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Taks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "TaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligiTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "SembolPoz",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "KatiAtikTur",
+       "type": "enum",
+       "codelist": "KatiAtikTur",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "KentselCalisma",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "EmsalKaks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "EmsalKaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "KatAdedi",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "MudahaleYontemi",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Taks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "TaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligiTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "SembolPoz",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "OnBahceMesafesi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YanBahceMesafesi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiDuzeni",
+       "type": "enum",
+       "codelist": "YapiDuzenTip",
+       "required": true
+      },
+      {
+       "name": "CalismaTip",
+       "type": "enum",
+       "codelist": "CalismaTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "KentselImge",
+     "geometry": "Point",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "KentselTasarimProjeSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "KiyiKenarCizgisi",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "OnamaTarihi",
+       "type": "dateTime",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "KiyiKorumaYapilari",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "KiyiKorumaTip",
+       "type": "enum",
+       "codelist": "KiyiKorumaTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "KiyiYapilari",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "EmsalKaks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "EmsalKaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "KatAdedi",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "MudahaleYontemi",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Taks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "TaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligiTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "SembolPoz",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "KiyiYapiTip",
+       "type": "enum",
+       "codelist": "KiyiYapiTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "Konut",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "EmsalKaks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "EmsalKaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "KatAdedi",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "MudahaleYontemi",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Taks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "TaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligiTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "SembolPoz",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "OnBahceMesafesi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YanBahceMesafesi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiDuzeni",
+       "type": "enum",
+       "codelist": "YapiDuzenTip",
+       "required": true
+      },
+      {
+       "name": "KonutTip",
+       "type": "enum",
+       "codelist": "KonutTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "KopruGecit",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "GecitTip",
+       "type": "enum",
+       "codelist": "GecitTip",
+       "required": true
+      },
+      {
+       "name": "Genislik",
+       "type": "double",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "KorumaKusaklari",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "KusakTip",
+       "type": "enum",
+       "codelist": "KusakTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "KoySiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "IlKod",
+       "type": "int",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "KumsalPlaj",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "MahalleSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "IlKod",
+       "type": "int",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "ManiaSiniri",
+     "geometry": "MultiLineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Yukseklik",
+       "type": "double",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "ManiaPlani",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Yukseklik",
+       "type": "double",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "Mera",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "MeraSinif",
+       "type": "enum",
+       "codelist": "MeraSinif",
+       "required": false
+      },
+      {
+       "name": "MeraTip",
+       "type": "enum",
+       "codelist": "MeraTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "MilliPark",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "IlanTarihi",
+       "type": "dateTime",
+       "required": true
+      },
+      {
+       "name": "MilliParkTip",
+       "type": "enum",
+       "codelist": "MilliParkTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "MucavirAlanSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "IlceKod",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "IlKod",
+       "type": "int",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "OckBolge",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "IlanTarihi",
+       "type": "dateTime",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "OckHassasAlan",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "HassaslikDerecesi",
+       "type": "enum",
+       "codelist": "HassaslikDerecesi",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "OnlemliAlan",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "OnlemliTip",
+       "type": "enum",
+       "codelist": "OnlemliTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "Orman",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "OzelEkosistem",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "EkosistemTip",
+       "type": "enum",
+       "codelist": "EkosistemTip",
+       "required": true
+      },
+      {
+       "name": "TurAdi",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "PlanDegisiklikSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Pin",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "PlanAdi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "DegismeSebepTip",
+       "type": "enum",
+       "codelist": "DegismeSebepTip",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "PlanNotu",
+     "geometry": null,
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Aciklama",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "PlanSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Pin",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "PlanAdi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "Nitelik",
+       "type": "enum",
+       "codelist": "NitelikTip",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "SaglikTesisAlani",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "EmsalKaks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "EmsalKaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "KatAdedi",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "MudahaleYontemi",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Taks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "TaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligiTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "SembolPoz",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "OnBahceMesafesi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YanBahceMesafesi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiDuzeni",
+       "type": "enum",
+       "codelist": "YapiDuzenTip",
+       "required": true
+      },
+      {
+       "name": "SaglikTip",
+       "type": "enum",
+       "codelist": "SaglikTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "SahilSeridi",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "SitAlanlari",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "IlanTarihi",
+       "type": "dateTime",
+       "required": true
+      },
+      {
+       "name": "SitTip",
+       "type": "enum",
+       "codelist": "SitTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "SogutmaSuyuAlmaHatti",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "SosyalKulturelAlan",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "EmsalKaks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "EmsalKaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "KatAdedi",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "MudahaleYontemi",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Taks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "TaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligiTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "SembolPoz",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "OnBahceMesafesi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YanBahceMesafesi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiDuzeni",
+       "type": "enum",
+       "codelist": "YapiDuzenTip",
+       "required": true
+      },
+      {
+       "name": "MulkiyetTip",
+       "type": "enum",
+       "codelist": "MulkiyetTip",
+       "required": true
+      },
+      {
+       "name": "SosyalKulturelTip",
+       "type": "enum",
+       "codelist": "SosyalKulturelTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "SozlesmeKoruma",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "AlanAdi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "IlanTarihi",
+       "type": "dateTime",
+       "required": true
+      },
+      {
+       "name": "SozlesmeAdi",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "SuKaptaj",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "EmsalKaks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "EmsalKaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "KatAdedi",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "MudahaleYontemi",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Taks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "TaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligiTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "SembolPoz",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "SuYuzeyi",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "SuYuzeyiTip",
+       "type": "enum",
+       "codelist": "SuYuzeyiTip",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "SulakAlan",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "IlanTarihi",
+       "type": "dateTime",
+       "required": true
+      },
+      {
+       "name": "SulakTip",
+       "type": "enum",
+       "codelist": "SulakTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "Tarim",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "EmsalKaks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "EmsalKaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "MinimumIfraz",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "TarimTip",
+       "type": "enum",
+       "codelist": "TarimTip",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligiTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "TehlikeliTesis",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "EmsalKaks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "EmsalKaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "KatAdedi",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "MudahaleYontemi",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Taks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "TaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligiTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "SembolPoz",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "TehlikeTur",
+       "type": "enum",
+       "codelist": "TehlikeTur",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "TeknikAltyapi",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "EmsalKaks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "EmsalKaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "KatAdedi",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "MudahaleYontemi",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Taks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "TaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligiTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "SembolPoz",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "AltyapiTur",
+       "type": "enum",
+       "codelist": "AltyapiTur",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "AtikGeriKazTesAlani",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "EmsalKaks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "EmsalKaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "KatAdedi",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "MudahaleYontemi",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Taks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "TaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligiTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "SembolPoz",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "TescilliAlan",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "EnvanterNo",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "PlanFonksiyonu",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "TescilTarihi",
+       "type": "dateTime",
+       "required": true
+      },
+      {
+       "name": "TescilTip",
+       "type": "enum",
+       "codelist": "TescilTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "TmKtkgbAlan",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "IlanTarihi",
+       "type": "dateTime",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "TopluTasimTurleriArasiDegisimAktarmaAlani",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "EmsalKaks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "EmsalKaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "KatAdedi",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "MudahaleYontemi",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Taks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "TaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligiTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "SembolPoz",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "TopluTasimaHatti",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "TopluHatTip",
+       "type": "enum",
+       "codelist": "TopluHatTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "TurizmAlani",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "EmsalKaks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "EmsalKaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "KatAdedi",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "MudahaleYontemi",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Taks",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "TaksTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligiTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "SembolPoz",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "OnBahceMesafesi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YanBahceMesafesi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiDuzeni",
+       "type": "enum",
+       "codelist": "YapiDuzenTip",
+       "required": true
+      },
+      {
+       "name": "TurizmTip",
+       "type": "enum",
+       "codelist": "TurizmTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "UlkeSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "UlkeKod",
+       "type": "int",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "YapiYaklasmaSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "YapiYaklasC",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Mesafe",
+       "type": "double",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "YayaYolu",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Genislik",
+       "type": "double",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "Yolorta",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "YolGenisligi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YolTip",
+       "type": "enum",
+       "codelist": "YolTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "YoreselMimariKoruma",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "YapayAda",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "OzelProjeAlanSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "YeraltiSuKaynakKoruma",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "SulamaHatti",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "TunelEtkiAlani",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "SuUlasimBaglantisi",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "AraziKullanimiDevamEttirilerekKorunacakAlanlar",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "AraziKorumaKullanimTip",
+       "type": "enum",
+       "codelist": "AraziKorumaKullanimTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "OzelKanunlarlaBelirlenenAlan",
+     "geometry": "Point",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "OzelKanunAlanTip",
+       "type": "enum",
+       "codelist": "OzelKanunAlanTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "AfetHizmetAlani",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "AfetHizmetTip",
+       "type": "enum",
+       "codelist": "AfetHizmetTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "YapiYaklasmaMes",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "YapiYaklasmaMesafesi",
+       "type": "double",
+       "required": false
+      }
+     ]
+    }
+   ],
+   "undefined_members": [],
+   "codelists": {
+    "AcikYesilTip": [
+     "Park",
+     "CocukBahcesiOyunAlani",
+     "PasifYesilAlan",
+     "RekreasyonAlani",
+     "FuarPanayirFestivalAlani",
+     "MesireYeri",
+     "HayvanatBahcesi",
+     "Hipodrom",
+     "Meydan",
+     "BakiSeyirTerasi",
+     "KentOrmani",
+     "ArboretumBotanikParki",
+     "AgaclandirilacakAlan",
+     "MezarlikAlani",
+     "KorunacakBahce",
+     "RekreatifAlan",
+     "MilletBahcesi"
+    ],
+    "AdaKenariCizgiTip": [
+     "Onerilen",
+     "Korunan",
+     "Duzeltilen",
+     "IfrazHatti",
+     "KademeHatti"
+    ],
+    "AfetHizmetTip": [
+     "AfetLojistikAlani"
+    ],
+    "AfetTip": [
+     "YapiYasakliAlan",
+     "HeyelanAlani",
+     "TaskinaMaruzAlan",
+     "KentselRiskAlani",
+     "TsunamiRiskliAlan",
+     "KutleHareketiRiskliAlan",
+     "FaySakinimZonuAlani"
+    ],
+    "AltyapiTur": [
+     "Enerji",
+     "Icmesuyu",
+     "Atiksu",
+     "KatiAtik",
+     "Kanalizasyon",
+     "Ulastirma",
+     "Haberlesme"
+    ],
+    "AraziKorumaKullanimTip": [
+     "DogalVeEkolojikAlan",
+     "EkolojikOnemeSahipAlan"
+    ],
+    "AtiksuSistemTip": [
+     "AtiksuAnaKollektoru",
+     "AtiksuDerinDenizDesarjHatti"
+    ],
+    "AtiksuTur": [
+     "Aritma",
+     "TerfiMerkezi"
+    ],
+    "BogaziciBolgeTip": [
+     "BogaziciEtkilenmeBolgeSiniri",
+     "BogaziciGeriGorunumBolgeSiniri",
+     "BogaziciOnGorunumBolgeSiniri"
+    ],
+    "CalismaTip": [
+     "TicaretAlani",
+     "TicaretKonutAlani",
+     "TicaretTurizmAlani",
+     "ToptanTicaretAlani",
+     "IdariHizmetAlani",
+     "AkaryakitServisIstasyonu",
+     "SanayiAlani",
+     "EndustriyelGelismeBolgesi",
+     "KucukSanayiAlani",
+     "DepolamaAlani",
+     "LojistikTesisAlani",
+     "PazarAlani",
+     "TarimHayvancilikTesisAlani",
+     "AskeriAlan",
+     "BetonSantrali",
+     "1KademeTicaretAlani",
+     "2KademeTicaretAlani",
+     "3KademeTicaretAlani",
+     "SuUrunleriUretimYetistirmeTesisi",
+     "TicaretTurizmKonutAlani",
+     "ImalathaneTesisAlani",
+     "OSBHizmetDestekAlani",
+     "TuzlaAlani"
+    ],
+    "DegerTip": [
+     "Serbest",
+     "GecerliDegil",
+     "Deger"
+    ],
+    "DegismeSebepTip": [
+     "Resen",
+     "Talep",
+     "Mahkeme",
+     "Itiraz"
+    ],
+    "DemirTip": [
+     "Demiryolu",
+     "HizliTrenHat",
+     "TriyajAlani"
+    ],
+    "DigerYolNesneTip": [
+     "Refuj",
+     "Kaldirim"
+    ],
+    "DogalKarakterTip": [
+     "Agaclik",
+     "KayalikTaslik",
+     "Calilik",
+     "Kumul",
+     "MakilikFundalik",
+     "SazlikBataklik",
+     "Diger",
+     "Tuzla"
+    ],
+    "DonusumTip": [
+     "TopluKonutAlanlari",
+     "GecekonduOnlemeBolgesi"
+    ],
+    "DurakTip": [
+     "AnaIstasyonGar",
+     "AraIstasyon",
+     "TerminalOtogar",
+     "RayliTopluTasimaIstasyonu",
+     "HavaiHatIstasyonu",
+     "HavarayIstasyonu"
+    ],
+    "EgitimTesisTip": [
+     "AnaokuluAlani",
+     "IlkokulAlani",
+     "OrtaokulAlani",
+     "LiseAlani",
+     "OzelEgitimAlani",
+     "MeslekiTeknikOgretimTesisAlani",
+     "YuksekOgretimAlani",
+     "HalkEgitimMerkezi"
+    ],
+    "EkosistemTip": [
+     "FloraFauna",
+     "EkolojikKoruma",
+     "EndemikBiyotop",
+     "AkdenizFoku",
+     "DenizKaplumbagasi"
+    ],
+    "EnerjiHatTip": [
+     "BoruHatti",
+     "DogalgazBoruHatti",
+     "AkaryakitBoruHatti",
+     "IletimTuneli",
+     "CebriBoruHatti"
+    ],
+    "EnerjiTesisTip": [
+     "RegulatorAlani",
+     "TurbinAlani",
+     "DogalgazDagitimTesisAlani",
+     "YaniciParlayiciPatlayiciMaddeUretimDepoAlani",
+     "AkaryakitUrunDepolamaAlani",
+     "TrafoAlani",
+     "ElektronikHaberlesmeAltyapiAlani",
+     "RafineriPetroKimyaTesisiAlani",
+     "EnerjiDepolamaAlani",
+     "YenilenebilirEnerjiKaynaginaDayaliUretimTesisAlani"
+    ],
+    "EnerjiTip": [
+     "NukleerEnerjiSantralAlani",
+     "TermikSantralAlani",
+     "YenilenebilirEnerjiKaynaginaDayaliUretimTesisAlani",
+     "EnerjiUretimAlani"
+    ],
+    "FonksiyonluCalismaTip": [
+     "TopluIsyeri",
+     "BelediyeHizmetAlani",
+     "ResmiKurumAlani"
+    ],
+    "GecitTip": [
+     "Kopru",
+     "YayaUstGecit",
+     "YayaAltGecit",
+     "Tunel"
+    ],
+    "GerilimKw": [
+     "34.5",
+     "154",
+     "380"
+    ],
+    "HassaslikDerecesi": [
+     "OckBolgesiHassasAlanA",
+     "OckBolgesiHassasAlanB",
+     "OckBolgesiHassasAlanC"
+    ],
+    "HavaTip": [
+     "HavalimaniHavaalani",
+     "HelikopterInisAlani"
+    ],
+    "IbadetTip": [
+     "Cami",
+     "Mescit",
+     "Kilise",
+     "Sapel",
+     "SinagogHavra"
+    ],
+    "IcmesuTur": [
+     "Depolama",
+     "Aritma",
+     "TerfiMerkezi"
+    ],
+    "IlanEdilenCalismaTip": [
+     "TeknolojiGelistirmeBolgesi",
+     "SerbestBolge",
+     "Osb",
+     "EndustriBolgesi"
+    ],
+    "KaraTesisTip": [
+     "GenelOtopark",
+     "TirKamyonMakinaParkGarajAlani",
+     "BisikletParki",
+     "KatliOtoparkAlani",
+     "ElektrikliAracSarjIstasyonAlani"
+    ],
+    "KatiAtikTur": [
+     "Bosaltma",
+     "Bertaraf",
+     "Isleme",
+     "Transfer",
+     "Depolama",
+     "VahsiCopDepolamaVeKapatmaAlani"
+    ],
+    "KiyiKorumaTip": [
+     "Dalgakiran",
+     "Kopru",
+     "Menfez",
+     "IstinatDuvari",
+     "Mendirek",
+     "Mahmuz",
+     "KiyiKoruma"
+    ],
+    "KiyiYapiTip": [
+     "TersaneAlani",
+     "KonteynerLimani",
+     "KruvaziyerLimani",
+     "RoRoLimani",
+     "YatLimani",
+     "BalikciBarinagi",
+     "TekneImalCekekYeri",
+     "GemiSokumYeri",
+     "Iskele",
+     "Rihtim",
+     "Barinak",
+     "DolfenPlatform",
+     "TekneImalBakimYeri",
+     "DenizInisRampasi"
+    ],
+    "KonutTip": [
+     "YerlesikKonut",
+     "GelismeKonut"
+    ],
+    "KorumaDerecesi": [
+     "MutlakKorumaAlani",
+     "KisaMesafeliKorumaAlani",
+     "OrtaMesafeliKorumaAani",
+     "UzunMesafeliKorumaAlani"
+    ],
+    "KusakTip": [
+     "NukleerEnerjiKorumaKusagi",
+     "HavaalaniKorumaKusagi",
+     "KarayoluKorumaKusagi",
+     "BoruHattiKorumaKusagi",
+     "SuKanaliKorumaKusagi",
+     "IcmesuyuKorumaKusagi",
+     "YeraltiSuKorumaKusagi",
+     "DemiryoluKorumaKusagi",
+     "JeotermalKorumaKusagi",
+     "YaniciPatlayiciMaddeKorumaKusagi",
+     "SaglikKorumaBandi",
+     "EnerjiNakilHattiKorumaKusagi"
+    ],
+    "MeraSinif": [
+     "CokIyi",
+     "Iyi",
+     "Orta",
+     "Kotu"
+    ],
+    "MeraTip": [
+     "Mera",
+     "Yaylak",
+     "Kislak",
+     "Cayir",
+     "Otlak"
+    ],
+    "MilliParkTip": [
+     "TabiatParkiAlani",
+     "TabiatiKorumaAlani",
+     "MilliPark",
+     "YabanHayatiKorumaGelistirmeAlani"
+    ],
+    "MulkiyetTip": [
+     "Ozel",
+     "Kamu"
+    ],
+    "NitelikTip": [
+     "Plan",
+     "Revizyon",
+     "Ilave",
+     "IlaveRevizyon"
+    ],
+    "OnlemliTip": [
+     "OnlemliAlan",
+     "1DereceOnlemliAlan",
+     "2DereceOnlemliAlan",
+     "3DereceOnlemliAlan",
+     "4DereceOnlemliAlan",
+     "5DereceOnlemliAlan"
+    ],
+    "OzelKanunAlanTip": [
+     "SinirKapisi"
+    ],
+    "SaglikTip": [
+     "SaglikTesisAlani",
+     "OzelSaglikTesisiAlani",
+     "Hastane",
+     "AileSagligiMerkezi"
+    ],
+    "SitTip": [
+     "1DereceArkeolojikSit",
+     "2DereceArkeolojikSit",
+     "3DereceArkeolojikSit",
+     "KesinKorunacakHassasAlan",
+     "NitelikliDogalKorumaAlani",
+     "SurdurulebilirKorumaKontrolluKullanimAlani",
+     "KentselSit",
+     "TarihiSit",
+     "SitEtkilesimAlani",
+     "1DereceDogalSit",
+     "2DereceDogalSit",
+     "3DereceDogalSit",
+     "KentselArkeolojikSit"
+    ],
+    "SosyalKulturelTip": [
+     "SosyalTesisAlani",
+     "KulturelTesisAlani",
+     "SefkatEvleriAlani",
+     "AcikSporTesisiAlani",
+     "KapaliSporTesisiAlani",
+     "KresGunduzBakimevi",
+     "YurtAlani",
+     "KongreSergiMerkeziAlani",
+     "YasliBakimeviAlani",
+     "SemtSporAlani",
+     "OzelSosyalTesisAlani",
+     "OzelKulturelTesisAlani",
+     "OzelAcikSporTesisiAlani",
+     "OzelKapaliSporTesisiAlani",
+     "SokakHayvanlariBarinagiAlani"
+    ],
+    "SuYuzeyiTip": [
+     "Gol",
+     "Golet",
+     "NehirDere",
+     "Deniz",
+     "Baraj"
+    ],
+    "SulakTip": [
+     "SulakAlanBolgesi",
+     "SulakAlanTamponBolgesi",
+     "SulakAlanEkolojikEtkilenmeBolgesi",
+     "SulakAlanMutlakKorumaBolgesi",
+     "SulakAlanOzelHukumBolgesi",
+     "SulakAlanSiniri"
+    ],
+    "TarimTip": [
+     "Zeytinlik",
+     "OrtuAltiTarim",
+     "OrganikTarim",
+     "TarımsalNitelikliAlan"
+    ],
+    "TehlikeTur": [
+     "Bertaraf",
+     "Depolama"
+    ],
+    "TescilTip": [
+     "TescilliAnitYapi",
+     "TescilliBina",
+     "TescilliParsel",
+     "TescilliTabiatVarligi"
+    ],
+    "TopluHatTip": [
+     "RayliTopluTasimaYerUstu",
+     "HavaiHat",
+     "RayliTopluTasimaYerAlti",
+     "Havaray"
+    ],
+    "TurizmTip": [
+     "PansiyonAlani",
+     "ApartOtelAlani",
+     "OtelAlani",
+     "MotelAlani",
+     "HostelAlani",
+     "TatilKoyuAlani",
+     "SaglikOdakliTatilKoyu",
+     "TermalTurizmAlani",
+     "KampingAlani",
+     "GunubirlikTesisAlani",
+     "GolfAlani",
+     "KisSporlariKayakTesisAlani",
+     "EkoTurizmKirsalTurizmTesisAlani"
+    ],
+    "YapiDuzenTip": [
+     "Ayrik",
+     "Bitisik",
+     "Blok",
+     "Serbest",
+     "Ikiz"
+    ],
+    "YolTip": [
+     "Otoyol",
+     "BolunmusTasit",
+     "TasitYol"
+    ]
+   },
+   "xsd": {
+    "file": "uip.V.1.1.7.xsd",
+    "sha256": "49d064249f6a428e62eff9800513b336927f49e1668bd4d29c26dacc13c481e2"
+   }
+  },
+  "NIP": {
+   "target_namespace": "www.csb.gov.tr",
+   "feature_types": [
+    {
+     "name": "AcikYesilAlan",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "YesilTip",
+       "type": "enum",
+       "codelist": "YesilTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "AfetTehlikeliAlanlar",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "AfetTip",
+       "type": "enum",
+       "codelist": "AfetTip",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "AskeriYasakBolge",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "AtiksuTesis",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "AtiksuTur",
+       "type": "enum",
+       "codelist": "AtiksuTur",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "AtikGeriKazTesAlani",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "AdaKenari",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "AdaKenariCizgiTip",
+       "type": "enum",
+       "codelist": "AdaKenariCizgiTip",
+       "required": true
+      },
+      {
+       "name": "CizgiKalinligi",
+       "type": "double",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "BelediyeSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "IlceKod",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "IlKod",
+       "type": "int",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "BogaziciSinirlari",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "BogaziciBolgeTip",
+       "type": "enum",
+       "codelist": "BogaziciBolgeTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "BoruHatti",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "EnerjiHatTip",
+       "type": "enum",
+       "codelist": "EnerjiHatTip",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "BuyuksehirSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "Ilkod",
+       "type": "int",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "Demiryolu",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "DemirTip",
+       "type": "enum",
+       "codelist": "DemirTip",
+       "required": true
+      },
+      {
+       "name": "GuzergahAdi",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "DenizUlasimBaglantisi",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "DigerOzelSinir",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "KanunAdi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "KanunNumarasi",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "DigerYolNesneleri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "DigerYolNesneTip",
+       "type": "enum",
+       "codelist": "DigerYolNesneTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "DogalKarakter",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "DogalKarakterTip",
+       "type": "enum",
+       "codelist": "DogalKarakterTip",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "DonusumKonutAlanlari",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "DonusumTip",
+       "type": "enum",
+       "codelist": "DonusumTip",
+       "required": true
+      },
+      {
+       "name": "IlanTarihi",
+       "type": "dateTime",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "EgitimTesisAlani",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "EgitimTesisTip",
+       "type": "enum",
+       "codelist": "EgitimTesisTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "EnerjiDagitimDepolama",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "EnerjiTesisTip",
+       "type": "enum",
+       "codelist": "EnerjiTesisTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "EnerjiNakilHatti",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Gerilim",
+       "type": "enum",
+       "codelist": "GerilimKw",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "EnerjiUretim",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "EnerjiTip",
+       "type": "enum",
+       "codelist": "EnerjiTip",
+       "required": false
+      },
+      {
+       "name": "KuruluGuc",
+       "type": "long",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "EtaplamaSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "EtapAdi",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "GelismeKonut",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "GelismeKonutAlaniYogunluk",
+       "type": "enum",
+       "codelist": "GelismeKonutAlaniYogunlukTip",
+       "required": true
+      },
+      {
+       "name": "YogunlukDeger",
+       "type": "long",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "HavaalaniHavaKoridoru",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "HavaalaniHavalimani",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "IbadetAlani",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "IbadetTip",
+       "type": "enum",
+       "codelist": "IbadetTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "IcmeKullanmaSuyuKoruma",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "HavzaAdi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "KorumaDerecesi",
+       "type": "enum",
+       "codelist": "KorumaDerecesi",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "IcmesuAnaHat",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "IcmesuTesis",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "IcmesuTur",
+       "type": "enum",
+       "codelist": "IcmesuTur",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "IlSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "Ilkod",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "NutKodD1",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "NutKodD2",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "NutKodD3",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "UlkeKod",
+       "type": "int",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "IlanEdilenClsmaAlan",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "IlanEdilenCalismaTip",
+       "type": "enum",
+       "codelist": "IlanEdilenCalismaTip",
+       "required": true
+      },
+      {
+       "name": "IlanTarihi",
+       "type": "dateTime",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "IlceSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "Ilkod",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "IlceKod",
+       "type": "int",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "ImarHakkiAktarimSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "KarayoluTesisleri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "KarayoluTesisTip",
+       "type": "enum",
+       "codelist": "KarayoluTesisTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "KatiAtikTesis",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "KatiAtikTur",
+       "type": "enum",
+       "codelist": "KatiAtikTur",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "KentselCalisma",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "CalismaTip",
+       "type": "enum",
+       "codelist": "CalismaTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "KentselDonusumSinirlari",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "KentselDonusumSinirlariTip",
+       "type": "enum",
+       "codelist": "KentselDonusumSiniriTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "KiyiKenarCizgisi",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "OnamaTarihi",
+       "type": "dateTime",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "KiyiKorumaYapilari",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "KiyiKorumaTip",
+       "type": "enum",
+       "codelist": "KiyiKorumaTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "KiyiYapilari",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "KiyiYapiTip",
+       "type": "enum",
+       "codelist": "KiyiYapiTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "KoySiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "Ilkod",
+       "type": "int",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "KumsalPlaj",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "ManiaSiniri",
+     "geometry": "MultiLineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Yukseklik",
+       "type": "double",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "ManiaPlani",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Yukseklik",
+       "type": "double",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "Mera",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "MeraSinif",
+       "type": "enum",
+       "codelist": "MeraSinif",
+       "required": false
+      },
+      {
+       "name": "MeraTip",
+       "type": "enum",
+       "codelist": "MeraTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "MevcutKonut",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "MevcutKonutYogunluk",
+       "type": "enum",
+       "codelist": "MevcutKonutAlaniYogunlukTip",
+       "required": true
+      },
+      {
+       "name": "YogunlukDeger",
+       "type": "long",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "MilliPark",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "IlanTarihi",
+       "type": "dateTime",
+       "required": true
+      },
+      {
+       "name": "MilliParkTip",
+       "type": "enum",
+       "codelist": "MilliParkTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "MucavirAlanSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "IlceKod",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "IlKod",
+       "type": "int",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "MudahaleSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "MudahaleSiniriTip",
+       "type": "enum",
+       "codelist": "MudahaleSiniriTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "OckBolge",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "IlanTarihi",
+       "type": "dateTime",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "OckHassasAlan",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "HassaslikDerecesi",
+       "type": "enum",
+       "codelist": "HassaslikDerecesi",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "OnlemliAlan",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "OnlemliTip",
+       "type": "enum",
+       "codelist": "OnlemliTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "Orman",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "OzelEkosistem",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "EkosistemTip",
+       "type": "enum",
+       "codelist": "EkosistemTip",
+       "required": true
+      },
+      {
+       "name": "TurAdi",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "YapayAda",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "OzelProjeAlanSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "KirsalYerlesikAlanSinir",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "PlanDegisiklikSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Pin",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "PlanAdi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "DegismeSebep",
+       "type": "enum",
+       "codelist": "DegismeSebepTip",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "PlanNotu",
+     "geometry": null,
+     "fields": [
+      {
+       "name": "Aciklama",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "PlanSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Pin",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "PlanAdi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "Nitelik",
+       "type": "enum",
+       "codelist": "NitelikTip",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "RayliTopluTasimaHatti",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "RayliHatTip",
+       "type": "enum",
+       "codelist": "RayliHatTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "SaglikTesisAlani",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "SaglikTip",
+       "type": "enum",
+       "codelist": "SaglikTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "SahilSeridi",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "SitAlanlari",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "IlanTarihi",
+       "type": "dateTime",
+       "required": true
+      },
+      {
+       "name": "SitTip",
+       "type": "enum",
+       "codelist": "SitTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "SogutmaSuyuAlmaHatti",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "SosyalKulturelAlan",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "SosyalKulturelTip",
+       "type": "enum",
+       "codelist": "SosyalKulturelTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "SozlesmeKoruma",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "AlanAdi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "IlanTarihi",
+       "type": "dateTime",
+       "required": true
+      },
+      {
+       "name": "SozlesmeAdi",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "StatusuOzelKanunlarlaBelirlenenAlanlar",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "SuKaptaj",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "SulamaHatti",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "SuYuzeyi",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "SuYuzeyiTip",
+       "type": "enum",
+       "codelist": "SuYuzeyiTip",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "SulakAlan",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "IlanTarihi",
+       "type": "dateTime",
+       "required": true
+      },
+      {
+       "name": "SulakTip",
+       "type": "enum",
+       "codelist": "SulakTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "Tarim",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Emsal",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "EmsalTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      },
+      {
+       "name": "MinimumIfraz",
+       "type": "long",
+       "required": true
+      },
+      {
+       "name": "TarimTip",
+       "type": "enum",
+       "codelist": "TarimTip",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YapiYuksekligiTip",
+       "type": "enum",
+       "codelist": "DegerTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "TehlikeliTesis",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "TehlikeTur",
+       "type": "enum",
+       "codelist": "TehlikeTur",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "TeknikAltyapi",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "AltyapiTur",
+       "type": "enum",
+       "codelist": "AltyapiTur",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "Terminal",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "TerminalTip",
+       "type": "enum",
+       "codelist": "TerminalTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "TmKtkgbAlan",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "IlanTarihi",
+       "type": "dateTime",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "TopluTasimaAktarimAlani",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "Tunel",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Genislik",
+       "type": "double",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "TurizmAlani",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "TurizmTip",
+       "type": "enum",
+       "codelist": "TurizmTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "UlkeSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "UlkeKod",
+       "type": "int",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "Yolorta",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "YolGenisligi",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "YolTip",
+       "type": "enum",
+       "codelist": "YolTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "YeraltiSuKaynakKoruma",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "SuUlasimBaglantisi",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "AraziKullanimiDevamEttirilerekKorunacakAlanlar",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "AraziKorumaKullanimTip",
+       "type": "enum",
+       "codelist": "AraziKorumaKullanimTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "OzelKanunlarlaBelirlenenAlan",
+     "geometry": "Point",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "OzelKanunAlanTip",
+       "type": "enum",
+       "codelist": "OzelKanunAlanTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "AfetHizmetAlani",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "AfetHizmetTip",
+       "type": "enum",
+       "codelist": "AfetHizmetTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "YolDuzenlemeAlanlari",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "YolDuzenlemeAlanTip",
+       "type": "enum",
+       "codelist": "YolDuzenlemeAlanTip",
+       "required": true
+      }
+     ]
+    }
+   ],
+   "undefined_members": [],
+   "codelists": {
+    "AdaKenariCizgiTip": [
+     "Onerilen",
+     "Korunan",
+     "Duzeltilen",
+     "IfrazHatti",
+     "KademeHatti"
+    ],
+    "AfetHizmetTip": [
+     "AfetLojistikAlani"
+    ],
+    "AfetTip": [
+     "YapiYasakliAlan",
+     "TaskinaMaruzAlan",
+     "AfeteMaruzBolge",
+     "KentselRiskAlani",
+     "TsunamiRiskliAlan",
+     "KutleHareketiRiskliAlan",
+     "FaySakinimZonuAlani"
+    ],
+    "AltyapiTur": [
+     "Enerji",
+     "Icmesuyu",
+     "Atiksu",
+     "KatiAtik",
+     "Kanalizasyon",
+     "Ulastirma",
+     "Haberlesme"
+    ],
+    "AraziKorumaKullanimTip": [
+     "DogalVeEkolojikAlan",
+     "EkolojikOnemeSahipAlan"
+    ],
+    "AtiksuTur": [
+     "Aritma",
+     "TerfiMerkezi"
+    ],
+    "BogaziciBolgeTip": [
+     "BogaziciEtkilenmeBolgeSiniri",
+     "BogaziciGeriGorunumBolgeSiniri",
+     "BogaziciOnGorunumBolgeSiniri"
+    ],
+    "CalismaTip": [
+     "MerkeziIsAlani",
+     "TicaretAlani",
+     "TicaretKonutAlani",
+     "TicaretTurizmAlani",
+     "TicaretTurizmKonutAlani",
+     "BelediyeHizmetAlani",
+     "KamuHizmetAlani",
+     "KonutDisiKentselCalismaAlani",
+     "AkaryakitServisIstasyonuAlani",
+     "SanayiAlani",
+     "EndustriyelGelismeBolgesi",
+     "KucukSanayiAlani",
+     "DepolamaAlani",
+     "LojistikTesisAlani",
+     "TopluIsyerleri",
+     "TarimHayvancilikTesisAlani",
+     "AskeriAlan",
+     "1DereceTicaretAlani",
+     "2DereceTicaretAlani",
+     "3DereceTicaretAlani",
+     "PazarAlani",
+     "SuUrunleriUretimVeYetistirmeTesisi",
+     "BetonSantrali",
+     "OSBHizmetDestekAlani",
+     "TuzlaAlani"
+    ],
+    "DegerTip": [
+     "Serbest",
+     "GecerliDegil",
+     "Deger"
+    ],
+    "DegismeSebepTip": [
+     "resen",
+     "talep",
+     "mahkeme",
+     "itiraz"
+    ],
+    "DemirTip": [
+     "Demiryolu",
+     "HizliTrenHatti",
+     "TriyajAlani"
+    ],
+    "DigerYolNesneTip": [
+     "TasitYolu",
+     "Refuj",
+     "Kaldirim"
+    ],
+    "DogalKarakterTip": [
+     "Agaclik",
+     "Taslik",
+     "Calilik",
+     "Kayalik",
+     "Kumul",
+     "MakilikFundalik",
+     "SazlikBataklik",
+     "Diger",
+     "Tuzla"
+    ],
+    "DonusumTip": [
+     "TopluKonutAlanlari",
+     "GecekonduOnlemeBolgesi",
+     "KentselDonusumProjeAlani"
+    ],
+    "EgitimTesisTip": [
+     "OzelEgitimAlani",
+     "EgitimAlani",
+     "YuksekOgretimAlani"
+    ],
+    "EkosistemTip": [
+     "FloraFauna",
+     "EkolojikKoruma",
+     "AkdenizFoku",
+     "DenizKaplumbagasi"
+    ],
+    "EnerjiHatTip": [
+     "PetrolBoruHatti",
+     "DogalgazBoruHatti"
+    ],
+    "EnerjiTesisTip": [
+     "RegulatorAlani",
+     "TurbinAlani",
+     "DogalgazIletimDagitimTesisiAlani",
+     "YaniciParlayiciPatlayiciMaddeUretimDepoAlani",
+     "EnerjiDepolamaAlani",
+     "RafineriAlani",
+     "RafineriPetroKimyaTesisiAlani",
+     "YenilenebilirEnerjiKaynaginaDayaliUretimTesisAlani"
+    ],
+    "EnerjiTip": [
+     "NukleerEnerjiSantralAlani",
+     "TermikSantralAlani",
+     "YenilenebilirEnerjiKaynaginaDayaliUretimTesisAlani"
+    ],
+    "GelismeKonutAlaniYogunlukTip": [
+     "CokYuksek401HAUstunde",
+     "Yuksek251-400HA",
+     "Orta121-250HA",
+     "Dusuk51-120HA",
+     "Seyrek50HAAltinda"
+    ],
+    "GerilimKw": [
+     "34.5",
+     "154",
+     "380"
+    ],
+    "HassaslikDerecesi": [
+     "OckBolgesiHassasAlanA",
+     "OckBolgesiHassasAlanB",
+     "OckBolgesiHassasAlanC"
+    ],
+    "IbadetTip": [
+     "Cami",
+     "Mescit",
+     "Kilise",
+     "Sapel",
+     "SinagogHavra",
+     "IbadetAlani"
+    ],
+    "IcmesuTur": [
+     "Depolama",
+     "Aritma",
+     "TerfiMerkezi"
+    ],
+    "IlanEdilenCalismaTip": [
+     "TeknolojiGelistirmeBolgesi",
+     "SerbestBolge",
+     "Osb",
+     "EndustriBolgesi"
+    ],
+    "KarayoluTesisTip": [
+     "GenelOtopark",
+     "TirKamyonMakinaParkGarajAlani",
+     "KatliOtoparkAlani",
+     "ElektrikliAracSarjIstasyonAlani"
+    ],
+    "KatiAtikTur": [
+     "Bosaltma",
+     "Bertaraf",
+     "Isleme",
+     "Transfer",
+     "Depolama",
+     "VahsiCopDepolamaVeKapatmaAlani"
+    ],
+    "KentselDonusumSiniriTip": [
+     "RiskliAlanSiniri",
+     "RezervYapiAlanSiniri",
+     "YenilemeAlanSiniri"
+    ],
+    "KiyiKorumaTip": [
+     "Dalgakiran",
+     "Kopru",
+     "Menfez",
+     "IstinatDuvari",
+     "Mendirek",
+     "Mahmuz"
+    ],
+    "KiyiYapiTip": [
+     "TersaneAlani",
+     "KonteynerLimani",
+     "KruvaziyerLimani",
+     "RoRoLimani",
+     "YatLimani",
+     "BalikciBarinagi",
+     "TekneImalCekekYeri",
+     "Iskele",
+     "TekneImalBakimYeri",
+     "DenizInisRampasi",
+     "Liman"
+    ],
+    "KorumaDerecesi": [
+     "MutlakKorumaAlani",
+     "KisaMesafeliKorumaAlani",
+     "OrtaMesafeliKorumaAlani",
+     "UzunMesafeliKorumaAlani"
+    ],
+    "MeraSinif": [
+     "CokIyi",
+     "Iyi",
+     "Orta",
+     "Kotu"
+    ],
+    "MeraTip": [
+     "Mera",
+     "Yaylak",
+     "Kislak",
+     "Cayir",
+     "Otlak"
+    ],
+    "MevcutKonutAlaniYogunlukTip": [
+     "CokYuksek601HAUstunde",
+     "Yuksek301-600HA",
+     "Orta151-300HA",
+     "Dusuk51-151HA",
+     "Seyrek50HAAltinda"
+    ],
+    "MilliParkTip": [
+     "TabiatParkiAlani",
+     "TabiatiKorumaAlani",
+     "MilliPark",
+     "YabanHayatiKorumaGelistirmeAlani"
+    ],
+    "MudahaleSiniriTip": [
+     "MevcutPlandakiDurumuKorunacakAlanSiniri",
+     "YenidenDuzenlenecekAlanSiniri",
+     "SagliklastirmaAlanSiniri"
+    ],
+    "NitelikTip": [
+     "Plan",
+     "Revizyon",
+     "Ilave",
+     "IlaveRevizyon"
+    ],
+    "OnlemliTip": [
+     "OnlemliAlan",
+     "1DereceOnlemliAlan",
+     "2DereceOnlemliAlan",
+     "3DereceOnlemliAlan",
+     "4DereceOnlemliAlan",
+     "5DereceOnlemliAlan"
+    ],
+    "OzelKanunAlanTip": [
+     "SinirKapisi"
+    ],
+    "RayliHatTip": [
+     "HavaiHat",
+     "Havaray",
+     "RayliTopluTasimaHatti"
+    ],
+    "SaglikTip": [
+     "SaglikTesisAlani",
+     "OzelSaglikTesisiAlani"
+    ],
+    "SitTip": [
+     "1DereceArkeolojikSit",
+     "2DereceArkeolojikSit",
+     "3DereceArkeolojikSit",
+     "KesinKorunacakHassasAlan",
+     "NitelikliDogalKorumaAlani",
+     "SurdurulebilirKorumaKontrolluKullanimAlani",
+     "KentselSit",
+     "1DereceDogalSit",
+     "2DereceDogalSit",
+     "3DereceDogalSit",
+     "TarihiSit",
+     "KentselArkeolojikSit"
+    ],
+    "SosyalKulturelTip": [
+     "SosyalTesisAlani",
+     "KulturelTesisAlani",
+     "OzelSosyalAltyapiAlani",
+     "SporAlani",
+     "OzelKulturelTesisAlani",
+     "OzelSporAlani",
+     "SemtSporAlani",
+     "OzelSosyalTesisAlani",
+     "SokakHayvanlariBarinagiAlani"
+    ],
+    "SuYuzeyiTip": [
+     "Gol",
+     "Golet",
+     "NehirDere",
+     "Baraj",
+     "Deniz"
+    ],
+    "SulakTip": [
+     "SulakAlanBolgesi",
+     "SulakAlanTamponBolgesi",
+     "SulakAlanEkolojikEtkilenmeBolgesi",
+     "SulakAlanMutlakKorumaBolgesi",
+     "SulakAlanOzelHukumBolgesi",
+     "SulakAlanSiniri"
+    ],
+    "TarimTip": [
+     "Zeytinlik",
+     "TarimAlani"
+    ],
+    "TehlikeTur": [
+     "Bertaraf",
+     "Depolama"
+    ],
+    "TerminalTip": [
+     "AnaIstasyonGar",
+     "TerminalOtogar",
+     "RayliTopluTasimaIstasyonu",
+     "HavaiHatIstasyonu",
+     "HavarayIstasyonu"
+    ],
+    "TurizmTip": [
+     "GunubirlikTesisAlani",
+     "TurizmAlani",
+     "GolfTurizmAlani"
+    ],
+    "YesilTip": [
+     "ParkVeYesilAlan",
+     "PasifYesilAlan",
+     "RekreasyonAlani",
+     "FuarPanayirFestivalAlani",
+     "MesireYeri",
+     "KentOrmani",
+     "AgaclandirilacakAlan",
+     "MezarlikAlani",
+     "RekreatifAlan",
+     "MilletBahcesi"
+    ],
+    "YolDuzenlemeAlanTip": [
+     "KavsakDuzenlemeAlani",
+     "TasitKontrolluBolge",
+     "YayaBolgesi"
+    ],
+    "YolTip": [
+     "ErismeKontrolluKarayoluOtoyol",
+     "2DereceYol",
+     "1DereceYol"
+    ]
+   },
+   "xsd": {
+    "file": "nip.V.1.1.7.xsd",
+    "sha256": "df0c5884faf5112e925b8fcb164b08e2b969268775a6a5b119667f4595a25e2b"
+   }
+  },
+  "CDP": {
+   "target_namespace": "www.csb.gov.tr",
+   "feature_types": [
+    {
+     "name": "AcikYesilAlan",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "AcikYesilTip",
+       "type": "enum",
+       "codelist": "AcikYesilTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "AtikGeriKazTesAlani",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "AskeriYskGuvenlikBlg",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "AskeriBolgeTip",
+       "type": "enum",
+       "codelist": "AskeriBolgeTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "AfetTehlikeliAlanlar",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "AfetTip",
+       "type": "enum",
+       "codelist": "AfetTip",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "AtiksuTesis",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "AtiksuTur",
+       "type": "enum",
+       "codelist": "AtiksuTur",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "BelediyeSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "IlceKod",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "Ilkod",
+       "type": "int",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "BogaziciSinirlari",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "BogaziciBolgeTip",
+       "type": "enum",
+       "codelist": "BogaziciBolgeTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "BoruHatti",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "BoruHattiTip",
+       "type": "enum",
+       "codelist": "BoruHattiTip",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "BuyuksehirSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "Ilkod",
+       "type": "int",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "Demiryolu",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "DemirTip",
+       "type": "enum",
+       "codelist": "DemirTip",
+       "required": true
+      },
+      {
+       "name": "GuzergahAdi",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "DenizUlasimBaglanti",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "DenizUlasimTip",
+       "type": "enum",
+       "codelist": "DenizUlasimTip",
+       "required": false
+      },
+      {
+       "name": "GuzergahAdi",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "DigerOzelSinir",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "KanunAdi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "KanunNumarasi",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "DogalKarakter",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "DogalKarakterTip",
+       "type": "enum",
+       "codelist": "DogalKarakterTip",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "EnerjiNakilHatti",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "GerilimKw",
+       "type": "enum",
+       "codelist": "GerilimKw",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "EnerjiUretim",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "EnerjiTip",
+       "type": "enum",
+       "codelist": "EnerjiTip",
+       "required": false
+      },
+      {
+       "name": "KuruluGuc",
+       "type": "long",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "EnerjiDagitimDepolama",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "EtaplamaSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "EtapAdi",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "HavaalaniHavalimani",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "IcmeKullanmaSuyuKoruma",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "HavzaAdi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "KorumaDerecesi",
+       "type": "enum",
+       "codelist": "KorumaDerecesi",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "IcmesuAnaHat",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "IcmesuTesis",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "IcmesuTur",
+       "type": "enum",
+       "codelist": "IcmesuTur",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "IdariMerkez",
+     "geometry": "Point",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "IdariMerkezTip",
+       "type": "enum",
+       "codelist": "IdariMerkezTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "IlSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "Ilkod",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "NutKodD1",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "NutKodD2",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "NutKodD3",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "UlkeKod",
+       "type": "int",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "IlceSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "Ilkod",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "IlceKod",
+       "type": "int",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "KatiAtikTesis",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "KatiAtikTur",
+       "type": "enum",
+       "codelist": "KatiAtikTur",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "KentselCalisma",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "CalismaTip",
+       "type": "enum",
+       "codelist": "CalismaTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "KentselGelismeKonut",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "KentselYerlesik",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "KiyiYapilari",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "KiyiYapiTip",
+       "type": "enum",
+       "codelist": "KiyiYapiTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "KirsalYerlesikKonut",
+     "geometry": "Point",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "AnaIstasyonGar",
+     "geometry": "Point",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "TerminalOtogar",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "Mera",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "MeraSinif",
+       "type": "enum",
+       "codelist": "MeraSinif",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "MilliPark",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "IlanTarihi",
+       "type": "dateTime",
+       "required": true
+      },
+      {
+       "name": "MilliParkTip",
+       "type": "enum",
+       "codelist": "MilliParkTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "MucavirAlanSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "IlceKod",
+       "type": "int",
+       "required": true
+      },
+      {
+       "name": "Ilkod",
+       "type": "int",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "OckBolge",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "IlanTarihi",
+       "type": "dateTime",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "OckHassasAlan",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "HassaslikDerecesi",
+       "type": "enum",
+       "codelist": "HassaslikDerecesi",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "Orman",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "OzelEkosistem",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "EkosistemTip",
+       "type": "enum",
+       "codelist": "EkosistemTip",
+       "required": true
+      },
+      {
+       "name": "TurAdi",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "PlanDegisiklikSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Pin",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "PlanAdi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "DegismeSebep",
+       "type": "enum",
+       "codelist": "DegismeSebepTip",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "PlanNotu",
+     "geometry": null,
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Aciklama",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "PlanSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Pin",
+       "type": "double",
+       "required": true
+      },
+      {
+       "name": "PlanAdi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "NitelikTip",
+       "type": "enum",
+       "codelist": "NitelikTip",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "SitAlanlari",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "IlanTarihi",
+       "type": "dateTime",
+       "required": true
+      },
+      {
+       "name": "SitTip",
+       "type": "enum",
+       "codelist": "SitTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "SosyalKulturelAlan",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "SosyalKulturelTip",
+       "type": "enum",
+       "codelist": "SosyalKulturelTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "SozlesmeKoruma",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "AlanAdi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "IlanTarihi",
+       "type": "dateTime",
+       "required": true
+      },
+      {
+       "name": "SozlesmeAdi",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "SuKaptaj",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "SuKaptajTip",
+       "type": "enum",
+       "codelist": "SuKaptajTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "SuYuzeyi",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "SuYuzeyiTip",
+       "type": "enum",
+       "codelist": "SuYuzeyiTip",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "SuYuzeyiCizgi",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "SuYuzeyiCizgiTip",
+       "type": "enum",
+       "codelist": "SuYuzeyiCizgiTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "SulakAlan",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "IlanTarihi",
+       "type": "dateTime",
+       "required": true
+      },
+      {
+       "name": "SulakTip",
+       "type": "enum",
+       "codelist": "SulakTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "Tarim",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "TarimTip",
+       "type": "enum",
+       "codelist": "TarimTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "TehlikeliTesis",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "TehlikeTur",
+       "type": "enum",
+       "codelist": "TehlikeTur",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "TeknikAltyapi",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "AltyapiTur",
+       "type": "enum",
+       "codelist": "AltyapiTur",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "TercihliKullanimBolgesi",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "TmKtkgbAlanlari",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "IlanTarihi",
+       "type": "dateTime",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "UlkeSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "UlkeKod",
+       "type": "int",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "TurizmAlani",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "TurizmTip",
+       "type": "enum",
+       "codelist": "TurizmTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "EgitimTesisAlanlari",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "EgitimTesisTip",
+       "type": "enum",
+       "codelist": "EgitimTesisTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "Yolorta",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "YolTip",
+       "type": "enum",
+       "codelist": "YolTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "OzelProjeAlaniSiniri",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "YapayAda",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "YeraltiSuKaynakKoruma",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "ManiaSiniri",
+     "geometry": "MultiLineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Yukseklik",
+       "type": "double",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "ManiaPlani",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Yukseklik",
+       "type": "double",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "SuUlasimBaglantisi",
+     "geometry": "LineString",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "YenilenebilirEnerjiKaynaginaDayaliUretimTesisAlani",
+     "geometry": "Point",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "Planlama_AltBolge",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "Stratejik_AltBolge",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "StratejikKarar",
+     "geometry": "Point",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": false
+      }
+     ]
+    },
+    {
+     "name": "AraziKullanimiDevamEttirilerekKorunacakAlanlar",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "AraziKorumaKullanimTip",
+       "type": "enum",
+       "codelist": "AraziKorumaKullanimTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "OzelKanunlarlaBelirlenenAlan",
+     "geometry": "Point",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "Adi",
+       "type": "string",
+       "required": true
+      },
+      {
+       "name": "OzelKanunAlanTip",
+       "type": "enum",
+       "codelist": "OzelKanunAlanTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "AfetHizmetAlani",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "AfetHizmetTip",
+       "type": "enum",
+       "codelist": "AfetHizmetTip",
+       "required": true
+      }
+     ]
+    },
+    {
+     "name": "YerlesimAlani",
+     "geometry": "MultiPolygon",
+     "fields": [
+      {
+       "name": "symbolizer",
+       "type": "string",
+       "required": false
+      },
+      {
+       "name": "YerlesimTip",
+       "type": "enum",
+       "codelist": "YerlesimTip",
+       "required": true
+      }
+     ]
+    }
+   ],
+   "undefined_members": [],
+   "codelists": {
+    "AcikYesilTip": [
+     "KentselBolgeselYesilSporAlani",
+     "MilletBahcesi",
+     "FuarPanayirFestivalAlani",
+     "AgaclandirilacakAlan"
+    ],
+    "AfetHizmetTip": [
+     "AfetLojistikAlani"
+    ],
+    "AfetTip": [
+     "JeolojikSakincaliAlan",
+     "Deprem",
+     "Cig",
+     "SelTaskin"
+    ],
+    "AltyapiTur": [
+     "Enerji",
+     "Icmesuyu",
+     "Atiksu",
+     "KatiAtik",
+     "Kanalizasyon",
+     "Ulastirma",
+     "Haberlesme"
+    ],
+    "AraziKorumaKullanimTip": [
+     "DogalVeEkolojikAlan",
+     "EkolojikOnemeSahipAlan"
+    ],
+    "AskeriBolgeTip": [
+     "AskeriYasakBolge",
+     "GuvenlikBolgesi",
+     "AskeriYasakVeGuvenlikBolgesi"
+    ],
+    "AtiksuTur": [
+     "Aritma",
+     "TerfiMerkezi"
+    ],
+    "BogaziciBolgeTip": [
+     "BogaziciEtkilenmeBolgeSiniri",
+     "BogaziciGeriGorunumBolgeSiniri",
+     "BogaziciOnGorunumBolgeSiniri"
+    ],
+    "BoruHattiTip": [
+     "DogalgazBoruHatti",
+     "PetrolBoruHatti"
+    ],
+    "CalismaTip": [
+     "KentselServisAlani",
+     "EndüstriyelGelismeBolgesi",
+     "LojistikBolge",
+     "MerkeziIsAlani",
+     "SanayiVeDepolamaBolgesi",
+     "TeknolojiGelistirmeBolgesi",
+     "TaliMerkez",
+     "EndustriBolgesi",
+     "SerbestBolge",
+     "OSB",
+     "DepolamaAlani",
+     "KamuHizmetAlani",
+     "TuzlaAlani"
+    ],
+    "DegismeSebepTip": [
+     "Resen",
+     "Talep",
+     "Mahkeme",
+     "Itiraz"
+    ],
+    "DemirTip": [
+     "Demiryolu",
+     "HizliTrenHatti",
+     "RayliTopluTasimaGuzergahi"
+    ],
+    "DenizUlasimTip": [
+     "YurticiFeribot",
+     "YurtdisiFeribot",
+     "DenizUlasimBaglanti",
+     "YatTuruGuzergahi"
+    ],
+    "DogalKarakterTip": [
+     "Agaclik",
+     "KayalikTaslikKumul",
+     "MakilikFundalikCalilik",
+     "Tuzla",
+     "Azmak",
+     "JeolojikOzelligiNedeniyleKorunacakAlan",
+     "SazlikBataklik",
+     "DogalKarakteriKorunacakAlan",
+     "PlajKumsal"
+    ],
+    "EgitimTesisTip": [
+     "YuksekOgretimAlani"
+    ],
+    "EkosistemTip": [
+     "EkolojikKoruma",
+     "FloraFauna",
+     "AkdenizFoku",
+     "DenizKaplumbagasi"
+    ],
+    "EnerjiTip": [
+     "DigerUretimAlani",
+     "SantralAlani",
+     "EnerjiUretimAlani",
+     "HidroelektrikSantralAlani",
+     "DogalgazCevrimSantrali",
+     "FosilYakitCikarimAlani",
+     "TermikSantral",
+     "RuzgarEnerjisiSantrali",
+     "JeotermalTesisAlani",
+     "NukleerEnerjiSantrali"
+    ],
+    "GerilimKw": [
+     "34.5",
+     "154",
+     "380"
+    ],
+    "HassaslikDerecesi": [
+     "OckBolgesiHassasAlanA",
+     "OckBolgesiHassasAlanB",
+     "OckBolgesiHassasAlanC"
+    ],
+    "IcmesuTur": [
+     "Depolama",
+     "Aritma",
+     "TerfiMerkezi"
+    ],
+    "IdariMerkezTip": [
+     "Koy",
+     "Il",
+     "Ilce",
+     "Belde"
+    ],
+    "KatiAtikTur": [
+     "Bosaltma",
+     "Bertaraf",
+     "Isleme",
+     "Transfer",
+     "Depolama",
+     "VahsiCopDepolamaVeKapatmaAlani"
+    ],
+    "KiyiYapiTip": [
+     "TersaneAlani",
+     "KiyiTesisAlani"
+    ],
+    "KorumaDerecesi": [
+     "MutlakKorumaAlani",
+     "KisaMesafeliKorumaAlani",
+     "OrtaMesafeliKorumaAlani",
+     "UzunMesafeliKorumaAlani"
+    ],
+    "MeraSinif": [
+     "CokIyi",
+     "Iyi",
+     "Orta",
+     "Kotu"
+    ],
+    "MilliParkTip": [
+     "TabiatParkiAlani",
+     "TabiatiKorumaAlani",
+     "MilliPark",
+     "YabanHayatiKorumaGelistirmeAlani"
+    ],
+    "NitelikTip": [
+     "Plan",
+     "Revizyon",
+     "Ilave",
+     "IlaveRevizyon"
+    ],
+    "OzelKanunAlanTip": [
+     "SinirKapisi"
+    ],
+    "SitTip": [
+     "1DereceArkeolojikSit",
+     "2DereceArkeolojikSit",
+     "3DereceArkeolojikSit",
+     "KesinKorunacakHassasAlan",
+     "NitelikliDogalKorumaAlani",
+     "SurdurulebilirKorumaKontrolluKullanimAlani",
+     "KentselSit",
+     "TarihiSit",
+     "1DereceDogalSit",
+     "2DereceDogalSit",
+     "3DereceDogalSit",
+     "KentselArkeolojikSit"
+    ],
+    "SosyalKulturelTip": [
+     "UniversiteAlani",
+     "KentselBolgeselSosyalAltyapiAlani",
+     "MesireAlani"
+    ],
+    "SuKaptajTip": [
+     "IcmesuyuKaynagi",
+     "YeraltiSuKaynagi",
+     "SuToplamaHavzasi"
+    ],
+    "SuYuzeyiCizgiTip": [
+     "KanalKanalet",
+     "SulamaKanali",
+     "AkarsuNehirDere"
+    ],
+    "SuYuzeyiTip": [
+     "Gol",
+     "Golet",
+     "Baraj",
+     "Deniz"
+    ],
+    "SulakTip": [
+     "SulakAlanBolgesi",
+     "SulakAlanTamponBolgesi",
+     "SulakAlanEkolojikEtkilenmeBolgesi",
+     "SulakAlanMutlakKorumaBolgesi",
+     "SulakAlanOzelHukumBolgesi",
+     "SulakAlanSiniri"
+    ],
+    "TarimTip": [
+     "Zeytinlik",
+     "SulamaAlani",
+     "OrganizeTarimVeHayvancilikAlani",
+     "TarimAlani"
+    ],
+    "TehlikeTur": [
+     "Bertaraf",
+     "Depolama"
+    ],
+    "TurizmTip": [
+     "KisTurizmi",
+     "GolfTurizmi",
+     "TurizmBolgesi",
+     "GunubirlikTurizm",
+     "EkoTurizm",
+     "SaglikTurizmi",
+     "YaylaTurizmi"
+    ],
+    "YerlesimTip": [
+     "BaglikBahcelik"
+    ],
+    "YolTip": [
+     "ErismeKontrolluKarayolu",
+     "1DereceYol",
+     "2DereceYol",
+     "3DereceYol"
+    ]
+   },
+   "xsd": {
+    "file": "cdp.V.1.1.7.xsd",
+    "sha256": "828da902b39a35cfd5fea7579ebba133d792926abd10628360c72c144e4bccd5"
+   }
+  }
+ }
+}

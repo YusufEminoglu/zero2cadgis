@@ -1,0 +1,3544 @@
+{
+ "note": "Ek-1e Mekânsal Planlar Detay Katalogları (22.01.2026) esas alınır. Bakanlık SLD'sinin yayımlanmamış TaramaSembol SVG'si ya da arşivde olmayan Intelli Eplan karakteri yerine aynı kalemin katalog sembolü kullanılır: 'svg' ve 'glyphs' o kaynağı kullanan her kademedeki her kurala uygulanır. 'rules' kataloğun sembol istediği ama SLD'nin sembol vermediği kurallara sembolü ekler.",
+ "symbols": {
+  "askeri_yasak_guvenlik": {
+   "page": 24,
+   "title": "ASKERİ YASAK VE GÜVENLİK BÖLGESİ",
+   "svg": [
+    "AskeriAlan.svg"
+   ]
+  },
+  "sinir_kapisi": {
+   "page": 36,
+   "title": "SINIR KAPISI",
+   "svg": [
+    "SinirKapisi.svg"
+   ]
+  },
+  "stratejik_karar": {
+   "page": 38,
+   "title": "STRATEJİK KARAR",
+   "svg": [
+    "StratejikKarar.svg"
+   ]
+  },
+  "golf_turizmi": {
+   "page": 57,
+   "title": "GOLF TURİZMİ",
+   "svg": [
+    "GolfTurizmi.svg"
+   ],
+   "part": [
+    0,
+    0
+   ],
+   "note": "Katalog hücresinde GTB, GTA, GTT yan yana; ÇDP kuralı bölge ölçeğindedir (GTB)."
+  },
+  "turizm_bolgesi": {
+   "page": 57,
+   "title": "TURİZM BÖLGESİ",
+   "svg": [
+    "TurizmAlani.svg"
+   ]
+  },
+  "kamu_hizmet_alani": {
+   "page": 62,
+   "title": "KAMU HİZMET ALANI",
+   "svg": [
+    "KamuHizmetAlani.svg"
+   ]
+  },
+  "depolama_alani": {
+   "page": 67,
+   "title": "DEPOLAMA ALANI",
+   "svg": [
+    "DepolamaAlani.svg"
+   ]
+  },
+  "kentsel_arkeolojik_sit": {
+   "page": 83,
+   "title": "KENTSEL ARKEOLOJİK SİT ALANI",
+   "svg": [
+    "KentselArkeolojikSitAlani.svg"
+   ]
+  },
+  "afet_lojistik": {
+   "page": 136,
+   "title": "AFET ARAMA KURTARMA HİZMET LOJİSTİK MERKEZLERİ ALANI",
+   "svg": [
+    "AfetLojistikAlani.svg"
+   ]
+  },
+  "fuar_panayir": {
+   "page": 138,
+   "title": "FUAR, PANAYIR VE FESTİVAL/GÖSTERİ ALANI",
+   "svg": [
+    "FuarPanayirFestival.svg"
+   ]
+  },
+  "agaclandirilacak": {
+   "page": 142,
+   "title": "AĞAÇLANDIRILACAK ALAN",
+   "svg": [
+    "AgaclandirilacakAlan.svg"
+   ]
+  },
+  "yenilenebilir_enerji": {
+   "page": 174,
+   "title": "YENİLENEBİLİR ENERJİ KAYNAKLARINA DAYALI ÜRETİM TESİSİ ALANI",
+   "svg": [
+    "YenilenebilirEnerjiKaynaklarinaDayaliEnerjiUretimTesisAlani.svg"
+   ]
+  },
+  "kentsel_risk": {
+   "page": 189,
+   "title": "KENTSEL RİSK ALANI",
+   "svg": [
+    "KentselRiskAlani.svg"
+   ],
+   "part": [
+    0,
+    0
+   ],
+   "note": "Katalog hücresinde kutunun altında açıklama metni var; yalnız kutu alınır. Parantez içi (KRA (….)) risk türü nesnenin açıklamasıyla doldurulur.",
+   "rows_first": true
+  },
+  "tsunami_riskli": {
+   "page": 189,
+   "title": "TSUNAMİ RİSKLİ ALAN",
+   "svg": [
+    "TsunamiRiskliAlan.svg"
+   ]
+  },
+  "kutle_hareketi_riskli": {
+   "page": 190,
+   "title": "KÜTLE HAREKETİ RİSKLİ ALAN",
+   "svg": [
+    "KutleHareketiRiskAlan.svg"
+   ],
+   "part": [
+    0,
+    0
+   ],
+   "note": "Katalog hücresinde kutunun altında açıklama metni var; yalnız kutu alınır. Parantez içi (KRA (….)) risk türü nesnenin açıklamasıyla doldurulur.",
+   "rows_first": true
+  },
+  "vahsi_cop": {
+   "page": 191,
+   "title": "VAHŞİ ÇÖP DEPOLAMA REHABİLİTASYON VE KAPATMA ALANI",
+   "svg": [
+    "VahsiCopVeRehabilitasyonMerkezi.svg"
+   ]
+  },
+  "sokak_hayvanlari": {
+   "page": 192,
+   "title": "SOKAK HAYVANLARI BARINAĞI ALANI",
+   "svg": [
+    "SokakHayvanlariBarinagiAlani.svg"
+   ]
+  },
+  "ekoturizm_kirsal": {
+   "page": 77,
+   "title": "EKOTURİZM/KIRSAL TURİZM",
+   "svg": [
+    "Ekoturizm.svg"
+   ],
+   "glyphs": [
+    "Intelli Eplan#G"
+   ]
+  },
+  "yapay_ada": {
+   "page": 100,
+   "title": "YAPAY ADA",
+   "glyphs": [
+    "Intelli Eplan#H"
+   ]
+  },
+  "millet_bahcesi": {
+   "page": 137,
+   "title": "MİLLET BAHÇESİ",
+   "glyphs": [
+    "Intelli Eplan#A"
+   ]
+  },
+  "sagliklastirma": {
+   "page": 18,
+   "title": "SAĞLIKLAŞTIRMA ALANI SINIRI",
+   "glyphs": [
+    "Intelli Eplan#L"
+   ]
+  },
+  "makilik_fundalik": {
+   "page": 96,
+   "title": "MAKİLİK- FUNDALIK ALAN",
+   "rules": [
+    {
+     "levels": [
+      "UIP",
+      "NIP"
+     ],
+     "type": "DogalKarakter",
+     "rule": "MAKILIK_FUNDALIK"
+    }
+   ]
+  },
+  "tarimsal_nitelikli": {
+   "page": 100,
+   "title": "TARIMSAL NİTELİKLİ ALAN",
+   "rules": [
+    {
+     "levels": [
+      "UIP"
+     ],
+     "type": "Tarim",
+     "rule": "TARIMSAL_NITELIKLI_ALAN"
+    }
+   ]
+  },
+  "bisiklet_yolu": {
+   "page": 153,
+   "title": "BİSİKLET YOLU",
+   "note": "vectors -> UIP/BisikletYolu/* çizgisinin ortasına konur."
+  },
+  "ekolojik_oneme_sahip": {
+   "page": 90,
+   "title": "EKOLOJİK ÖNEME SAHİP ALAN",
+   "cell": "TARAMA",
+   "part": [
+    1,
+    1
+   ],
+   "use": "hatch",
+   "note": "SLD bu SVG'yi GraphicFill (tarama) olarak kullanır; katalog tarama hücresindeki tek motif kesilir, katalogdaki karolaj aralığıyla dizilir.",
+   "hatch": [
+    "EkolojikOnemeSahipAlan.svg"
+   ],
+   "spacing_mm": 10
+  },
+  "dogal_karakteri_korunacak": {
+   "page": 95,
+   "title": "DOĞAL KARAKTERİ KORUNACAK ALAN",
+   "cell": "TARAMA",
+   "part": [
+    1,
+    1
+   ],
+   "use": "hatch",
+   "note": "SLD bu SVG'yi GraphicFill (tarama) olarak kullanır; katalog tarama hücresindeki tek motif kesilir, katalogdaki karolaj aralığıyla dizilir.",
+   "hatch": [
+    "DogalKarakteriKorunacakAlan.svg"
+   ],
+   "spacing_mm": 10
+  },
+  "saglik_odakli_tatil_koyu": {
+   "page": 74,
+   "title": "SAĞLIK ODAKLI TATİL KÖYÜ",
+   "svg": [
+    "SaglikTurizmi.svg"
+   ]
+  },
+  "gunubirlik_tesis": {
+   "page": 76,
+   "title": "GÜNÜBİRLİK TESİS ALANI",
+   "svg": [
+    "GunubirlikTurizm.svg"
+   ]
+  },
+  "kis_sporlari_kayak": {
+   "page": 76,
+   "title": "KIŞ SPORLARI VE KAYAK TESİSİ ALANI",
+   "svg": [
+    "KisTurizmi.svg"
+   ]
+  },
+  "kongre_sergi_merkezi": {
+   "page": 128,
+   "title": "KONGRE VE SERGİ MERKEZİ ALANI",
+   "glyphs": [
+    "uygulama_imar_07_2#?"
+   ]
+  },
+  "kumsal_plaj": {
+   "page": 97,
+   "title": "KUMSAL-PLAJ",
+   "glyphs": [
+    "UIP_10_2#?"
+   ]
+  },
+  "yuksekogretim_tesis_alani": {
+   "page": 120,
+   "title": "YÜKSEK ÖĞRETİM ALANI",
+   "glyphs": [
+    "Intelli Eplan#O"
+   ]
+  },
+  "ozel_kulturel_tesis": {
+   "page": "sentez",
+   "title": "ÖZEL KÜLTÜREL TESİS ALANI (sentez: s.124 sembolü + s.125 'Ö' kuralı)",
+   "glyphs": [
+    "Intelli Eplan#D"
+   ]
+  },
+  "ozel_sosyal_tesis": {
+   "page": "sentez",
+   "title": "ÖZEL SOSYAL TESİS ALANI (sentez: s.124 sembolü + s.125 'Ö' kuralı)",
+   "glyphs": [
+    "Intelli Eplan#E"
+   ]
+  },
+  "ozel_acik_spor_tesis": {
+   "page": "sentez",
+   "title": "ÖZEL AÇIK SPOR TESİSİ ALANI (sentez: s.126 sembolü + s.125 'Ö' kuralı)",
+   "glyphs": [
+    "Intelli Eplan#C"
+   ]
+  },
+  "ozel_kapali_spor_tesis": {
+   "page": "sentez",
+   "title": "ÖZEL KAPALI SPOR TESİSİ ALAN (sentez: s.127 sembolü + s.125 'Ö' kuralı)",
+   "glyphs": [
+    "Intelli Eplan#B"
+   ]
+  },
+  "ozel_sosyal_kulturel_tesis": {
+   "page": "sentez",
+   "title": "ÖZEL SOSYAL KÜLTÜREL TESİS ALANI (sentez: MUIPE_10_2 'V' = 'STK' + s.125 'Ö' kuralı)",
+   "glyphs": [
+    "Intelli Eplan#V"
+   ]
+  },
+  "yayla_turizmi": {
+   "page": "sentez",
+   "title": "YAYLA TURİZMİ",
+   "svg": [
+    "YaylaTurizmi.svg"
+   ]
+  }
+ },
+ "levels_scale": {
+  "note": "Katalog ölçüleri paftadaki milimetredir. Harita metresi gereken sembollerde 1 mm = ölçek/1000 m alınır.",
+  "UIP": 1000,
+  "NIP": 5000,
+  "CDP": 25000
+ },
+ "vectors": {
+  "note": "Katalogda ölçüyle tarif edilen, SLD'de ise arşivde olmayan Intelli Eplan karakteriyle çizilen semboller. Anahtar KADEME/Tip/Kural başlığı; '*' tipin tüm kuralları. M serisinde güncel kademeden ödünç alınmış aynı kurala da uygulanır. AdaKenari/KORUNAN, DUZELTILEN, ONERILEN (Cephe çizgileri, s.45-46) kataloğun ölçüsü yok: 'ÇİZGİ KALINLIĞI: Yol genişliğine göre' diyor ama bu çizgi tipinin kendi şemasında bir yol genişliği alanı yok (yol genişliği komşu yol nesnesinde); sabit bir mm değeri uydurmak yanlış olur, düzeltilmedi.",
+  "UIP/AdaKenari/KADEME_HATTI": {
+   "page": 44,
+   "kind": "line_solid",
+   "color": "0/0/0",
+   "width_mm": 0.5
+  },
+  "UIP/AdaKenari/IFRAZ_HATTI": {
+   "page": 45,
+   "kind": "line_dashed",
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 2,
+   "gap_mm": 2
+  },
+  "CDP/IdariMerkez/IL": {
+   "page": 35,
+   "kind": "merkez",
+   "outer_m": 80,
+   "inner_m": 50,
+   "ring": "255/255/0",
+   "color": "0/0/0",
+   "stroke_mm": 0.3
+  },
+  "CDP/IdariMerkez/ILCE": {
+   "page": 35,
+   "kind": "merkez",
+   "outer_m": 60,
+   "inner_m": 30,
+   "ring": "255/255/0",
+   "color": "0/0/0",
+   "stroke_mm": 0.3
+  },
+  "CDP/IdariMerkez/BELDE": {
+   "page": 36,
+   "kind": "merkez",
+   "outer_m": 30,
+   "inner_m": 10,
+   "ring": "255/255/0",
+   "color": "0/0/0",
+   "stroke_mm": 0.3
+  },
+  "CDP/IdariMerkez/KOY": {
+   "page": 38,
+   "kind": "merkez",
+   "outer_m": 30,
+   "inner_m": 10,
+   "ring": "255/255/0",
+   "color": "0/0/0",
+   "stroke_mm": 0.3
+  },
+  "CDP/Yolorta/ERISME_KONTROLLU_KARAYOLU_OTOYOL": {
+   "page": 147,
+   "kind": "road",
+   "total_mm": 3.0,
+   "platform_mm": 1.0,
+   "cephe_mm": 0.3,
+   "kaldirim": "255/255/0",
+   "color": "0/0/0"
+  },
+  "CDP/Yolorta/1_DERECE_YOL": {
+   "page": 148,
+   "kind": "road",
+   "total_mm": 1.8,
+   "platform_mm": 1.2,
+   "cephe_mm": 0.3,
+   "kaldirim": "255/255/0",
+   "color": "0/0/0"
+  },
+  "CDP/Yolorta/2_DERECE_YOL": {
+   "page": 149,
+   "kind": "road",
+   "total_mm": 1.2,
+   "platform_mm": 0.8,
+   "cephe_mm": 0.3,
+   "kaldirim": "255/255/0",
+   "color": "0/0/0"
+  },
+  "UIP/BisikletYolu/*": {
+   "page": 153,
+   "kind": "ladder",
+   "interval_mm": 3.0,
+   "rung_mm": 1.5,
+   "width_mm": 0.3,
+   "color": "0/0/0",
+   "symbol": "bisiklet_yolu",
+   "symbol_mm": 5.0
+  },
+  "UIP/SahilSeridi/*": {
+   "page": 27,
+   "kind": "vertex_chain",
+   "color": "255/0/0",
+   "width_mm": 0.6,
+   "dot_mm": 2,
+   "filled": true
+  },
+  "NIP/SahilSeridi/*": {
+   "page": 27,
+   "kind": "vertex_chain",
+   "color": "255/0/0",
+   "width_mm": 0.6,
+   "dot_mm": 2,
+   "filled": true
+  },
+  "UIP/KiyiKenarCizgisi/*": {
+   "page": 28,
+   "kind": "vertex_chain",
+   "color": "255/0/0",
+   "width_mm": 0.6,
+   "dot_mm": 2,
+   "filled": false
+  },
+  "NIP/KiyiKenarCizgisi/*": {
+   "page": 28,
+   "kind": "vertex_chain",
+   "color": "255/0/0",
+   "width_mm": 0.6,
+   "dot_mm": 2,
+   "filled": false
+  },
+  "CDP/Yolorta/3_DERECE_YOL": {
+   "kind": "line_overlay",
+   "page": 150,
+   "color": "0/0/0",
+   "width_mm": 1.0,
+   "overlay_color": "255/255/115",
+   "overlay_width_mm": 0.4
+  },
+  "UIP/Demiryolu/DEMIRYOLU": {
+   "kind": "line_ties",
+   "page": 157,
+   "color": "0/0/0",
+   "width_mm": 0.8,
+   "tie_mm": 5.0,
+   "thickness_mm": 2.0,
+   "gap_mm": 2.0
+  },
+  "UIP/Demiryolu/HIZLI_TREN_HAT": {
+   "kind": "line_ties",
+   "page": 157,
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "tie_mm": 5.0,
+   "thickness_mm": 2.0,
+   "gap_mm": 2.0,
+   "fills": [
+    true,
+    false
+   ],
+   "side_rail_offsets_mm": [
+    1.0,
+    2.0
+   ]
+  },
+  "NIP/Demiryolu/DEMIRYOLU": {
+   "kind": "line_ties",
+   "page": 157,
+   "color": "0/0/0",
+   "width_mm": 0.8,
+   "tie_mm": 5.0,
+   "thickness_mm": 2.0,
+   "gap_mm": 2.0
+  },
+  "NIP/Demiryolu/HIZLI_TREN_HATTI": {
+   "kind": "line_ties",
+   "page": 157,
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "tie_mm": 5.0,
+   "thickness_mm": 2.0,
+   "gap_mm": 2.0,
+   "fills": [
+    true,
+    false
+   ],
+   "side_rail_offsets_mm": [
+    1.0,
+    2.0
+   ]
+  },
+  "CDP/Demiryolu/DEMIRYOLU": {
+   "kind": "line_ties",
+   "page": 157,
+   "color": "0/0/0",
+   "width_mm": 0.8,
+   "tie_mm": 5.0,
+   "thickness_mm": 2.0,
+   "gap_mm": 2.0
+  },
+  "CDP/Demiryolu/HIZLI_TREN_HATTI": {
+   "kind": "line_ties",
+   "page": 157,
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "tie_mm": 5.0,
+   "thickness_mm": 2.0,
+   "gap_mm": 2.0,
+   "fills": [
+    true,
+    false
+   ],
+   "side_rail_offsets_mm": [
+    1.0,
+    2.0
+   ]
+  },
+  "UIP/Demiryolu/TRIYAJ_ALANI": {
+   "kind": "line_ties",
+   "page": 158,
+   "color": "0/0/0",
+   "width_mm": 0.8,
+   "tie_mm": 5.0,
+   "thickness_mm": 2.0,
+   "gap_mm": 2.0
+  },
+  "NIP/Demiryolu/TRIYAJ_ALANI": {
+   "kind": "line_ties",
+   "page": 158,
+   "color": "0/0/0",
+   "width_mm": 0.8,
+   "tie_mm": 5.0,
+   "thickness_mm": 2.0,
+   "gap_mm": 2.0
+  },
+  "CDP/Demiryolu/RAYLI_TOPLU_TASIMA_GUZERGAHI - uzak olcek": {
+   "kind": "line_ties",
+   "page": 169,
+   "color": "0/0/0",
+   "width_mm": 0.4,
+   "tie_mm": 5.0,
+   "thickness_mm": 3.0,
+   "gap_mm": 3.0,
+   "side_rail_offset_mm": 1.0
+  },
+  "CDP/Demiryolu/RAYLI_TOPLU_TASIMA_GUZERGAHI - orta olcek": {
+   "kind": "line_ties",
+   "page": 169,
+   "color": "0/0/0",
+   "width_mm": 0.4,
+   "tie_mm": 5.0,
+   "thickness_mm": 3.0,
+   "gap_mm": 3.0,
+   "side_rail_offset_mm": 1.0
+  },
+  "CDP/Demiryolu/RAYLI_TOPLU_TASIMA_GUZERGAHI - yakin olcek": {
+   "kind": "line_ties",
+   "page": 169,
+   "color": "0/0/0",
+   "width_mm": 0.4,
+   "tie_mm": 5.0,
+   "thickness_mm": 3.0,
+   "gap_mm": 3.0,
+   "side_rail_offset_mm": 1.0
+  },
+  "CDP/Demiryolu/RAYLI_TOPLU_TASIMA_GUZERGAHI - cok yakin olcek": {
+   "kind": "line_ties",
+   "page": 169,
+   "color": "0/0/0",
+   "width_mm": 0.4,
+   "tie_mm": 5.0,
+   "thickness_mm": 3.0,
+   "gap_mm": 3.0,
+   "side_rail_offset_mm": 1.0
+  },
+  "UIP/DenizUlasimBaglanti/UIP_DENIZ_ULASIM_BAGLANTI": {
+   "kind": "line_dashed",
+   "page": 159,
+   "color": "0/0/0",
+   "width_mm": 0.8,
+   "dash_mm": 6.0,
+   "gap_mm": 2.0
+  },
+  "NIP/DenizUlasimBaglantisi/NIP_DENIZ_ULASIM_BAGLANTISI": {
+   "kind": "line_dashed",
+   "page": 159,
+   "color": "0/0/0",
+   "width_mm": 0.8,
+   "dash_mm": 6.0,
+   "gap_mm": 2.0
+  },
+  "CDP/DenizUlasimBaglanti/CDP_DENIZ_ULASIM_BAGLANTI": {
+   "kind": "line_dashed",
+   "page": 159,
+   "color": "0/0/0",
+   "width_mm": 0.8,
+   "dash_mm": 6.0,
+   "gap_mm": 2.0
+  },
+  "UIP/SuUlasimBaglantisi/*": {
+   "kind": "line_dashed",
+   "page": 160,
+   "color": "0/77/168",
+   "width_mm": 0.8,
+   "pattern": [
+    5.0,
+    2.0,
+    1.0,
+    2.0
+   ]
+  },
+  "NIP/SuUlasimBaglantisi/*": {
+   "kind": "line_dashed",
+   "page": 160,
+   "color": "0/77/168",
+   "width_mm": 0.8,
+   "pattern": [
+    5.0,
+    2.0,
+    1.0,
+    2.0
+   ]
+  },
+  "CDP/SuUlasimBaglantisi/*": {
+   "kind": "line_dashed",
+   "page": 160,
+   "color": "0/77/168",
+   "width_mm": 0.8,
+   "pattern": [
+    5.0,
+    2.0,
+    1.0,
+    2.0
+   ]
+  },
+  "UIP/TopluTasimaHatti/RAYLI_TOPLU_TASIMA_YERALTI": {
+   "kind": "line_ties",
+   "page": 169,
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "tie_mm": 5.0,
+   "thickness_mm": 2.0,
+   "gap_mm": 2.0,
+   "side_rail_offset_mm": 1.0
+  },
+  "UIP/TopluTasimaHatti/RAYLI_TOPLU_TASIMA_YERUSTU": {
+   "kind": "line_ties",
+   "page": 169,
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "tie_mm": 5.0,
+   "thickness_mm": 2.0,
+   "gap_mm": 2.0,
+   "side_rail_offset_mm": 1.0
+  },
+  "UIP/TopluTasimaHatti/HAVAI_HAT": {
+   "kind": "line_tick_tie",
+   "page": 170,
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "tick_mm": 2.0,
+   "box_mm": 5.0,
+   "box_thickness_mm": 2.0,
+   "interval_mm": 10.0,
+   "filled": true
+  },
+  "UIP/TopluTasimaHatti/HAVARAY": {
+   "kind": "line_tick_tie",
+   "page": 171,
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "tick_mm": 2.0,
+   "box_mm": 5.0,
+   "box_thickness_mm": 2.0,
+   "interval_mm": 10.0,
+   "filled": false
+  },
+  "NIP/RayliTopluTasimaHatti/RAYLI_TOPLU_TASIMA_HATTI": {
+   "kind": "line_ties",
+   "page": 169,
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "tie_mm": 5.0,
+   "thickness_mm": 2.0,
+   "gap_mm": 2.0,
+   "side_rail_offset_mm": 1.0
+  },
+  "NIP/RayliTopluTasimaHatti/HAVAI_HAT": {
+   "kind": "line_tick_tie",
+   "page": 170,
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "tick_mm": 2.0,
+   "box_mm": 5.0,
+   "box_thickness_mm": 2.0,
+   "interval_mm": 10.0,
+   "filled": true
+  },
+  "NIP/RayliTopluTasimaHatti/HAVARAY": {
+   "kind": "line_tick_tie",
+   "page": 171,
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "tick_mm": 2.0,
+   "box_mm": 5.0,
+   "box_thickness_mm": 2.0,
+   "interval_mm": 10.0,
+   "filled": false
+  },
+  "UIP/IletimHatti/BORU_HATTI": {
+   "kind": "line_marked",
+   "page": 180,
+   "color": "0/0/0",
+   "width_mm": 0.4,
+   "interval_mm": 15.0,
+   "mark_mm": 3.0
+  },
+  "UIP/IletimHatti/DOGALGAZ_BORU_HATTI": {
+   "kind": "line_marked",
+   "page": 180,
+   "color": "0/0/0",
+   "width_mm": 0.4,
+   "dash_mm": 3.0,
+   "gap_mm": 1.0,
+   "interval_mm": 15.0,
+   "mark_mm": 3.0
+  },
+  "UIP/IletimHatti/AKARYAKIT_BORU_HATTI": {
+   "kind": "line_marked",
+   "page": 181,
+   "color": "0/0/0",
+   "width_mm": 0.4,
+   "interval_mm": 15.0,
+   "mark_mm": 3.0
+  },
+  "UIP/IletimHatti/ILETIM_TUNELI": {
+   "kind": "line_dashed",
+   "page": 175,
+   "color": "0/0/0",
+   "width_mm": 0.8,
+   "dash_mm": 2.0,
+   "gap_mm": 2.0
+  },
+  "UIP/IletimHatti/CEBRI_BORU_HATTI": {
+   "kind": "line_solid",
+   "page": 176,
+   "color": "0/0/0",
+   "width_mm": 0.8
+  },
+  "CDP/BoruHatti/CDP_BORU_HATTI": {
+   "kind": "line_marked",
+   "page": 180,
+   "color": "0/0/0",
+   "width_mm": 0.4,
+   "interval_mm": 15.0,
+   "mark_mm": 3.0
+  },
+  "UIP/SogutmaSuyuAlmaHatti/UIP_SOGUTMA_SUYU_ALMA_HATTI": {
+   "kind": "line_marked",
+   "page": 183,
+   "color": "0/0/0",
+   "width_mm": 0.4,
+   "interval_mm": 15.0,
+   "mark_mm": 3.0,
+   "text": "S"
+  },
+  "NIP/SogutmaSuyuAlmaHatti/NIP_SOGUTMA_SUYU_ALMA_HATTI": {
+   "kind": "line_marked",
+   "page": 183,
+   "color": "0/0/0",
+   "width_mm": 0.4,
+   "interval_mm": 15.0,
+   "mark_mm": 3.0,
+   "text": "S"
+  },
+  "UIP/IcmesuAnaHat/UIP_ICMESU_ANA_HAT": {
+   "kind": "line_circles",
+   "page": 184,
+   "color": "0/0/0",
+   "width_mm": 0.4,
+   "dot_mm": 2.5,
+   "dot_width_mm": 0.3,
+   "interval_mm": 10.0
+  },
+  "NIP/IcmesuAnaHat/NIP_ICMESU_ANA_HAT": {
+   "kind": "line_circles",
+   "page": 184,
+   "color": "0/0/0",
+   "width_mm": 0.4,
+   "dot_mm": 2.5,
+   "dot_width_mm": 0.3,
+   "interval_mm": 10.0
+  },
+  "CDP/IcmesuAnaHat/CDP_ICMESU_ANA_HAT": {
+   "kind": "line_circles",
+   "page": 184,
+   "color": "0/0/0",
+   "width_mm": 0.4,
+   "dot_mm": 2.5,
+   "dot_width_mm": 0.3,
+   "interval_mm": 10.0
+  },
+  "UIP/AtiksuSistemi/ATIKSU_ANA_KOLLEKTORU": {
+   "kind": "line_marked",
+   "page": 185,
+   "color": "0/0/0",
+   "width_mm": 0.4,
+   "interval_mm": 10.0,
+   "mark_mm": 3.0,
+   "shape": "arrow"
+  },
+  "UIP/AtiksuSistemi/ATIKSU_DERIN_DENIZ_DESARJ_HATTI": {
+   "kind": "line_marked",
+   "page": 186,
+   "color": "0/0/0",
+   "width_mm": 0.4,
+   "interval_mm": 10.0,
+   "mark_mm": 3.0,
+   "shape": "triangle",
+   "filled": false
+  },
+  "UIP/BisikletYolu/UIP_BISIKLET_YOLU": {
+   "kind": "line_ticks",
+   "page": 153,
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "tick_mm": 2.0,
+   "interval_mm": 3.0
+  }
+ },
+ "fills": {
+  "note": "Katalogdaki renk kutusunun dolgu rengi (PDF çiziminden okunmuştur). s.95 'Doğal ve ekolojik yapısı korunacak alan' kutusu 209/255/155'tir; yanındaki '102/153/205' yazısı kutuyla çelişir, eklentideki renk kutuyla aynı olduğu için değiştirilmez.",
+  "UIP/YapayAda/*": {
+   "page": 100,
+   "rgb": "225/225/225"
+  },
+  "NIP/YapayAda/*": {
+   "page": 100,
+   "rgb": "225/225/225"
+  },
+  "CDP/YapayAda/*": {
+   "page": 100,
+   "rgb": "225/225/225"
+  },
+  "CDP/KiyiYapilari/KIYI_TESIS_ALANI": {
+   "page": 107,
+   "rgb": "225/225/225"
+  },
+  "UIP/TopluTasimTurleriArasiDegisimAktarmaAlani/*": {
+   "page": 172,
+   "rgb": "178/178/178"
+  },
+  "NIP/TopluTasimaAktarimAlani/*": {
+   "page": 172,
+   "rgb": "178/178/178"
+  },
+  "UIP/AtikGeriKazTesAlani/*": {
+   "page": 187,
+   "rgb": "178/178/178"
+  }
+ },
+ "hatches": {
+  "note": "SLD'de olmayan ya da QGIS'e aktarılamayan katalog taramaları; ölçüler pafta milimetresi. keep_fills: SLD'de SVG taraması olan PolygonSymbolizer QGIS'e gri düz dolgu olarak gelir; ilk keep_fills kadar düz dolgu tutulur, gerisi silinir (s.90 saydam, s.95 209/255/155 zemin).",
+  "UIP/AraziKullanimiDevamEttirilerekKorunacakAlanlar/Dogal Ekolojik Korunacak Alan": {
+   "page": 95,
+   "kind": "motif",
+   "motif": "dogal_karakteri_korunacak",
+   "spacing_mm": 10,
+   "size_mm": 3,
+   "keep_fills": 1
+  },
+  "NIP/AraziKullanimiDevamEttirilerekKorunacakAlanlar/Dogal Ekolojik Korunacak Alan": {
+   "page": 95,
+   "kind": "motif",
+   "motif": "dogal_karakteri_korunacak",
+   "spacing_mm": 10,
+   "size_mm": 3,
+   "keep_fills": 1
+  },
+  "CDP/AraziKullanimiDevamEttirilerekKorunacakAlanlar/Dogal Ekolojik Korunacak Alan": {
+   "page": 95,
+   "kind": "motif",
+   "motif": "dogal_karakteri_korunacak",
+   "spacing_mm": 10,
+   "size_mm": 3,
+   "keep_fills": 1
+  },
+  "UIP/AraziKullanimiDevamEttirilerekKorunacakAlanlar/EkolojikOnemeSahipAlan": {
+   "page": 90,
+   "kind": "motif",
+   "motif": "ekolojik_oneme_sahip",
+   "spacing_mm": 10,
+   "size_mm": 3,
+   "keep_fills": 0
+  },
+  "NIP/AraziKullanimiDevamEttirilerekKorunacakAlanlar/EkolojikOnemeSahipAlan": {
+   "page": 90,
+   "kind": "motif",
+   "motif": "ekolojik_oneme_sahip",
+   "spacing_mm": 10,
+   "size_mm": 3,
+   "keep_fills": 0
+  },
+  "CDP/AraziKullanimiDevamEttirilerekKorunacakAlanlar/EkolojikOnemeSahipAlan": {
+   "page": 90,
+   "kind": "motif",
+   "motif": "ekolojik_oneme_sahip",
+   "spacing_mm": 10,
+   "size_mm": 3,
+   "keep_fills": 0
+  },
+  "UIP/AtikGeriKazTesAlani/*": {
+   "page": 187,
+   "kind": "dots",
+   "spacing_mm": 7,
+   "dot_mm": 0.4,
+   "color": "0/0/0"
+  },
+  "CDP/AcikYesilAlan/FuarPanayirFestival": {
+   "page": 138,
+   "kind": "random_dots",
+   "fill": "36/156/34",
+   "area_per_dot_mm2": 5,
+   "dot_mm": 0.3,
+   "color": "0/0/0"
+  },
+  "NIP/AfetTehlikeliAlanlar/TASKINA_MARUZ_ALAN": {
+   "page": 145,
+   "kind": "copy",
+   "from": "UIP/AfetTehlikeliAlanlar/TASKINA_MARUZ_ALAN",
+   "note": "Katalog UİP ve NİP için aynı taramayı tanımlar; NİP SLD'si yalnız saydam dolgu verir."
+  },
+  "UIP/EnerjiDagitimDepolama/YED": {
+   "page": 174,
+   "kind": "copy",
+   "from": "UIP/EnerjiUretim/YED",
+   "note": "Aynı YED katalog gösterimi Enerji Üretim katmanında doğru, Dağıtım/Depolama SLD'sinde ise siyah dolguya dönüşüyor."
+  },
+  "UIP/SitAlanlari/KENTSEL_ARKEOLOJIK_SIT": {
+   "page": 83,
+   "kind": "double_lines",
+   "color": "255/0/0",
+   "width_mm": 0.4,
+   "pair_gap_mm": 1,
+   "spacing_mm": 3,
+   "angle_deg": 0
+  },
+  "NIP/SitAlanlari/KENTSEL_ARKEOLOJIK_SIT": {
+   "page": 83,
+   "kind": "double_lines",
+   "color": "255/0/0",
+   "width_mm": 0.4,
+   "pair_gap_mm": 1,
+   "spacing_mm": 3,
+   "angle_deg": 0
+  },
+  "CDP/SitAlanlari/KENTSEL_ARKEOLOJIK_SIT": {
+   "page": 83,
+   "kind": "double_lines",
+   "color": "255/0/0",
+   "width_mm": 0.4,
+   "pair_gap_mm": 1,
+   "spacing_mm": 3,
+   "angle_deg": 0
+  },
+  "UIP/Durak/HAVAI_HAT_ISTASYONU": {
+   "page": 171,
+   "kind": "tile",
+   "tile": "havai_hat_istasyonu_tarama"
+  }
+ },
+ "tiles": {
+  "note": "Katalogun ölçüyle tarif ettiği ve QGIS desen dolgusuyla kırpılamayan taramalar için üretilen kesintisiz karolar. Eğik çizgi yönü katalog çizimindeki görünüşe göre alınmıştır ('330 derece' yazısının hangi eksene göre ölçüldüğü katalogda belirtilmez).",
+  "havai_hat_istasyonu_tarama": {
+   "page": 171,
+   "title": "HAVAİ HAT İSTASYONU",
+   "period_mm": 5,
+   "band_mm": 2,
+   "line_spacing_mm": 1,
+   "slant_deg": 30,
+   "width_mm": 0.2
+  }
+ },
+ "labels": {
+  "note": "Katalogun yazıyla gösterdiği ölçüler.",
+  "UIP/YayaYolu/*": {
+   "page": 155,
+   "kind": "road_width",
+   "field": "Genislik",
+   "note": "Yaya yolu genişliği, taşıt yolundaki gibi aks ortasında daire içinde yazılır."
+  }
+ },
+ "borders": {
+  "note": "Katalogun ölçüyle tanımladığı sınır çizgileri. SLD'den gelen işaret çizgileri kaldırılıp yerine katalog çizgisi konur. İdari Sınırlar (s.12-15): SLD'nin GraphicStroke/glyph denemesi yerine katalogun çizgi+nokta/çentik tarifi. Nokta öbeği aralığı yalnız Belediye/Mücavir Alan/Mahalle Sınırı metninde 'aralı' ile verilir (1 mm); İlçe/Köy'de verilmeyip katalog çiziminde noktalar bitişik göründüğünden 0 alınır.",
+  "UIP/AskeriYasakBolge/*": {
+   "page": 24,
+   "kind": "cross",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "interval_mm": 7,
+   "size_mm": 3,
+   "text": "AYB"
+  },
+  "NIP/AskeriYasakBolge/*": {
+   "page": 24,
+   "kind": "cross",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "interval_mm": 7,
+   "size_mm": 3,
+   "text": "AYB"
+  },
+  "CDP/AskeriYskGuvenlikBlg/*": {
+   "page": 24,
+   "kind": "cross",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "interval_mm": 7,
+   "size_mm": 3,
+   "text": "AYB"
+  },
+  "UIP/UlkeSiniri/*": {
+   "page": 12,
+   "kind": "tick_circle",
+   "color": "0/0/0",
+   "width_mm": 1.2,
+   "dash_mm": 10,
+   "tick_mm": 5,
+   "circle_mm": 3,
+   "filled": false
+  },
+  "NIP/UlkeSiniri/*": {
+   "page": 12,
+   "kind": "tick_circle",
+   "color": "0/0/0",
+   "width_mm": 1.2,
+   "dash_mm": 10,
+   "tick_mm": 5,
+   "circle_mm": 3,
+   "filled": false
+  },
+  "CDP/UlkeSiniri/*": {
+   "page": 12,
+   "kind": "tick_circle",
+   "color": "0/0/0",
+   "width_mm": 1.2,
+   "dash_mm": 10,
+   "tick_mm": 5,
+   "circle_mm": 3,
+   "filled": false
+  },
+  "UIP/IlSiniri/*": {
+   "page": 12,
+   "kind": "dots",
+   "color": "0/0/0",
+   "width_mm": 1,
+   "dash_mm": 10,
+   "gap_mm": 1,
+   "dot_mm": 1,
+   "dot_count": 1
+  },
+  "NIP/IlSiniri/*": {
+   "page": 12,
+   "kind": "dots",
+   "color": "0/0/0",
+   "width_mm": 1,
+   "dash_mm": 10,
+   "gap_mm": 1,
+   "dot_mm": 1,
+   "dot_count": 1
+  },
+  "CDP/IlSiniri/*": {
+   "page": 12,
+   "kind": "dots",
+   "color": "0/0/0",
+   "width_mm": 1,
+   "dash_mm": 10,
+   "gap_mm": 1,
+   "dot_mm": 1,
+   "dot_count": 1
+  },
+  "UIP/IlceSiniri/*": {
+   "page": 13,
+   "kind": "dots",
+   "color": "0/0/0",
+   "width_mm": 0.8,
+   "dash_mm": 10,
+   "gap_mm": 2,
+   "dot_mm": 1,
+   "dot_count": 2
+  },
+  "NIP/IlceSiniri/*": {
+   "page": 13,
+   "kind": "dots",
+   "color": "0/0/0",
+   "width_mm": 0.8,
+   "dash_mm": 10,
+   "gap_mm": 2,
+   "dot_mm": 1,
+   "dot_count": 2
+  },
+  "CDP/IlceSiniri/*": {
+   "page": 13,
+   "kind": "dots",
+   "color": "0/0/0",
+   "width_mm": 0.8,
+   "dash_mm": 10,
+   "gap_mm": 2,
+   "dot_mm": 1,
+   "dot_count": 2
+  },
+  "UIP/BelediyeSiniri/*": {
+   "page": 13,
+   "kind": "dots",
+   "color": "0/0/0",
+   "width_mm": 0.8,
+   "dash_mm": 10,
+   "gap_before_mm": 0,
+   "gap_after_mm": 1,
+   "dot_mm": 1,
+   "dot_count": 2,
+   "dot_spacing_mm": 1,
+   "flank_mm": 2
+  },
+  "NIP/BelediyeSiniri/*": {
+   "page": 13,
+   "kind": "dots",
+   "color": "0/0/0",
+   "width_mm": 0.8,
+   "dash_mm": 10,
+   "gap_before_mm": 0,
+   "gap_after_mm": 1,
+   "dot_mm": 1,
+   "dot_count": 2,
+   "dot_spacing_mm": 1,
+   "flank_mm": 2
+  },
+  "CDP/BelediyeSiniri/*": {
+   "page": 13,
+   "kind": "dots",
+   "color": "0/0/0",
+   "width_mm": 0.8,
+   "dash_mm": 10,
+   "gap_before_mm": 0,
+   "gap_after_mm": 1,
+   "dot_mm": 1,
+   "dot_count": 2,
+   "dot_spacing_mm": 1,
+   "flank_mm": 2
+  },
+  "UIP/MucavirAlanSiniri/*": {
+   "page": 14,
+   "kind": "dots",
+   "color": "0/0/0",
+   "width_mm": 0.8,
+   "dash_mm": 10,
+   "gap_before_mm": 0,
+   "gap_after_mm": 1,
+   "dot_mm": 1,
+   "dot_count": 3,
+   "dot_spacing_mm": 1,
+   "flank_mm": 2
+  },
+  "NIP/MucavirAlanSiniri/*": {
+   "page": 14,
+   "kind": "dots",
+   "color": "0/0/0",
+   "width_mm": 0.8,
+   "dash_mm": 10,
+   "gap_before_mm": 0,
+   "gap_after_mm": 1,
+   "dot_mm": 1,
+   "dot_count": 3,
+   "dot_spacing_mm": 1,
+   "flank_mm": 2
+  },
+  "CDP/MucavirAlanSiniri/*": {
+   "page": 14,
+   "kind": "dots",
+   "color": "0/0/0",
+   "width_mm": 0.8,
+   "dash_mm": 10,
+   "gap_before_mm": 0,
+   "gap_after_mm": 1,
+   "dot_mm": 1,
+   "dot_count": 3,
+   "dot_spacing_mm": 1,
+   "flank_mm": 2
+  },
+  "UIP/KoySiniri/*": {
+   "page": 14,
+   "kind": "dots",
+   "color": "0/0/0",
+   "width_mm": 0.7,
+   "dash_mm": 10,
+   "gap_mm": 2,
+   "dot_mm": 1,
+   "dot_count": 3
+  },
+  "NIP/KoySiniri/*": {
+   "page": 14,
+   "kind": "dots",
+   "color": "0/0/0",
+   "width_mm": 0.7,
+   "dash_mm": 10,
+   "gap_mm": 2,
+   "dot_mm": 1,
+   "dot_count": 3
+  },
+  "UIP/MahalleSiniri/*": {
+   "page": 15,
+   "kind": "dots",
+   "color": "0/0/0",
+   "width_mm": 0.7,
+   "dash_mm": 10,
+   "gap_mm": 2,
+   "dot_mm": 1,
+   "dot_count": 4,
+   "dot_spacing_mm": 1
+  },
+  "UIP/PlanSiniri/*": {
+   "page": 15,
+   "kind": "circles",
+   "color": "0/92/230",
+   "width_mm": 0.3,
+   "circle_mm": 5,
+   "gap_mm": 2.5,
+   "filled": false
+  },
+  "NIP/PlanSiniri/*": {
+   "page": 15,
+   "kind": "circles",
+   "color": "0/92/230",
+   "width_mm": 0.3,
+   "circle_mm": 4,
+   "gap_mm": 2.5,
+   "filled": false
+  },
+  "CDP/PlanSiniri/*": {
+   "page": 15,
+   "kind": "circles",
+   "color": "0/92/230",
+   "width_mm": 0.3,
+   "circle_mm": 3,
+   "gap_mm": 2.5,
+   "filled": false
+  },
+  "UIP/PlanDegisiklikSiniri/*": {
+   "page": 16,
+   "kind": "dots",
+   "color": "0/0/0",
+   "width_mm": 0.6,
+   "dash_mm": 10,
+   "gap_mm": 1,
+   "dot_mm": 0.6,
+   "dot_count": 1
+  },
+  "NIP/PlanDegisiklikSiniri/*": {
+   "page": 16,
+   "kind": "dots",
+   "color": "0/0/0",
+   "width_mm": 0.6,
+   "dash_mm": 10,
+   "gap_mm": 1,
+   "dot_mm": 0.6,
+   "dot_count": 1
+  },
+  "CDP/PlanDegisiklikSiniri/*": {
+   "page": 16,
+   "kind": "dots",
+   "color": "0/0/0",
+   "width_mm": 0.6,
+   "dash_mm": 10,
+   "gap_mm": 1,
+   "dot_mm": 0.6,
+   "dot_count": 1
+  },
+  "UIP/EtaplamaSiniri/*": {
+   "page": 16,
+   "kind": "circles",
+   "color": "0/92/230",
+   "width_mm": 0.3,
+   "circle_mm": 5,
+   "gap_mm": 2.5,
+   "alternate": true
+  },
+  "NIP/EtaplamaSiniri/*": {
+   "page": 16,
+   "kind": "circles",
+   "color": "0/92/230",
+   "width_mm": 0.3,
+   "circle_mm": 4,
+   "gap_mm": 2.5,
+   "alternate": true
+  },
+  "CDP/EtaplamaSiniri/*": {
+   "page": 16,
+   "kind": "circles",
+   "color": "0/92/230",
+   "width_mm": 0.3,
+   "circle_mm": 3,
+   "gap_mm": 2.5,
+   "alternate": true
+  },
+  "NIP/KirsalYerlesikAlanSinir/*": {
+   "page": 19,
+   "kind": "circles",
+   "color": "0/92/230",
+   "width_mm": 0.3,
+   "circle_mm": 4,
+   "gap_mm": 2.5,
+   "alternate": true,
+   "note": "Katalog s.19 küçük gösterim kutusunda mavi renk kutusu görünmüyor; s.16-20 aynı 'Planlama Sınırları' ailesindeki tüm kardeşleri 0/92/230 kullandığı için o renk alındı, son kontrol Yusuf'ta."
+  },
+  "UIP/OzelProjeAlanSiniri/*": {
+   "page": 20,
+   "kind": "circles",
+   "color": "0/92/230",
+   "width_mm": 0.3,
+   "circle_mm": 4,
+   "dash_mm": 2.5,
+   "filled": true
+  },
+  "NIP/OzelProjeAlanSiniri/*": {
+   "page": 20,
+   "kind": "circles",
+   "color": "0/92/230",
+   "width_mm": 0.3,
+   "circle_mm": 4,
+   "dash_mm": 2.5,
+   "filled": true
+  },
+  "CDP/OzelProjeAlaniSiniri/*": {
+   "page": 20,
+   "kind": "circles",
+   "color": "0/92/230",
+   "width_mm": 0.3,
+   "circle_mm": 4,
+   "dash_mm": 2.5,
+   "filled": true
+  },
+  "_note_disli": "Dişli ailesi (s.21-23): diş sayısı (10) ve diş derinliği kataloğun ölçüyle vermediği bir çizim ayrıntısıdır; s.21'deki küçük dişli simgesinden sayılmış, gövde/diş sınırı iç ve dış çap ortası alınmıştır. PNG'ler resources/katalog_sembol/disli_*.png, üretim betiği tools/build_gear_symbols.py.",
+  "UIP/IlanEdilenClsmaAlan/TEKNOLOJI_GELISTIRME_BOLGESI": {
+   "page": 21,
+   "kind": "gears",
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "gear_mm": 7,
+   "gear_count": 3,
+   "gear_spacing_mm": 1,
+   "gap_mm": 2,
+   "dash_mm": 7,
+   "gear_file": "disli_bos_uip.png"
+  },
+  "NIP/IlanEdilenClsmaAlan/TEKNOLOJI_GELISTIRME_BOLGESI": {
+   "page": 21,
+   "kind": "gears",
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "gear_mm": 6,
+   "gear_count": 3,
+   "gear_spacing_mm": 1,
+   "gap_mm": 2,
+   "dash_mm": 7,
+   "gear_file": "disli_bos_nip.png"
+  },
+  "CDP/KentselCalisma/TEKNOLOJI_GELISTIRME_BOLGESI": {
+   "page": 21,
+   "kind": "gears",
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "gear_mm": 5,
+   "gear_count": 3,
+   "gear_spacing_mm": 1,
+   "gap_mm": 2,
+   "dash_mm": 7,
+   "gear_file": "disli_bos_cdp.png"
+  },
+  "UIP/IlanEdilenClsmaAlan/SERBEST_BOLGE": {
+   "page": 21,
+   "kind": "gears",
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "gear_mm": 7,
+   "gap_mm": 2,
+   "dash_mm": 7,
+   "gear_file": "disli_bos_uip.png",
+   "alternate_file": "disli_dolu_uip.png"
+  },
+  "NIP/IlanEdilenClsmaAlan/SERBEST_BOLGE": {
+   "page": 21,
+   "kind": "gears",
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "gear_mm": 6,
+   "gap_mm": 2,
+   "dash_mm": 7,
+   "gear_file": "disli_bos_nip.png",
+   "alternate_file": "disli_dolu_nip.png"
+  },
+  "CDP/KentselCalisma/SERBEST_BOLGE": {
+   "page": 21,
+   "kind": "gears",
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "gear_mm": 5,
+   "gap_mm": 2,
+   "dash_mm": 7,
+   "gear_file": "disli_bos_cdp.png",
+   "alternate_file": "disli_dolu_cdp.png"
+  },
+  "UIP/IlanEdilenClsmaAlan/OSB": {
+   "page": 22,
+   "kind": "gears",
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "gear_mm": 7,
+   "gap_mm": 2,
+   "dash_mm": 7,
+   "gear_file": "disli_bos_uip.png"
+  },
+  "NIP/IlanEdilenClsmaAlan/OSB": {
+   "page": 22,
+   "kind": "gears",
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "gear_mm": 6,
+   "gap_mm": 2,
+   "dash_mm": 7,
+   "gear_file": "disli_bos_nip.png"
+  },
+  "CDP/KentselCalisma/OSB": {
+   "page": 22,
+   "kind": "gears",
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "gear_mm": 5,
+   "gap_mm": 2,
+   "dash_mm": 7,
+   "gear_file": "disli_bos_cdp.png"
+  },
+  "UIP/IlanEdilenClsmaAlan/ENDUSTRI_BOLGESI": {
+   "page": 23,
+   "kind": "gears",
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "gear_mm": 7,
+   "gear_count": 2,
+   "gear_spacing_mm": 1,
+   "gap_mm": 2,
+   "dash_mm": 7,
+   "gear_file": "disli_bos_uip.png"
+  },
+  "NIP/IlanEdilenClsmaAlan/ENDUSTRI_BOLGESI": {
+   "page": 23,
+   "kind": "gears",
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "gear_mm": 6,
+   "gear_count": 2,
+   "gear_spacing_mm": 1,
+   "gap_mm": 2,
+   "dash_mm": 7,
+   "gear_file": "disli_bos_nip.png"
+  },
+  "CDP/KentselCalisma/ENDUSTRI_BOLGESI": {
+   "page": 23,
+   "kind": "gears",
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "gear_mm": 5,
+   "gear_count": 2,
+   "gear_spacing_mm": 1,
+   "gap_mm": 2,
+   "dash_mm": 7,
+   "gear_file": "disli_bos_cdp.png"
+  },
+  "UIP/KentselCalisma/ENDUSTRIYEL_GELISME_BOLGESI": {
+   "page": 66,
+   "kind": "gears",
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "gear_mm": 7,
+   "gear_count": 2,
+   "gear_spacing_mm": 1,
+   "gap_mm": 2,
+   "dash_mm": 7,
+   "gear_file": "disli_dolu_uip.png"
+  },
+  "NIP/KentselCalisma/ENDUSTRIYEL_GELISME_BOLGESI": {
+   "page": 66,
+   "kind": "gears",
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "gear_mm": 6,
+   "gear_count": 2,
+   "gear_spacing_mm": 1,
+   "gap_mm": 2,
+   "dash_mm": 7,
+   "gear_file": "disli_dolu_nip.png"
+  },
+  "CDP/KentselCalisma/ENDUSTRIYEL_GELISME_BOLGESI": {
+   "page": 66,
+   "kind": "gears",
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "gear_mm": 5,
+   "gear_count": 2,
+   "gear_spacing_mm": 1,
+   "gap_mm": 2,
+   "dash_mm": 7,
+   "gear_file": "disli_dolu_cdp.png"
+  },
+  "NIP/MudahaleSiniri/MEVCUT_PLANDAKI_DURUMU_KORUNACAK_ALAN_SINIRI": {
+   "page": 17,
+   "kind": "dashed",
+   "color": "0/92/230",
+   "width_mm": 0.5,
+   "dash_mm": 10,
+   "gap_mm": 2
+  },
+  "NIP/MudahaleSiniri/YENIDEN_DUZENLENECEK_ALAN_SINIRI": {
+   "page": 18,
+   "kind": "dashed",
+   "color": "0/92/230",
+   "width_mm": 0.5,
+   "dash_mm": 10,
+   "gap_mm": 2
+  },
+  "NIP/MudahaleSiniri/SAGLIKLASTIRMA_ALAN_SINIRI": {
+   "page": 18,
+   "kind": "dashed",
+   "color": "0/92/230",
+   "width_mm": 0.5,
+   "dash_mm": 10,
+   "gap_mm": 2
+  },
+  "UIP/ImarHakkiAktarimSiniri/*": {
+   "page": 19,
+   "kind": "circles",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "circle_mm": 5.5,
+   "inner_mm": 3,
+   "dash_mm": 7
+  },
+  "NIP/ImarHakkiAktarimSiniri/*": {
+   "page": 19,
+   "kind": "circles",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "circle_mm": 4.5,
+   "inner_mm": 2.5,
+   "dash_mm": 7
+  },
+  "UIP/BogaziciSinirlari/BOGAZICI_ETKILENME_BOLGE_SINIRI": {
+   "page": 25,
+   "kind": "dots",
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 7,
+   "gap_mm": 0,
+   "dot_mm": 2,
+   "dot_count": 3,
+   "dot_spacing_mm": 1,
+   "dot_shape": "square"
+  },
+  "NIP/BogaziciSinirlari/BOGAZICI_ETKILENME_BOLGE_SINIRI": {
+   "page": 25,
+   "kind": "dots",
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 7,
+   "gap_mm": 0,
+   "dot_mm": 2,
+   "dot_count": 3,
+   "dot_spacing_mm": 1,
+   "dot_shape": "square"
+  },
+  "CDP/BogaziciSinirlari/BOGAZICI_ETKILENME_BOLGE_SINIRI": {
+   "page": 25,
+   "kind": "dots",
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 7,
+   "gap_mm": 0,
+   "dot_mm": 2,
+   "dot_count": 3,
+   "dot_spacing_mm": 1,
+   "dot_shape": "square"
+  },
+  "UIP/BogaziciSinirlari/BOGAZICI_GERI_GORUNUM_BOLGE_SINIRI": {
+   "page": 25,
+   "kind": "dots",
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 7,
+   "gap_mm": 0,
+   "dot_mm": 2,
+   "dot_count": 2,
+   "dot_spacing_mm": 1,
+   "dot_shape": "square"
+  },
+  "NIP/BogaziciSinirlari/BOGAZICI_GERI_GORUNUM_BOLGE_SINIRI": {
+   "page": 25,
+   "kind": "dots",
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 7,
+   "gap_mm": 0,
+   "dot_mm": 2,
+   "dot_count": 2,
+   "dot_spacing_mm": 1,
+   "dot_shape": "square"
+  },
+  "CDP/BogaziciSinirlari/BOGAZICI_GERI_GORUNUM_BOLGE_SINIRI": {
+   "page": 25,
+   "kind": "dots",
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 7,
+   "gap_mm": 0,
+   "dot_mm": 2,
+   "dot_count": 2,
+   "dot_spacing_mm": 1,
+   "dot_shape": "square"
+  },
+  "UIP/BogaziciSinirlari/BOGAZICI_ON_GORUNUM_BOLGE_SINIRI": {
+   "page": 26,
+   "kind": "dots",
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 7,
+   "gap_mm": 0,
+   "dot_mm": 2,
+   "dot_count": 1
+  },
+  "NIP/BogaziciSinirlari/BOGAZICI_ON_GORUNUM_BOLGE_SINIRI": {
+   "page": 26,
+   "kind": "dots",
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 7,
+   "gap_mm": 0,
+   "dot_mm": 2,
+   "dot_count": 1
+  },
+  "CDP/BogaziciSinirlari/BOGAZICI_ON_GORUNUM_BOLGE_SINIRI": {
+   "page": 26,
+   "kind": "dots",
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 7,
+   "gap_mm": 0,
+   "dot_mm": 2,
+   "dot_count": 1
+  },
+  "UIP/DonusumKonutAlanlari/GECEKONDU_ONLEME_BOLGESI": {
+   "page": 26,
+   "kind": "cross",
+   "shape": "cross",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "size_mm": 3,
+   "gap_mm": 2
+  },
+  "NIP/DonusumKonutAlanlari/GECEKONDU_ONLEME_BOLGESI": {
+   "page": 26,
+   "kind": "cross",
+   "shape": "cross",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "size_mm": 3,
+   "gap_mm": 2
+  },
+  "UIP/DonusumKonutAlanlari/TOPLU_KONUT_ALANLARI": {
+   "page": 27,
+   "kind": "cross",
+   "shape": "cross",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "size_mm": 3,
+   "ring_mm": 3,
+   "gap_mm": 2
+  },
+  "NIP/DonusumKonutAlanlari/TOPLU_KONUT_ALANLARI": {
+   "page": 27,
+   "kind": "cross",
+   "shape": "cross",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "size_mm": 3,
+   "ring_mm": 3,
+   "gap_mm": 2
+  },
+  "UIP/TmKtkgbAlan/*": {
+   "page": 20,
+   "kind": "cross_cluster",
+   "color": "0/92/230",
+   "width_mm": 0.4,
+   "circle_mm": 5,
+   "cluster_gap_mm": 1,
+   "edge_gap_mm": 1,
+   "dash_mm": 5
+  },
+  "NIP/DonusumKonutAlanlari/KENTSEL_DONUSUM_PROJE_ALANI": {
+   "page": 28,
+   "kind": "circles",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "circle_mm": 4,
+   "dash_mm": 5,
+   "alternate": true
+  },
+  "_note_metin": "AYB (s.24) ve Riskli Alan/Rezerv Yapı Alanı/Yenileme Alanı Sınırı (s.29-30) kataloğu ayrıca 'sınır üzerine AYB/RA/RYA/YENİLEME yazılacak' diyor: PerimeterCurved + repeatDistance ile çizgi boyunca tekrarlanan yazı olarak core/mpyy_workspace.py:_apply_border_text_labels'te uygulandı. Aralık kataloğun ölçmediği bir değer (BORDER_TEXT_REPEAT_MM = 40 mm).",
+  "NIP/KentselDonusumSinirlari/RISKLI_ALAN_SINIRI": {
+   "page": 29,
+   "kind": "dashed",
+   "color": "0/0/0",
+   "width_mm": 0.5,
+   "dash_mm": 5,
+   "gap_mm": 1,
+   "text": "RA"
+  },
+  "NIP/KentselDonusumSinirlari/REZERV_YAPI_ALAN_SINIRI": {
+   "page": 29,
+   "kind": "dashed",
+   "color": "0/0/0",
+   "width_mm": 0.5,
+   "dash_mm": 5,
+   "gap_mm": 1,
+   "text": "RYA"
+  },
+  "NIP/KentselDonusumSinirlari/YENILEME_ALAN_SINIRI": {
+   "page": 30,
+   "kind": "dashed",
+   "color": "0/0/0",
+   "width_mm": 0.5,
+   "dash_mm": 5,
+   "gap_mm": 1,
+   "text": "YENİLEME"
+  },
+  "NIP/StatusuOzelKanunlarlaBelirlenenAlanlar/*": {
+   "page": 30,
+   "kind": "circle_triangle",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "circle_mm": 4.5,
+   "triangle_mm": 3,
+   "gap_mm": 2,
+   "dash_mm": 7
+  },
+  "UIP/DigerOzelSinir/*": {
+   "page": 34,
+   "kind": "triangle_cluster",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "triangle_mm": 4,
+   "gap_mm": 1,
+   "dash_mm": 5
+  },
+  "NIP/DigerOzelSinir/*": {
+   "page": 34,
+   "kind": "triangle_cluster",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "triangle_mm": 4,
+   "gap_mm": 1,
+   "dash_mm": 5
+  },
+  "CDP/DigerOzelSinir/*": {
+   "page": 34,
+   "kind": "triangle_cluster",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "triangle_mm": 4,
+   "gap_mm": 1,
+   "dash_mm": 5
+  },
+  "UIP/YapiYaklasmaSiniri/*": {
+   "page": 44,
+   "kind": "dots",
+   "color": "0/0/0",
+   "width_mm": 0.4,
+   "dash_mm": 10,
+   "gap_mm": 2,
+   "dot_mm": 0.8,
+   "dot_count": 1,
+   "note": "Nokta çapı katalogda verilmiyor ('kesik çizgi arası nokta'); okunaklı bir küçük değer (0.8mm) alındı."
+  },
+  "UIP/SitAlanlari/1_DERECE_DOGAL_SIT": {
+   "page": 31,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 1,
+   "text": "D1",
+   "hatch": {
+    "angle_deg": 45,
+    "interval_mm": 3,
+    "length_mm": 2.5
+   }
+  },
+  "UIP/SitAlanlari/2_DERECE_DOGAL_SIT": {
+   "page": 32,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 2,
+   "text": "D2",
+   "hatch": {
+    "angle_deg": 45,
+    "interval_mm": 3,
+    "length_mm": 2.5
+   }
+  },
+  "UIP/SitAlanlari/3_DERECE_DOGAL_SIT": {
+   "page": 33,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 3,
+   "text": "D3",
+   "hatch": {
+    "angle_deg": 45,
+    "interval_mm": 3,
+    "length_mm": 2.5
+   }
+  },
+  "UIP/SitAlanlari/1_DERECE_ARKEOLOJIK_SIT": {
+   "page": 79,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 1,
+   "text": "A1"
+  },
+  "UIP/SitAlanlari/2_DERECE_ARKEOLOJIK_SIT": {
+   "page": 80,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 2,
+   "text": "A2"
+  },
+  "UIP/SitAlanlari/3_DERECE_ARKEOLOJIK_SIT": {
+   "page": 80,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 3,
+   "text": "A3"
+  },
+  "UIP/SitAlanlari/KESIN_KORUNACAK_HASSAS_ALAN": {
+   "page": 81,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 1,
+   "text": "KK"
+  },
+  "UIP/SitAlanlari/NITELIKLI_DOGAL_KORUMA_ALANI": {
+   "page": 81,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 2,
+   "text": "ND"
+  },
+  "UIP/SitAlanlari/SURDURULEBILIR_KORUMA_KONTROLLU_KULLANIM_ALANI": {
+   "page": 82,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 3,
+   "text": "SK"
+  },
+  "UIP/SitAlanlari/KENTSEL_SIT": {
+   "page": 82,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 1,
+   "text": "KS"
+  },
+  "UIP/SitAlanlari/KENTSEL_ARKEOLOJIK_SIT": {
+   "page": 83,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 1,
+   "text": "KA"
+  },
+  "UIP/SitAlanlari/TARIHI_SIT": {
+   "page": 84,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 1,
+   "text": "TS"
+  },
+  "NIP/SitAlanlari/1_DERECE_DOGAL_SIT": {
+   "page": 31,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 1,
+   "text": "D1",
+   "hatch": {
+    "angle_deg": 45,
+    "interval_mm": 3,
+    "length_mm": 2.5
+   }
+  },
+  "NIP/SitAlanlari/2_DERECE_DOGAL_SIT": {
+   "page": 32,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 2,
+   "text": "D2",
+   "hatch": {
+    "angle_deg": 45,
+    "interval_mm": 3,
+    "length_mm": 2.5
+   }
+  },
+  "NIP/SitAlanlari/3_DERECE_DOGAL_SIT": {
+   "page": 33,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 3,
+   "text": "D3",
+   "hatch": {
+    "angle_deg": 45,
+    "interval_mm": 3,
+    "length_mm": 2.5
+   }
+  },
+  "NIP/SitAlanlari/1_DERECE_ARKEOLOJIK_SIT": {
+   "page": 79,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 1,
+   "text": "A1"
+  },
+  "NIP/SitAlanlari/2_DERECE_ARKEOLOJIK_SIT": {
+   "page": 80,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 2,
+   "text": "A2"
+  },
+  "NIP/SitAlanlari/3_DERECE_ARKEOLOJIK_SIT": {
+   "page": 80,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 3,
+   "text": "A3"
+  },
+  "NIP/SitAlanlari/KESIN_KORUNACAK_HASSAS_ALAN": {
+   "page": 81,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 1,
+   "text": "KK"
+  },
+  "NIP/SitAlanlari/NITELIKLI_DOGAL_KORUMA_ALANI": {
+   "page": 81,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 2,
+   "text": "ND"
+  },
+  "NIP/SitAlanlari/SURDURULEBILIR_KORUMA_KONTROLLU_KULLANIM_ALANI": {
+   "page": 82,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 3,
+   "text": "SK"
+  },
+  "NIP/SitAlanlari/KENTSEL_SIT": {
+   "page": 82,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 1,
+   "text": "KS"
+  },
+  "NIP/SitAlanlari/KENTSEL_ARKEOLOJIK_SIT": {
+   "page": 83,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 1,
+   "text": "KA"
+  },
+  "NIP/SitAlanlari/TARIHI_SIT": {
+   "page": 84,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 1,
+   "text": "TS"
+  },
+  "CDP/SitAlanlari/1_DERECE_DOGAL_SIT": {
+   "page": 31,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 1,
+   "text": "D1",
+   "hatch": {
+    "angle_deg": 45,
+    "interval_mm": 3,
+    "length_mm": 2.5
+   }
+  },
+  "CDP/SitAlanlari/2_DERECE_DOGAL_SIT": {
+   "page": 32,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 2,
+   "text": "D2",
+   "hatch": {
+    "angle_deg": 45,
+    "interval_mm": 3,
+    "length_mm": 2.5
+   }
+  },
+  "CDP/SitAlanlari/3_DERECE_DOGAL_SIT": {
+   "page": 33,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 3,
+   "text": "D3",
+   "hatch": {
+    "angle_deg": 45,
+    "interval_mm": 3,
+    "length_mm": 2.5
+   }
+  },
+  "CDP/SitAlanlari/1_DERECE_ARKEOLOJIK_SIT": {
+   "page": 79,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 1,
+   "text": "A1"
+  },
+  "CDP/SitAlanlari/2_DERECE_ARKEOLOJIK_SIT": {
+   "page": 80,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 2,
+   "text": "A2"
+  },
+  "CDP/SitAlanlari/3_DERECE_ARKEOLOJIK_SIT": {
+   "page": 80,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 3,
+   "text": "A3"
+  },
+  "CDP/SitAlanlari/KESIN_KORUNACAK_HASSAS_ALAN": {
+   "page": 81,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 1,
+   "text": "KK"
+  },
+  "CDP/SitAlanlari/NITELIKLI_DOGAL_KORUMA_ALANI": {
+   "page": 81,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 2,
+   "text": "ND"
+  },
+  "CDP/SitAlanlari/SURDURULEBILIR_KORUMA_KONTROLLU_KULLANIM_ALANI": {
+   "page": 82,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 3,
+   "text": "SK"
+  },
+  "CDP/SitAlanlari/KENTSEL_SIT": {
+   "page": 82,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 1,
+   "text": "KS"
+  },
+  "CDP/SitAlanlari/KENTSEL_ARKEOLOJIK_SIT": {
+   "page": 83,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 1,
+   "text": "KA"
+  },
+  "CDP/SitAlanlari/TARIHI_SIT": {
+   "page": 84,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 0,
+   "dot_mm": 3,
+   "dot_count": 1,
+   "text": "TS"
+  },
+  "UIP/SitAlanlari/SIT_ETKILESIMLI_ALANI": {
+   "page": 84,
+   "kind": "circles",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "circle_mm": 5.5,
+   "inner_mm": 3,
+   "inner_filled": true,
+   "dash_mm": 7,
+   "text": "SEG"
+  },
+  "UIP/TescilliAlan/TESCILLI_ANIT_YAPI": {
+   "page": 77,
+   "kind": "solid",
+   "color": "0/0/0",
+   "width_mm": 0.4
+  },
+  "UIP/TescilliAlan/TESCILLI_BINA": {
+   "page": 78,
+   "kind": "solid",
+   "color": "0/0/0",
+   "width_mm": 0.4
+  },
+  "UIP/TescilliAlan/TESCILLI_PARSEL": {
+   "page": 78,
+   "kind": "solid",
+   "color": "0/0/0",
+   "width_mm": 0.4
+  },
+  "UIP/TescilliAlan/TESCILLI_TABIAT_VARLIGI": {
+   "page": 79,
+   "kind": "solid",
+   "color": "0/0/0",
+   "width_mm": 0.4
+  },
+  "UIP/YapayAda/*": {
+   "page": 100,
+   "kind": "solid",
+   "color": "0/0/0",
+   "width_mm": 0.2
+  },
+  "NIP/YapayAda/*": {
+   "page": 100,
+   "kind": "solid",
+   "color": "0/0/0",
+   "width_mm": 0.2
+  },
+  "CDP/YapayAda/*": {
+   "page": 100,
+   "kind": "solid",
+   "color": "0/0/0",
+   "width_mm": 0.2
+  },
+  "CDP/KiyiYapilari/KIYI_TESIS_ALANI": {
+   "page": 107,
+   "kind": "solid",
+   "color": "0/0/0",
+   "width_mm": 0.2
+  },
+  "UIP/KorumaKusaklari/HAVAALANI_KORUMA_KUSAGI": {
+   "page": 110,
+   "kind": "cross",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "interval_mm": 7,
+   "size_mm": 3,
+   "text": "HKK"
+  },
+  "UIP/KorumaKusaklari/KARAYOLU_KORUMA_KUSAGI": {
+   "page": 111,
+   "kind": "cross",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "interval_mm": 7,
+   "size_mm": 3,
+   "text": "YKK"
+  },
+  "UIP/KorumaKusaklari/BORU_HATTI_KORUMA_KUSAGI": {
+   "page": 111,
+   "kind": "cross",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "interval_mm": 7,
+   "size_mm": 3,
+   "text": "BHK"
+  },
+  "UIP/KorumaKusaklari/SU_KANALI_KORUMA_KUSAGI": {
+   "page": 112,
+   "kind": "cross",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "interval_mm": 7,
+   "size_mm": 3,
+   "text": "SKK"
+  },
+  "UIP/KorumaKusaklari/ICMESUYU_KORUMA_KUSAGI": {
+   "page": 112,
+   "kind": "cross",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "interval_mm": 7,
+   "size_mm": 3,
+   "text": "İSK"
+  },
+  "UIP/KorumaKusaklari/YERALTI_SU_KORUMA_KUSAGI": {
+   "page": 113,
+   "kind": "cross",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "interval_mm": 7,
+   "size_mm": 3,
+   "text": "YSK"
+  },
+  "UIP/KorumaKusaklari/DEMIRYOLU_KORUMA_KUSAGI": {
+   "page": 114,
+   "kind": "cross",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "interval_mm": 7,
+   "size_mm": 3,
+   "text": "DKK"
+  },
+  "UIP/KorumaKusaklari/YANICI_PATLAYICI_MADDE_KORUMA_KUSAGI": {
+   "page": 115,
+   "kind": "cross",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "interval_mm": 7,
+   "size_mm": 3,
+   "text": "YPK"
+  },
+  "UIP/KorumaKusaklari/SAGLIK_KORUMA_BANDI": {
+   "page": 115,
+   "kind": "cross",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "interval_mm": 7,
+   "size_mm": 3,
+   "text": "SKB"
+  },
+  "UIP/KorumaKusaklari/ENERJI_NAKIL_HATTI_KORUMA_KUSAGI": {
+   "page": 116,
+   "kind": "cross",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "interval_mm": 7,
+   "size_mm": 3,
+   "text": "ENH"
+  },
+  "UIP/YeraltiSuKaynakKoruma/*": {
+   "page": 113,
+   "kind": "cross",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "interval_mm": 7,
+   "size_mm": 3,
+   "text": "YSK"
+  },
+  "NIP/YeraltiSuKaynakKoruma/*": {
+   "page": 113,
+   "kind": "cross",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "interval_mm": 7,
+   "size_mm": 3,
+   "text": "YSK"
+  },
+  "CDP/YeraltiSuKaynakKoruma/*": {
+   "page": 113,
+   "kind": "cross",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "interval_mm": 7,
+   "size_mm": 3,
+   "text": "YSK"
+  },
+  "_note_schema_geometri": "Mania Planı Alanı ve Havaalanı Hava Koridoru kataloğu GEOMETRİ TİPİ'ni 'ÇOKLU ÇİZGİ' yazar ama mpyy_schema.json'da ikisi de MultiPolygon; sınır çizgisi gerçekte poligonun kenarıdır, 'vectors' değil 'borders' altında (boundary($geometry) ile).",
+  "UIP/ManiaPlani/*": {
+   "page": 109,
+   "kind": "solid",
+   "color": "0/0/0",
+   "width_mm": 0.4
+  },
+  "NIP/ManiaPlani/*": {
+   "page": 109,
+   "kind": "solid",
+   "color": "0/0/0",
+   "width_mm": 0.4
+  },
+  "CDP/ManiaPlani/*": {
+   "page": 109,
+   "kind": "solid",
+   "color": "0/0/0",
+   "width_mm": 0.4
+  },
+  "UIP/HavaalaniHavaKoridoru/*": {
+   "page": 110,
+   "kind": "cross",
+   "shape": "line",
+   "color": "0/0/0",
+   "width_mm": 0.4,
+   "interval_mm": 7,
+   "size_mm": 3
+  },
+  "NIP/HavaalaniHavaKoridoru/*": {
+   "page": 110,
+   "kind": "cross",
+   "shape": "line",
+   "color": "0/0/0",
+   "width_mm": 0.4,
+   "interval_mm": 7,
+   "size_mm": 3
+  },
+  "UIP/MilliPark/YABAN_HAYATI_KORUMA_GELISTIRME_ALANI": {
+   "page": 87,
+   "kind": "triangle_cluster",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "triangle_mm": 4,
+   "fills": [
+    true
+   ],
+   "gap_mm": 1,
+   "dash_mm": 5
+  },
+  "UIP/MilliPark/MILLI_PARK": {
+   "page": 85,
+   "kind": "triangle_cluster",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "triangle_mm": 4,
+   "fills": [
+    true,
+    true,
+    true
+   ],
+   "gap_mm": 1,
+   "dash_mm": 5
+  },
+  "UIP/MilliPark/TABIAT_PARKI_ALANI": {
+   "page": 86,
+   "kind": "triangle_cluster",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "triangle_mm": 4,
+   "fills": [
+    false,
+    false,
+    false
+   ],
+   "gap_mm": 1,
+   "dash_mm": 5
+  },
+  "UIP/MilliPark/TABIATI_KORUMA_ALANI": {
+   "page": 86,
+   "kind": "triangle_cluster",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "triangle_mm": 4,
+   "fills": [
+    false
+   ],
+   "gap_mm": 2,
+   "dash_mm": 3
+  },
+  "NIP/MilliPark/YABAN_HAYATI_KORUMA_GELISTIRME_ALANI": {
+   "page": 87,
+   "kind": "triangle_cluster",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "triangle_mm": 4,
+   "fills": [
+    true
+   ],
+   "gap_mm": 1,
+   "dash_mm": 5
+  },
+  "NIP/MilliPark/MILLI_PARK": {
+   "page": 85,
+   "kind": "triangle_cluster",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "triangle_mm": 4,
+   "fills": [
+    true,
+    true,
+    true
+   ],
+   "gap_mm": 1,
+   "dash_mm": 5
+  },
+  "NIP/MilliPark/TABIAT_PARKI_ALANI": {
+   "page": 86,
+   "kind": "triangle_cluster",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "triangle_mm": 4,
+   "fills": [
+    false,
+    false,
+    false
+   ],
+   "gap_mm": 1,
+   "dash_mm": 5
+  },
+  "NIP/MilliPark/TABIATI_KORUMA_ALANI": {
+   "page": 86,
+   "kind": "triangle_cluster",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "triangle_mm": 4,
+   "fills": [
+    false
+   ],
+   "gap_mm": 2,
+   "dash_mm": 3
+  },
+  "CDP/MilliPark/YABAN_HAYATI_KORUMA_GELISTIRME_ALANI": {
+   "page": 87,
+   "kind": "triangle_cluster",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "triangle_mm": 3,
+   "fills": [
+    true
+   ],
+   "gap_mm": 1,
+   "dash_mm": 5
+  },
+  "CDP/MilliPark/MILLI_PARK": {
+   "page": 85,
+   "kind": "triangle_cluster",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "triangle_mm": 3,
+   "fills": [
+    true,
+    true,
+    true
+   ],
+   "gap_mm": 1,
+   "dash_mm": 5
+  },
+  "CDP/MilliPark/TABIAT_PARKI_ALANI": {
+   "page": 86,
+   "kind": "triangle_cluster",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "triangle_mm": 3,
+   "fills": [
+    false,
+    false,
+    false
+   ],
+   "gap_mm": 1,
+   "dash_mm": 5
+  },
+  "CDP/MilliPark/TABIATI_KORUMA_ALANI": {
+   "page": 86,
+   "kind": "triangle_cluster",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "triangle_mm": 3,
+   "fills": [
+    false
+   ],
+   "gap_mm": 2,
+   "dash_mm": 3
+  },
+  "UIP/SozlesmeKoruma/*": {
+   "page": 85,
+   "kind": "triangle_cluster",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "triangle_mm": 4,
+   "fills": [
+    false
+   ],
+   "dot_mm": 2,
+   "gap_mm": 4,
+   "dash_mm": 0,
+   "note": "Kataloğun 'X mm aralıklı' ifadesi tek boşluk değeri veriyor; simetrik gap_mm olarak alındı, dash_mm=0 (bağlantı çizgisi yok)."
+  },
+  "NIP/SozlesmeKoruma/*": {
+   "page": 85,
+   "kind": "triangle_cluster",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "triangle_mm": 4,
+   "fills": [
+    false
+   ],
+   "dot_mm": 2,
+   "gap_mm": 4,
+   "dash_mm": 0,
+   "note": "Kataloğun 'X mm aralıklı' ifadesi tek boşluk değeri veriyor; simetrik gap_mm olarak alındı, dash_mm=0 (bağlantı çizgisi yok)."
+  },
+  "CDP/SozlesmeKoruma/*": {
+   "page": 85,
+   "kind": "triangle_cluster",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "triangle_mm": 3,
+   "fills": [
+    false
+   ],
+   "dot_mm": 1,
+   "gap_mm": 4,
+   "dash_mm": 0,
+   "note": "Kataloğun 'X mm aralıklı' ifadesi tek boşluk değeri veriyor; simetrik gap_mm olarak alındı, dash_mm=0 (bağlantı çizgisi yok)."
+  },
+  "UIP/OckBolge/*": {
+   "page": 87,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 1,
+   "dot_mm": 4,
+   "dot_count": 3
+  },
+  "NIP/OckBolge/*": {
+   "page": 87,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 1,
+   "dot_mm": 4,
+   "dot_count": 3
+  },
+  "CDP/OckBolge/*": {
+   "page": 87,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 1,
+   "dot_mm": 3,
+   "dot_count": 3
+  },
+  "UIP/OckHassasAlan/OCK_BOLGESI_HASSAS_ALAN_A": {
+   "page": 88,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 1,
+   "dot_mm": 4,
+   "dot_count": 3,
+   "fills": [
+    false,
+    true,
+    false
+   ]
+  },
+  "UIP/OckHassasAlan/OCK_BOLGESI_HASSAS_ALAN_B": {
+   "page": 88,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 1,
+   "dot_mm": 4,
+   "dot_count": 3,
+   "fills": [
+    false,
+    true,
+    false
+   ]
+  },
+  "UIP/OckHassasAlan/OCK_BOLGESI_HASSAS_ALAN_C": {
+   "page": 88,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 1,
+   "dot_mm": 4,
+   "dot_count": 3,
+   "fills": [
+    false,
+    true,
+    false
+   ]
+  },
+  "NIP/OckHassasAlan/OCK_BOLGESI_HASSAS_ALAN_A": {
+   "page": 88,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 1,
+   "dot_mm": 4,
+   "dot_count": 3,
+   "fills": [
+    false,
+    true,
+    false
+   ]
+  },
+  "NIP/OckHassasAlan/OCK_BOLGESI_HASSAS_ALAN_B": {
+   "page": 88,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 1,
+   "dot_mm": 4,
+   "dot_count": 3,
+   "fills": [
+    false,
+    true,
+    false
+   ]
+  },
+  "NIP/OckHassasAlan/OCK_BOLGESI_HASSAS_ALAN_C": {
+   "page": 88,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 1,
+   "dot_mm": 4,
+   "dot_count": 3,
+   "fills": [
+    false,
+    true,
+    false
+   ]
+  },
+  "CDP/OckHassasAlan/OCK_BOLGESI_HASSAS_ALAN_A": {
+   "page": 88,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 1,
+   "dot_mm": 3,
+   "dot_count": 3,
+   "fills": [
+    false,
+    true,
+    false
+   ]
+  },
+  "CDP/OckHassasAlan/OCK_BOLGESI_HASSAS_ALAN_B": {
+   "page": 88,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 1,
+   "dot_mm": 3,
+   "dot_count": 3,
+   "fills": [
+    false,
+    true,
+    false
+   ]
+  },
+  "CDP/OckHassasAlan/OCK_BOLGESI_HASSAS_ALAN_C": {
+   "page": 88,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_mm": 1,
+   "dot_mm": 3,
+   "dot_count": 3,
+   "fills": [
+    false,
+    true,
+    false
+   ]
+  },
+  "UIP/OzelEkosistem/FLORA_FAUNA": {
+   "page": 89,
+   "kind": "triangle_cluster",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "triangle_mm": 4,
+   "fills": [
+    false,
+    false,
+    false
+   ],
+   "dot_mm": 2,
+   "gap_mm": 1,
+   "dash_mm": 7
+  },
+  "UIP/OzelEkosistem/EKOLOJIK_KORUMA": {
+   "page": 90,
+   "kind": "triangle_cluster",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "triangle_mm": 4,
+   "fills": [
+    false,
+    false,
+    false
+   ],
+   "dot_mm": 2,
+   "gap_mm": 1,
+   "dash_mm": 7
+  },
+  "NIP/OzelEkosistem/FLORA_FAUNA": {
+   "page": 89,
+   "kind": "triangle_cluster",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "triangle_mm": 4,
+   "fills": [
+    false,
+    false,
+    false
+   ],
+   "dot_mm": 2,
+   "gap_mm": 1,
+   "dash_mm": 7
+  },
+  "NIP/OzelEkosistem/EKOLOJIK_KORUMA": {
+   "page": 90,
+   "kind": "triangle_cluster",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "triangle_mm": 4,
+   "fills": [
+    false,
+    false,
+    false
+   ],
+   "dot_mm": 2,
+   "gap_mm": 1,
+   "dash_mm": 7
+  },
+  "CDP/OzelEkosistem/FLORA_FAUNA": {
+   "page": 89,
+   "kind": "triangle_cluster",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "triangle_mm": 3,
+   "fills": [
+    false,
+    false,
+    false
+   ],
+   "dot_mm": 2,
+   "gap_mm": 1,
+   "dash_mm": 7
+  },
+  "CDP/OzelEkosistem/EKOLOJIK_KORUMA": {
+   "page": 90,
+   "kind": "triangle_cluster",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "triangle_mm": 3,
+   "fills": [
+    false,
+    false,
+    false
+   ],
+   "dot_mm": 2,
+   "gap_mm": 1,
+   "dash_mm": 7
+  },
+  "UIP/YoreselMimariKoruma/*": {
+   "page": 92,
+   "kind": "circles",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "circle_mm": 5.5,
+   "inner_mm": 3,
+   "inner_filled": true,
+   "continuous": true,
+   "gap_mm": 1.5,
+   "note": "Katalog '7 mm aralıkla' diyor, toplam tekrar mesafesi olarak okundu (gap_mm = 7 - circle_mm)."
+  },
+  "UIP/IcmeKullanmaSuyuKoruma/MUTLAK_KORUMA_ALANI": {
+   "page": 102,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 7,
+   "gap_mm": 2,
+   "dot_mm": 2,
+   "dot_count": 4,
+   "dot_spacing_mm": 0,
+   "fills": [
+    false,
+    false,
+    false,
+    false
+   ],
+   "inner_dot_mm": 0.5,
+   "note": "İç nokta çapı katalogda verilmiyor ('içi noktalı daire'); okunaklı bir küçük değer (0.5mm) alındı."
+  },
+  "UIP/IcmeKullanmaSuyuKoruma/KISA_MESAFELI_KORUMA_ALANI": {
+   "page": 102,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 7,
+   "gap_mm": 2,
+   "dot_mm": 2,
+   "dot_count": 3,
+   "dot_spacing_mm": 0,
+   "fills": [
+    false,
+    false,
+    false
+   ],
+   "inner_dot_mm": 0.5,
+   "note": "İç nokta çapı katalogda verilmiyor ('içi noktalı daire'); okunaklı bir küçük değer (0.5mm) alındı."
+  },
+  "UIP/IcmeKullanmaSuyuKoruma/ORTA_MESAFELI_KORUMA_ALANI": {
+   "page": 103,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 7,
+   "gap_mm": 2,
+   "dot_mm": 2,
+   "dot_count": 2,
+   "dot_spacing_mm": 0,
+   "fills": [
+    false,
+    false
+   ],
+   "inner_dot_mm": 0.5,
+   "note": "İç nokta çapı katalogda verilmiyor ('içi noktalı daire'); okunaklı bir küçük değer (0.5mm) alındı."
+  },
+  "UIP/IcmeKullanmaSuyuKoruma/UZUN_MESAFELI_KORUMA_ALANI": {
+   "page": 103,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 7,
+   "gap_mm": 2,
+   "dot_mm": 2,
+   "dot_count": 1,
+   "dot_spacing_mm": 0,
+   "fills": [
+    false
+   ],
+   "inner_dot_mm": 0.5,
+   "note": "İç nokta çapı katalogda verilmiyor ('içi noktalı daire'); okunaklı bir küçük değer (0.5mm) alındı."
+  },
+  "NIP/IcmeKullanmaSuyuKoruma/MUTLAK_KORUMA_ALANI": {
+   "page": 102,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 7,
+   "gap_mm": 2,
+   "dot_mm": 2,
+   "dot_count": 4,
+   "dot_spacing_mm": 0,
+   "fills": [
+    false,
+    false,
+    false,
+    false
+   ],
+   "inner_dot_mm": 0.5,
+   "note": "İç nokta çapı katalogda verilmiyor ('içi noktalı daire'); okunaklı bir küçük değer (0.5mm) alındı."
+  },
+  "NIP/IcmeKullanmaSuyuKoruma/KISA_MESAFELI_KORUMA_ALANI": {
+   "page": 102,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 7,
+   "gap_mm": 2,
+   "dot_mm": 2,
+   "dot_count": 3,
+   "dot_spacing_mm": 0,
+   "fills": [
+    false,
+    false,
+    false
+   ],
+   "inner_dot_mm": 0.5,
+   "note": "İç nokta çapı katalogda verilmiyor ('içi noktalı daire'); okunaklı bir küçük değer (0.5mm) alındı."
+  },
+  "NIP/IcmeKullanmaSuyuKoruma/ORTA_MESAFELI_KORUMA_ALANI": {
+   "page": 103,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 7,
+   "gap_mm": 2,
+   "dot_mm": 2,
+   "dot_count": 2,
+   "dot_spacing_mm": 0,
+   "fills": [
+    false,
+    false
+   ],
+   "inner_dot_mm": 0.5,
+   "note": "İç nokta çapı katalogda verilmiyor ('içi noktalı daire'); okunaklı bir küçük değer (0.5mm) alındı."
+  },
+  "NIP/IcmeKullanmaSuyuKoruma/UZUN_MESAFELI_KORUMA_ALANI": {
+   "page": 103,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 7,
+   "gap_mm": 2,
+   "dot_mm": 2,
+   "dot_count": 1,
+   "dot_spacing_mm": 0,
+   "fills": [
+    false
+   ],
+   "inner_dot_mm": 0.5,
+   "note": "İç nokta çapı katalogda verilmiyor ('içi noktalı daire'); okunaklı bir küçük değer (0.5mm) alındı."
+  },
+  "CDP/IcmeKullanmaSuyuKoruma/MUTLAK_KORUMA_ALANI": {
+   "page": 102,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 7,
+   "gap_mm": 2,
+   "dot_mm": 2,
+   "dot_count": 4,
+   "dot_spacing_mm": 0,
+   "fills": [
+    false,
+    false,
+    false,
+    false
+   ],
+   "inner_dot_mm": 0.5,
+   "note": "İç nokta çapı katalogda verilmiyor ('içi noktalı daire'); okunaklı bir küçük değer (0.5mm) alındı."
+  },
+  "CDP/IcmeKullanmaSuyuKoruma/KISA_MESAFELI_KORUMA_ALANI": {
+   "page": 102,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 7,
+   "gap_mm": 2,
+   "dot_mm": 2,
+   "dot_count": 3,
+   "dot_spacing_mm": 0,
+   "fills": [
+    false,
+    false,
+    false
+   ],
+   "inner_dot_mm": 0.5,
+   "note": "İç nokta çapı katalogda verilmiyor ('içi noktalı daire'); okunaklı bir küçük değer (0.5mm) alındı."
+  },
+  "CDP/IcmeKullanmaSuyuKoruma/ORTA_MESAFELI_KORUMA_ALANI": {
+   "page": 103,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 7,
+   "gap_mm": 2,
+   "dot_mm": 2,
+   "dot_count": 2,
+   "dot_spacing_mm": 0,
+   "fills": [
+    false,
+    false
+   ],
+   "inner_dot_mm": 0.5,
+   "note": "İç nokta çapı katalogda verilmiyor ('içi noktalı daire'); okunaklı bir küçük değer (0.5mm) alındı."
+  },
+  "CDP/IcmeKullanmaSuyuKoruma/UZUN_MESAFELI_KORUMA_ALANI": {
+   "page": 103,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 7,
+   "gap_mm": 2,
+   "dot_mm": 2,
+   "dot_count": 1,
+   "dot_spacing_mm": 0,
+   "fills": [
+    false
+   ],
+   "inner_dot_mm": 0.5,
+   "note": "İç nokta çapı katalogda verilmiyor ('içi noktalı daire'); okunaklı bir küçük değer (0.5mm) alındı."
+  },
+  "UIP/SulakAlan/SULAK_ALAN_SINIRI": {
+   "page": 104,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_before_mm": 0,
+   "gap_after_mm": 0,
+   "dot_mm": 1,
+   "dot_count": 2,
+   "dot_spacing_mm": 0,
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
+  },
+  "UIP/SulakAlan/SULAK_ALAN_BOLGESI": {
+   "page": 104,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_before_mm": 0,
+   "gap_after_mm": 0,
+   "dot_mm": 1,
+   "dot_count": 2,
+   "dot_spacing_mm": 0,
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
+  },
+  "UIP/SulakAlan/SULAK_ALAN_TAMPON_BOLGESI": {
+   "page": 105,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_before_mm": 0.5,
+   "gap_after_mm": 0.5,
+   "dot_mm": 1,
+   "dot_count": 1,
+   "dot_spacing_mm": 0,
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
+  },
+  "UIP/SulakAlan/SULAK_ALAN_EKOLOJIK_ETKILENME_BOLGESI": {
+   "page": 105,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_before_mm": 1,
+   "gap_after_mm": 1,
+   "dot_mm": 1,
+   "dot_count": 3,
+   "dot_spacing_mm": 0,
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
+  },
+  "UIP/SulakAlan/SULAK_ALAN_OZEL_HUKUM_BOLGESI": {
+   "page": 106,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_before_mm": 0.5,
+   "gap_after_mm": 0.5,
+   "dot_mm": 1,
+   "dot_count": 1,
+   "dot_spacing_mm": 0,
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
+  },
+  "UIP/SulakAlan/SULAK_ALAN_MUTLAK_KORUMA_BOLGESI": {
+   "page": 106,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_before_mm": 0.5,
+   "gap_after_mm": 0.5,
+   "dot_mm": 1,
+   "dot_count": 1,
+   "dot_spacing_mm": 0,
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
+  },
+  "NIP/SulakAlan/SULAK_ALAN_SINIRI": {
+   "page": 104,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_before_mm": 0,
+   "gap_after_mm": 0,
+   "dot_mm": 1,
+   "dot_count": 2,
+   "dot_spacing_mm": 0,
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
+  },
+  "NIP/SulakAlan/SULAK_ALAN_BOLGESI": {
+   "page": 104,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_before_mm": 0,
+   "gap_after_mm": 0,
+   "dot_mm": 1,
+   "dot_count": 2,
+   "dot_spacing_mm": 0,
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
+  },
+  "NIP/SulakAlan/SULAK_ALAN_TAMPON_BOLGESI": {
+   "page": 105,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_before_mm": 0.5,
+   "gap_after_mm": 0.5,
+   "dot_mm": 1,
+   "dot_count": 1,
+   "dot_spacing_mm": 0,
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
+  },
+  "NIP/SulakAlan/SULAK_ALAN_EKOLOJIK_ETKILENME_BOLGESI": {
+   "page": 105,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_before_mm": 1,
+   "gap_after_mm": 1,
+   "dot_mm": 1,
+   "dot_count": 3,
+   "dot_spacing_mm": 0,
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
+  },
+  "NIP/SulakAlan/SULAK_ALAN_OZEL_HUKUM_BOLGESI": {
+   "page": 106,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_before_mm": 0.5,
+   "gap_after_mm": 0.5,
+   "dot_mm": 1,
+   "dot_count": 1,
+   "dot_spacing_mm": 0,
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
+  },
+  "NIP/SulakAlan/SULAK_ALAN_MUTLAK_KORUMA_BOLGESI": {
+   "page": 106,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_before_mm": 0.5,
+   "gap_after_mm": 0.5,
+   "dot_mm": 1,
+   "dot_count": 1,
+   "dot_spacing_mm": 0,
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
+  },
+  "CDP/SulakAlan/SULAK_ALAN_SINIRI": {
+   "page": 104,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_before_mm": 0,
+   "gap_after_mm": 0,
+   "dot_mm": 1,
+   "dot_count": 2,
+   "dot_spacing_mm": 0,
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
+  },
+  "CDP/SulakAlan/SULAK_ALAN_BOLGESI": {
+   "page": 104,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_before_mm": 0,
+   "gap_after_mm": 0,
+   "dot_mm": 1,
+   "dot_count": 2,
+   "dot_spacing_mm": 0,
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
+  },
+  "CDP/SulakAlan/SULAK_ALAN_TAMPON_BOLGESI": {
+   "page": 105,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_before_mm": 0.5,
+   "gap_after_mm": 0.5,
+   "dot_mm": 1,
+   "dot_count": 1,
+   "dot_spacing_mm": 0,
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
+  },
+  "CDP/SulakAlan/SULAK_ALAN_EKOLOJIK_ETKILENME_BOLGESI": {
+   "page": 105,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_before_mm": 1,
+   "gap_after_mm": 1,
+   "dot_mm": 1,
+   "dot_count": 3,
+   "dot_spacing_mm": 0,
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
+  },
+  "CDP/SulakAlan/SULAK_ALAN_OZEL_HUKUM_BOLGESI": {
+   "page": 106,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_before_mm": 0.5,
+   "gap_after_mm": 0.5,
+   "dot_mm": 1,
+   "dot_count": 1,
+   "dot_spacing_mm": 0,
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
+  },
+  "CDP/SulakAlan/SULAK_ALAN_MUTLAK_KORUMA_BOLGESI": {
+   "page": 106,
+   "kind": "dots",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "dash_mm": 5,
+   "gap_before_mm": 0.5,
+   "gap_after_mm": 0.5,
+   "dot_mm": 1,
+   "dot_count": 3,
+   "dot_spacing_mm": 0,
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
+  },
+  "UIP/TunelEtkiAlani/UIP_TUNEL_ETKI_ALANI": {
+   "kind": "cross",
+   "page": 175,
+   "color": "245/122/122",
+   "width_mm": 0.3,
+   "shape": "cross2",
+   "size_mm": 3.0,
+   "interval_mm": 7.0,
+   "text": "TEA"
+  },
+  "UIP/AfetTehlikeliAlanlar/KENTSEL_RISK_ALANI": {
+   "kind": "dashed",
+   "page": 189,
+   "color": "0/0/0",
+   "width_mm": 0.4,
+   "dash_mm": 2.0,
+   "gap_mm": 2.0
+  },
+  "NIP/AfetTehlikeliAlanlar/KENTSEL_RISK_ALANI": {
+   "kind": "dashed",
+   "page": 189,
+   "color": "0/0/0",
+   "width_mm": 0.4,
+   "dash_mm": 2.0,
+   "gap_mm": 2.0
+  },
+  "UIP/AfetTehlikeliAlanlar/YAPI_YASAKLI_ALAN": {
+   "kind": "dashed",
+   "page": 144,
+   "color": "0/0/0",
+   "width_mm": 0.4,
+   "dash_mm": 2.0,
+   "gap_mm": 2.0
+  },
+  "NIP/AfetTehlikeliAlanlar/YAPI_YASAKLI_ALAN": {
+   "kind": "dashed",
+   "page": 144,
+   "color": "0/0/0",
+   "width_mm": 0.4,
+   "dash_mm": 2.0,
+   "gap_mm": 2.0
+  },
+  "UIP/AfetTehlikeliAlanlar/TSUNAMI_RISKLI_ALAN": {
+   "kind": "triangle_cluster",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "triangle_mm": 3.0,
+   "gap_mm": 2.0,
+   "fills": [
+    false
+   ],
+   "page": 189
+  },
+  "NIP/AfetTehlikeliAlanlar/TSUNAMI_RISKLI_ALAN": {
+   "kind": "triangle_cluster",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "triangle_mm": 3.0,
+   "gap_mm": 2.0,
+   "fills": [
+    false
+   ],
+   "page": 189
+  },
+  "UIP/AfetTehlikeliAlanlar/KUTLE_HAREKETI_RISKLI_ALAN": {
+   "kind": "triangle_cluster",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "triangle_mm": 3.0,
+   "gap_mm": 2.0,
+   "fills": [
+    false
+   ],
+   "page": 190
+  },
+  "NIP/AfetTehlikeliAlanlar/KUTLE_HAREKETI_RISKLI_ALAN": {
+   "kind": "triangle_cluster",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "triangle_mm": 3.0,
+   "gap_mm": 2.0,
+   "fills": [
+    false
+   ],
+   "page": 190
+  },
+  "UIP/AfetTehlikeliAlanlar/FAY_SAKINIM_ZONU_ALANI": {
+   "kind": "triangle_cluster",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "triangle_mm": 3.0,
+   "gap_mm": 2.0,
+   "fills": [
+    false
+   ],
+   "page": 191
+  },
+  "NIP/AfetTehlikeliAlanlar/FAY_SAKINIM_ZONU_ALANI": {
+   "kind": "triangle_cluster",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "triangle_mm": 3.0,
+   "gap_mm": 2.0,
+   "fills": [
+    false
+   ],
+   "page": 191
+  },
+  "UIP/AfetTehlikeliAlanlar/TASKINA_MARUZ_ALAN": {
+   "kind": "triangle_cluster",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "triangle_mm": 3.0,
+   "gap_mm": 2.0,
+   "fills": [
+    false
+   ],
+   "page": 145
+  },
+  "NIP/AfetTehlikeliAlanlar/TASKINA_MARUZ_ALAN": {
+   "kind": "triangle_cluster",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "triangle_mm": 3.0,
+   "gap_mm": 2.0,
+   "fills": [
+    false
+   ],
+   "page": 145
+  },
+  "UIP/AfetTehlikeliAlanlar/HEYELAN_ALANI": {
+   "kind": "triangle_cluster",
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "triangle_mm": 3.0,
+   "gap_mm": 2.0,
+   "fills": [
+    false
+   ],
+   "page": 146
+  },
+  "NIP/AfetTehlikeliAlanlar/AFETE_MARUZ_BOLGE": {
+   "kind": "triangle_cluster",
+   "page": 145,
+   "color": "255/0/0",
+   "width_mm": 0.3,
+   "triangle_mm": 3.0,
+   "triangle_spacing_mm": 1.0,
+   "gap_mm": 7.0,
+   "fills": [
+    false,
+    false,
+    false
+   ]
+  },
+  "UIP/SulamaHatti/UIP_SULAMA_HATTI": {
+   "kind": "cross",
+   "page": 99,
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "shape": "line",
+   "size_mm": 3.0,
+   "interval_mm": 15.0
+  },
+  "NIP/SulamaHatti/NIP_SULAMA_HATTI": {
+   "kind": "cross",
+   "page": 99,
+   "color": "0/0/0",
+   "width_mm": 0.3,
+   "shape": "line",
+   "size_mm": 3.0,
+   "interval_mm": 15.0
+  }
+ },
+ "_note_ulasim_skips": "Tunel/Kopru/Yaya Ust-Alt Gecidi (KARAYOLLARI, s.154-156) ve Bolunmus Tasit Yolu/Tasit Yolu (s.150-151): katalog 'gercek olculeri ile cizilir' diyor, kodlanacak bir olcu yok. Enerji Nakil Hatti (s.182): '30 derece acili sekildeki obje' zigzag'in genligi/adim sayisi katalogda verilmiyor, sadace acisi ve aralik mesafesi (10/20/30mm) -- guvenilir bicimde kodlanamaz, SLD varsayilaninda birakildi.",
+ "_note_afet_onlemli_alan": "Onlemli Alan (s.146, AFET TEHLIKELI ALANLAR): katalogda UIP/NIP olcusu var (1mm aralikli 2'li ucgen kumesi, 7mm bosluk) ama UIP/NIP AfetTehlikeliAlanlar.sld'de eslesen bir kural yok -- kodlanacak bir SLD rule'u yok, atlandi.",
+ "_note_sulama_kiyi_tesis_skip": "Sulama Alani (s.99, CDP-only) ve Kiyi Tesisleri Alani (CDP-only): katalogda olcu var ama SulamaAlani/KiyiTesisleriAlani icin hicbir seviyede SLD dosyasi yok -- eklenecek bir kural yok, atlandi."
+}

@@ -10,3 +10,7 @@ tools
 docs
 .github
 benchmarks
+
+# Draft PlanGML writer: not conformant with the Ministry XSD 1.1.7 and not
+# reachable from the dock (see its module docstring). Kept in the repo, not shipped.
+core/plangml_export.py

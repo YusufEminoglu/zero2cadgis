@@ -1,0 +1,2746 @@
+{
+  "version": 1,
+  "source_sha256": "63c796d081d0f099edd8ac87e7e1362412ad8f46db86506b90ed1ae307b94c28",
+  "rows": [
+    {
+      "source_fid": 1,
+      "ust_grup_kodu": 101000,
+      "ust_grup_adi": "AÇIK VE YEŞİL ALANLAR",
+      "fonksiyon_kodu": 101001,
+      "fonksiyon_adi": "AĞAÇLANDIRILACAK ALAN",
+      "detay_kodu": 101001,
+      "tabaka_adi": "PL_AGACLANDIRILACAK",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 2,
+      "ust_grup_kodu": 101000,
+      "ust_grup_adi": "AÇIK VE YEŞİL ALANLAR",
+      "fonksiyon_kodu": 101002,
+      "fonksiyon_adi": "ARBORETUM - BOTANİK PARKI",
+      "detay_kodu": 101002,
+      "tabaka_adi": "PL_ARBORETUM_ALANI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 3,
+      "ust_grup_kodu": 101000,
+      "ust_grup_adi": "AÇIK VE YEŞİL ALANLAR",
+      "fonksiyon_kodu": 101003,
+      "fonksiyon_adi": "ÇOCUK BAHÇESİ VE OYUN ALANI",
+      "detay_kodu": 101003,
+      "tabaka_adi": "PL_COCUK_BAHCESI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 4,
+      "ust_grup_kodu": 101000,
+      "ust_grup_adi": "AÇIK VE YEŞİL ALANLAR",
+      "fonksiyon_kodu": 101004,
+      "fonksiyon_adi": "FUAR, PANAYIR VE FESTİVAL ALANI",
+      "detay_kodu": 101004,
+      "tabaka_adi": "PL_FUAR",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 5,
+      "ust_grup_kodu": 101000,
+      "ust_grup_adi": "AÇIK VE YEŞİL ALANLAR",
+      "fonksiyon_kodu": 101005,
+      "fonksiyon_adi": "HAYVANAT BAHÇESİ",
+      "detay_kodu": 101005,
+      "tabaka_adi": "PL_HAYVANAT_BAHCESI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 6,
+      "ust_grup_kodu": 101000,
+      "ust_grup_adi": "AÇIK VE YEŞİL ALANLAR",
+      "fonksiyon_kodu": 101006,
+      "fonksiyon_adi": "HİPODROM",
+      "detay_kodu": 101006,
+      "tabaka_adi": "PL_HIPODROM",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 7,
+      "ust_grup_kodu": 101000,
+      "ust_grup_adi": "AÇIK VE YEŞİL ALANLAR",
+      "fonksiyon_kodu": 101007,
+      "fonksiyon_adi": "KENT ORMANI",
+      "detay_kodu": 101007,
+      "tabaka_adi": "PL_KENT_ORMANI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 8,
+      "ust_grup_kodu": 101000,
+      "ust_grup_adi": "AÇIK VE YEŞİL ALANLAR",
+      "fonksiyon_kodu": 101008,
+      "fonksiyon_adi": "KORUNACAK BAHÇE",
+      "detay_kodu": 101008,
+      "tabaka_adi": "PL_KORUNACAK_BAHCE",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 9,
+      "ust_grup_kodu": 101000,
+      "ust_grup_adi": "AÇIK VE YEŞİL ALANLAR",
+      "fonksiyon_kodu": 101009,
+      "fonksiyon_adi": "MESİRE YERİ",
+      "detay_kodu": 101009,
+      "tabaka_adi": "PL_MESIRE_YERI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 10,
+      "ust_grup_kodu": 101000,
+      "ust_grup_adi": "AÇIK VE YEŞİL ALANLAR",
+      "fonksiyon_kodu": 101010,
+      "fonksiyon_adi": "MEYDAN",
+      "detay_kodu": 101010,
+      "tabaka_adi": "PL_MEYDAN",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 11,
+      "ust_grup_kodu": 101000,
+      "ust_grup_adi": "AÇIK VE YEŞİL ALANLAR",
+      "fonksiyon_kodu": 101011,
+      "fonksiyon_adi": "MEZARLIK ALANI",
+      "detay_kodu": 101011,
+      "tabaka_adi": "PL_MEZARLIK",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 12,
+      "ust_grup_kodu": 101000,
+      "ust_grup_adi": "AÇIK VE YEŞİL ALANLAR",
+      "fonksiyon_kodu": 101012,
+      "fonksiyon_adi": "MİLLET BAHÇESİ",
+      "detay_kodu": 101012,
+      "tabaka_adi": "PL_MILLET_BAHCESI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 13,
+      "ust_grup_kodu": 101000,
+      "ust_grup_adi": "AÇIK VE YEŞİL ALANLAR",
+      "fonksiyon_kodu": 101013,
+      "fonksiyon_adi": "PARK",
+      "detay_kodu": 101013,
+      "tabaka_adi": "PL_PARK",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 14,
+      "ust_grup_kodu": 101000,
+      "ust_grup_adi": "AÇIK VE YEŞİL ALANLAR",
+      "fonksiyon_kodu": 101014,
+      "fonksiyon_adi": "PASİF YEŞİL ALAN",
+      "detay_kodu": 101014,
+      "tabaka_adi": "PL_PASIF_YESIL",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 15,
+      "ust_grup_kodu": 101000,
+      "ust_grup_adi": "AÇIK VE YEŞİL ALANLAR",
+      "fonksiyon_kodu": 101015,
+      "fonksiyon_adi": "REKREASYON ALANI",
+      "detay_kodu": 101015,
+      "tabaka_adi": "PL_REKREASYON",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 16,
+      "ust_grup_kodu": 101000,
+      "ust_grup_adi": "AÇIK VE YEŞİL ALANLAR",
+      "fonksiyon_kodu": 101016,
+      "fonksiyon_adi": "REKREAKTİF ALAN",
+      "detay_kodu": 101016,
+      "tabaka_adi": "PL_REKREATIF_ALAN",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 17,
+      "ust_grup_kodu": 101000,
+      "ust_grup_adi": "AÇIK VE YEŞİL ALANLAR",
+      "fonksiyon_kodu": 101017,
+      "fonksiyon_adi": "BAKI VE SEYİR TERASI",
+      "detay_kodu": 101017,
+      "tabaka_adi": "PL_SEYIR_TERASI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 18,
+      "ust_grup_kodu": 102000,
+      "ust_grup_adi": "AFET TEHLİKELİ ALANLAR",
+      "fonksiyon_kodu": 102001,
+      "fonksiyon_adi": "HEYELAN ALANI",
+      "detay_kodu": 102001,
+      "tabaka_adi": "KST_HEYELAN",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 19,
+      "ust_grup_kodu": 102000,
+      "ust_grup_adi": "AFET TEHLİKELİ ALANLAR",
+      "fonksiyon_kodu": 102002,
+      "fonksiyon_adi": "ÖNLEMLİ ALAN",
+      "detay_kodu": 102002,
+      "tabaka_adi": "KST_ONLEMLI_ALAN",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 20,
+      "ust_grup_kodu": 102000,
+      "ust_grup_adi": "AFET TEHLİKELİ ALANLAR",
+      "fonksiyon_kodu": 102003,
+      "fonksiyon_adi": "TAŞKINA MARUZ ALAN",
+      "detay_kodu": 102003,
+      "tabaka_adi": "KST_TASKIN",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 21,
+      "ust_grup_kodu": 102000,
+      "ust_grup_adi": "AFET TEHLİKELİ ALANLAR",
+      "fonksiyon_kodu": 102004,
+      "fonksiyon_adi": "YAPI YASAKLI ALAN",
+      "detay_kodu": 102004,
+      "tabaka_adi": "KST_YAPI_YASAK",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 22,
+      "ust_grup_kodu": 103000,
+      "ust_grup_adi": "BUGÜNKÜ ARAZİ KULLANIMI DEVAM ETTİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 103001,
+      "fonksiyon_adi": "AKDENİZ FOKU YAŞAM ALANI",
+      "detay_kodu": 103001,
+      "tabaka_adi": "PL_AKDENIZ_FOKU_YASA",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 23,
+      "ust_grup_kodu": 103000,
+      "ust_grup_adi": "BUGÜNKÜ ARAZİ KULLANIMI DEVAM ETTİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 103002,
+      "fonksiyon_adi": "DENİZ KAPLUMBAĞALARI ÜREME VE KORUMA ALANI",
+      "detay_kodu": 103002,
+      "tabaka_adi": "PL_DENIZ_KAPLM_KORU",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 24,
+      "ust_grup_kodu": 103000,
+      "ust_grup_adi": "BUGÜNKÜ ARAZİ KULLANIMI DEVAM ETTİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 103003,
+      "fonksiyon_adi": "DOĞAL KARAKTERİ KORUNACAK ALAN",
+      "detay_kodu": 103003,
+      "tabaka_adi": "PL_DOGAL_KARKT_KORU",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 25,
+      "ust_grup_kodu": 103000,
+      "ust_grup_adi": "BUGÜNKÜ ARAZİ KULLANIMI DEVAM ETTİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 103004,
+      "fonksiyon_adi": "KUMSAL-PLAJ",
+      "detay_kodu": 103004,
+      "tabaka_adi": "PL_KUMSAL_PLAJ",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 26,
+      "ust_grup_kodu": 103000,
+      "ust_grup_adi": "BUGÜNKÜ ARAZİ KULLANIMI DEVAM ETTİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 103005,
+      "fonksiyon_adi": "MAKİLİK- FUNDALIK ALAN",
+      "detay_kodu": 103005,
+      "tabaka_adi": "PL_MAKI_FUNDA",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 27,
+      "ust_grup_kodu": 103000,
+      "ust_grup_adi": "BUGÜNKÜ ARAZİ KULLANIMI DEVAM ETTİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 103006,
+      "fonksiyon_adi": "MERA ALANI",
+      "detay_kodu": 103006,
+      "tabaka_adi": "PL_MERA_ALANI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 28,
+      "ust_grup_kodu": 103000,
+      "ust_grup_adi": "BUGÜNKÜ ARAZİ KULLANIMI DEVAM ETTİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 103007,
+      "fonksiyon_adi": "ORGANİK TARIM ALANI",
+      "detay_kodu": 103007,
+      "tabaka_adi": "PL_ORGANIK_TARIM",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 29,
+      "ust_grup_kodu": 103000,
+      "ust_grup_adi": "BUGÜNKÜ ARAZİ KULLANIMI DEVAM ETTİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 103008,
+      "fonksiyon_adi": "ORMAN ALANI",
+      "detay_kodu": 103008,
+      "tabaka_adi": "PL_ORMAN_ALANI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 30,
+      "ust_grup_kodu": 103000,
+      "ust_grup_adi": "BUGÜNKÜ ARAZİ KULLANIMI DEVAM ETTİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 103009,
+      "fonksiyon_adi": "ÖRTÜ ALTI TARIM ARAZİSİ",
+      "detay_kodu": 103009,
+      "tabaka_adi": "PL_ORTU_ALTI_TARIM",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 31,
+      "ust_grup_kodu": 103000,
+      "ust_grup_adi": "BUGÜNKÜ ARAZİ KULLANIMI DEVAM ETTİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 103010,
+      "fonksiyon_adi": "TARIMSAL NİTELİKLİ ALAN",
+      "detay_kodu": 103010,
+      "tabaka_adi": "PL_TARIMSAL_ALAN",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 32,
+      "ust_grup_kodu": 103000,
+      "ust_grup_adi": "BUGÜNKÜ ARAZİ KULLANIMI DEVAM ETTİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 103011,
+      "fonksiyon_adi": "ZEYTİNLİK ALAN",
+      "detay_kodu": 103011,
+      "tabaka_adi": "PL_ZEYTINLIK_ALAN",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 33,
+      "ust_grup_kodu": 104000,
+      "ust_grup_adi": "DEMİRYOLLARI",
+      "fonksiyon_kodu": 104001,
+      "fonksiyon_adi": "ANA İSTASYON (GAR)",
+      "detay_kodu": 104001,
+      "tabaka_adi": "PL_ANA_ISTASYON",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 34,
+      "ust_grup_kodu": 104000,
+      "ust_grup_adi": "DEMİRYOLLARI",
+      "fonksiyon_kodu": 104002,
+      "fonksiyon_adi": "ARA İSTASYON",
+      "detay_kodu": 104002,
+      "tabaka_adi": "PL_ARA_ISTASYON",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 35,
+      "ust_grup_kodu": 120000,
+      "ust_grup_adi": "DENİZYOLLARI",
+      "fonksiyon_kodu": 120001,
+      "fonksiyon_adi": "BALIKÇI BARINAĞI",
+      "detay_kodu": 120001,
+      "tabaka_adi": "PL_BALIKCI_BARINAK",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 36,
+      "ust_grup_kodu": 120000,
+      "ust_grup_adi": "DENİZYOLLARI",
+      "fonksiyon_kodu": 120002,
+      "fonksiyon_adi": "BARINAK",
+      "detay_kodu": 120002,
+      "tabaka_adi": "PL_BARINAK",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 37,
+      "ust_grup_kodu": 120000,
+      "ust_grup_adi": "DENİZYOLLARI",
+      "fonksiyon_kodu": 120003,
+      "fonksiyon_adi": "TEKNE İMAL VE ÇEKEK YERİ",
+      "detay_kodu": 120003,
+      "tabaka_adi": "PL_CEKEK_YERI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 38,
+      "ust_grup_kodu": 120000,
+      "ust_grup_adi": "DENİZYOLLARI",
+      "fonksiyon_kodu": 120004,
+      "fonksiyon_adi": "DOLFEN/PLATFORM",
+      "detay_kodu": 120004,
+      "tabaka_adi": "PL_DOLFEN_PLATFORM",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 39,
+      "ust_grup_kodu": 120000,
+      "ust_grup_adi": "DENİZYOLLARI",
+      "fonksiyon_kodu": 120005,
+      "fonksiyon_adi": "GEMİ SÖKÜM YERİ",
+      "detay_kodu": 120005,
+      "tabaka_adi": "PL_GEMI_SOKUM",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 40,
+      "ust_grup_kodu": 120000,
+      "ust_grup_adi": "DENİZYOLLARI",
+      "fonksiyon_kodu": 120006,
+      "fonksiyon_adi": "DENİZ İNİŞ RAMPASI",
+      "detay_kodu": 120006,
+      "tabaka_adi": "PL_INIS_RAMPA",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 41,
+      "ust_grup_kodu": 120000,
+      "ust_grup_adi": "DENİZYOLLARI",
+      "fonksiyon_kodu": 120007,
+      "fonksiyon_adi": "İSKELE",
+      "detay_kodu": 120007,
+      "tabaka_adi": "PL_ISKELE",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 42,
+      "ust_grup_kodu": 120000,
+      "ust_grup_adi": "DENİZYOLLARI",
+      "fonksiyon_kodu": 120008,
+      "fonksiyon_adi": "KIYI KORUMA YAPILARI",
+      "detay_kodu": 120008,
+      "tabaka_adi": "PL_KIYI_KORUMA",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 43,
+      "ust_grup_kodu": 120000,
+      "ust_grup_adi": "DENİZYOLLARI",
+      "fonksiyon_kodu": 120009,
+      "fonksiyon_adi": "KONTEYNER LİMANI",
+      "detay_kodu": 120009,
+      "tabaka_adi": "PL_KONTEYNER_LIMAN",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 44,
+      "ust_grup_kodu": 120000,
+      "ust_grup_adi": "DENİZYOLLARI",
+      "fonksiyon_kodu": 120010,
+      "fonksiyon_adi": "KRUVAZİYER LİMANI",
+      "detay_kodu": 120010,
+      "tabaka_adi": "PL_KRUVAZIYER_LIMAN",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 45,
+      "ust_grup_kodu": 120000,
+      "ust_grup_adi": "DENİZYOLLARI",
+      "fonksiyon_kodu": 120011,
+      "fonksiyon_adi": "MAHMUZ",
+      "detay_kodu": 120011,
+      "tabaka_adi": "PL_MAHMUZ",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 46,
+      "ust_grup_kodu": 120000,
+      "ust_grup_adi": "DENİZYOLLARI",
+      "fonksiyon_kodu": 120012,
+      "fonksiyon_adi": "MENFEZ",
+      "detay_kodu": 120012,
+      "tabaka_adi": "PL_MENFEZ",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 47,
+      "ust_grup_kodu": 120000,
+      "ust_grup_adi": "DENİZYOLLARI",
+      "fonksiyon_kodu": 120013,
+      "fonksiyon_adi": "RIHTIM",
+      "detay_kodu": 120013,
+      "tabaka_adi": "PL_RIHTIM",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 48,
+      "ust_grup_kodu": 120000,
+      "ust_grup_adi": "DENİZYOLLARI",
+      "fonksiyon_kodu": 120014,
+      "fonksiyon_adi": "RO RO LİMANI",
+      "detay_kodu": 120014,
+      "tabaka_adi": "PL_RO_RO_LIMAN",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 49,
+      "ust_grup_kodu": 120000,
+      "ust_grup_adi": "DENİZYOLLARI",
+      "fonksiyon_kodu": 120015,
+      "fonksiyon_adi": "TEKNE İMAL VE BAKIM YERİ",
+      "detay_kodu": 120015,
+      "tabaka_adi": "PL_TEKNE_IMAL",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 50,
+      "ust_grup_kodu": 120000,
+      "ust_grup_adi": "DENİZYOLLARI",
+      "fonksiyon_kodu": 120016,
+      "fonksiyon_adi": "TERSANE ALANI",
+      "detay_kodu": 120016,
+      "tabaka_adi": "PL_TERSANE_ALANI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 51,
+      "ust_grup_kodu": 120000,
+      "ust_grup_adi": "DENİZYOLLARI",
+      "fonksiyon_kodu": 120017,
+      "fonksiyon_adi": "YAT LİMANI",
+      "detay_kodu": 120017,
+      "tabaka_adi": "PL_YAT_LIMANI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 52,
+      "ust_grup_kodu": 105000,
+      "ust_grup_adi": "EĞİTİM TESİSLERİ ALANI",
+      "fonksiyon_kodu": 105001,
+      "fonksiyon_adi": "ANAOKULU ALANI",
+      "detay_kodu": 105001,
+      "tabaka_adi": "PL_ANAOKULU",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 53,
+      "ust_grup_kodu": 105000,
+      "ust_grup_adi": "EĞİTİM TESİSLERİ ALANI",
+      "fonksiyon_kodu": 105002,
+      "fonksiyon_adi": "HALK EĞİTİM MERKEZİ",
+      "detay_kodu": 105002,
+      "tabaka_adi": "PL_HALK_EGITIM",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 54,
+      "ust_grup_kodu": 105000,
+      "ust_grup_adi": "EĞİTİM TESİSLERİ ALANI",
+      "fonksiyon_kodu": 105003,
+      "fonksiyon_adi": "İLKOKUL ALANI",
+      "detay_kodu": 105003,
+      "tabaka_adi": "PL_ILKOKUL_ALANI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 55,
+      "ust_grup_kodu": 105000,
+      "ust_grup_adi": "EĞİTİM TESİSLERİ ALANI",
+      "fonksiyon_kodu": 105004,
+      "fonksiyon_adi": "LİSE ALANI",
+      "detay_kodu": 105004,
+      "tabaka_adi": "PL_LISE_ALANI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 56,
+      "ust_grup_kodu": 105000,
+      "ust_grup_adi": "EĞİTİM TESİSLERİ ALANI",
+      "fonksiyon_kodu": 105005,
+      "fonksiyon_adi": "ORTAOKUL ALANI",
+      "detay_kodu": 105005,
+      "tabaka_adi": "PL_ORTAOKUL_ALANI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 57,
+      "ust_grup_kodu": 105000,
+      "ust_grup_adi": "EĞİTİM TESİSLERİ ALANI",
+      "fonksiyon_kodu": 105006,
+      "fonksiyon_adi": "ÖZEL ANAOKULU ALANI",
+      "detay_kodu": 105006,
+      "tabaka_adi": "PL_OZEL_ANAOKULU",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 58,
+      "ust_grup_kodu": 105000,
+      "ust_grup_adi": "EĞİTİM TESİSLERİ ALANI",
+      "fonksiyon_kodu": 105007,
+      "fonksiyon_adi": "ÖZEL EĞİTİM ALANI",
+      "detay_kodu": 105007,
+      "tabaka_adi": "PL_OZEL_EGITIM",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 59,
+      "ust_grup_kodu": 105000,
+      "ust_grup_adi": "EĞİTİM TESİSLERİ ALANI",
+      "fonksiyon_kodu": 105008,
+      "fonksiyon_adi": "MESLEKİ VE TEKNİK ÖĞRETİM TESİSİ ALANI",
+      "detay_kodu": 105008,
+      "tabaka_adi": "PL_TEKNIK_OGRETIM",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 60,
+      "ust_grup_kodu": 105000,
+      "ust_grup_adi": "EĞİTİM TESİSLERİ ALANI",
+      "fonksiyon_kodu": 105009,
+      "fonksiyon_adi": "YÜKSEK ÖĞRETİM ALANI",
+      "detay_kodu": 105009,
+      "tabaka_adi": "PL_YUKSEKOGRETIM",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 61,
+      "ust_grup_kodu": 106000,
+      "ust_grup_adi": "ENERJI ÜRETİM DAĞITIM VE DEPOLAMA",
+      "fonksiyon_kodu": 106001,
+      "fonksiyon_adi": "AKARYAKIT ÜRÜNLERİ DEPOLAMA ALANI ",
+      "detay_kodu": 106001,
+      "tabaka_adi": "PL_AKARYAKIT_DEPO",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 62,
+      "ust_grup_kodu": 106000,
+      "ust_grup_adi": "ENERJI ÜRETİM DAĞITIM VE DEPOLAMA",
+      "fonksiyon_kodu": 106002,
+      "fonksiyon_adi": "DOĞALGAZ / DAĞITIM TESİSİ ALANI",
+      "detay_kodu": 106002,
+      "tabaka_adi": "PL_DOGALGAZ_DAGITIM",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 63,
+      "ust_grup_kodu": 106000,
+      "ust_grup_adi": "ENERJI ÜRETİM DAĞITIM VE DEPOLAMA",
+      "fonksiyon_kodu": 106003,
+      "fonksiyon_adi": "ENERJİ ÜRETİM ALANI",
+      "detay_kodu": 106003,
+      "tabaka_adi": "PL_ENERJI_URETIM",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 64,
+      "ust_grup_kodu": 106000,
+      "ust_grup_adi": "ENERJI ÜRETİM DAĞITIM VE DEPOLAMA",
+      "fonksiyon_kodu": 106004,
+      "fonksiyon_adi": "ELEKTRONİK HABERLEŞME ALTYAPI ALANI",
+      "detay_kodu": 106004,
+      "tabaka_adi": "PL_HABERLESME_ALTYPI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 65,
+      "ust_grup_kodu": 106000,
+      "ust_grup_adi": "ENERJI ÜRETİM DAĞITIM VE DEPOLAMA",
+      "fonksiyon_kodu": 106005,
+      "fonksiyon_adi": "NÜKLEER ENERJİ SANTRALİ ALANI",
+      "detay_kodu": 106005,
+      "tabaka_adi": "PL_NUKLEER_SANTRAL",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 66,
+      "ust_grup_kodu": 106000,
+      "ust_grup_adi": "ENERJI ÜRETİM DAĞITIM VE DEPOLAMA",
+      "fonksiyon_kodu": 106006,
+      "fonksiyon_adi": "REGÜLATÖR ALANI",
+      "detay_kodu": 106006,
+      "tabaka_adi": "PL_REGULATOR_ALANI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 67,
+      "ust_grup_kodu": 106000,
+      "ust_grup_adi": "ENERJI ÜRETİM DAĞITIM VE DEPOLAMA",
+      "fonksiyon_kodu": 106007,
+      "fonksiyon_adi": "TERMİK SANTRAL ALANI",
+      "detay_kodu": 106007,
+      "tabaka_adi": "PL_TERMIK_SANTRAL",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 68,
+      "ust_grup_kodu": 106000,
+      "ust_grup_adi": "ENERJI ÜRETİM DAĞITIM VE DEPOLAMA",
+      "fonksiyon_kodu": 106008,
+      "fonksiyon_adi": "TRAFO ALANI",
+      "detay_kodu": 106008,
+      "tabaka_adi": "PL_TRAFO_ALANI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 69,
+      "ust_grup_kodu": 106000,
+      "ust_grup_adi": "ENERJI ÜRETİM DAĞITIM VE DEPOLAMA",
+      "fonksiyon_kodu": 106009,
+      "fonksiyon_adi": "TÜRBİN ALANI",
+      "detay_kodu": 106009,
+      "tabaka_adi": "PL_TURBIN_ALANI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 70,
+      "ust_grup_kodu": 106000,
+      "ust_grup_adi": "ENERJI ÜRETİM DAĞITIM VE DEPOLAMA",
+      "fonksiyon_kodu": 106010,
+      "fonksiyon_adi": "YANICI PARLAYICI VE PATLAYICI MADDELER ÜRETİM VE DEPO ALANI",
+      "detay_kodu": 106010,
+      "tabaka_adi": "PL_YANICI_MADDE_DEPO",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 71,
+      "ust_grup_kodu": 106000,
+      "ust_grup_adi": "ENERJI ÜRETİM DAĞITIM VE DEPOLAMA",
+      "fonksiyon_kodu": 106011,
+      "fonksiyon_adi": "YENİLENEBİLİR ENERJİ KAYNAKLARINA DAYALI ÜRETİM TESİSİ ALANI",
+      "detay_kodu": 106011,
+      "tabaka_adi": "PL_YENILENEBILIR_EN",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 72,
+      "ust_grup_kodu": 107000,
+      "ust_grup_adi": "HAVAYOLLARI",
+      "fonksiyon_kodu": 107001,
+      "fonksiyon_adi": "HAVAALANI/HAVALİMANI",
+      "detay_kodu": 107001,
+      "tabaka_adi": "PL_HAVAALANI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 73,
+      "ust_grup_kodu": 107000,
+      "ust_grup_adi": "HAVAYOLLARI",
+      "fonksiyon_kodu": 107002,
+      "fonksiyon_adi": "HELİKOPTER İNİŞ ALANI",
+      "detay_kodu": 107002,
+      "tabaka_adi": "PL_HELIKOPTER_INIS",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 74,
+      "ust_grup_kodu": 108000,
+      "ust_grup_adi": "İBADET ALANLARI",
+      "fonksiyon_kodu": 108001,
+      "fonksiyon_adi": "CAMİ",
+      "detay_kodu": 108001,
+      "tabaka_adi": "PL_CAMI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 75,
+      "ust_grup_kodu": 108000,
+      "ust_grup_adi": "İBADET ALANLARI",
+      "fonksiyon_kodu": 108002,
+      "fonksiyon_adi": "KİLİSE",
+      "detay_kodu": 108002,
+      "tabaka_adi": "PL_KILISE",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 76,
+      "ust_grup_kodu": 108000,
+      "ust_grup_adi": "İBADET ALANLARI",
+      "fonksiyon_kodu": 108003,
+      "fonksiyon_adi": "MESCİT",
+      "detay_kodu": 108003,
+      "tabaka_adi": "PL_MESCIT",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 77,
+      "ust_grup_kodu": 108000,
+      "ust_grup_adi": "İBADET ALANLARI",
+      "fonksiyon_kodu": 108004,
+      "fonksiyon_adi": "ŞAPEL",
+      "detay_kodu": 108004,
+      "tabaka_adi": "PL_SAPEL",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 78,
+      "ust_grup_kodu": 108000,
+      "ust_grup_adi": "İBADET ALANLARI",
+      "fonksiyon_kodu": 108005,
+      "fonksiyon_adi": "SİNAGOG (HAVRA)",
+      "detay_kodu": 108005,
+      "tabaka_adi": "PL_SINAGOG",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 79,
+      "ust_grup_kodu": 109000,
+      "ust_grup_adi": "KARAYOLLARI",
+      "fonksiyon_kodu": 109001,
+      "fonksiyon_adi": "BİSİKLET PARKI",
+      "detay_kodu": 109001,
+      "tabaka_adi": "PL_BISIKLET_PARKI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 80,
+      "ust_grup_kodu": 109000,
+      "ust_grup_adi": "KARAYOLLARI",
+      "fonksiyon_kodu": 109002,
+      "fonksiyon_adi": "TERMİNAL (OTOGAR)",
+      "detay_kodu": 109002,
+      "tabaka_adi": "PL_OTOGAR",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 81,
+      "ust_grup_kodu": 109000,
+      "ust_grup_adi": "KARAYOLLARI",
+      "fonksiyon_kodu": 109003,
+      "fonksiyon_adi": "GENEL OTOPARK ALANI",
+      "detay_kodu": 109003,
+      "tabaka_adi": "PL_OTOPARK",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 82,
+      "ust_grup_kodu": 109000,
+      "ust_grup_adi": "KARAYOLLARI",
+      "fonksiyon_kodu": 109004,
+      "fonksiyon_adi": "TIR, KAMYON, MAKİNE PARKI VE GARAJ ALANI",
+      "detay_kodu": 109004,
+      "tabaka_adi": "PL_TIR_PARKI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 83,
+      "ust_grup_kodu": 110000,
+      "ust_grup_adi": "KENTSEL ÇALIŞMA ALANLARI",
+      "fonksiyon_kodu": 110001,
+      "fonksiyon_adi": "ASKERİ ALAN",
+      "detay_kodu": 110001,
+      "tabaka_adi": "PL_ASKERI_ALAN",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 84,
+      "ust_grup_kodu": 110000,
+      "ust_grup_adi": "KENTSEL ÇALIŞMA ALANLARI",
+      "fonksiyon_kodu": 110002,
+      "fonksiyon_adi": "AKARYAKIT VE SERVİS İSTASYONU ALANI",
+      "detay_kodu": 110002,
+      "tabaka_adi": "PL_BAKIM_AKARYAKIT",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 85,
+      "ust_grup_kodu": 110000,
+      "ust_grup_adi": "KENTSEL ÇALIŞMA ALANLARI",
+      "fonksiyon_kodu": 110003,
+      "fonksiyon_adi": "BETON SANTRALİ",
+      "detay_kodu": 110003,
+      "tabaka_adi": "PL_BETON_SANTRALI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 86,
+      "ust_grup_kodu": 110000,
+      "ust_grup_adi": "KENTSEL ÇALIŞMA ALANLARI",
+      "fonksiyon_kodu": 110004,
+      "fonksiyon_adi": "BELEDİYE HİZMET ALANI",
+      "detay_kodu": 110004,
+      "tabaka_adi": "PL_BHA",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 87,
+      "ust_grup_kodu": 110000,
+      "ust_grup_adi": "KENTSEL ÇALIŞMA ALANLARI",
+      "fonksiyon_kodu": 110005,
+      "fonksiyon_adi": "DEPOLAMA ALANI",
+      "detay_kodu": 110005,
+      "tabaka_adi": "PL_DEPOLAMA",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 88,
+      "ust_grup_kodu": 110000,
+      "ust_grup_adi": "KENTSEL ÇALIŞMA ALANLARI",
+      "fonksiyon_kodu": 110006,
+      "fonksiyon_adi": "ENDÜSTRİYEL GELİŞME BÖLGESİ",
+      "detay_kodu": 110006,
+      "tabaka_adi": "PL_ENDUSTRIYEL_GEL",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 89,
+      "ust_grup_kodu": 110000,
+      "ust_grup_adi": "KENTSEL ÇALIŞMA ALANLARI",
+      "fonksiyon_kodu": 110007,
+      "fonksiyon_adi": "İDARİ HİZMET ALANI",
+      "detay_kodu": 110007,
+      "tabaka_adi": "PL_IHA",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 90,
+      "ust_grup_kodu": 110000,
+      "ust_grup_adi": "KENTSEL ÇALIŞMA ALANLARI",
+      "fonksiyon_kodu": 110008,
+      "fonksiyon_adi": "İMALATHANE TESİS ALANI",
+      "detay_kodu": 110008,
+      "tabaka_adi": "PL_IMALATHANE",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 91,
+      "ust_grup_kodu": 110000,
+      "ust_grup_adi": "KENTSEL ÇALIŞMA ALANLARI",
+      "fonksiyon_kodu": 110009,
+      "fonksiyon_adi": "TİCARET - KONUT ALANI",
+      "detay_kodu": 110009,
+      "tabaka_adi": "PL_KONUT_TICARET",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 92,
+      "ust_grup_kodu": 110000,
+      "ust_grup_adi": "KENTSEL ÇALIŞMA ALANLARI",
+      "fonksiyon_kodu": 110010,
+      "fonksiyon_adi": "KÜÇÜK SANAYİ ALANI",
+      "detay_kodu": 110010,
+      "tabaka_adi": "PL_KUCUK_SANAYI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 93,
+      "ust_grup_kodu": 110000,
+      "ust_grup_adi": "KENTSEL ÇALIŞMA ALANLARI",
+      "fonksiyon_kodu": 110011,
+      "fonksiyon_adi": "LOJİSTİK TESİS ALANI",
+      "detay_kodu": 110011,
+      "tabaka_adi": "PL_LOJISTIK_TESIS",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 94,
+      "ust_grup_kodu": 110000,
+      "ust_grup_adi": "KENTSEL ÇALIŞMA ALANLARI",
+      "fonksiyon_kodu": 110012,
+      "fonksiyon_adi": "PAZAR ALANI",
+      "detay_kodu": 110012,
+      "tabaka_adi": "PL_PAZAR_ALANI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 95,
+      "ust_grup_kodu": 110000,
+      "ust_grup_adi": "KENTSEL ÇALIŞMA ALANLARI",
+      "fonksiyon_kodu": 110013,
+      "fonksiyon_adi": "RESMİ KURUM ALANI",
+      "detay_kodu": 110013,
+      "tabaka_adi": "PL_RESMI_KURUM",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 96,
+      "ust_grup_kodu": 110000,
+      "ust_grup_adi": "KENTSEL ÇALIŞMA ALANLARI",
+      "fonksiyon_kodu": 110014,
+      "fonksiyon_adi": "SANAYİ TESİS ALANI",
+      "detay_kodu": 110014,
+      "tabaka_adi": "PL_SANAYI_TESIS",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 97,
+      "ust_grup_kodu": 110000,
+      "ust_grup_adi": "KENTSEL ÇALIŞMA ALANLARI",
+      "fonksiyon_kodu": 110015,
+      "fonksiyon_adi": "SU ÜRÜNLERİ ÜRETİM VE YETİŞTİRME TESİSİ",
+      "detay_kodu": 110015,
+      "tabaka_adi": "PL_SU_URUNLERI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 98,
+      "ust_grup_kodu": 110000,
+      "ust_grup_adi": "KENTSEL ÇALIŞMA ALANLARI",
+      "fonksiyon_kodu": 110016,
+      "fonksiyon_adi": "TARIM VE HAYVANCILIK TESİS ALANI",
+      "detay_kodu": 110016,
+      "tabaka_adi": "PL_TARIM_HAYVANCILIK",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 99,
+      "ust_grup_kodu": 110000,
+      "ust_grup_adi": "KENTSEL ÇALIŞMA ALANLARI",
+      "fonksiyon_kodu": 110017,
+      "fonksiyon_adi": "TİCARET-TURİZM-KONUT ALANI",
+      "detay_kodu": 110017,
+      "tabaka_adi": "PL_TIC_TURZM_KNT",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 100,
+      "ust_grup_kodu": 110000,
+      "ust_grup_adi": "KENTSEL ÇALIŞMA ALANLARI",
+      "fonksiyon_kodu": 110018,
+      "fonksiyon_adi": "TİCARET ALANI",
+      "detay_kodu": 110018,
+      "tabaka_adi": "PL_TICARET",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 101,
+      "ust_grup_kodu": 110000,
+      "ust_grup_adi": "KENTSEL ÇALIŞMA ALANLARI",
+      "fonksiyon_kodu": 110019,
+      "fonksiyon_adi": "T1 TİCARET ALANI",
+      "detay_kodu": 110019,
+      "tabaka_adi": "PL_TICARET_T1",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 102,
+      "ust_grup_kodu": 110000,
+      "ust_grup_adi": "KENTSEL ÇALIŞMA ALANLARI",
+      "fonksiyon_kodu": 110020,
+      "fonksiyon_adi": "T2 TİCARET ALANI",
+      "detay_kodu": 110020,
+      "tabaka_adi": "PL_TICARET_T2",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 103,
+      "ust_grup_kodu": 110000,
+      "ust_grup_adi": "KENTSEL ÇALIŞMA ALANLARI",
+      "fonksiyon_kodu": 110021,
+      "fonksiyon_adi": "T3 TİCARET ALANI",
+      "detay_kodu": 110021,
+      "tabaka_adi": "PL_TICARET_T3",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 104,
+      "ust_grup_kodu": 110000,
+      "ust_grup_adi": "KENTSEL ÇALIŞMA ALANLARI",
+      "fonksiyon_kodu": 110022,
+      "fonksiyon_adi": "TİCARET - TURİZM ALANI",
+      "detay_kodu": 110022,
+      "tabaka_adi": "PL_TICARET_TURIZM",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 105,
+      "ust_grup_kodu": 110000,
+      "ust_grup_adi": "KENTSEL ÇALIŞMA ALANLARI",
+      "fonksiyon_kodu": 110023,
+      "fonksiyon_adi": "TOPLU İŞYERLERİ",
+      "detay_kodu": 110023,
+      "tabaka_adi": "PL_TOPLU_ISYERLERI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 106,
+      "ust_grup_kodu": 110000,
+      "ust_grup_adi": "KENTSEL ÇALIŞMA ALANLARI",
+      "fonksiyon_kodu": 110024,
+      "fonksiyon_adi": "TOPTAN TİCARET ALANI",
+      "detay_kodu": 110024,
+      "tabaka_adi": "PL_TOPTAN_TICARET",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 107,
+      "ust_grup_kodu": 111000,
+      "ust_grup_adi": "KENTSEL TOPLU TAŞIMA GÜZERGAHLARI",
+      "fonksiyon_kodu": 111001,
+      "fonksiyon_adi": "HAVAİ HAT İSTASYONU",
+      "detay_kodu": 111001,
+      "tabaka_adi": "PL_HAVAI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 108,
+      "ust_grup_kodu": 111000,
+      "ust_grup_adi": "KENTSEL TOPLU TAŞIMA GÜZERGAHLARI",
+      "fonksiyon_kodu": 111002,
+      "fonksiyon_adi": "HAVARAY İSTASYONU",
+      "detay_kodu": 111002,
+      "tabaka_adi": "PL_HAVARAY_ISTASYONU",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 109,
+      "ust_grup_kodu": 111000,
+      "ust_grup_adi": "KENTSEL TOPLU TAŞIMA GÜZERGAHLARI",
+      "fonksiyon_kodu": 111003,
+      "fonksiyon_adi": "RAYLI TOPLU TAŞIMA İSTASYONU",
+      "detay_kodu": 111003,
+      "tabaka_adi": "PL_RAY_ISTASYON",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 110,
+      "ust_grup_kodu": 111000,
+      "ust_grup_adi": "KENTSEL TOPLU TAŞIMA GÜZERGAHLARI",
+      "fonksiyon_kodu": 111004,
+      "fonksiyon_adi": "TOPLU TAŞINIM TÜRLERİ ARASI DEĞİŞİM VE AKTARMA ALANI",
+      "detay_kodu": 111004,
+      "tabaka_adi": "PL_TT_AKTARMA",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 111,
+      "ust_grup_kodu": 112000,
+      "ust_grup_adi": "KONUT ALANLARI / YERLEŞİM ALANLARI",
+      "fonksiyon_kodu": 112001,
+      "fonksiyon_adi": "GELİŞME KONUT ALANI",
+      "detay_kodu": 112001,
+      "tabaka_adi": "PL_GELISME_KONUT",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 112,
+      "ust_grup_kodu": 112000,
+      "ust_grup_adi": "KONUT ALANLARI / YERLEŞİM ALANLARI",
+      "fonksiyon_kodu": 112002,
+      "fonksiyon_adi": "YERLEŞİK KONUT ALANI",
+      "detay_kodu": 112002,
+      "tabaka_adi": "PL_KONUT",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 113,
+      "ust_grup_kodu": 113000,
+      "ust_grup_adi": "KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 113001,
+      "fonksiyon_adi": "1. DERECE ARKEOLOJİK SİT ALANI",
+      "detay_kodu": 113001,
+      "tabaka_adi": "KA_1DER_ARK_SIT",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 114,
+      "ust_grup_kodu": 113000,
+      "ust_grup_adi": "KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 113002,
+      "fonksiyon_adi": "1. DERECE DOĞAL SİT ALANI",
+      "detay_kodu": 113002,
+      "tabaka_adi": "KA_1DER_DGL_SIT",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 115,
+      "ust_grup_kodu": 113000,
+      "ust_grup_adi": "KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 113003,
+      "fonksiyon_adi": "2. DERECE ARKEOLOJİK SİT ALANI",
+      "detay_kodu": 113003,
+      "tabaka_adi": "KA_2DER_ARK_SIT",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 116,
+      "ust_grup_kodu": 113000,
+      "ust_grup_adi": "KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 113004,
+      "fonksiyon_adi": "2. DERECE DOĞAL SİT ALANI",
+      "detay_kodu": 113004,
+      "tabaka_adi": "KA_2DER_DGL_SIT",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 117,
+      "ust_grup_kodu": 113000,
+      "ust_grup_adi": "KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 113005,
+      "fonksiyon_adi": "3. DERECE ARKEOLOJİK SİT ALANI",
+      "detay_kodu": 113005,
+      "tabaka_adi": "KA_3DER_ARK_SIT",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 118,
+      "ust_grup_kodu": 113000,
+      "ust_grup_adi": "KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 113006,
+      "fonksiyon_adi": "3. DERECE DOĞAL SİT ALANI",
+      "detay_kodu": 113006,
+      "tabaka_adi": "KA_3DER_DGL_SIT",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 119,
+      "ust_grup_kodu": 113000,
+      "ust_grup_adi": "KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 113007,
+      "fonksiyon_adi": "EKOLOJİK NİTELİĞİ KORUNACAK ALAN",
+      "detay_kodu": 113007,
+      "tabaka_adi": "KA_EKOLOJIK_KORU",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 120,
+      "ust_grup_kodu": 113000,
+      "ust_grup_adi": "KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 113008,
+      "fonksiyon_adi": "HASSAS ENDEMİK BİYOTOP ALANI",
+      "detay_kodu": 113008,
+      "tabaka_adi": "KA_ENDEMIK_BIYOTOP",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 121,
+      "ust_grup_kodu": 113000,
+      "ust_grup_adi": "KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 113009,
+      "fonksiyon_adi": "KORUNMASI GEREKLİ FLORA VE FAUNA ALANI",
+      "detay_kodu": 113009,
+      "tabaka_adi": "KA_FLORA_FAUNA",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 122,
+      "ust_grup_kodu": 113000,
+      "ust_grup_adi": "KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 113010,
+      "fonksiyon_adi": "KENTSEL SİT ALANI",
+      "detay_kodu": 113010,
+      "tabaka_adi": "KA_KENTSEL_SIT",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 123,
+      "ust_grup_kodu": 113000,
+      "ust_grup_adi": "KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 113011,
+      "fonksiyon_adi": "KESİN KORUNACAK HASSAS ALAN",
+      "detay_kodu": 113011,
+      "tabaka_adi": "KA_KESIN_KOR_HAS",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 124,
+      "ust_grup_kodu": 113000,
+      "ust_grup_adi": "KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 113012,
+      "fonksiyon_adi": "NİTELİKLİ DOĞAL KORUMA ALANI",
+      "detay_kodu": 113012,
+      "tabaka_adi": "KA_NITELIKLI_DOG_KOR",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 125,
+      "ust_grup_kodu": 113000,
+      "ust_grup_adi": "KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 113013,
+      "fonksiyon_adi": "ÖÇK BÖLGESİ HASSAS ALAN (A)",
+      "detay_kodu": 113013,
+      "tabaka_adi": "KA_OCK_A",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 126,
+      "ust_grup_kodu": 113000,
+      "ust_grup_adi": "KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 113014,
+      "fonksiyon_adi": "ÖÇK BÖLGESİ HASSAS ALAN (B)",
+      "detay_kodu": 113014,
+      "tabaka_adi": "KA_OCK_B",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 127,
+      "ust_grup_kodu": 113000,
+      "ust_grup_adi": "KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 113015,
+      "fonksiyon_adi": "ÖÇK BÖLGESİ HASSAS ALAN (C)",
+      "detay_kodu": 113015,
+      "tabaka_adi": "KA_OCK_C",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 128,
+      "ust_grup_kodu": 113000,
+      "ust_grup_adi": "KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 113016,
+      "fonksiyon_adi": "ÖZEL ÇEVRE KORUMA BÖLGESİ (ÖÇK)",
+      "detay_kodu": 113016,
+      "tabaka_adi": "KA_OZEL_CEVRE_KORUMA",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 129,
+      "ust_grup_kodu": 113000,
+      "ust_grup_adi": "KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 113017,
+      "fonksiyon_adi": "SÜRDÜRÜLEBİLİR KORUMA VE KONTROLLÜ KULLANIM ALANI",
+      "detay_kodu": 113017,
+      "tabaka_adi": "KA_SURDURULEBILIR_KO",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 130,
+      "ust_grup_kodu": 113000,
+      "ust_grup_adi": "KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 113018,
+      "fonksiyon_adi": "TABİATI KORUMA ALANI",
+      "detay_kodu": 113018,
+      "tabaka_adi": "KA_TABIATI_KORUMA",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 131,
+      "ust_grup_kodu": 113000,
+      "ust_grup_adi": "KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 113019,
+      "fonksiyon_adi": "TARİHİ SİT ALANI",
+      "detay_kodu": 113019,
+      "tabaka_adi": "KA_TARIHI_SIT",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 132,
+      "ust_grup_kodu": 113000,
+      "ust_grup_adi": "KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 113020,
+      "fonksiyon_adi": "ULUSLARARASI SÖZLEŞMELERLE BELİRLENEN KORUMA ALAN SINIRI",
+      "detay_kodu": 113020,
+      "tabaka_adi": "KA_ULUSLARARASI_KOR",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 133,
+      "ust_grup_kodu": 113000,
+      "ust_grup_adi": "KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 113021,
+      "fonksiyon_adi": "YABAN HAYATI KORUMA VE GELİŞTİRME ALANI",
+      "detay_kodu": 113021,
+      "tabaka_adi": "KA_YABAN_HAYATI_KORU",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 134,
+      "ust_grup_kodu": 113000,
+      "ust_grup_adi": "KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 113022,
+      "fonksiyon_adi": "YÖRESEL MİMARİ ÖZELLİKLERİ KORUNACAK ALAN",
+      "detay_kodu": 113022,
+      "tabaka_adi": "KA_YOR_MIMARI_KORU",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 135,
+      "ust_grup_kodu": 113000,
+      "ust_grup_adi": "KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 113023,
+      "fonksiyon_adi": "MİLLİ PARK",
+      "detay_kodu": 113023,
+      "tabaka_adi": "PL_MILLI_PARK",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 136,
+      "ust_grup_kodu": 113000,
+      "ust_grup_adi": "KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 113024,
+      "fonksiyon_adi": "TABİAT PARKI ALANI",
+      "detay_kodu": 113024,
+      "tabaka_adi": "PL_TABIAT_PARKI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 137,
+      "ust_grup_kodu": 113000,
+      "ust_grup_adi": "KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 113025,
+      "fonksiyon_adi": "TESCİLLİ ANIT YAPI",
+      "detay_kodu": 113025,
+      "tabaka_adi": "TESCILLI_ANIT_YAPI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 138,
+      "ust_grup_kodu": 113000,
+      "ust_grup_adi": "KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 113026,
+      "fonksiyon_adi": "TESCİLLİ BİNA",
+      "detay_kodu": 113026,
+      "tabaka_adi": "TESCILLI_BINA",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 139,
+      "ust_grup_kodu": 113000,
+      "ust_grup_adi": "KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 113027,
+      "fonksiyon_adi": "TESCİLLİ PARSEL",
+      "detay_kodu": 113027,
+      "tabaka_adi": "TESCILLI_PARSEL",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 140,
+      "ust_grup_kodu": 113000,
+      "ust_grup_adi": "KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 113028,
+      "fonksiyon_adi": "TESCİLLİ TABİAT VARLIĞI",
+      "detay_kodu": 113028,
+      "tabaka_adi": "TESCILLI_TAB_VARLIGI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 141,
+      "ust_grup_kodu": 114000,
+      "ust_grup_adi": "ÖZEL KANUNLARLA BELİRLENEN ALAN VE SINIRLAR",
+      "fonksiyon_kodu": 114001,
+      "fonksiyon_adi": "ASKERİ YASAK VE GÜVENLİK BÖLGESİ",
+      "detay_kodu": 114001,
+      "tabaka_adi": "KST_ASKERI_YASAK",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 142,
+      "ust_grup_kodu": 114000,
+      "ust_grup_adi": "ÖZEL KANUNLARLA BELİRLENEN ALAN VE SINIRLAR",
+      "fonksiyon_kodu": 114002,
+      "fonksiyon_adi": "ENDÜSTRİ BÖLGESİ",
+      "detay_kodu": 114002,
+      "tabaka_adi": "PL_ENDUSTRI_BOL",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 143,
+      "ust_grup_kodu": 114000,
+      "ust_grup_adi": "ÖZEL KANUNLARLA BELİRLENEN ALAN VE SINIRLAR",
+      "fonksiyon_kodu": 114003,
+      "fonksiyon_adi": "ORGANİZE SANAYİ BÖLGESİ",
+      "detay_kodu": 114003,
+      "tabaka_adi": "PL_OSB",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 144,
+      "ust_grup_kodu": 114000,
+      "ust_grup_adi": "ÖZEL KANUNLARLA BELİRLENEN ALAN VE SINIRLAR",
+      "fonksiyon_kodu": 114004,
+      "fonksiyon_adi": "SERBEST BÖLGE",
+      "detay_kodu": 114004,
+      "tabaka_adi": "PL_SERBEST_BOLGE",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 145,
+      "ust_grup_kodu": 114000,
+      "ust_grup_adi": "ÖZEL KANUNLARLA BELİRLENEN ALAN VE SINIRLAR",
+      "fonksiyon_kodu": 114005,
+      "fonksiyon_adi": "TEKNOLOJİ GELİŞTİRME BÖLGESİ",
+      "detay_kodu": 114005,
+      "tabaka_adi": "PL_TGB",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 146,
+      "ust_grup_kodu": 115000,
+      "ust_grup_adi": "SAĞLIK TESİSLERİ ALANI",
+      "fonksiyon_kodu": 115001,
+      "fonksiyon_adi": "AİLE SAĞLIĞI MERKEZİ",
+      "detay_kodu": 115001,
+      "tabaka_adi": "PL_AILE_SAGL_MER",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 147,
+      "ust_grup_kodu": 115000,
+      "ust_grup_adi": "SAĞLIK TESİSLERİ ALANI",
+      "fonksiyon_kodu": 115002,
+      "fonksiyon_adi": "HASTANE",
+      "detay_kodu": 115002,
+      "tabaka_adi": "PL_HASTANE",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 148,
+      "ust_grup_kodu": 115000,
+      "ust_grup_adi": "SAĞLIK TESİSLERİ ALANI",
+      "fonksiyon_kodu": 115003,
+      "fonksiyon_adi": "ÖZEL SAĞLIK TESİSİ ALANI",
+      "detay_kodu": 115003,
+      "tabaka_adi": "PL_OZEL_SAGLIK_TES",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 149,
+      "ust_grup_kodu": 115000,
+      "ust_grup_adi": "SAĞLIK TESİSLERİ ALANI",
+      "fonksiyon_kodu": 115004,
+      "fonksiyon_adi": "SAĞLIK TESİSİ ALANI",
+      "detay_kodu": 115004,
+      "tabaka_adi": "PL_SAGLIK_TESISI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 150,
+      "ust_grup_kodu": 116000,
+      "ust_grup_adi": "SOSYAL VE KÜLTÜREL TESİS ALANI",
+      "fonksiyon_kodu": 116001,
+      "fonksiyon_adi": "AÇIK SPOR TESİSİ ALANI",
+      "detay_kodu": 116001,
+      "tabaka_adi": "PL_ACIK_SPOR_TES",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 151,
+      "ust_grup_kodu": 116000,
+      "ust_grup_adi": "SOSYAL VE KÜLTÜREL TESİS ALANI",
+      "fonksiyon_kodu": 116002,
+      "fonksiyon_adi": "KAPALI SPOR TESİSİ ALANI",
+      "detay_kodu": 116002,
+      "tabaka_adi": "PL_KAPALI_SPOR_TES",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 152,
+      "ust_grup_kodu": 116000,
+      "ust_grup_adi": "SOSYAL VE KÜLTÜREL TESİS ALANI",
+      "fonksiyon_kodu": 116003,
+      "fonksiyon_adi": "KONGRE VE SERGİ MERKEZİ ALANI",
+      "detay_kodu": 116003,
+      "tabaka_adi": "PL_KONGRE_SERGI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 153,
+      "ust_grup_kodu": 116000,
+      "ust_grup_adi": "SOSYAL VE KÜLTÜREL TESİS ALANI",
+      "fonksiyon_kodu": 116004,
+      "fonksiyon_adi": "KREŞ, GÜNDÜZ BAKIMEVİ",
+      "detay_kodu": 116004,
+      "tabaka_adi": "PL_KRES_BAKIMEVI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 154,
+      "ust_grup_kodu": 116000,
+      "ust_grup_adi": "SOSYAL VE KÜLTÜREL TESİS ALANI",
+      "fonksiyon_kodu": 116005,
+      "fonksiyon_adi": "KÜLTÜREL TESİS ALANI",
+      "detay_kodu": 116005,
+      "tabaka_adi": "PL_KULTUREL_TESIS",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 155,
+      "ust_grup_kodu": 116000,
+      "ust_grup_adi": "SOSYAL VE KÜLTÜREL TESİS ALANI",
+      "fonksiyon_kodu": 116006,
+      "fonksiyon_adi": "ÖZEL AÇIK SPOR TESİSİ ALANI",
+      "detay_kodu": 116006,
+      "tabaka_adi": "PL_O_ACIK_SPOR_TES",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 156,
+      "ust_grup_kodu": 116000,
+      "ust_grup_adi": "SOSYAL VE KÜLTÜREL TESİS ALANI",
+      "fonksiyon_kodu": 116007,
+      "fonksiyon_adi": "ÖZEL KAPALI SPOR TESİSİ ALANI",
+      "detay_kodu": 116007,
+      "tabaka_adi": "PL_O_KAPALI_SPOR_TES",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 157,
+      "ust_grup_kodu": 116000,
+      "ust_grup_adi": "SOSYAL VE KÜLTÜREL TESİS ALANI",
+      "fonksiyon_kodu": 116008,
+      "fonksiyon_adi": "ÖZEL KREŞ, GÜNDÜZ BAKIMEVİ",
+      "detay_kodu": 116008,
+      "tabaka_adi": "PL_O_KRES_BAKIMEVI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 158,
+      "ust_grup_kodu": 116000,
+      "ust_grup_adi": "SOSYAL VE KÜLTÜREL TESİS ALANI",
+      "fonksiyon_kodu": 116009,
+      "fonksiyon_adi": "ÖZEL KÜLTÜREL TESİS ALANI",
+      "detay_kodu": 116009,
+      "tabaka_adi": "PL_O_KULTUREL_TESIS",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 160,
+      "ust_grup_kodu": 116000,
+      "ust_grup_adi": "SOSYAL VE KÜLTÜREL TESİS ALANI",
+      "fonksiyon_kodu": 116011,
+      "fonksiyon_adi": "ÖZEL SOSYAL TESİS ALANI",
+      "detay_kodu": 116011,
+      "tabaka_adi": "PL_OZEL_SOSYAL_TESIS",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 161,
+      "ust_grup_kodu": 116000,
+      "ust_grup_adi": "SOSYAL VE KÜLTÜREL TESİS ALANI",
+      "fonksiyon_kodu": 116012,
+      "fonksiyon_adi": "ÖZEL YURT ALANI",
+      "detay_kodu": 116012,
+      "tabaka_adi": "PL_OZEL_YURT_ALANI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 162,
+      "ust_grup_kodu": 116000,
+      "ust_grup_adi": "SOSYAL VE KÜLTÜREL TESİS ALANI",
+      "fonksiyon_kodu": 116013,
+      "fonksiyon_adi": "ŞEFKAT EVLERİ ALANI",
+      "detay_kodu": 116013,
+      "tabaka_adi": "PL_SEFKAT_EVI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 163,
+      "ust_grup_kodu": 116000,
+      "ust_grup_adi": "SOSYAL VE KÜLTÜREL TESİS ALANI",
+      "fonksiyon_kodu": 116014,
+      "fonksiyon_adi": "SOSYAL TESİS ALANI",
+      "detay_kodu": 116014,
+      "tabaka_adi": "PL_SOSYAL_TESIS",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 164,
+      "ust_grup_kodu": 116000,
+      "ust_grup_adi": "SOSYAL VE KÜLTÜREL TESİS ALANI",
+      "fonksiyon_kodu": 116015,
+      "fonksiyon_adi": "YAŞLI BAKIMEVİ ALANI",
+      "detay_kodu": 116015,
+      "tabaka_adi": "PL_YASLI_BAKIMEVI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 165,
+      "ust_grup_kodu": 116000,
+      "ust_grup_adi": "SOSYAL VE KÜLTÜREL TESİS ALANI",
+      "fonksiyon_kodu": 116016,
+      "fonksiyon_adi": "YURT ALANI",
+      "detay_kodu": 116016,
+      "tabaka_adi": "PL_YURT_ALANI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 166,
+      "ust_grup_kodu": 117000,
+      "ust_grup_adi": "SU - ATIKSU VE ATIK SİSTEMLERİ",
+      "fonksiyon_kodu": 117001,
+      "fonksiyon_adi": "ATIKSU TESİSLERİ ALANI (ARITMA, TERFİ MERKEZİ)",
+      "detay_kodu": 117001,
+      "tabaka_adi": "PL_ATIKSU_TESISI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 167,
+      "ust_grup_kodu": 117000,
+      "ust_grup_adi": "SU - ATIKSU VE ATIK SİSTEMLERİ",
+      "fonksiyon_kodu": 117002,
+      "fonksiyon_adi": "İÇME SUYU TESİSLERİ ALANI (DEPOLAMA, ARITMA, TERFİ MERKEZİ)",
+      "detay_kodu": 117002,
+      "tabaka_adi": "PL_ICME_SUYU_TESIS",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 168,
+      "ust_grup_kodu": 117000,
+      "ust_grup_adi": "SU - ATIKSU VE ATIK SİSTEMLERİ",
+      "fonksiyon_kodu": 117003,
+      "fonksiyon_adi": "KATI ATIK TESİSLERİ ALANI (BOŞALTMA, BERTARAF, İŞLEME, TRANSFER VE DEPOLAMA)",
+      "detay_kodu": 117003,
+      "tabaka_adi": "PL_KATI_ATIK_TESISI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 169,
+      "ust_grup_kodu": 117000,
+      "ust_grup_adi": "SU - ATIKSU VE ATIK SİSTEMLERİ",
+      "fonksiyon_kodu": 117004,
+      "fonksiyon_adi": "SU KAYNAKLARI TOPLAMA YERİ (KAPTAJ ALANI)",
+      "detay_kodu": 117004,
+      "tabaka_adi": "PL_SU_KAY_TOPLAMA",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 170,
+      "ust_grup_kodu": 117000,
+      "ust_grup_adi": "SU - ATIKSU VE ATIK SİSTEMLERİ",
+      "fonksiyon_kodu": 117005,
+      "fonksiyon_adi": "SU YÜZEYİ",
+      "detay_kodu": 117005,
+      "tabaka_adi": "PL_SU_YUZEYI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 171,
+      "ust_grup_kodu": 117000,
+      "ust_grup_adi": "SU - ATIKSU VE ATIK SİSTEMLERİ",
+      "fonksiyon_kodu": 117006,
+      "fonksiyon_adi": "TEHLİKELİ ATIK TESİSLERİ ALANI (BERTARAF VE DEPOLAMA) ",
+      "detay_kodu": 117006,
+      "tabaka_adi": "PL_TEHLIKELI_ATIK_TE",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 172,
+      "ust_grup_kodu": 117000,
+      "ust_grup_adi": "SU - ATIKSU VE ATIK SİSTEMLERİ",
+      "fonksiyon_kodu": 117007,
+      "fonksiyon_adi": "TEKNİK ALTYAPI ALANI",
+      "detay_kodu": 117007,
+      "tabaka_adi": "PL_TEKNIK_ALTYAPI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 173,
+      "ust_grup_kodu": 117000,
+      "ust_grup_adi": "SU - ATIKSU VE ATIK SİSTEMLERİ",
+      "fonksiyon_kodu": 117008,
+      "fonksiyon_adi": "YAPAY ADA ",
+      "detay_kodu": 117008,
+      "tabaka_adi": "PL_YAPAY_ADA",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 174,
+      "ust_grup_kodu": 118000,
+      "ust_grup_adi": "TURİZM ALANLARI",
+      "fonksiyon_kodu": 118001,
+      "fonksiyon_adi": "APART OTEL ALANI",
+      "detay_kodu": 118001,
+      "tabaka_adi": "PL_APART_OTEL",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 175,
+      "ust_grup_kodu": 118000,
+      "ust_grup_adi": "TURİZM ALANLARI",
+      "fonksiyon_kodu": 118002,
+      "fonksiyon_adi": "GOLF ALANI",
+      "detay_kodu": 118002,
+      "tabaka_adi": "PL_GOLF_ALANI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 176,
+      "ust_grup_kodu": 118000,
+      "ust_grup_adi": "TURİZM ALANLARI",
+      "fonksiyon_kodu": 118003,
+      "fonksiyon_adi": "GÜNÜBİRLİK TESİS ALANI",
+      "detay_kodu": 118003,
+      "tabaka_adi": "PL_GUNUBIRLIK_TESIS",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 177,
+      "ust_grup_kodu": 118000,
+      "ust_grup_adi": "TURİZM ALANLARI",
+      "fonksiyon_kodu": 118004,
+      "fonksiyon_adi": "HOSTEL ALANI",
+      "detay_kodu": 118004,
+      "tabaka_adi": "PL_HOSTEL_ALANI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 178,
+      "ust_grup_kodu": 118000,
+      "ust_grup_adi": "TURİZM ALANLARI",
+      "fonksiyon_kodu": 118005,
+      "fonksiyon_adi": "KAMPİNG ALANI",
+      "detay_kodu": 118005,
+      "tabaka_adi": "PL_KAMPING_ALANI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 179,
+      "ust_grup_kodu": 118000,
+      "ust_grup_adi": "TURİZM ALANLARI",
+      "fonksiyon_kodu": 118006,
+      "fonksiyon_adi": "KIŞ SPORLARI VE KAYAK TESİSİ ALANI",
+      "detay_kodu": 118006,
+      "tabaka_adi": "PL_KIS_SPORLARI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 180,
+      "ust_grup_kodu": 118000,
+      "ust_grup_adi": "TURİZM ALANLARI",
+      "fonksiyon_kodu": 118007,
+      "fonksiyon_adi": "MOTEL ALANI",
+      "detay_kodu": 118007,
+      "tabaka_adi": "PL_MOTEL_ALANI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 181,
+      "ust_grup_kodu": 118000,
+      "ust_grup_adi": "TURİZM ALANLARI",
+      "fonksiyon_kodu": 118008,
+      "fonksiyon_adi": "OTEL ALANI ",
+      "detay_kodu": 118008,
+      "tabaka_adi": "PL_OTEL_ALANI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 182,
+      "ust_grup_kodu": 118000,
+      "ust_grup_adi": "TURİZM ALANLARI",
+      "fonksiyon_kodu": 118009,
+      "fonksiyon_adi": "PANSİYON ALANI",
+      "detay_kodu": 118009,
+      "tabaka_adi": "PL_PANSIYON_ALANI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 183,
+      "ust_grup_kodu": 118000,
+      "ust_grup_adi": "TURİZM ALANLARI",
+      "fonksiyon_kodu": 118010,
+      "fonksiyon_adi": "SAĞLIK ODAKLI TATİL KÖYÜ",
+      "detay_kodu": 118010,
+      "tabaka_adi": "PL_SAGLIK_TATIL_KOYU",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 184,
+      "ust_grup_kodu": 118000,
+      "ust_grup_adi": "TURİZM ALANLARI",
+      "fonksiyon_kodu": 118011,
+      "fonksiyon_adi": "TATİL KÖYÜ ALANI",
+      "detay_kodu": 118011,
+      "tabaka_adi": "PL_TATIL_KOYU",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 185,
+      "ust_grup_kodu": 118000,
+      "ust_grup_adi": "TURİZM ALANLARI",
+      "fonksiyon_kodu": 118012,
+      "fonksiyon_adi": "TERMAL TURİZM ALANI",
+      "detay_kodu": 118012,
+      "tabaka_adi": "PL_TERMAL_TURIZM",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 186,
+      "ust_grup_kodu": 119000,
+      "ust_grup_adi": "YAPI SINIRLAMASI GETİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 119001,
+      "fonksiyon_adi": "BORU HATTI KORUMA KUŞAĞI",
+      "detay_kodu": 119001,
+      "tabaka_adi": "KST_BORU_HATTI_KORU",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 187,
+      "ust_grup_kodu": 119000,
+      "ust_grup_adi": "YAPI SINIRLAMASI GETİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 119002,
+      "fonksiyon_adi": "DEMİRYOLLARI KORUMA KUŞAĞI",
+      "detay_kodu": 119002,
+      "tabaka_adi": "KST_DEMIRYOLU_KORU",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 188,
+      "ust_grup_kodu": 119000,
+      "ust_grup_adi": "YAPI SINIRLAMASI GETİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 119003,
+      "fonksiyon_adi": "ENERJİ NAKİL HATTI KORUMA KUŞAĞI",
+      "detay_kodu": 119003,
+      "tabaka_adi": "KST_ENERJI_NAKIL_HAT",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 189,
+      "ust_grup_kodu": 119000,
+      "ust_grup_adi": "YAPI SINIRLAMASI GETİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 119004,
+      "fonksiyon_adi": "HAVA ALANI HAVA KORİDORU",
+      "detay_kodu": 119004,
+      "tabaka_adi": "KST_HAVA_KORIDORU",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 190,
+      "ust_grup_kodu": 119000,
+      "ust_grup_adi": "YAPI SINIRLAMASI GETİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 119005,
+      "fonksiyon_adi": "HAVAALANI/HAVALİMANI KORUMA KUŞAĞI",
+      "detay_kodu": 119005,
+      "tabaka_adi": "KST_HAVAALANI_KORUMA",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 191,
+      "ust_grup_kodu": 119000,
+      "ust_grup_adi": "YAPI SINIRLAMASI GETİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 119006,
+      "fonksiyon_adi": "İÇME SUYU ANA İLETİM HATTI KORUMA KUŞAĞI",
+      "detay_kodu": 119006,
+      "tabaka_adi": "KST_ICME_SUYU_KORU",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 192,
+      "ust_grup_kodu": 119000,
+      "ust_grup_adi": "YAPI SINIRLAMASI GETİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 119007,
+      "fonksiyon_adi": "JEOTERMAL KORUMA KUŞAĞI",
+      "detay_kodu": 119007,
+      "tabaka_adi": "KST_JEOTERMAL_KORU",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 193,
+      "ust_grup_kodu": 119000,
+      "ust_grup_adi": "YAPI SINIRLAMASI GETİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 119008,
+      "fonksiyon_adi": "KARAYOLLARI YOL KENARI KORUMA KUŞAĞI ",
+      "detay_kodu": 119008,
+      "tabaka_adi": "KST_KARAYOLU_KORUMA",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 194,
+      "ust_grup_kodu": 119000,
+      "ust_grup_adi": "YAPI SINIRLAMASI GETİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 119009,
+      "fonksiyon_adi": "İÇME VE KULLANMA SUYU KISA MESAFELİ KORUMA ALANI",
+      "detay_kodu": 119009,
+      "tabaka_adi": "KST_KORUMA_KISA",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 195,
+      "ust_grup_kodu": 119000,
+      "ust_grup_adi": "YAPI SINIRLAMASI GETİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 119010,
+      "fonksiyon_adi": "İÇME VE KULLANMA SUYU MUTLAK KORUMA ALANI",
+      "detay_kodu": 119010,
+      "tabaka_adi": "KST_KORUMA_MUTLAK",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 196,
+      "ust_grup_kodu": 119000,
+      "ust_grup_adi": "YAPI SINIRLAMASI GETİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 119011,
+      "fonksiyon_adi": "İÇME VE KULLANMA SUYU ORTA MESAFELİ KORUMA ALANI",
+      "detay_kodu": 119011,
+      "tabaka_adi": "KST_KORUMA_ORTA",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 197,
+      "ust_grup_kodu": 119000,
+      "ust_grup_adi": "YAPI SINIRLAMASI GETİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 119012,
+      "fonksiyon_adi": "İÇME VE KULLANMA SUYU UZUN MESAFELİ KORUMA ALANI",
+      "detay_kodu": 119012,
+      "tabaka_adi": "KST_KORUMA_UZUN",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 198,
+      "ust_grup_kodu": 119000,
+      "ust_grup_adi": "YAPI SINIRLAMASI GETİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 119013,
+      "fonksiyon_adi": "NÜKLEER ENERJİ ÜRETİM ALANI KORUMA KUŞAĞI",
+      "detay_kodu": 119013,
+      "tabaka_adi": "KST_NUKLEER_EN_KORU",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 199,
+      "ust_grup_kodu": 119000,
+      "ust_grup_adi": "YAPI SINIRLAMASI GETİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 119014,
+      "fonksiyon_adi": "SAĞLIK KORUMA BANDI",
+      "detay_kodu": 119014,
+      "tabaka_adi": "KST_SAGLIK_KORUMA",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 200,
+      "ust_grup_kodu": 119000,
+      "ust_grup_adi": "YAPI SINIRLAMASI GETİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 119015,
+      "fonksiyon_adi": "SU KANALLARI KORUMA KUŞAĞI",
+      "detay_kodu": 119015,
+      "tabaka_adi": "KST_SU_KANAL_KORUMA",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 201,
+      "ust_grup_kodu": 119000,
+      "ust_grup_adi": "YAPI SINIRLAMASI GETİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 119016,
+      "fonksiyon_adi": "SULAK ALAN BÖLGESİ",
+      "detay_kodu": 119016,
+      "tabaka_adi": "KST_SULAK_ALAN_BOLGE",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 202,
+      "ust_grup_kodu": 119000,
+      "ust_grup_adi": "YAPI SINIRLAMASI GETİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 119017,
+      "fonksiyon_adi": "SULAK ALAN EKOLOJİK ETKİLENME BÖLGESİ",
+      "detay_kodu": 119017,
+      "tabaka_adi": "KST_SULAK_EKO_ETKI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 203,
+      "ust_grup_kodu": 119000,
+      "ust_grup_adi": "YAPI SINIRLAMASI GETİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 119018,
+      "fonksiyon_adi": "SULAK ALAN MUTLAK KORUMA BÖLGESİ",
+      "detay_kodu": 119018,
+      "tabaka_adi": "KST_SULAK_MUTLAK",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 204,
+      "ust_grup_kodu": 119000,
+      "ust_grup_adi": "YAPI SINIRLAMASI GETİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 119019,
+      "fonksiyon_adi": "SULAK ALAN ÖZEL HÜKÜM BÖLGESİ",
+      "detay_kodu": 119019,
+      "tabaka_adi": "KST_SULAK_OZEL_HUKUM",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 205,
+      "ust_grup_kodu": 119000,
+      "ust_grup_adi": "YAPI SINIRLAMASI GETİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 119020,
+      "fonksiyon_adi": "SULAK ALAN TAMPON BÖLGESİ",
+      "detay_kodu": 119020,
+      "tabaka_adi": "KST_SULAK_TAMPON",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 206,
+      "ust_grup_kodu": 119000,
+      "ust_grup_adi": "YAPI SINIRLAMASI GETİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 119021,
+      "fonksiyon_adi": "YANICI PARLAYICI VE PATLAYICI MADDELER KORUMA KUŞAĞI",
+      "detay_kodu": 119021,
+      "tabaka_adi": "KST_YANICI_PATLAYICI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 207,
+      "ust_grup_kodu": 119000,
+      "ust_grup_adi": "YAPI SINIRLAMASI GETİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 119022,
+      "fonksiyon_adi": "YER ALTI SU KAYNAKLARI KORUMA KUŞAĞI",
+      "detay_kodu": 119022,
+      "tabaka_adi": "KST_YERALTI_SUYU_KOR",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 208,
+      "ust_grup_kodu": 119000,
+      "ust_grup_adi": "YAPI SINIRLAMASI GETİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 119023,
+      "fonksiyon_adi": "YER ALTI SU KAYNAKLARI KORUMA ALANLARI",
+      "detay_kodu": 119023,
+      "tabaka_adi": "KST_YSK_KORUMA_ALANI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 209,
+      "ust_grup_kodu": 121000,
+      "ust_grup_adi": "İDARİ SINIRLAR",
+      "fonksiyon_kodu": 121101,
+      "fonksiyon_adi": "BELEDİYE SINIRI",
+      "detay_kodu": 121101,
+      "tabaka_adi": "SNR_BELEDIYE",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 210,
+      "ust_grup_kodu": 121000,
+      "ust_grup_adi": "İDARİ SINIRLAR",
+      "fonksiyon_kodu": 121102,
+      "fonksiyon_adi": "İL SINIRI",
+      "detay_kodu": 121102,
+      "tabaka_adi": "SNR_IL",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 211,
+      "ust_grup_kodu": 121000,
+      "ust_grup_adi": "İDARİ SINIRLAR",
+      "fonksiyon_kodu": 121103,
+      "fonksiyon_adi": "İLÇE SINIRI",
+      "detay_kodu": 121103,
+      "tabaka_adi": "SNR_ILCE",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 212,
+      "ust_grup_kodu": 121000,
+      "ust_grup_adi": "İDARİ SINIRLAR",
+      "fonksiyon_kodu": 121104,
+      "fonksiyon_adi": "KÖY SINIRI",
+      "detay_kodu": 121104,
+      "tabaka_adi": "SNR_KOY",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 213,
+      "ust_grup_kodu": 121000,
+      "ust_grup_adi": "İDARİ SINIRLAR",
+      "fonksiyon_kodu": 121105,
+      "fonksiyon_adi": "MAHALLE SINIRI",
+      "detay_kodu": 121105,
+      "tabaka_adi": "SNR_MAHALLE",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 214,
+      "ust_grup_kodu": 121000,
+      "ust_grup_adi": "İDARİ SINIRLAR",
+      "fonksiyon_kodu": 121106,
+      "fonksiyon_adi": "MÜCAVİR ALAN SINIRI",
+      "detay_kodu": 121106,
+      "tabaka_adi": "SNR_MUCAVIR",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 215,
+      "ust_grup_kodu": 121000,
+      "ust_grup_adi": "İDARİ SINIRLAR",
+      "fonksiyon_kodu": 121107,
+      "fonksiyon_adi": "ÜLKE SINIRI",
+      "detay_kodu": 121107,
+      "tabaka_adi": "SNR_ULKE",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 216,
+      "ust_grup_kodu": 113000,
+      "ust_grup_adi": "KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 113101,
+      "fonksiyon_adi": "SİT ETKİLEŞİM GEÇİŞ ALANI SINIRI",
+      "detay_kodu": 113101,
+      "tabaka_adi": "SNR_SEG",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 217,
+      "ust_grup_kodu": 114000,
+      "ust_grup_adi": "ÖZEL KANUNLARLA BELİRLENEN ALAN VE SINIRLAR",
+      "fonksiyon_kodu": 114101,
+      "fonksiyon_adi": "BOĞAZİÇİ GERİ GÖRÜNÜM BÖLGESİ SINIRI",
+      "detay_kodu": 114101,
+      "tabaka_adi": "SNR_BOGAZ_GERI_GOR",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 218,
+      "ust_grup_kodu": 114000,
+      "ust_grup_adi": "ÖZEL KANUNLARLA BELİRLENEN ALAN VE SINIRLAR",
+      "fonksiyon_kodu": 114102,
+      "fonksiyon_adi": "BOĞAZİÇİ ÖN GÖRÜNÜM BÖLGESİ SINIRI",
+      "detay_kodu": 114102,
+      "tabaka_adi": "SNR_BOGAZ_ON_GOR",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 219,
+      "ust_grup_kodu": 114000,
+      "ust_grup_adi": "ÖZEL KANUNLARLA BELİRLENEN ALAN VE SINIRLAR",
+      "fonksiyon_kodu": 114103,
+      "fonksiyon_adi": "BOĞAZİÇİ ETKİLENME BÖLGESİ SINIRI",
+      "detay_kodu": 114103,
+      "tabaka_adi": "SNR_BOGAZICI_ETKILNM",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 220,
+      "ust_grup_kodu": 114000,
+      "ust_grup_adi": "ÖZEL KANUNLARLA BELİRLENEN ALAN VE SINIRLAR",
+      "fonksiyon_kodu": 114104,
+      "fonksiyon_adi": "DİĞER ÖZEL KANUNLARLA BELİRLENEN ALAN SINIRLARI",
+      "detay_kodu": 114104,
+      "tabaka_adi": "SNR_DIGER_OZL",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 221,
+      "ust_grup_kodu": 114000,
+      "ust_grup_adi": "ÖZEL KANUNLARLA BELİRLENEN ALAN VE SINIRLAR",
+      "fonksiyon_kodu": 114105,
+      "fonksiyon_adi": "GECEKONDU ÖNLEME BÖLGESİ SINIRI",
+      "detay_kodu": 114105,
+      "tabaka_adi": "SNR_GOB",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 222,
+      "ust_grup_kodu": 114000,
+      "ust_grup_adi": "ÖZEL KANUNLARLA BELİRLENEN ALAN VE SINIRLAR",
+      "fonksiyon_kodu": 114108,
+      "fonksiyon_adi": "TOPLU KONUT ALANI SINIRI",
+      "detay_kodu": 114108,
+      "tabaka_adi": "SNR_TKA",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 223,
+      "ust_grup_kodu": 114000,
+      "ust_grup_adi": "ÖZEL KANUNLARLA BELİRLENEN ALAN VE SINIRLAR",
+      "fonksiyon_kodu": 114109,
+      "fonksiyon_adi": "TURİZM MERKEZİ/KÜLTÜR VE TURİZM KORUMA VE GELİŞİM ALT BÖLGE SINIRI",
+      "detay_kodu": 114109,
+      "tabaka_adi": "SNR_TURIZM_KORUMA",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 224,
+      "ust_grup_kodu": 122000,
+      "ust_grup_adi": "PLANLAMA SINIRLARI",
+      "fonksiyon_kodu": 122103,
+      "fonksiyon_adi": "ETAPLAMA SINIRI",
+      "detay_kodu": 122103,
+      "tabaka_adi": "SNR_ETAPLAMA",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 225,
+      "ust_grup_kodu": 122000,
+      "ust_grup_adi": "PLANLAMA SINIRLARI",
+      "fonksiyon_kodu": 122105,
+      "fonksiyon_adi": "İMAR HAKKI AKTARIM ALANI SINIRI",
+      "detay_kodu": 122105,
+      "tabaka_adi": "SNR_IMAR_HAKKI_AKT",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 226,
+      "ust_grup_kodu": 122000,
+      "ust_grup_adi": "PLANLAMA SINIRLARI",
+      "fonksiyon_kodu": 122106,
+      "fonksiyon_adi": "KENTSEL TASARIM PROJESİ SINIRI",
+      "detay_kodu": 122106,
+      "tabaka_adi": "SNR_KENTSEL_TASARIM",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 227,
+      "ust_grup_kodu": 122000,
+      "ust_grup_adi": "PLANLAMA SINIRLARI",
+      "fonksiyon_kodu": 122107,
+      "fonksiyon_adi": "ÖZEL PROJE ALANI SINIRI ",
+      "detay_kodu": 122107,
+      "tabaka_adi": "SNR_OZEL_PROJE_ALANI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 228,
+      "ust_grup_kodu": 122000,
+      "ust_grup_adi": "PLANLAMA SINIRLARI",
+      "fonksiyon_kodu": 122108,
+      "fonksiyon_adi": "PLAN DEĞİŞİKLİĞİ ONAMA SINIRI",
+      "detay_kodu": 122108,
+      "tabaka_adi": "SNR_PLAN_DEGISIKLIGI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 229,
+      "ust_grup_kodu": 122000,
+      "ust_grup_adi": "PLANLAMA SINIRLARI",
+      "fonksiyon_kodu": 122109,
+      "fonksiyon_adi": "PLAN ONAMA SINIRI",
+      "detay_kodu": 122109,
+      "tabaka_adi": "SNR_PLANONAMA",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 230,
+      "ust_grup_kodu": 122000,
+      "ust_grup_adi": "PLANLAMA SINIRLARI",
+      "fonksiyon_kodu": 122110,
+      "fonksiyon_adi": "YAPI YAKLAŞMA SINIRI",
+      "detay_kodu": 122110,
+      "tabaka_adi": "SNR_YAPIYAK",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 231,
+      "ust_grup_kodu": 119000,
+      "ust_grup_adi": "YAPI SINIRLAMASI GETİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 119102,
+      "fonksiyon_adi": "SULAK ALAN SINIRI",
+      "detay_kodu": 119102,
+      "tabaka_adi": "SNR_SULAK_ALAN",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 232,
+      "ust_grup_kodu": 114000,
+      "ust_grup_adi": "ÖZEL KANUNLARLA BELİRLENEN ALAN VE SINIRLAR",
+      "fonksiyon_kodu": 114200,
+      "fonksiyon_adi": "SAHİL ŞERİDİ",
+      "detay_kodu": 114200,
+      "tabaka_adi": "SNR_SAHIL_SERIDI",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 234,
+      "ust_grup_kodu": 118000,
+      "ust_grup_adi": "TURİZM ALANLARI",
+      "fonksiyon_kodu": 118200,
+      "fonksiyon_adi": "GOLF TURİZMİ",
+      "detay_kodu": 118200,
+      "tabaka_adi": "YOK",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 235,
+      "ust_grup_kodu": 109000,
+      "ust_grup_adi": "KARAYOLLARI",
+      "fonksiyon_kodu": 109100,
+      "fonksiyon_adi": "KATLI OTOPARK",
+      "detay_kodu": 109100,
+      "tabaka_adi": "YOK",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 236,
+      "ust_grup_kodu": 120000,
+      "ust_grup_adi": "DENİZYOLLARI",
+      "fonksiyon_kodu": 120100,
+      "fonksiyon_adi": "LİMAN",
+      "detay_kodu": 120100,
+      "tabaka_adi": "YOK",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 237,
+      "ust_grup_kodu": 119000,
+      "ust_grup_adi": "YAPI SINIRLAMASI GETİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": 119200,
+      "fonksiyon_adi": "TÜNEL ETKİ ALANI",
+      "detay_kodu": 119200,
+      "tabaka_adi": "YOK",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 238,
+      "ust_grup_kodu": 106000,
+      "ust_grup_adi": "ENERJI ÜRETİM DAĞITIM VE DEPOLAMA",
+      "fonksiyon_kodu": 106100,
+      "fonksiyon_adi": "ENERJİ DEPOLAMA ALANI",
+      "detay_kodu": 106100,
+      "tabaka_adi": "PL_ENERJI_DEPOLAMA",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 239,
+      "ust_grup_kodu": 106000,
+      "ust_grup_adi": "ENERJI ÜRETİM DAĞITIM VE DEPOLAMA",
+      "fonksiyon_kodu": 106200,
+      "fonksiyon_adi": "RAFİNERİ-PETROKİMYA TESİSİ ALANI",
+      "detay_kodu": 106200,
+      "tabaka_adi": "PL_ENERJI_DEPOLAMA",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 241,
+      "ust_grup_kodu": 117000,
+      "ust_grup_adi": "SU - ATIKSU VE ATIK SİSTEMLERİ",
+      "fonksiyon_kodu": 117100,
+      "fonksiyon_adi": "ATIK GERİ KAZANIM TESİSLERİ ALANI",
+      "detay_kodu": 117100,
+      "tabaka_adi": "YOK",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 242,
+      "ust_grup_kodu": 118000,
+      "ust_grup_adi": "TURİZM ALANLARI",
+      "fonksiyon_kodu": 118200,
+      "fonksiyon_adi": "EKOTURİZM/KIRSAL TURİZM",
+      "detay_kodu": 118200,
+      "tabaka_adi": "YOK",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 243,
+      "ust_grup_kodu": 109000,
+      "ust_grup_adi": "KARAYOLLARI",
+      "fonksiyon_kodu": 109200,
+      "fonksiyon_adi": "ELEKTRİKLİ ARAÇ ŞARJ İSTASYONU",
+      "detay_kodu": 109200,
+      "tabaka_adi": "YOK",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 244,
+      "ust_grup_kodu": 123000,
+      "ust_grup_adi": "SOSYAL ALT YAPI ALANLARI",
+      "fonksiyon_kodu": 123100,
+      "fonksiyon_adi": "SOKAK HAYVANLARI BARINAĞI ALANI",
+      "detay_kodu": 123100,
+      "tabaka_adi": "YOK",
+      "geometry_type": "POLYGON"
+    },
+    {
+      "source_fid": 1,
+      "ust_grup_kodu": "104000",
+      "ust_grup_adi": "DEMİRYOLLARI",
+      "fonksiyon_kodu": "104100",
+      "fonksiyon_adi": "DEMİRYOLU",
+      "detay_kodu": "104100",
+      "tabaka_adi": "HAT_DEMIRYOLU",
+      "geometry_type": "LINE"
+    },
+    {
+      "source_fid": 2,
+      "ust_grup_kodu": "104000",
+      "ust_grup_adi": "DEMİRYOLLARI",
+      "fonksiyon_kodu": "104101",
+      "fonksiyon_adi": "HIZLI TREN HATTI",
+      "detay_kodu": "104101",
+      "tabaka_adi": "HAT_HIZLI_TREN",
+      "geometry_type": "LINE"
+    },
+    {
+      "source_fid": 3,
+      "ust_grup_kodu": "104000",
+      "ust_grup_adi": "DEMİRYOLLARI",
+      "fonksiyon_kodu": "104102",
+      "fonksiyon_adi": "KATAR DÜZENLEME (TRİYAJ) ALANI",
+      "detay_kodu": "104102",
+      "tabaka_adi": "HAT_TRIYAJ",
+      "geometry_type": "LINE"
+    },
+    {
+      "source_fid": 4,
+      "ust_grup_kodu": "120000",
+      "ust_grup_adi": "DENİZYOLLARI",
+      "fonksiyon_kodu": "120101",
+      "fonksiyon_adi": "DENİZ ULAŞIM BAĞLANTISI",
+      "detay_kodu": "120101",
+      "tabaka_adi": "SNR_DENIZ_ULASIM",
+      "geometry_type": "LINE"
+    },
+    {
+      "source_fid": 5,
+      "ust_grup_kodu": "106000",
+      "ust_grup_adi": "ENERJI ÜRETİM DAĞITIM VE DEPOLAMA",
+      "fonksiyon_kodu": "106101",
+      "fonksiyon_adi": "AKARYAKIT BORU HATTI",
+      "detay_kodu": "106101",
+      "tabaka_adi": "HAT_AKARYAKIT_BORU",
+      "geometry_type": "LINE"
+    },
+    {
+      "source_fid": 6,
+      "ust_grup_kodu": "106000",
+      "ust_grup_adi": "ENERJI ÜRETİM DAĞITIM VE DEPOLAMA",
+      "fonksiyon_kodu": "106102",
+      "fonksiyon_adi": "BORU HATTI",
+      "detay_kodu": "106102",
+      "tabaka_adi": "HAT_BORU_HATTI",
+      "geometry_type": "LINE"
+    },
+    {
+      "source_fid": 7,
+      "ust_grup_kodu": "106000",
+      "ust_grup_adi": "ENERJI ÜRETİM DAĞITIM VE DEPOLAMA",
+      "fonksiyon_kodu": "106103",
+      "fonksiyon_adi": "CEBRİ BORU HATTI",
+      "detay_kodu": "106103",
+      "tabaka_adi": "HAT_CEBRI_BORU",
+      "geometry_type": "LINE"
+    },
+    {
+      "source_fid": 8,
+      "ust_grup_kodu": "106000",
+      "ust_grup_adi": "ENERJI ÜRETİM DAĞITIM VE DEPOLAMA",
+      "fonksiyon_kodu": "106104",
+      "fonksiyon_adi": "DOĞALGAZ BORU HATTI",
+      "detay_kodu": "106104",
+      "tabaka_adi": "HAT_DOGALGAZ",
+      "geometry_type": "LINE"
+    },
+    {
+      "source_fid": 9,
+      "ust_grup_kodu": "106000",
+      "ust_grup_adi": "ENERJI ÜRETİM DAĞITIM VE DEPOLAMA",
+      "fonksiyon_kodu": "106105",
+      "fonksiyon_adi": "ENERJİ NAKİL HATTI",
+      "detay_kodu": "106105",
+      "tabaka_adi": "HAT_ENERJI_NAKIL_HAT",
+      "geometry_type": "LINE"
+    },
+    {
+      "source_fid": 10,
+      "ust_grup_kodu": "106000",
+      "ust_grup_adi": "ENERJI ÜRETİM DAĞITIM VE DEPOLAMA",
+      "fonksiyon_kodu": "106106",
+      "fonksiyon_adi": "İLETİM TÜNELİ",
+      "detay_kodu": "106106",
+      "tabaka_adi": "HAT_ILETIM_TUNELI",
+      "geometry_type": "LINE"
+    },
+    {
+      "source_fid": 18,
+      "ust_grup_kodu": "111000",
+      "ust_grup_adi": "KENTSEL TOPLU TAŞIMA GÜZERGAHLARI",
+      "fonksiyon_kodu": "111101",
+      "fonksiyon_adi": "HAVAİ HAT",
+      "detay_kodu": "111101",
+      "tabaka_adi": "HAT_HAVAI",
+      "geometry_type": "LINE"
+    },
+    {
+      "source_fid": 19,
+      "ust_grup_kodu": "111000",
+      "ust_grup_adi": "KENTSEL TOPLU TAŞIMA GÜZERGAHLARI",
+      "fonksiyon_kodu": "111102",
+      "fonksiyon_adi": "HAVARAY",
+      "detay_kodu": "111102",
+      "tabaka_adi": "HAT_HAVARAY",
+      "geometry_type": "LINE"
+    },
+    {
+      "source_fid": 20,
+      "ust_grup_kodu": "111000",
+      "ust_grup_adi": "KENTSEL TOPLU TAŞIMA GÜZERGAHLARI",
+      "fonksiyon_kodu": "111103",
+      "fonksiyon_adi": "RAYLI TOPLU TAŞIMA HATTI",
+      "detay_kodu": "111103",
+      "tabaka_adi": "HAT_RAYLI_TOPLU_TAS",
+      "geometry_type": "LINE"
+    },
+    {
+      "source_fid": 27,
+      "ust_grup_kodu": "114000",
+      "ust_grup_adi": "ÖZEL KANUNLARLA BELİRLENEN ALAN VE SINIRLAR",
+      "fonksiyon_kodu": "114106",
+      "fonksiyon_adi": "KIYI KENAR ÇİZGİSİ",
+      "detay_kodu": "114106",
+      "tabaka_adi": "SNR_KIYI_KENAR",
+      "geometry_type": "LINE"
+    },
+    {
+      "source_fid": 28,
+      "ust_grup_kodu": "114000",
+      "ust_grup_adi": "ÖZEL KANUNLARLA BELİRLENEN ALAN VE SINIRLAR",
+      "fonksiyon_kodu": "114107",
+      "fonksiyon_adi": "SAHİL ŞERİDİ",
+      "detay_kodu": "114107",
+      "tabaka_adi": "SNR_SAHIL_SERIDI",
+      "geometry_type": "LINE"
+    },
+    {
+      "source_fid": 31,
+      "ust_grup_kodu": "132000",
+      "ust_grup_adi": "YAPI DÜZENİ VE YOĞUNLUKLARI",
+      "fonksiyon_kodu": "132102",
+      "fonksiyon_adi": "İFRAZ HATTI",
+      "detay_kodu": "132102",
+      "tabaka_adi": "HAT_IFRAZ",
+      "geometry_type": "LINE"
+    },
+    {
+      "source_fid": 32,
+      "ust_grup_kodu": "132000",
+      "ust_grup_adi": "YAPI DÜZENİ VE YOĞUNLUKLARI",
+      "fonksiyon_kodu": "132101",
+      "fonksiyon_adi": "KADEME HATTI",
+      "detay_kodu": "132101",
+      "tabaka_adi": "HAT_KADEME",
+      "geometry_type": "LINE"
+    },
+    {
+      "source_fid": 42,
+      "ust_grup_kodu": "117000",
+      "ust_grup_adi": "SU - ATIKSU VE ATIK SİSTEMLERİ",
+      "fonksiyon_kodu": "117101",
+      "fonksiyon_adi": "İÇME SUYU ANA HATTI",
+      "detay_kodu": "117101",
+      "tabaka_adi": "HAT_ANA_ICME_SUYU",
+      "geometry_type": "LINE"
+    },
+    {
+      "source_fid": 43,
+      "ust_grup_kodu": "117000",
+      "ust_grup_adi": "SU - ATIKSU VE ATIK SİSTEMLERİ",
+      "fonksiyon_kodu": "117102",
+      "fonksiyon_adi": "ATIK SU DERİN DENİZ DEŞARJ HATTI",
+      "detay_kodu": "117102",
+      "tabaka_adi": "HAT_ATIKSU_DESARJ",
+      "geometry_type": "LINE"
+    },
+    {
+      "source_fid": 44,
+      "ust_grup_kodu": "117000",
+      "ust_grup_adi": "SU - ATIKSU VE ATIK SİSTEMLERİ",
+      "fonksiyon_kodu": "117103",
+      "fonksiyon_adi": "ATIK SU ANA KOLLEKTÖRÜ",
+      "detay_kodu": "117103",
+      "tabaka_adi": "HAT_ATIKSU_KOLLEKTOR",
+      "geometry_type": "LINE"
+    },
+    {
+      "source_fid": 45,
+      "ust_grup_kodu": "117000",
+      "ust_grup_adi": "SU - ATIKSU VE ATIK SİSTEMLERİ",
+      "fonksiyon_kodu": "117104",
+      "fonksiyon_adi": "SOĞUTMA SUYU ALMA HATTI",
+      "detay_kodu": "117104",
+      "tabaka_adi": "HAT_SOGUTMA_SUYU",
+      "geometry_type": "LINE"
+    },
+    {
+      "source_fid": 46,
+      "ust_grup_kodu": "119000",
+      "ust_grup_adi": "YAPI SINIRLAMASI GETİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": "119101",
+      "fonksiyon_adi": "MANİA PLANI",
+      "detay_kodu": "119101",
+      "tabaka_adi": "SNR_MANIA_PLAN",
+      "geometry_type": "LINE"
+    },
+    {
+      "source_fid": 48,
+      "ust_grup_kodu": "130000",
+      "ust_grup_adi": "ÖZEL ÇİZGİLER",
+      "fonksiyon_kodu": "130100",
+      "fonksiyon_adi": "ADAKENARI",
+      "detay_kodu": "130100",
+      "tabaka_adi": "ADAKENARI",
+      "geometry_type": "LINE"
+    },
+    {
+      "source_fid": 51,
+      "ust_grup_kodu": "130000",
+      "ust_grup_adi": "ÖZEL ÇİZGİLER",
+      "fonksiyon_kodu": "130103",
+      "fonksiyon_adi": "KALDIRIM",
+      "detay_kodu": "130103",
+      "tabaka_adi": "KALDIRIM",
+      "geometry_type": "LINE"
+    },
+    {
+      "source_fid": 59,
+      "ust_grup_kodu": "132000",
+      "ust_grup_adi": "YAPI DÜZENİ VE YOĞUNLUKLARI",
+      "fonksiyon_kodu": "132103",
+      "fonksiyon_adi": "KORUNAN CEPHE ÇİZGİSİ",
+      "detay_kodu": "132103",
+      "tabaka_adi": "YOK",
+      "geometry_type": "LINE"
+    },
+    {
+      "source_fid": 60,
+      "ust_grup_kodu": "132000",
+      "ust_grup_adi": "YAPI DÜZENİ VE YOĞUNLUKLARI",
+      "fonksiyon_kodu": "132104",
+      "fonksiyon_adi": "DÜZELTİLEN CEPHE ÇİZGİSİ",
+      "detay_kodu": "132104",
+      "tabaka_adi": "YOK",
+      "geometry_type": "LINE"
+    },
+    {
+      "source_fid": 61,
+      "ust_grup_kodu": "132000",
+      "ust_grup_adi": "YAPI DÜZENİ VE YOĞUNLUKLARI",
+      "fonksiyon_kodu": "132105",
+      "fonksiyon_adi": "ÖNERİLEN CEPHE ÇİZGİSİ",
+      "detay_kodu": "132105",
+      "tabaka_adi": "YOK",
+      "geometry_type": "LINE"
+    },
+    {
+      "source_fid": 62,
+      "ust_grup_kodu": "119000",
+      "ust_grup_adi": "YAPI SINIRLAMASI GETİRİLEREK KORUNACAK ALANLAR",
+      "fonksiyon_kodu": "119103",
+      "fonksiyon_adi": "HAVAALANI HAVA KORİDORU",
+      "detay_kodu": "119103",
+      "tabaka_adi": "KST_HAVA_KORIDORU",
+      "geometry_type": "LINE"
+    },
+    {
+      "source_fid": 63,
+      "ust_grup_kodu": "133000",
+      "ust_grup_adi": "KARAYOLLARI",
+      "fonksiyon_kodu": "133001",
+      "fonksiyon_adi": "ERİŞME KONTROLLÜ KARAYOLU (OTOYOL)",
+      "detay_kodu": "133001",
+      "tabaka_adi": "HAT_OTOYOL",
+      "geometry_type": "LINE"
+    },
+    {
+      "source_fid": 64,
+      "ust_grup_kodu": "133000",
+      "ust_grup_adi": "KARAYOLLARI",
+      "fonksiyon_kodu": "133002",
+      "fonksiyon_adi": "BÖLÜNMÜŞ TAŞIT YOLU",
+      "detay_kodu": "133002",
+      "tabaka_adi": "YOK",
+      "geometry_type": "LINE"
+    },
+    {
+      "source_fid": 65,
+      "ust_grup_kodu": "133000",
+      "ust_grup_adi": "KARAYOLLARI",
+      "fonksiyon_kodu": "133003",
+      "fonksiyon_adi": "TAŞIT YOLU",
+      "detay_kodu": "133003",
+      "tabaka_adi": "YOK",
+      "geometry_type": "LINE"
+    },
+    {
+      "source_fid": 66,
+      "ust_grup_kodu": "133000",
+      "ust_grup_adi": "KARAYOLLARI",
+      "fonksiyon_kodu": "133004",
+      "fonksiyon_adi": "BİSİKLET YOLU",
+      "detay_kodu": "133004",
+      "tabaka_adi": "YOK",
+      "geometry_type": "LINE"
+    },
+    {
+      "source_fid": 67,
+      "ust_grup_kodu": "133000",
+      "ust_grup_adi": "KARAYOLLARI",
+      "fonksiyon_kodu": "133005",
+      "fonksiyon_adi": "YAYA YOLU VE BÖLGESİ",
+      "detay_kodu": "133005",
+      "tabaka_adi": "YOK",
+      "geometry_type": "LINE"
+    }
+  ]
+}

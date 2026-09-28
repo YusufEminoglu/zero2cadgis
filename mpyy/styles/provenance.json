@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "distribution_status": "unverified; local development only until source redistribution rights are established",
+  "sources": [
+    {
+      "filename": "UIPMPYYSTYLE-2026_02_27.xml",
+      "bytes": 5565775,
+      "sha256": "e7da049b8494424962a36d900fc8af2331216ffd620d8c8c0ad9a4cca02faea3"
+    },
+    {
+      "filename": "MpyyUipDb_2026_02_27.gpkg",
+      "bytes": 3665920,
+      "sha256": "63c796d081d0f099edd8ac87e7e1362412ad8f46db86506b90ed1ae307b94c28"
+    }
+  ],
+  "catalog_sources": {
+    "note": "The MSP catalogue and the Ek-1e detail symbols are compiled from the Ministry's published annexes, not from the UIP source above. Their digests are repeated here so that this one file answers 'what is in the package, and from where'. Each compiler records the digests of its own inputs in the file it writes; the MSP compiler additionally refuses to write when one of them disagrees.",
+    "sources": [
+      {
+        "filename": "EK-1e.docx",
+        "sha256": "d3d8705644448bd8adce40c321b52415bff572a1360145b4b2bda104c605d434",
+        "used_by": "styles/msp_catalog.json (detail text and colour columns)"
+      },
+      {
+        "filename": "20260122-2-5-Ek1e-Mekansal-Planlar-Detay-Kataloglari-20260122155150.pdf",
+        "sha256": "fe21926c6827a245d11e10b4ab47a4276b14abc4b02d76b299fdb3d84ecb1be4",
+        "used_by": "styles/msp_catalog.json (drawn columns), styles/mpyy_detail_catalog/symbols.json, resources/katalog_sembol/"
+      },
+      {
+        "filename": "EK_1b Mekansal Strateji Planlar Gosterimleri.pdf",
+        "sha256": "1c08e7c78b970e1c6d29512e1f7b70e9028fcb5ff0c9d1a3ed2f30e075ded161",
+        "used_by": "styles/msp_shapes.json -> styles/msp_catalog.json v4 (which mark a point record is drawn with, its printed colour, its hatch axis), resources/msp_icons/"
+      }
+    ],
+    "distribution_status": "unverified, the same state as distribution_status above: these are the Ministry's published annexes and no redistribution term has been established for them."
+  },
+  "mapping_method": "Exact name and geometry first (including source whitespace); unique Turkish uppercase name fallback; explicit HAVAALANI/HAVA ALANI spelling alias; duplicate codes omitted.",
+  "normalized_name_collisions": [["OTEL ALANI", "OTEL ALANI "]],
+  "aliases": {
+    "HAVAALANI HAVA KORİDORU": "HAVA ALANI HAVA KORİDORU"
+  },
+  "ambiguous_codes_omitted": [
+    {
+      "code": "118200",
+      "function": "GOLF TURİZMİ",
+      "geometry_type": "POLYGON",
+      "tabaka": "YOK"
+    },
+    {
+      "code": "118200",
+      "function": "EKOTURİZM/KIRSAL TURİZM",
+      "geometry_type": "POLYGON",
+      "tabaka": "YOK"
+    }
+  ],
+  "geometry_mismatches_omitted": [
+    {
+      "code": "119004",
+      "function": "HAVA ALANI HAVA KORİDORU",
+      "geometry_type": "POLYGON",
+      "reason": "No symbol of required geometry type"
+    },
+    {
+      "code": "114200",
+      "function": "SAHİL ŞERİDİ",
+      "geometry_type": "POLYGON",
+      "reason": "No symbol of required geometry type"
+    }
+  ],
+  "top_level_symbols": 300,
+  "all_symbol_nodes": 1100,
+  "nested_only_symbol_nodes": 800,
+  "external_svg_references": {
+    "Font Awesome icons (Font Awesome Free icons)/svg/solid/water.svg": 7,
+    "crosses/Cross4.svg": 1
+  },
+  "font_families": [
+    "Arial",
+    "Arial Black",
+    "Times New Roman",
+    "Calibri"
+  ],
+  "bundled_font_payload": {
+    "note": "The font_families list above is what the source XML references, not what the package ships. The package carries its own TTF payload under resources/fonts/; the measured inventory is below.",
+    "path": "resources/fonts",
+    "file_count": 131,
+    "family_count": 58,
+    "measurement": "QFontDatabase.addApplicationFont on every .ttf, then applicationFontFamilies; 0 files unreadable, so all 131 register.",
+    "free_licensed": {
+      "families": ["DejaVu Sans", "DejaVu Sans Mono", "DejaVu Serif", "DejaVu Math TeX Gyre"],
+      "file_count": 22,
+      "basis": "The DejaVu fonts carry the DejaVu / Bitstream Vera license, which permits redistribution."
+    },
+    "unverified": {
+      "family_count": 54,
+      "file_count": 109,
+      "plan_notation_families": 51,
+      "plan_notation_examples": ["CDP_10_1", "MCDP_25_10_1", "MNIP_10_1", "MUIP_10_1", "NIP_10_1", "UIP_10_1", "OG_V_1_1", "uygulama_imar_00", "nazim_imar_00", "yerlesim", "cevre_duzeni_plani_00", "mekansal_strateji_planlari_00", "mulga_uip_00_1"],
+      "marker_families": ["ESRI Default Marker", "Intelli Eplan Extra", "ISKI"],
+      "basis": "No license file, license header or attribution record accompanies any of the 131 files. The three marker families above are named after unrelated third parties; the rest are named after Turkish plan levels and authorities."
+    },
+    "distribution_status": "unverified; the package ships these files under the overall distribution_status above. This record states what the package contains, it does not assert a right to redistribute it."
+  },
+  "source_ownership_evidence": "zero2cadgis/THIRD_PARTY_NOTICES.md attributes source database compilation to Yusuf Eminoğlu; XML contains no explicit license declaration.",
+  "limitations": [
+    "No legal conformity certification.",
+    "No point code mappings: source lookup tables cover polygon and line only.",
+    "The source references external SVGs. The engine embeds packaged water.svg and Cross4.svg during import.",
+    "Original system fonts are used if installed; absent families use a reported text fallback.",
+    "79 legacy setback geometry generators are disabled; code field aliases are normalized at import.",
+    "Native metre-based map units are preserved. Styling requires a projected metre layer and project CRS."
+  ]
+}

@@ -4,13 +4,23 @@ from __future__ import annotations
 
 import contextlib
 import re
-from qgis.core import QgsWkbTypes
+from functools import lru_cache
+
+with contextlib.suppress(ImportError):
+    from qgis.core import QgsWkbTypes
 
 
 def fix_mojibake(text: str | None) -> str:
     """Repair Mojibake character corruptions and unescape DXF unicode escapes."""
     if not text or not isinstance(text, str):
         return str(text) if text is not None else ""
+    return _fix_mojibake_str(text)
+
+
+@lru_cache(maxsize=65536)
+def _fix_mojibake_str(text: str) -> str:
+    # Pure str -> str and called once per attribute cell; CAD attribute values
+    # repeat heavily (file, tabaka, entity kind on every row), so it is cached.
 
     # 1. Unescape DXF \U+XXXX / \u+XXXX unicode escapes (e.g. \U+015E -> Ş)
     if "\\U+" in text or "\\u+" in text or r"\U+" in text or r"\u+" in text:
@@ -20,13 +30,11 @@ def fix_mojibake(text: str | None) -> str:
     if any(c in text for c in ("Ã", "Â", "Å", "Ä", "Ã°", "Ã½", "â", "ï")):
         for src_enc in ("latin1", "cp1252"):
             for dst_enc in ("utf-8", "cp1254", "iso-8859-9"):
-                try:
+                with contextlib.suppress(UnicodeEncodeError, UnicodeDecodeError):
                     fixed = text.encode(src_enc).decode(dst_enc)
                     if not any(c in fixed for c in ("Ã", "Â", "Å", "Ä", "â")):
                         text = fixed
                         break
-                except (UnicodeEncodeError, UnicodeDecodeError):
-                    pass
 
     # 3. Direct character replacement for remaining stubborn Turkish Mojibake double-encodings
     replacements = {

@@ -208,6 +208,171 @@ class TestLiveConversion(unittest.TestCase):
         self.assertGreater(result.feature_count, 0)
 
 
+class TestPlanPipelineQgis(unittest.TestCase):
+    """Plan-mode pieces that only mean anything with real QGIS geometry."""
+
+    @staticmethod
+    def _line(name, *pts, closed=False, kind="Line"):
+        from zero2cadgis.core.netcad_parser import NetcadCoordinate, NetcadEntity
+        return NetcadEntity(
+            geometry_kind=kind, layer_code=7, layer_name=name, is_closed=closed,
+            coordinates=[NetcadCoordinate(x, y) for x, y in pts])
+
+    def test_polygonizer_nodes_crossings_keeps_holes_and_skips_closed(self):
+        from zero2cadgis.core.cad_polygonizer import polygonize_cad_entities
+        L = self._line
+        # Two long lines crossing mid-segment plus two closing lines: without
+        # noding there is no shared vertex at the crossings and no face at all.
+        cross = [
+            L("PL_KONUT", (0, 10), (100, 10)), L("PL_KONUT", (0, 90), (100, 90)),
+            L("PL_KONUT", (10, 0), (10, 100)), L("PL_KONUT", (90, 0), (90, 100)),
+        ]
+        faces = polygonize_cad_entities(cross)
+        self.assertEqual(len(faces), 1)
+        self.assertEqual(faces[0].name, "POLYGONIZED")
+        # A square inside it: the outer face keeps it as a hole.
+        inner = [
+            L("PL_KONUT", (40, 40), (60, 40)), L("PL_KONUT", (60, 40), (60, 60)),
+            L("PL_KONUT", (60, 60), (40, 60)), L("PL_KONUT", (40, 60), (40, 40)),
+        ]
+        faces = polygonize_cad_entities(cross + inner)
+        self.assertEqual(len(faces), 2)
+        outer = max(faces, key=lambda f: len(f.interior_rings))
+        self.assertEqual(len(outer.interior_rings), 1)
+        # A closed polyline is already a polygon and must not come back twice.
+        drawn = L("PL_KONUT", (200, 0), (220, 0), (220, 20), (200, 20), (200, 0),
+                  closed=True, kind="Polyline")
+        self.assertEqual(len(polygonize_cad_entities([drawn])), 0)
+        # Not a plan area: KOPRU is a bridge, not KOP.
+        bridge = [L("KOPRU", *seg) for seg in (((0, 0), (5, 0)), ((5, 0), (5, 5)),
+                                               ((5, 5), (0, 5)), ((0, 5), (0, 0)))]
+        self.assertEqual(polygonize_cad_entities(bridge), [])
+
+    def test_plan_symbology_labels_render_and_catch_all_is_neutral(self):
+        from qgis.core import (QgsExpression, QgsExpressionContext, QgsFeature,
+                               QgsField, QgsGeometry, QgsVectorLayer)
+        from qgis.PyQt.QtCore import QMetaType
+        from zero2cadgis.core.symbology import UNMATCHED_RULE, apply_plan_symbology
+
+        layer = QgsVectorLayer("Polygon?crs=EPSG:5253", "UIP_TEST", "memory")
+        provider = layer.dataProvider()
+        provider.addAttributes([
+            QgsField("uip_tabaka", QMetaType.Type.QString),
+            QgsField("TAM_ADI", QMetaType.Type.QString),
+            QgsField("YapiDuzeni", QMetaType.Type.QString),
+            QgsField("KatAdedi", QMetaType.Type.Int),
+        ])
+        layer.updateFields()
+        rows = [("PL_KONUT", "YERLEŞİK KONUT ALANI", "AYRIK", 3),
+                ("PL_PARK", "PARK", None, None)]
+        feats = []
+        for i, values in enumerate(rows):
+            f = QgsFeature(layer.fields())
+            f.setGeometry(QgsGeometry.fromWkt(
+                f"POLYGON(({i*100} 0,{i*100+50} 0,{i*100+50} 50,{i*100} 50,{i*100} 0))"))
+            f.setAttributes(list(values))
+            feats.append(f)
+        provider.addFeatures(feats)
+        layer.updateExtents()
+        self.assertTrue(apply_plan_symbology(layer, plan_type="UIP"))
+
+        renderer = layer.renderer()
+        cats = {c.value(): c for c in renderer.categories()}
+        self.assertIn("", cats)                       # all other values
+        self.assertEqual(cats[""].label(), UNMATCHED_RULE.display_name)
+
+        settings = layer.labeling().settings()
+        self.assertTrue(settings.isExpression)
+        expression = QgsExpression(settings.fieldName)
+        self.assertFalse(expression.hasParserError(), expression.parserErrorString())
+        context = QgsExpressionContext()
+        texts = []
+        for f in layer.getFeatures():
+            context.setFeature(f)
+            texts.append(expression.evaluate(context))
+        self.assertFalse(expression.hasEvalError(), expression.evalErrorString())
+        self.assertEqual(texts, ["AYRIK-3", "PARK"])
+
+
+class TestMpyyStructureImportQgis(unittest.TestCase):
+    """NCZ -> 02CadGis -> MPYY 1.1.7 workspace with the MPYY UİP styles."""
+
+    def setUp(self):
+        from qgis.PyQt.QtWidgets import QMessageBox
+        self.errors = []
+        self._critical, self._warning = QMessageBox.critical, QMessageBox.warning
+        QMessageBox.critical = staticmethod(lambda *a, **k: self.errors.append(a[2:]))
+        QMessageBox.warning = staticmethod(lambda *a, **k: self.errors.append(a[2:]))
+        self.work = tempfile.mkdtemp(prefix="zero2cadgis-mpyy-")
+
+    def tearDown(self):
+        from qgis.PyQt.QtWidgets import QMessageBox
+        QMessageBox.critical, QMessageBox.warning = self._critical, self._warning
+        QgsProject.instance().removeAllMapLayers()
+        QgsProject.instance().layerTreeRoot().removeAllChildren()
+        gc.collect()
+
+    def test_ncz_import_in_mpyy_structure(self):
+        from qgis.PyQt.QtCore import Qt
+        from zero2cadgis.dialogs.dock import Zero2CadGisDockWidget
+        from zero2cadgis.tests import ncz_fixtures as fx
+
+        path = os.path.join(self.work, "1000_TEST_UIP.ncz")
+        with open(path, "wb") as handle:
+            handle.write(b"".join([
+                fx.version_block(),
+                fx.layer_table_block([b"PL_KONUT", b"PL_GELISME_KONUT", b"ADAKENARI", b"CIZPEN"]),
+                fx.polyline_block(layer=0, closed=True),
+                fx.polyline_block(layer=1, closed=True),
+                fx.line_block(layer=2),
+                fx.polyline_block(layer=3, closed=True),
+            ]))
+
+        window = QMainWindow()
+        iface = MagicMock()
+        iface.mainWindow.return_value = window
+        icon_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "icons"))
+        dock = Zero2CadGisDockWidget(iface, icon_dir, window)
+        try:
+            dock._load_ncz_paths([path])
+            tree = dock.ncz_layer_tree
+            for i in range(tree.topLevelItemCount()):
+                top = tree.topLevelItem(i)
+                for j in range(top.childCount()):
+                    for k in range(top.child(j).childCount()):
+                        top.child(j).child(k).setCheckState(0, Qt.CheckState.Checked)
+            dock.ncz_crs_selector.setCrs(QgsCoordinateReferenceSystem("EPSG:5253"))
+            dock.chk_ncz_temporary.setChecked(True)
+            dock.chk_ncz_plan_symbology.setChecked(True)
+            self.assertTrue(dock.chk_ncz_mpyy.isEnabled())
+            dock.chk_ncz_mpyy.setChecked(True)
+            dock._import_netcad_dataset()
+            self.assertEqual(self.errors, [])
+
+            result = dock.last_mpyy_result
+            self.assertEqual(result.level, "UIP")
+            by_name = {layer.name(): layer for layer in result.layers}
+            self.assertEqual(set(by_name), {"Konut", "AdaKenari"})
+            konut_tip = sorted(f["KonutTip"] for f in by_name["Konut"].getFeatures())
+            self.assertEqual(konut_tip, ["GelismeKonut", "YerlesikKonut"])
+            for layer in result.layers:
+                self.assertTrue(str(layer.customProperty("mpyy/symbology")).startswith("e-Plan SLD: UIP/"),
+                                layer.name())
+                self.assertIsNone(layer.customProperty("mpyy/missing_symbols"), layer.name())
+            # Not in the crosswalk: reported and kept, never guessed.
+            self.assertEqual([r["tabaka"] for r in result.unmatched], ["CIZPEN"])
+            self.assertEqual(sum(l.featureCount() for l in result.leftovers), 1)
+            root = QgsProject.instance().layerTreeRoot()
+            self.assertIsNotNone(root.findGroup("1000_TEST_UIP_MPYY_UIP"))
+            self.assertIsNotNone(root.findGroup("1000_TEST_UIP_ESLESMEYEN_TABAKALAR"))
+            # The MPYY styles come from inside 02CadGis, not from MPYY Studio.
+            import sys
+            self.assertFalse(any(m.startswith("planx_mpyy_studio") for m in sys.modules))
+        finally:
+            dock.close()
+            dock.setParent(None)
+
+
 if __name__ == "__main__":
     unittest.main()
 

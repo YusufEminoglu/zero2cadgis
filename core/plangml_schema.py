@@ -20,6 +20,7 @@ looks authoritative.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from functools import lru_cache
 import re
 from typing import Optional
 
@@ -50,12 +51,28 @@ class TabakaIdentity:
     matched_as: str             # "exact" | "alias"
 
 
+# A plan-revision drawing marks the function it proposes or adds with a suffix;
+# the function itself is unchanged, so the suffix is dropped before lookup.
+# `_IPTAL` (cancelled) and `_ITIRAZ` (objection) are deliberately NOT here: a
+# cancelled or contested area is not that function, and handing it the live
+# official code would put a cancelled KONUT into an export as a KONUT.
+_REVISION_SUFFIXES = ("_ONERISI", "_ONERI", "_ILAVE", "_DEGISIKLIK")
+
+# Official tabaka names carry one of these prefixes. A local name without one
+# ("PARK", "CAMI") is tried as "PL_<name>" — only an exact official name counts.
+_OFFICIAL_PREFIXES = ("PL_", "SNR_", "HAT_", "KST_", "YOL_")
+
+
 def _normalize(name: Optional[str]) -> str:
     """Fold a CAD tabaka name onto the catalog's spelling."""
     if not name:
         return ""
     text = str(name).strip().translate(_TR_MAP).upper()
-    return re.sub(r"[^A-Z0-9]+", "_", text).strip("_")
+    key = re.sub(r"[^A-Z0-9]+", "_", text).strip("_")
+    for suffix in _REVISION_SUFFIXES:
+        if key.endswith(suffix) and len(key) > len(suffix):
+            return key[:-len(suffix)]
+    return key
 
 
 def _index():
@@ -76,6 +93,32 @@ def _alias_index():
     return cached
 
 
+def _resolve_variant(key: str) -> Optional[str]:
+    """Official tabaka for a local spelling that is not itself official.
+
+    Tried in order, each needing an *exact* official or alias hit:
+    the alias table; the name with the ``PL_`` prefix a local drawing left off;
+    and each of those with or without the ``_ALANI`` ("area") ending, which
+    local drawings add and drop freely without changing the function.
+    """
+    stems = [key]
+    if not key.startswith(_OFFICIAL_PREFIXES):
+        stems.append("PL_" + key)
+    candidates = []
+    for stem in stems:
+        candidates.append(stem)
+        if stem.endswith("_ALANI"):
+            candidates.append(stem[:-len("_ALANI")])
+        else:
+            candidates.append(stem + "_ALANI")
+    for candidate in candidates:
+        official = _alias_index().get(candidate) or _index().get(candidate)
+        if official is not None:
+            return official
+    return None
+
+
+@lru_cache(maxsize=4096)
 def lookup_tabaka(name: Optional[str]) -> Optional[TabakaIdentity]:
     """Official identity of a CAD tabaka, or None if it has none.
 
@@ -90,7 +133,7 @@ def lookup_tabaka(name: Optional[str]) -> Optional[TabakaIdentity]:
     official = _index().get(key)
     matched_as = "exact"
     if official is None:
-        official = _alias_index().get(key)
+        official = _resolve_variant(key)
         matched_as = "alias"
     if official is None:
         return None

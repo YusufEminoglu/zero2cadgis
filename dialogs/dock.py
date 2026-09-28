@@ -543,6 +543,19 @@ class Zero2CadGisDockWidget(QDockWidget):
         QgsField("TAM_ADI", QMetaType.Type.QString),
         QgsField("GISTERIM", QMetaType.Type.QString),
         QgsField("uip_tabaka", QMetaType.Type.QString),
+        QgsField("YapiDuzeni", QMetaType.Type.QString),
+        QgsField("KatAdedi", QMetaType.Type.Int),
+        QgsField("EmsalKaks", QMetaType.Type.Double),
+        QgsField("Taks", QMetaType.Type.Double),
+        QgsField("YapiYuksekligi", QMetaType.Type.Double),
+        QgsField("Yencok", QMetaType.Type.QString),
+        QgsField("OnBahceMesafesi", QMetaType.Type.Double),
+        QgsField("YanBahceMesafesi", QMetaType.Type.Double),
+        QgsField("ArkaBahceMesafesi", QMetaType.Type.Double),
+        QgsField("AdaNo", QMetaType.Type.QString),
+        QgsField("ParselNo", QMetaType.Type.QString),
+        QgsField("YolGenisligi", QMetaType.Type.Double),
+        QgsField("PlanNotu", QMetaType.Type.QString),
     ]
 
     FIELD_DEFINITIONS = CAD_FIELD_DEFINITIONS + PLANGML_FIELD_DEFINITIONS
@@ -1079,6 +1092,17 @@ class Zero2CadGisDockWidget(QDockWidget):
             "imar, 25000 and above çevre düzeni.")
         ncz_opt_form.addRow("Plan type (official symbology):", self.cmb_plan_type)
 
+        self.chk_ncz_mpyy = QCheckBox(
+            "MPYY yapısında aktar (MPYY UİP / NİP / ÇDP stilleri)")
+        self.chk_ncz_mpyy.setToolTip(
+            "Writes the drawing into a MPYY 1.1.7 workspace GeoPackage: each "
+            "tabaka goes to its MPYY feature type with its XSD attributes "
+            "(e.g. Konut, KonutTip=GelismeKonut) and is drawn with the MPYY "
+            "e-Plan style of the chosen plan level. Tabaka the crosswalk does "
+            "not define are not guessed; they stay in a separate group.")
+        self.chk_ncz_mpyy.setChecked(False)
+        ncz_opt_form.addRow(self.chk_ncz_mpyy)
+
         self.chk_ncz_label = QCheckBox("Convert text elements to map labels")
         self.chk_ncz_label.setChecked(True)
         ncz_opt_form.addRow(self.chk_ncz_label)
@@ -1101,6 +1125,8 @@ class Zero2CadGisDockWidget(QDockWidget):
         self.chk_ncz_temporary = QCheckBox(
             "Import directly as temporary scratch layers (no GPKG)")
         ncz_opt_form.addRow(self.chk_ncz_temporary)
+
+        self._sync_merge_geometry_availability()
 
         ncz_layout.addWidget(ncz_opt_group)
 
@@ -1874,7 +1900,11 @@ class Zero2CadGisDockWidget(QDockWidget):
                             apply_plan_symbology(
                                 cl, source_name=os.path.basename(src))
                     QgsProject.instance().addMapLayer(cl, False)
-                    group.addLayer(cl)
+                    node = group.addLayer(cl)
+                    from ..core.cad_engine import is_helper_or_noise_layer
+                    if node and is_helper_or_noise_layer(cl.name()):
+                        with suppress(Exception):
+                            node.setItemVisibilityChecked(False)
 
             self.progress_conv.setValue(100)
             self.progress_conv.setVisible(False)
@@ -2206,6 +2236,35 @@ class Zero2CadGisDockWidget(QDockWidget):
         elif not is_batch_import:
             chk_merge.setChecked(False)
 
+        combo_plan = getattr(self, "cmb_plan_type", None)
+        if combo_plan is not None:
+            combo_plan.setEnabled(is_plangml)
+        chk_mpyy = getattr(self, "chk_ncz_mpyy", None)
+        if chk_mpyy is not None:
+            chk_mpyy.setEnabled(is_plangml)
+            if not is_plangml:
+                chk_mpyy.setChecked(False)
+
+        chk_style = getattr(self, "chk_ncz_style", None)
+        if chk_style is not None:
+            was_enabled = chk_style.isEnabled()
+            chk_style.setEnabled(not is_plangml)
+            if is_plangml:
+                # Remember the user's choice only when leaving the free state,
+                # so a second sync in PlanGML mode cannot overwrite it.
+                if was_enabled:
+                    self._ncz_style_before_plangml = chk_style.isChecked()
+                chk_style.setChecked(False)
+                chk_style.setToolTip(
+                    "PlanGML spatial planning mode applies official Ministry legislation "
+                    "symbology; raw CAD colors are bypassed.")
+            else:
+                if not was_enabled:
+                    chk_style.setChecked(
+                        getattr(self, "_ncz_style_before_plangml", True))
+                chk_style.setToolTip(
+                    "Apply original Netcad entity and layer ARGB colors.")
+
     def _selected_plan_type(self) -> str:
         """Official e-Plan style set chosen in the UI: AUTO / UIP / NIP / CDP."""
         combo = getattr(self, "cmb_plan_type", None)
@@ -2334,8 +2393,14 @@ class Zero2CadGisDockWidget(QDockWidget):
 
                     layer_name = entity.layer_name or f"LAYER_{entity.layer_code}"
                     is_plangml = getattr(self, "chk_ncz_plan_symbology", None) is not None and self.chk_ncz_plan_symbology.isChecked()
+                    from ..core.cad_engine import is_helper_or_noise_layer
+                    is_noise = is_helper_or_noise_layer(layer_name)
 
-                    if merge_geometry_types and is_plangml:
+                    if is_noise:
+                        display_name = f"{file_base_name}_{self._sanitize_name(layer_name)}_{family}"
+                        group_name = f"{file_base_name}_CAD_DRAFT" if merge_geometry_types else f"{file_base_name}_{family}"
+                        bucket_key = (entity.layer_code, layer_name, family)
+                    elif merge_geometry_types and is_plangml:
                         # Grouped by the Ministry's own upper groups, so the
                         # layer tree is organised the way the regulation is.
                         ust_token = self._sanitize_name(
@@ -2358,6 +2423,46 @@ class Zero2CadGisDockWidget(QDockWidget):
                             geometry_type=geometry_type))
                     bucket.entities.append(entity)
                     bucket.source_files[id(entity)] = source_file_name
+
+                # Topological polygonization for zoning boundaries drafted as lines
+                if is_plangml:
+                    with suppress(Exception):
+                        from ..core.cad_polygonizer import polygonize_cad_entities
+                        # Filters to open line work of plan-area tabaka itself.
+                        poly_entities = polygonize_cad_entities(decoded_entities)
+                        if poly_entities:
+                            for entity in poly_entities:
+                                family, geometry_type = self._geometry_family(
+                                    entity.geometry_kind, entity.is_closed, entity.coordinates)
+                                if not family:
+                                    continue
+                                layer_name = entity.layer_name or f"LAYER_{entity.layer_code}"
+                                is_poly_noise = is_helper_or_noise_layer(layer_name)
+                                if is_poly_noise:
+                                    display_name = f"{file_base_name}_{self._sanitize_name(layer_name)}_{family}"
+                                    group_name = f"{file_base_name}_CAD_DRAFT" if merge_geometry_types else f"{file_base_name}_{family}"
+                                    bucket_key = (entity.layer_code, layer_name, family)
+                                elif merge_geometry_types and is_plangml:
+                                    ust_token = self._sanitize_name(
+                                        upper_group_of(layer_name))
+                                    family_token = self._sanitize_name(family)
+                                    display_name = f"{file_base_name}_{ust_token}_{family_token}"
+                                    group_name = file_base_name
+                                    bucket_key = (ust_token, family, geometry_type)
+                                else:
+                                    display_name = f"{file_base_name}_{self._sanitize_name(layer_name)}_{family}"
+                                    group_name = f"{file_base_name}_{family}"
+                                    bucket_key = (entity.layer_code, layer_name, family)
+
+                                bucket = grouped_entities.setdefault(
+                                    group_name,
+                                    {}).setdefault(
+                                    bucket_key,
+                                    LayerBucket(
+                                        display_name=display_name,
+                                        geometry_type=geometry_type))
+                                bucket.entities.append(entity)
+                                bucket.source_files[id(entity)] = source_file_name
 
                 if not merge_geometry_types:
                     layer_groups.extend(
@@ -2394,6 +2499,15 @@ class Zero2CadGisDockWidget(QDockWidget):
             if not layer_groups:
                 raise ValueError(
                     "Selected Netcad data did not produce any valid layers.")
+
+            if getattr(self, "chk_ncz_mpyy", None) is not None and self.chk_ncz_mpyy.isChecked():
+                from ..core.mpyy_transfer import mpyy_level_for
+                level = mpyy_level_for(self._resolve_plan_type(first_file))
+                if level is None:
+                    raise ValueError(
+                        "MPYY aktarımı için plan kademesi (UİP / NİP / ÇDP) belirlenemedi.")
+                self._finish_mpyy_import(layer_groups, level, base_name, is_temp, gpkg_path)
+                return
 
             if not is_temp:
                 # Write each layer to a separate temp GPKG file, then merge, to
@@ -2501,11 +2615,84 @@ class Zero2CadGisDockWidget(QDockWidget):
                 "Import Error",
                 f"Failed to import Netcad dataset:\n{exc}")
 
+    def _finish_mpyy_import(
+            self,
+            layer_groups: list[LayerGroup],
+            level: str,
+            base_name: str,
+            is_temp: bool,
+            gpkg_path: str) -> None:
+        """Deliver the import as a MPYY workspace styled with the MPYY styles.
+
+        The workspace is the chosen GeoPackage, or a temporary one for scratch
+        imports (a MPYY workspace is a GeoPackage by definition). Tabaka the
+        crosswalk does not define stay as ordinary layers in their own group.
+        """
+        import tempfile
+        from ..core.mpyy_transfer import LEVEL_TITLES, transfer_to_mpyy
+
+        spatial = [lyr for grp in layer_groups for lyr in grp.layers if lyr.isSpatial()]
+        tables = [grp for grp in layer_groups
+                  if grp.layers and not any(lyr.isSpatial() for lyr in grp.layers)]
+        if is_temp:
+            workspace = os.path.join(
+                tempfile.mkdtemp(prefix="zero2cadgis_mpyy_"),
+                f"{base_name.lower()}_mpyy_{level.lower()}.gpkg")
+        else:
+            workspace = gpkg_path
+            if os.path.exists(workspace):
+                os.remove(workspace)   # overwrite was confirmed in the save dialog
+
+        self.progress_ncz.setValue(85)
+        self.progress_ncz.setFormat(
+            f"MPYY {LEVEL_TITLES.get(level, level)} çalışma alanına aktarılıyor...")
+        QApplication.processEvents()
+        result = transfer_to_mpyy(
+            spatial, level, workspace, f"{base_name}_MPYY_{level}")
+        self.last_mpyy_result = result
+
+        extra = []
+        if result.leftovers:
+            extra.append(LayerGroup(
+                name=f"{base_name}_ESLESMEYEN_TABAKALAR", layers=result.leftovers))
+        extra.extend(tables)
+        if extra:
+            self._add_groups_to_project(extra)
+        with suppress(Exception):
+            if hasattr(self.iface, "mapCanvas") and self.iface.mapCanvas():
+                self.iface.mapCanvas().refresh()
+
+        self.progress_ncz.setValue(100)
+        self.progress_ncz.setVisible(False)
+        self._populate_layers_combo()
+        level_msg = (Qgis.MessageLevel.Warning if result.unmatched
+                     else Qgis.MessageLevel.Success)
+        self.iface.messageBar().pushMessage(
+            "02CadGis", result.summary(), level_msg, 12)
+
     def _build_layer_groups_from_buckets(
             self,
             grouped_entities: dict,
             target_crs: QgsCoordinateReferenceSystem) -> list[LayerGroup]:
         layer_groups = []
+        is_plan_mode = (getattr(self, "chk_ncz_plan_symbology", None) is None
+                        or self.chk_ncz_plan_symbology.isChecked())
+        # Texts are gathered across all groups: without geometry merging the
+        # texts sit in a "<file>_POINT/TEXT" group apart from the polygons
+        # they describe, and a per-group search found none of them.
+        text_pts = []
+        if is_plan_mode:
+            from ..core.cad_engine import is_helper_or_noise_layer
+            for buckets in grouped_entities.values():
+                for bkt in buckets.values():
+                    if bkt.geometry_type != "Point":
+                        continue
+                    for e in bkt.entities:
+                        txt = e.label_text or e.name
+                        if (txt and e.coordinates
+                                and not is_helper_or_noise_layer(e.layer_name)):
+                            text_pts.append(
+                                (e.coordinates[0].x, e.coordinates[0].y, str(txt)))
         for group_name in sorted(grouped_entities.keys()):
             layers = []
             for key in sorted(grouped_entities[group_name].keys()):
@@ -2551,6 +2738,20 @@ class Zero2CadGisDockWidget(QDockWidget):
 
                     layers.append(processed_layer)
 
+            # Spatial zoning parameter extraction: join texts inside plan polygons
+            if is_plan_mode and layers:
+                if text_pts and not group_name.endswith("_CAD_DRAFT"):
+                    with suppress(Exception):
+                        from ..core.zoning_text_extractor import (
+                            assign_zoning_parameters_to_polygons,
+                            assign_road_widths_to_lines,
+                        )
+                        for lyr in layers:
+                            if lyr.geometryType() == QgsWkbTypes.GeometryType.PolygonGeometry:
+                                assign_zoning_parameters_to_polygons(lyr, text_pts)
+                            elif lyr.geometryType() == QgsWkbTypes.GeometryType.LineGeometry:
+                                assign_road_widths_to_lines(lyr, text_pts)
+
             if layers:
                 layer_groups.append(
                     LayerGroup(
@@ -2583,6 +2784,16 @@ class Zero2CadGisDockWidget(QDockWidget):
         provider.addAttributes(field_defs)
         layer.updateFields()
 
+        # Symbology rule and official identity depend only on the tabaka name
+        # and the plan type; a drawing has dozens of tabaka and ~1e5 features.
+        plan_type = self._resolve_plan_type(source_file_name) if is_plangml else ""
+        plan_kodu = {
+            "UIP": "UIP_1000",
+            "NIP": "NIP_5000",
+            "CDP": "CDP_25000",
+        }.get(plan_type, "UIP_1000")
+        tabaka_memo: dict[str, tuple] = {}
+
         features = []
         for entity in entities:
             coords = entity.coordinates
@@ -2602,6 +2813,11 @@ class Zero2CadGisDockWidget(QDockWidget):
                 entity.end_angle,
                 entity.is_closed,
             )
+            if geom and geometry_type == "Polygon" and entity.interior_rings:
+                with suppress(Exception):
+                    geom = QgsGeometry.fromPolygonXY([
+                        [QgsPointXY(c.x, c.y) for c in ring]
+                        for ring in [coords, *entity.interior_rings]])
             if not geom or geom.isEmpty():
                 continue
 
@@ -2633,20 +2849,20 @@ class Zero2CadGisDockWidget(QDockWidget):
             ]
 
             if is_plangml:
-                plan_type = self._resolve_plan_type(source_file_name)
-                rule = PlanSymbologyMatcher.match_rule(
-                    tabaka_name, plan_type=plan_type)
-                plan_kodu = {
-                    "UIP": "UIP_1000",
-                    "NIP": "NIP_5000",
-                    "CDP": "CDP_25000",
-                }.get(plan_type, "UIP_1000")
+                memo = tabaka_memo.get(tabaka_name)
+                if memo is None:
+                    memo = (
+                        PlanSymbologyMatcher.match_rule(
+                            tabaka_name, plan_type=plan_type),
+                        lookup_tabaka(tabaka_name),
+                    )
+                    tabaka_memo[tabaka_name] = memo
+                rule, identity = memo
 
                 # The codes are the Ministry's, taken from its own UİP tabaka
                 # catalog. A tabaka the catalog does not define — a CAD symbol
                 # or text layer, or a local name with no unambiguous official
                 # counterpart — gets empty code cells rather than invented ones.
-                identity = lookup_tabaka(tabaka_name)
                 if identity is not None:
                     ust_grup_id = identity.ust_grup_id
                     ust_grup_adi = identity.ust_grup_adi
@@ -2672,6 +2888,19 @@ class Zero2CadGisDockWidget(QDockWidget):
                     tam_adi,
                     rule.display_name,   # GISTERIM: how it is drawn
                     tabaka_name,         # uip_tabaka: the drawing's own name
+                    "",                  # YapiDuzeni
+                    None,                # KatAdedi
+                    None,                # EmsalKaks
+                    None,                # Taks
+                    None,                # YapiYuksekligi
+                    "",                  # Yencok
+                    None,                # OnBahceMesafesi
+                    None,                # YanBahceMesafesi
+                    None,                # ArkaBahceMesafesi
+                    "",                  # AdaNo
+                    "",                  # ParselNo
+                    None,                # YolGenisligi
+                    "",                  # PlanNotu
                 ])
 
             feature = QgsFeature(layer.fields())
@@ -2748,6 +2977,7 @@ class Zero2CadGisDockWidget(QDockWidget):
     def _add_groups_to_project(self, layer_groups: list[LayerGroup]) -> None:
         project = QgsProject.instance()
         root = project.layerTreeRoot()
+        from ..core.cad_engine import is_helper_or_noise_layer, CadStylingEngine
 
         for item in layer_groups:
             existing_group = root.findGroup(item.name)
@@ -2756,17 +2986,40 @@ class Zero2CadGisDockWidget(QDockWidget):
                 parent.removeChildNode(existing_group)
 
             group = root.addGroup(item.name)
+            is_draft_group = "CAD_DRAFT" in item.name.upper()
+
             for layer in item.layers:
-                if getattr(self, "chk_ncz_plan_symbology", None) is None or self.chk_ncz_plan_symbology.isChecked():
+                is_plangml = (getattr(self, "chk_ncz_plan_symbology", None) is None
+                              or self.chk_ncz_plan_symbology.isChecked())
+
+                if is_plangml:
                     with suppress(Exception):
                         apply_plan_symbology(
                             layer,
                             plan_type=self._selected_plan_type(),
                             source_name=layer.name())
+                elif getattr(self, "chk_ncz_style", None) and self.chk_ncz_style.isChecked():
+                    with suppress(Exception):
+                        geom_type = layer.geometryType()
+                        geom_str = "Polygon" if geom_type == QgsWkbTypes.GeometryType.PolygonGeometry else ("LineString" if geom_type == QgsWkbTypes.GeometryType.LineGeometry else "Point")
+                        CadStylingEngine.apply_argb_renderer(layer, geom_str)
+
+                if getattr(self, "chk_ncz_label", None) and self.chk_ncz_label.isChecked() and layer.geometryType() == QgsWkbTypes.GeometryType.PointGeometry:
+                    with suppress(Exception):
+                        CadStylingEngine.apply_buffered_labels(layer)
+
                 project.addMapLayer(layer, False)
-                group.addLayer(layer)
+                node = group.addLayer(layer)
+                if node and (is_draft_group or is_helper_or_noise_layer(layer.name())):
+                    with suppress(Exception):
+                        node.setItemVisibilityChecked(False)
                 with suppress(Exception):
                     layer.triggerRepaint()
+
+            if is_draft_group and group:
+                with suppress(Exception):
+                    group.setItemVisibilityChecked(False)
+                    group.setExpanded(False)
 
     def _coords_to_geometry(
         self,
@@ -4582,6 +4835,31 @@ class Zero2CadGisDockWidget(QDockWidget):
             )
             bucket.entities.append(entity)
             bucket.source_files[id(entity)] = base_name
+
+        is_plangml = getattr(self, "chk_ncz_plan_symbology", None) is None or self.chk_ncz_plan_symbology.isChecked()
+        if is_plangml:
+            with suppress(Exception):
+                from ..core.cad_polygonizer import polygonize_cad_entities
+                line_entities = [
+                    e for e in entities
+                    if e.geometry_kind in ("Line", "Polyline", "Arc") or not e.is_closed
+                ]
+                for entity in polygonize_cad_entities(line_entities):
+                    family, geom_type = self._geometry_family(
+                        entity.geometry_kind, entity.is_closed, entity.coordinates)
+                    if not family:
+                        continue
+                    group_name = f"{base_name}_{family}"
+                    bucket_key = (entity.layer_code, entity.layer_name or "LAYER", family)
+                    bucket = grouped.setdefault(group_name, {}).setdefault(
+                        bucket_key,
+                        LayerBucket(
+                            display_name=f"{base_name}_{self._sanitize_name(entity.layer_name or 'LAYER')}_{family}",
+                            geometry_type=geom_type,
+                        ),
+                    )
+                    bucket.entities.append(entity)
+                    bucket.source_files[id(entity)] = base_name
 
         layer_groups = self._build_layer_groups_from_buckets(
             grouped, target_crs)

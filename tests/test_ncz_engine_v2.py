@@ -401,5 +401,23 @@ class TestNczEngineV2Safety(unittest.TestCase):
         self.assertIn("Line", kinds)
 
 
+    def test_smart_object_corner_fallback_passes_through_both_corners(self):
+        # When the stored width/height are unusable, the size comes from the two
+        # stored corners. "first" is y and "second" is x (the ring runs width
+        # along x), so width = |dx| and height = |dy|; v1 had these transposed,
+        # which drew any non-square object off its own second corner.
+        body = bytearray(fx.smart_object_block(layer=1)[5:])
+        fx._put_f64(body, 169, 0.0)
+        fx._put_f64(body, 177, 0.0)
+        fx._put_f64(body, 66, fx.BASE_Y + 20.0)   # corner B, first (y)
+        fx._put_f64(body, 74, fx.BASE_X + 30.0)   # corner B, second (x)
+        data = fx.layer_table_block([b"0", b"PLAN"]) + fx.block(21, body)
+        entity = parse_bytes(data)["entities"][0]
+        self.assertEqual((entity["box_width"], entity["box_height"]), (30.0, 20.0))
+        ring = {(round(c["x"], 6), round(c["y"], 6)) for c in entity["coordinates"]}
+        self.assertIn((fx.BASE_X, fx.BASE_Y), ring)
+        self.assertIn((fx.BASE_X + 30.0, fx.BASE_Y + 20.0), ring)
+
+
 if __name__ == "__main__":
     unittest.main()

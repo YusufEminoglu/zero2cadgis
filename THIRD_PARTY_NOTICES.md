@@ -31,8 +31,9 @@ What is **not** included:
 
 - The symbol fonts the SLD set references for point symbolizers
   (`uygulama_imar_*`, `OG_V_*`, `UIP_*`, `Intelli Eplan`,
-  `ESRI Default Marker`, `Calibri`). **No font file is redistributed**, and
-  the point symbolizers that depend on them are not implemented.
+  `ESRI Default Marker`, `Calibri`) are not used by *this* catalog, whose
+  point symbolizers are not implemented. The separate MPYY style bundle under
+  `mpyy/` **does** ship them — see "MPYY UİP / NİP / ÇDP styles" below.
 
 Copyright:
 
@@ -70,6 +71,21 @@ Copyright: The database structure, `MpyyUipDb_2026_02_27.gpkg` compilation,
 the compiler, the `MPYY_ALIASES` list mapping local tabaka spellings onto
 official ones, and the lookup in `core/plangml_schema.py` are:
 Copyright (C) 2026 Yusuf Eminoğlu.
+
+## MPYY UİP / NİP / ÇDP styles (`mpyy/`)
+
+The "MPYY yapısında aktar" import writes a drawing into a MPYY 1.1.7 workspace
+and draws it with the MPYY UİP, NİP and ÇDP styles. That styling pipeline —
+code, Ministry e-Plan SLDs rewritten to the MPYY schema, Ek-1e catalog
+corrections, tarama tiles and plan symbol fonts — is MPYY Studio's (same
+author) and is carried **unchanged** under `mpyy/`, copied by
+`tools/sync_mpyy_styles.py`; `mpyy/SYNC_MANIFEST.json` records the sha256 of
+every file. Its full notice, including the **131 bundled font files of which
+109 carry no licence or established redistribution term** (among them
+`ESRI Default Marker`, `Intelli Eplan Extra`, `ISKI`), is
+[`mpyy/THIRD_PARTY_NOTICES.md`](mpyy/THIRD_PARTY_NOTICES.md). The fonts are
+bundled by the author's decision of 2026-09-28; this notice records what the
+package contains and does not assert a right to redistribute them.
 
 ## Jeomatik NCZ Reader
 
