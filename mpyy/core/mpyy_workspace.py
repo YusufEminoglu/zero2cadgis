@@ -549,11 +549,19 @@ def apply_plan_reference_scale(layer, level):
     return True
 
 
-def apply_eplan_symbology(layer, level, type_name):
-    """Apply the official SLD of this MPYY type; returns False when the Ministry set has none."""
+def apply_eplan_symbology(layer, level, type_name, centre_sizes=True):
+    """Apply the official SLD of this MPYY type; returns False when the Ministry set has none.
+
+    ``centre_sizes=False`` keeps the centre pictograms at the size the SLD gives
+    them; only ``tools/measure_centre_symbols.py`` needs that, to measure them."""
+    from .centre_symbols import apply_centre_symbol_sizes
+
     source = SLD_DIR / level / f"{type_name}.sld"
     if not source.exists():
-        return _apply_catalog_symbol(layer, level, type_name)
+        applied = _apply_catalog_symbol(layer, level, type_name)
+        if applied and centre_sizes:
+            apply_centre_symbol_sizes(layer, level, type_name)
+        return applied
     from .fonts import register_mpyy_fonts
 
     register_mpyy_fonts()
@@ -666,6 +674,8 @@ def apply_eplan_symbology(layer, level, type_name):
     from .mpyy_detail_hierarchy import apply_renderer_hierarchy
 
     apply_renderer_hierarchy(layer, level, type_name)
+    if centre_sizes:
+        apply_centre_symbol_sizes(layer, level, type_name)
     apply_plan_reference_scale(layer, level)
     layer.setCustomProperty("mpyy/symbology", "e-Plan SLD: " + level + "/" + type_name)
     if missing:

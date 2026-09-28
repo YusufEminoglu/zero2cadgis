@@ -487,7 +487,7 @@ def _copied_symbol(address, geometry_type):
     level, type_name, label = address.split("/", 2)
     kinds = {Qgis.GeometryType.Polygon: "MultiPolygon", Qgis.GeometryType.Line: "MultiLineString", Qgis.GeometryType.Point: "Point"}
     probe = QgsVectorLayer(f"{kinds[geometry_type]}?crs=EPSG:5254", "katalog", "memory")
-    if not apply_eplan_symbology(probe, level, type_name):
+    if not apply_eplan_symbology(probe, level, type_name, centre_sizes=False):  # sized once, by the copying type
         return None
     for rule_label, getter, _ in _rules(probe.renderer()):
         if rule_label == label:

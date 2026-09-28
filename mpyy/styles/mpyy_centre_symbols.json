@@ -1,0 +1,8722 @@
+{
+ "kaynak": "Ek-1e: Çevre Düzeni Planı 5 mm, Nazım İmar Planı 7 mm, Uygulama İmar Planı 10 mm",
+ "olcum": "tools/measure_centre_symbols.py, 384 dpi, plan ölçeğinde",
+ "levels": {
+  "UIP": {
+   "AcikYesilAlan": [
+    {
+     "kural": "PARK",
+     "murekkep_mm": [
+      53.84,
+      15.08
+     ],
+     "carpan": null
+    },
+    {
+     "kural": "COCUK_BAHCESI_OYUN_ALANI",
+     "murekkep_mm": [
+      10.65,
+      15.08
+     ],
+     "carpan": 0.939
+    },
+    {
+     "kural": "REKREASYON_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "FUAR_PANAYIR_FESTIVAL_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "MESIRE_YERI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "HAYVANAT_BAHCESI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "HIPODROM",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "MEYDAN",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "BAKI_SEYIR_TERASI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "KENT_ORMANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "ARBORETUM_BOTANIK_PARKI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "AGACLANDIRILACAK_ALAN",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "MEZARLIK_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "KORUNACAK_BAHCE",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "REKREATIF_ALAN",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "MILLET_BAHCESI",
+     "murekkep_mm": [
+      14.95,
+      14.22
+     ],
+     "carpan": 0.7032
+    }
+   ],
+   "AfetTehlikeliAlanlar": [
+    {
+     "kural": "YAPI_YASAKLI_ALAN",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "HEYELAN_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "TASKINA_MARUZ_ALAN",
+     "murekkep_mm": [
+      12.04,
+      14.95
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "KENTSEL_RISK_ALANI",
+     "murekkep_mm": [
+      4.3,
+      3.97
+     ],
+     "carpan": 2.5189
+    },
+    {
+     "kural": "TSUNAMI_RISKLI_ALAN",
+     "murekkep_mm": [
+      3.51,
+      3.97
+     ],
+     "carpan": 2.849
+    },
+    {
+     "kural": "KUTLE_HAREKETI_RISKLI_ALAN",
+     "murekkep_mm": [
+      4.56,
+      3.97
+     ],
+     "carpan": 2.5189
+    },
+    {
+     "kural": "TSUNAMI_RISKLI_ALAN",
+     "murekkep_mm": [
+      3.51,
+      3.97
+     ],
+     "carpan": 2.849
+    },
+    {
+     "kural": "KUTLE_HAREKETI_RISKLI_ALAN",
+     "murekkep_mm": [
+      4.56,
+      3.97
+     ],
+     "carpan": 2.5189
+    }
+   ],
+   "AtiksuTesis": [
+    {
+     "kural": "ARITMA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "TERFI_MERKEZI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "AskeriYasakBolge": [
+    {
+     "kural": "UIP_ASKERI_YASAK_BOLGE",
+     "murekkep_mm": [
+      10.05,
+      11.24
+     ],
+     "carpan": 0.995
+    }
+   ],
+   "DogalKarakter": [
+    {
+     "kural": "MAKILIK_FUNDALIK",
+     "murekkep_mm": [
+      11.51,
+      11.51
+     ],
+     "carpan": 0.8688
+    }
+   ],
+   "Durak": [
+    {
+     "kural": "ANA_ISTASYON_GAR",
+     "murekkep_mm": [
+      11.84,
+      15.02
+     ],
+     "carpan": 0.8446
+    },
+    {
+     "kural": "ARA_ISTASYON",
+     "murekkep_mm": [
+      12.04,
+      15.02
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "TERMINAL_OTOGAR",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "RAYLI_TOPLU_TASIMA_ISTASYONU",
+     "murekkep_mm": [
+      12.04,
+      15.02
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "HAVAI_HAT_ISTASYONU",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "HAVARAY_ISTASYONU",
+     "murekkep_mm": [
+      12.04,
+      14.95
+     ],
+     "carpan": 0.8306
+    }
+   ],
+   "EgitimTesisAlani": [
+    {
+     "kural": "ANAOKULU_ALANI",
+     "murekkep_mm": [
+      11.18,
+      15.02
+     ],
+     "carpan": 0.8945
+    },
+    {
+     "kural": "ILKOKUL_ALANI",
+     "murekkep_mm": [
+      11.51,
+      15.02
+     ],
+     "carpan": 0.8688
+    },
+    {
+     "kural": "ORTAOKUL_ALANI",
+     "murekkep_mm": [
+      11.77,
+      15.02
+     ],
+     "carpan": 0.8496
+    },
+    {
+     "kural": "LISE_ALANI",
+     "murekkep_mm": [
+      11.38,
+      15.02
+     ],
+     "carpan": 0.8787
+    },
+    {
+     "kural": "OZEL_EGITIM_ALANI",
+     "murekkep_mm": [
+      11.24,
+      14.68
+     ],
+     "carpan": 0.8897
+    },
+    {
+     "kural": "MESLEKI_TEKNIK_OGRETIM_TESIS_ALANI",
+     "murekkep_mm": [
+      15.21,
+      15.02
+     ],
+     "carpan": 0.6658
+    },
+    {
+     "kural": "YUKSEK_OGRETIM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "HALK_EGITIM_MERKEZI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "EnerjiDagitimDepolama": [
+    {
+     "kural": "REGULATOR_ALANI",
+     "murekkep_mm": [
+      3.24,
+      4.03
+     ],
+     "carpan": 3.0864
+    },
+    {
+     "kural": "TURBIN_ALANI",
+     "murekkep_mm": [
+      3.04,
+      3.97
+     ],
+     "carpan": 3.2895
+    },
+    {
+     "kural": "DOGALGAZ_DAGITIM_TESIS_ALANI",
+     "murekkep_mm": [
+      3.24,
+      4.03
+     ],
+     "carpan": 3.0864
+    },
+    {
+     "kural": "YANICI_PARLAYICI_PATLAYICI_MADDE_URETIM_DEPO_ALANI",
+     "murekkep_mm": [
+      4.03,
+      4.03
+     ],
+     "carpan": 2.4814
+    },
+    {
+     "kural": "AKARYAKIT_URUN_DEPOLAMA_ALANI",
+     "murekkep_mm": [
+      3.17,
+      3.97
+     ],
+     "carpan": 3.1546
+    },
+    {
+     "kural": "TRAFO_ALANI",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 2.5189
+    },
+    {
+     "kural": "ELEKTRONIK_HABERLESME_ALTYAPI_ALANI",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 2.5189
+    },
+    {
+     "kural": "RAFINERI_PETROKIMYA_TESISI_ALANI",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 2.5189
+    },
+    {
+     "kural": "ENERJI_DEPOLAMA_ALANI",
+     "murekkep_mm": [
+      4.03,
+      4.03
+     ],
+     "carpan": 2.4814
+    },
+    {
+     "kural": "YED",
+     "murekkep_mm": [
+      10.05,
+      13.43
+     ],
+     "carpan": 0.995
+    }
+   ],
+   "EnerjiUretim": [
+    {
+     "kural": "NUKLEER_ENERJI_SANTRAL_ALANI",
+     "murekkep_mm": [
+      11.05,
+      14.75
+     ],
+     "carpan": 0.905
+    },
+    {
+     "kural": "TERMIK_SANTRAL_ALANI",
+     "murekkep_mm": [
+      11.64,
+      14.82
+     ],
+     "carpan": 0.8591
+    },
+    {
+     "kural": "YENILENEBILIR_ENERJI_KAYNAGINA_DAYALI_URETIM_TESIS_ALANI",
+     "murekkep_mm": [
+      10.98,
+      14.75
+     ],
+     "carpan": 0.9107
+    },
+    {
+     "kural": "ENERJI_URETIM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "FonksiyonluCalisma": [
+    {
+     "kural": "TOPLU_ISYERI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "BELEDIYE_HIZMET_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "RESMI_KURUM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "HavayoluTesisleri": [
+    {
+     "kural": "HAVALIMANI_HAVAALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "HELIKOPTER_INIS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "IbadetAlani": [
+    {
+     "kural": "CAMI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "MESCIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "KILISE",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "SAPEL",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "SINAGOG_HAVRA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "IcmesuTesis": [
+    {
+     "kural": "İÇME SUYU TESİSLERİ ALANI (DEPOLAMA-ARITMA-TERFİ MERKEZİ)",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "IlanEdilenClsmaAlan": [
+    {
+     "kural": "TEKNOLOJI_GELISTIRME_BOLGESI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "SERBEST_BOLGE",
+     "murekkep_mm": [
+      11.71,
+      15.08
+     ],
+     "carpan": 0.854
+    },
+    {
+     "kural": "OSB",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "ENDUSTRI_BOLGESI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "KarayoluTesisleri": [
+    {
+     "kural": "GENEL_OTOPARK",
+     "murekkep_mm": [
+      15.08,
+      15.15
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "TIR_KAMYON_MAKINA_PARK_GARAJ_ALANI",
+     "murekkep_mm": [
+      11.38,
+      14.75
+     ],
+     "carpan": 0.8787
+    },
+    {
+     "kural": "BISIKLET_PARKI",
+     "murekkep_mm": [
+      15.15,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "KATLI_OTOPARK_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "ELEKTRIKLI_ARAC_SARJ_ISTASYON_ALANI",
+     "murekkep_mm": [
+      11.64,
+      14.75
+     ],
+     "carpan": 0.8591
+    }
+   ],
+   "KatiAtikTesis": [
+    {
+     "kural": "KATI ATIK TESİSLERİ ALANI (BOŞALTMA, BERTARAF, İŞLEME, TRANSFER VE DEPOLAMA)",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "VAHSI_COP_DEPOLAMA_ALANI",
+     "murekkep_mm": [
+      3.97,
+      3.97
+     ],
+     "carpan": 2.5189
+    }
+   ],
+   "KentselCalisma": [
+    {
+     "kural": "TICARET_ALANI",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 2.5189
+    },
+    {
+     "kural": "TICARET_KONUT_ALANI",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 2.5189
+    },
+    {
+     "kural": "TICARET_TURIZM_ALANI",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 2.5189
+    },
+    {
+     "kural": "TOPTAN_TICARET_ALANI",
+     "murekkep_mm": [
+      4.03,
+      4.03
+     ],
+     "carpan": 2.4814
+    },
+    {
+     "kural": "IDARI_HIZMET_ALANI",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 2.5189
+    },
+    {
+     "kural": "AKARYAKIT_SERVIS_ISTASYONU",
+     "murekkep_mm": [
+      3.11,
+      4.03
+     ],
+     "carpan": 3.2154
+    },
+    {
+     "kural": "ENDUSTRIYEL_GELISME_BOLGESI",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 2.5189
+    },
+    {
+     "kural": "KUCUK_SANAYI_ALANI",
+     "murekkep_mm": [
+      4.03,
+      4.03
+     ],
+     "carpan": 2.4814
+    },
+    {
+     "kural": "DEPOLAMA_ALANI",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 2.5189
+    },
+    {
+     "kural": "LOJISTIK_TESIS_ALANI",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 2.5189
+    },
+    {
+     "kural": "PAZAR_ALANI",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 2.5189
+    },
+    {
+     "kural": "ASKERI_ALAN",
+     "murekkep_mm": [
+      4.03,
+      4.03
+     ],
+     "carpan": 2.4814
+    },
+    {
+     "kural": "BETON_SANTRALI",
+     "murekkep_mm": [
+      4.03,
+      4.03
+     ],
+     "carpan": 2.4814
+    },
+    {
+     "kural": "1_KADEME_TICARET_ALANI",
+     "murekkep_mm": [
+      4.03,
+      4.03
+     ],
+     "carpan": 2.4814
+    },
+    {
+     "kural": "2_KADEME_TICARET_ALANI",
+     "murekkep_mm": [
+      4.03,
+      4.03
+     ],
+     "carpan": 2.4814
+    },
+    {
+     "kural": "3_KADEME_TICARET_ALANI",
+     "murekkep_mm": [
+      4.03,
+      4.03
+     ],
+     "carpan": 2.4814
+    },
+    {
+     "kural": "SU_URUNLERI_URETIM_YETISTIRME_TESISI",
+     "murekkep_mm": [
+      2.98,
+      3.97
+     ],
+     "carpan": 3.3557
+    },
+    {
+     "kural": "TICARET_TURIZM_KONUT_ALANI",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 2.5189
+    },
+    {
+     "kural": "OSB_HIZMET_DESTEK_ALANI",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 2.5189
+    }
+   ],
+   "KiyiKorumaYapilari": [
+    {
+     "kural": "DALGAKIRAN",
+     "murekkep_mm": [
+      12.1,
+      14.88
+     ],
+     "carpan": 0.8264
+    },
+    {
+     "kural": "MENFEZ",
+     "murekkep_mm": [
+      12.1,
+      15.08
+     ],
+     "carpan": 0.8264
+    },
+    {
+     "kural": "MAHMUZ",
+     "murekkep_mm": [
+      12.1,
+      15.08
+     ],
+     "carpan": 0.8264
+    },
+    {
+     "kural": "KIYI_KORUMA",
+     "murekkep_mm": [
+      12.1,
+      14.88
+     ],
+     "carpan": 0.8264
+    },
+    {
+     "kural": "KOPRU",
+     "murekkep_mm": [
+      12.1,
+      14.88
+     ],
+     "carpan": 0.8264
+    },
+    {
+     "kural": "ISTINAT_DUVARI",
+     "murekkep_mm": [
+      12.1,
+      14.88
+     ],
+     "carpan": 0.8264
+    },
+    {
+     "kural": "MENDIREK",
+     "murekkep_mm": [
+      12.1,
+      14.88
+     ],
+     "carpan": 0.8264
+    }
+   ],
+   "KiyiYapilari": [
+    {
+     "kural": "TERSANE_ALANI",
+     "murekkep_mm": [
+      11.91,
+      15.02
+     ],
+     "carpan": 0.8396
+    },
+    {
+     "kural": "KONTEYNER_LIMANI",
+     "murekkep_mm": [
+      12.04,
+      15.02
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "KRUVAZIYER_LIMANI",
+     "murekkep_mm": [
+      12.04,
+      14.88
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "RORO_LIMANI",
+     "murekkep_mm": [
+      12.04,
+      15.02
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "YAT_LIMANI",
+     "murekkep_mm": [
+      11.77,
+      14.88
+     ],
+     "carpan": 0.8496
+    },
+    {
+     "kural": "BALIKCI_BARINAGI",
+     "murekkep_mm": [
+      12.04,
+      15.02
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "TEKNE_IMAL_CEKEK_YERI",
+     "murekkep_mm": [
+      12.04,
+      15.02
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "GEMI_SOKUM_YERI",
+     "murekkep_mm": [
+      12.04,
+      15.08
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "ISKELE",
+     "murekkep_mm": [
+      11.11,
+      14.75
+     ],
+     "carpan": 0.9001
+    },
+    {
+     "kural": "RIHTIM",
+     "murekkep_mm": [
+      12.1,
+      15.08
+     ],
+     "carpan": 0.8264
+    },
+    {
+     "kural": "BARINAK",
+     "murekkep_mm": [
+      11.71,
+      14.88
+     ],
+     "carpan": 0.854
+    },
+    {
+     "kural": "DOLFEN_PLATFORM",
+     "murekkep_mm": [
+      11.64,
+      14.75
+     ],
+     "carpan": 0.8591
+    },
+    {
+     "kural": "TEKNE_IMAL_BAKIM_YERI",
+     "murekkep_mm": [
+      12.17,
+      15.08
+     ],
+     "carpan": 0.8217
+    },
+    {
+     "kural": "DENIZ_INIS_RAMPASI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "KorumaKusaklari": [
+    {
+     "kural": "NUKLEER_ENERJI_KORUMA_KUSAGI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "HAVAALANI_KORUMA_KUSAGI",
+     "murekkep_mm": [
+      12.04,
+      15.02
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "KARAYOLU_KORUMA_KUSAGI",
+     "murekkep_mm": [
+      12.04,
+      14.95
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "BORU_HATTI_KORUMA_KUSAGI",
+     "murekkep_mm": [
+      12.04,
+      15.02
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "SU_KANALI_KORUMA_KUSAGI",
+     "murekkep_mm": [
+      12.17,
+      15.08
+     ],
+     "carpan": 0.8217
+    },
+    {
+     "kural": "ICMESUYU_KORUMA_KUSAGI",
+     "murekkep_mm": [
+      12.04,
+      14.95
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "YERALTI_SU_KORUMA_KUSAGI",
+     "murekkep_mm": [
+      12.04,
+      15.08
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "DEMIRYOLU_KORUMA_KUSAGI",
+     "murekkep_mm": [
+      12.04,
+      14.95
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "YANICI_PATLAYICI_MADDE_KORUMA_KUSAGI",
+     "murekkep_mm": [
+      12.04,
+      15.02
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "SAGLIK_KORUMA_BANDI",
+     "murekkep_mm": [
+      12.04,
+      15.02
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "ENERJI_NAKIL_HATTI_KORUMA_KUSAGI",
+     "murekkep_mm": [
+      12.04,
+      15.08
+     ],
+     "carpan": 0.8306
+    }
+   ],
+   "KumsalPlaj": [
+    {
+     "kural": "UIP_KUMSAL_PLAJ",
+     "murekkep_mm": [
+      14.95,
+      18.79
+     ],
+     "carpan": 0.6689
+    }
+   ],
+   "MilliPark": [
+    {
+     "kural": "TABIAT_PARKI_ALANI",
+     "murekkep_mm": [
+      7.94,
+      10.05
+     ],
+     "carpan": 1.2594
+    },
+    {
+     "kural": "TABIATI_KORUMA_ALANI",
+     "murekkep_mm": [
+      11.05,
+      15.08
+     ],
+     "carpan": 0.905
+    },
+    {
+     "kural": "MILLI_PARK",
+     "murekkep_mm": [
+      11.91,
+      14.95
+     ],
+     "carpan": 0.8396
+    },
+    {
+     "kural": "YABAN_HAYATI_KORUMA_GELISTIRME_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "OckHassasAlan": [
+    {
+     "kural": "OCK_BOLGESI_HASSAS_ALAN_A",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "OCK_BOLGESI_HASSAS_ALAN_B",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "OCK_BOLGESI_HASSAS_ALAN_C",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "OnlemliAlan": [
+    {
+     "kural": "ONLEMLI_ALAN",
+     "murekkep_mm": [
+      12.04,
+      15.08
+     ],
+     "carpan": 0.8306
+    }
+   ],
+   "OzelEkosistem": [
+    {
+     "kural": "FLORA_FAUNA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "ENDEMIK_BIYOTOP",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "AKDENIZ_FOKU",
+     "murekkep_mm": [
+      15.15,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "DENIZ_KAPLUMBAGASI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "EKOLOJIK_KORUMA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "SaglikTesisAlani": [
+    {
+     "kural": "SAGLIK_TESIS_ALANI",
+     "murekkep_mm": [
+      11.24,
+      14.68
+     ],
+     "carpan": 0.8897
+    },
+    {
+     "kural": "OZEL_SAGLIK_TESISI_ALANI",
+     "murekkep_mm": [
+      11.18,
+      14.88
+     ],
+     "carpan": 0.8945
+    },
+    {
+     "kural": "HASTANE",
+     "murekkep_mm": [
+      11.18,
+      15.08
+     ],
+     "carpan": 0.8945
+    },
+    {
+     "kural": "AILE_SAGLIK_MERKEZI",
+     "murekkep_mm": [
+      11.11,
+      15.15
+     ],
+     "carpan": 0.9001
+    }
+   ],
+   "SitAlanlari": [
+    {
+     "kural": "1_DERECE_ARKEOLOJIK_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "2_DERECE_ARKEOLOJIK_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "3_DERECE_ARKEOLOJIK_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "KESIN_KORUNACAK_HASSAS_ALAN",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "NITELIKLI_DOGAL_KORUMA_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "SURDURULEBILIR_KORUMA_KONTROLLU_KULLANIM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "KENTSEL_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "TARIHI_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "SIT_ETKILESIMLI_ALANI",
+     "murekkep_mm": [
+      12.04,
+      14.95
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "1_DERECE_DOGAL_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "2_DERECE_DOGAL_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "3_DERECE_DOGAL_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "KENTSEL_ARKEOLOJIK_SIT",
+     "murekkep_mm": [
+      10.05,
+      9.13
+     ],
+     "carpan": 1.0953
+    }
+   ],
+   "SosyalKulturelAlan": [
+    {
+     "kural": "SOSYAL_TESIS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "KULTUREL_TESIS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "SEFKAT_EVLERI_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "ACIK_SPOR_TESISI_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "KAPALI_SPOR_TESISI_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "KRES_GUNDUZ_BAKIMEVI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "YURT_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "KONGRE_SERGI_MERKEZI_ALANI",
+     "murekkep_mm": [
+      14.95,
+      14.55
+     ],
+     "carpan": 0.6873
+    },
+    {
+     "kural": "YASLI_BAKIMEVI_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "SEMT_SPOR_ALANI",
+     "murekkep_mm": [
+      15.02,
+      15.08
+     ],
+     "carpan": 0.6658
+    },
+    {
+     "kural": "OZEL_SOSYAL_TESIS_ALANI",
+     "murekkep_mm": [
+      14.95,
+      14.95
+     ],
+     "carpan": 0.6689
+    },
+    {
+     "kural": "OZEL_KULTUREL_TESIS_ALANI",
+     "murekkep_mm": [
+      14.95,
+      14.95
+     ],
+     "carpan": 0.6689
+    },
+    {
+     "kural": "OZEL_ACIK_SPOR_TESIS_ALANI",
+     "murekkep_mm": [
+      14.95,
+      14.95
+     ],
+     "carpan": 0.6689
+    },
+    {
+     "kural": "OZEL_KAPALI_SPOR_TESIS_ALANI",
+     "murekkep_mm": [
+      14.95,
+      14.95
+     ],
+     "carpan": 0.6689
+    },
+    {
+     "kural": "SOKAK_HAYVANLARI_BARINAGI_ALANI",
+     "murekkep_mm": [
+      3.97,
+      3.97
+     ],
+     "carpan": 2.5189
+    }
+   ],
+   "SuKaptaj": [
+    {
+     "kural": "UIP_SU_KAPTAJ",
+     "murekkep_mm": [
+      11.91,
+      15.02
+     ],
+     "carpan": 0.8396
+    }
+   ],
+   "Tarim": [
+    {
+     "kural": "ORTU_ALTI_TARIM",
+     "murekkep_mm": [
+      15.08,
+      15.02
+     ],
+     "carpan": 0.6658
+    },
+    {
+     "kural": "ORGANIK_TARIM",
+     "murekkep_mm": [
+      12.04,
+      15.02
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "TARIMSAL_NITELIKLI_ALAN",
+     "murekkep_mm": [
+      11.58,
+      11.31
+     ],
+     "carpan": 0.8842
+    }
+   ],
+   "TehlikeliTesis": [
+    {
+     "kural": "BERTARAF",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "DEPOLAMA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "TeknikAltyapi": [
+    {
+     "kural": "ENERJI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "ICMESUYU",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "ATIKSU",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "KATI_ATIK",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "KANALIZASYON",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "ULASTIRMA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "HABERLESME",
+     "murekkep_mm": [
+      15.08,
+      15.02
+     ],
+     "carpan": 0.6658
+    }
+   ],
+   "AtikGeriKazTesAlani": [
+    {
+     "kural": "UIP_ATIK_GERI_KAZ_TES_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "TescilliAlan": [
+    {
+     "kural": "TESCILLI_ANIT_YAPI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "TESCILLI_BINA",
+     "murekkep_mm": [
+      11.11,
+      14.95
+     ],
+     "carpan": 0.9001
+    },
+    {
+     "kural": "TESCILLI_TABIAT_VARLIGI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "TopluTasimTurleriArasiDegisimAktarmaAlani": [
+    {
+     "kural": "NIP_TOPLU_TASIMA_AKTAR_ALAN",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "TurizmAlani": [
+    {
+     "kural": "PANSIYON_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "APART_OTEL_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "OTEL_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "MOTEL_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "TATIL_KOYU_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "SAGLIK_ODAKLI_TATIL_KOYU",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "TERMAL_TURIZM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "KAMPING_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "GUNUBIRLIK_TESIS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "GOLF_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "KIS_SPORLARI_KAYAK_TESIS_ALANI",
+     "murekkep_mm": [
+      15.35,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "EKO_TURIZM_KIRSAL_TURIZM_TESIS_ALANI",
+     "murekkep_mm": [
+      14.95,
+      13.89
+     ],
+     "carpan": 0.7199
+    },
+    {
+     "kural": "HOSTEL_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "YapayAda": [
+    {
+     "kural": "uip_yapay_ada",
+     "murekkep_mm": [
+      14.95,
+      15.15
+     ],
+     "carpan": 0.6689
+    }
+   ],
+   "YeraltiSuKaynakKoruma": [
+    {
+     "kural": "uip_yeralti_su_kaynak_koruma",
+     "murekkep_mm": [
+      12.04,
+      15.08
+     ],
+     "carpan": 0.8306
+    }
+   ],
+   "AfetHizmetAlani": [
+    {
+     "kural": "AfetLojistikAlani",
+     "murekkep_mm": [
+      10.05,
+      9.39
+     ],
+     "carpan": 1.065
+    }
+   ]
+  },
+  "NIP": {
+   "AcikYesilAlan": [
+    {
+     "kural": "PARK_VE_YESIL_ALAN",
+     "murekkep_mm": [
+      53.71,
+      15.08
+     ],
+     "carpan": null
+    },
+    {
+     "kural": "REKREASYON_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "FUAR_PANAYIR_FESTIVAL_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "MESIRE_YERI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "KENT_ORMANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "AGACLANDIRILACAK_ALAN",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "MEZARLIK_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "REKREATIF_ALAN",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "MILLET_BAHCESI",
+     "murekkep_mm": [
+      14.95,
+      14.22
+     ],
+     "carpan": 0.4923
+    }
+   ],
+   "AfetTehlikeliAlanlar": [
+    {
+     "kural": "AFETE_MARUZ_BOLGE",
+     "murekkep_mm": [
+      11.18,
+      14.22
+     ],
+     "carpan": 0.6261
+    },
+    {
+     "kural": "YAPI_YASAKLI_ALAN",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "TASKINA_MARUZ_ALAN",
+     "murekkep_mm": [
+      12.04,
+      14.95
+     ],
+     "carpan": 0.5814
+    },
+    {
+     "kural": "KENTSEL_RISK_ALANI",
+     "murekkep_mm": [
+      4.3,
+      3.97
+     ],
+     "carpan": 1.7632
+    },
+    {
+     "kural": "TSUNAMI_RISKLI_ALAN",
+     "murekkep_mm": [
+      3.51,
+      3.97
+     ],
+     "carpan": 1.9943
+    },
+    {
+     "kural": "KUTLE_HAREKETI_RISKLI_ALAN",
+     "murekkep_mm": [
+      4.56,
+      3.97
+     ],
+     "carpan": 1.7632
+    },
+    {
+     "kural": "TSUNAMI_RISKLI_ALAN",
+     "murekkep_mm": [
+      3.51,
+      3.97
+     ],
+     "carpan": 1.9943
+    },
+    {
+     "kural": "KUTLE_HAREKETI_RISKLI_ALAN",
+     "murekkep_mm": [
+      4.56,
+      3.97
+     ],
+     "carpan": 1.7632
+    }
+   ],
+   "AskeriYasakBolge": [
+    {
+     "kural": "NIP_ASKERI_YASAK_BOLGE",
+     "murekkep_mm": [
+      9.99,
+      11.24
+     ],
+     "carpan": 0.7007
+    }
+   ],
+   "AtiksuTesis": [
+    {
+     "kural": "ARITMA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "TERFI_MERKEZI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    }
+   ],
+   "AtikGeriKazTesAlani": [
+    {
+     "kural": "NIP_ATIK_GERI_KAZ_TES_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    }
+   ],
+   "DogalKarakter": [
+    {
+     "kural": "MAKILIK_FUNDALIK",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "MAKILIK_FUNDALIK",
+     "murekkep_mm": [
+      11.51,
+      11.51
+     ],
+     "carpan": 0.6082
+    }
+   ],
+   "EgitimTesisAlani": [
+    {
+     "kural": "OZEL_EGITIM_ALANI",
+     "murekkep_mm": [
+      11.44,
+      15.02
+     ],
+     "carpan": 0.6119
+    },
+    {
+     "kural": "EGITIM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.02
+     ],
+     "carpan": 0.466
+    },
+    {
+     "kural": "YUKSEK_OGRETIM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    }
+   ],
+   "EnerjiDagitimDepolama": [
+    {
+     "kural": "REGULATOR_ALANI",
+     "murekkep_mm": [
+      3.04,
+      3.9
+     ],
+     "carpan": 2.3026
+    },
+    {
+     "kural": "TURBIN_ALANI",
+     "murekkep_mm": [
+      3.04,
+      3.9
+     ],
+     "carpan": 2.3026
+    },
+    {
+     "kural": "DOGALGAZ_ILETIM_DAGITIM_TESIS_ALANI",
+     "murekkep_mm": [
+      2.91,
+      3.97
+     ],
+     "carpan": 2.4055
+    },
+    {
+     "kural": "YANICI_PARLAYICI_PATLAYICI_MADDE_URETIM_DEPO_ALANI",
+     "murekkep_mm": [
+      4.03,
+      4.03
+     ],
+     "carpan": 1.737
+    },
+    {
+     "kural": "ENERJI_DEPOLAMA_ALANI",
+     "murekkep_mm": [
+      4.03,
+      4.03
+     ],
+     "carpan": 1.737
+    },
+    {
+     "kural": "RAFINERI_ALANI",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 1.7632
+    },
+    {
+     "kural": "RAFINERI_PETROKIMYA_TESISI_ALANI",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 1.7632
+    },
+    {
+     "kural": "YED",
+     "murekkep_mm": [
+      9.99,
+      13.43
+     ],
+     "carpan": 0.7007
+    }
+   ],
+   "EnerjiUretim": [
+    {
+     "kural": "NUKLEER_ENERJI_SANTRAL_ALANI",
+     "murekkep_mm": [
+      12.04,
+      15.02
+     ],
+     "carpan": 0.5814
+    },
+    {
+     "kural": "TERMIK_SANTRAL_ALANI",
+     "murekkep_mm": [
+      12.04,
+      14.95
+     ],
+     "carpan": 0.5814
+    },
+    {
+     "kural": "YENILENEBILIR_ENERJI_KAYNAGINA_DAYALI_URETIM_TESIS_ALANI",
+     "murekkep_mm": [
+      11.38,
+      15.08
+     ],
+     "carpan": 0.6151
+    }
+   ],
+   "GelismeKonut": [
+    {
+     "kural": "-222",
+     "murekkep_mm": [
+      1.06,
+      1.06
+     ],
+     "carpan": null
+    }
+   ],
+   "HavaalaniHavalimani": [
+    {
+     "kural": "NIP_HAVAALANI_HAVALIMANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    }
+   ],
+   "IbadetAlani": [
+    {
+     "kural": "CAMI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "MESCIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "KILISE",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "5",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "SAPEL",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "SINAGOG_HAVRA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    }
+   ],
+   "IcmesuTesis": [
+    {
+     "kural": "İÇME SUYU TESİSLERİ ALANI (DEPOLAMA-ARITMA-TERFİ MERKEZİ)",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    }
+   ],
+   "IlanEdilenClsmaAlan": [
+    {
+     "kural": "TEKNOLOJI_GELISTIRME_BOLGESI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "SERBEST_BOLGE",
+     "murekkep_mm": [
+      11.71,
+      15.08
+     ],
+     "carpan": 0.5978
+    },
+    {
+     "kural": "OSB",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "ENDUSTRI_BOLGESI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    }
+   ],
+   "KarayoluTesisleri": [
+    {
+     "kural": "GENEL_OTOPARK",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "TIR_KAMYON_MAKINA_PARK_GARAJ_ALANI",
+     "murekkep_mm": [
+      11.38,
+      14.75
+     ],
+     "carpan": 0.6151
+    },
+    {
+     "kural": "KATLI_OTOPARK_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "ELEKTRIKLI_ARAC_SARJ_ISTASYON_ALANI",
+     "murekkep_mm": [
+      11.64,
+      14.75
+     ],
+     "carpan": 0.6014
+    }
+   ],
+   "KatiAtikTesis": [
+    {
+     "kural": "KATI ATIK TESİSLERİ ALANI (BOŞALTMA, BERTARAF, İŞLEME, TRANSFER VE DEPOLAMA)",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "VAHSI_COP_DEPOLAMA_ALANI",
+     "murekkep_mm": [
+      3.97,
+      3.97
+     ],
+     "carpan": 1.7632
+    }
+   ],
+   "KentselCalisma": [
+    {
+     "kural": "MERKEZI_IS_ALANI",
+     "murekkep_mm": [
+      4.03,
+      4.03
+     ],
+     "carpan": 1.737
+    },
+    {
+     "kural": "TICARET_ALANI",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 1.7632
+    },
+    {
+     "kural": "TICARET_KONUT_ALANI",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 1.7632
+    },
+    {
+     "kural": "TICARET_TURIZM_ALANI",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 1.7632
+    },
+    {
+     "kural": "TICARET_TURIZM_KONUT_ALANI",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 1.7632
+    },
+    {
+     "kural": "BELEDIYE_HIZMET_ALANI",
+     "murekkep_mm": [
+      4.03,
+      4.03
+     ],
+     "carpan": 1.737
+    },
+    {
+     "kural": "KAMU_HIZMET_ALANI",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 1.7632
+    },
+    {
+     "kural": "KONUT_DISI_KENTSEL_CALISMA_ALANI",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 1.7632
+    },
+    {
+     "kural": "AKARYAKIT_SERVIS_ISTASYONU_ALANI",
+     "murekkep_mm": [
+      3.17,
+      3.97
+     ],
+     "carpan": 2.2082
+    },
+    {
+     "kural": "ENDUSTRIYEL_GELISME_BOLGESI",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 1.7632
+    },
+    {
+     "kural": "KUCUK_SANAYI_ALANI",
+     "murekkep_mm": [
+      4.03,
+      4.03
+     ],
+     "carpan": 1.737
+    },
+    {
+     "kural": "DEPOLAMA_ALANI",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 1.7632
+    },
+    {
+     "kural": "LOJISTIK_TESIS_ALANI",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 1.7632
+    },
+    {
+     "kural": "TOPLU_ISYERLERI",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 1.7632
+    },
+    {
+     "kural": "ASKERI_ALAN",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 1.7632
+    },
+    {
+     "kural": "1_DERECE_TICARET_ALANI",
+     "murekkep_mm": [
+      4.03,
+      4.03
+     ],
+     "carpan": 1.737
+    },
+    {
+     "kural": "2_DERECE_TICARET_ALANI",
+     "murekkep_mm": [
+      4.03,
+      4.03
+     ],
+     "carpan": 1.737
+    },
+    {
+     "kural": "3_DERECE_TICARET_ALANI",
+     "murekkep_mm": [
+      4.03,
+      4.03
+     ],
+     "carpan": 1.737
+    },
+    {
+     "kural": "PAZAR_ALANI",
+     "murekkep_mm": [
+      4.03,
+      4.03
+     ],
+     "carpan": 1.737
+    },
+    {
+     "kural": "SU_URUNLERI_URETIM_VE_YETISTIRME_TESISI",
+     "murekkep_mm": [
+      3.17,
+      3.97
+     ],
+     "carpan": 2.2082
+    },
+    {
+     "kural": "BETON_SANTRALI",
+     "murekkep_mm": [
+      4.03,
+      4.03
+     ],
+     "carpan": 1.737
+    },
+    {
+     "kural": "OSB_HIZMET_DESTEK_ALANI",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 1.7632
+    }
+   ],
+   "KiyiKorumaYapilari": [
+    {
+     "kural": "DALGAKIRAN",
+     "murekkep_mm": [
+      12.1,
+      14.88
+     ],
+     "carpan": 0.5785
+    },
+    {
+     "kural": "MENFEZ",
+     "murekkep_mm": [
+      12.1,
+      14.88
+     ],
+     "carpan": 0.5785
+    },
+    {
+     "kural": "MENDIREK",
+     "murekkep_mm": [
+      12.1,
+      14.88
+     ],
+     "carpan": 0.5785
+    },
+    {
+     "kural": "MAHMUZ",
+     "murekkep_mm": [
+      12.1,
+      14.88
+     ],
+     "carpan": 0.5785
+    },
+    {
+     "kural": "KOPRU",
+     "murekkep_mm": [
+      12.1,
+      14.88
+     ],
+     "carpan": 0.5785
+    },
+    {
+     "kural": "ISTINAT_DUVARI",
+     "murekkep_mm": [
+      12.1,
+      14.88
+     ],
+     "carpan": 0.5785
+    }
+   ],
+   "KiyiYapilari": [
+    {
+     "kural": "TERSANE_ALANI",
+     "murekkep_mm": [
+      11.91,
+      15.02
+     ],
+     "carpan": 0.5877
+    },
+    {
+     "kural": "YAT_LIMANI",
+     "murekkep_mm": [
+      11.51,
+      14.62
+     ],
+     "carpan": 0.6082
+    },
+    {
+     "kural": "BALIKCI_BARINAGI",
+     "murekkep_mm": [
+      12.04,
+      15.02
+     ],
+     "carpan": 0.5814
+    },
+    {
+     "kural": "TEKNE_IMAL_CEKEK_YERI",
+     "murekkep_mm": [
+      10.98,
+      14.75
+     ],
+     "carpan": 0.6375
+    },
+    {
+     "kural": "ISKELE",
+     "murekkep_mm": [
+      11.38,
+      15.08
+     ],
+     "carpan": 0.6151
+    },
+    {
+     "kural": "TEKNE_IMAL_BAKIM_YERI",
+     "murekkep_mm": [
+      10.72,
+      14.82
+     ],
+     "carpan": 0.653
+    },
+    {
+     "kural": "DENIZ_INIS_RAMPASI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "LIMAN",
+     "murekkep_mm": [
+      11.77,
+      14.88
+     ],
+     "carpan": 0.5947
+    },
+    {
+     "kural": "KONTEYNER_LIMANI",
+     "murekkep_mm": [
+      12.04,
+      15.02
+     ],
+     "carpan": 0.5814
+    },
+    {
+     "kural": "KRUVAZIYER_LIMANI",
+     "murekkep_mm": [
+      12.04,
+      14.88
+     ],
+     "carpan": 0.5814
+    },
+    {
+     "kural": "RORO_LIMANI",
+     "murekkep_mm": [
+      12.04,
+      15.02
+     ],
+     "carpan": 0.5814
+    }
+   ],
+   "KumsalPlaj": [
+    {
+     "kural": "NIP_KUMSAL_PLAJ",
+     "murekkep_mm": [
+      14.95,
+      18.79
+     ],
+     "carpan": 0.4682
+    }
+   ],
+   "MilliPark": [
+    {
+     "kural": "TABIAT_PARKI_ALANI",
+     "murekkep_mm": [
+      11.97,
+      15.08
+     ],
+     "carpan": 0.5848
+    },
+    {
+     "kural": "TABIATI_KORUMA_ALANI",
+     "murekkep_mm": [
+      11.05,
+      15.08
+     ],
+     "carpan": 0.6335
+    },
+    {
+     "kural": "MILLI_PARK",
+     "murekkep_mm": [
+      11.91,
+      14.95
+     ],
+     "carpan": 0.5877
+    },
+    {
+     "kural": "YABAN_HAYATI_KORUMA_GELISTIRME_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    }
+   ],
+   "MudahaleSiniri": [
+    {
+     "kural": "MEVCUT_PLANDAKI_DURUMU_KORUNACAK_ALAN_SINIRI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "YENIDEN_DUZENLENECEK_ALAN_SINIRI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "SAGLIKLASTIRMA_ALAN_SINIRI",
+     "murekkep_mm": [
+      14.95,
+      14.88
+     ],
+     "carpan": 0.4704
+    }
+   ],
+   "OckHassasAlan": [
+    {
+     "kural": "OCK_BOLGESI_HASSAS_ALAN_A",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "OCK_BOLGESI_HASSAS_ALAN_B",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "OCK_BOLGESI_HASSAS_ALAN_C",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    }
+   ],
+   "OnlemliAlan": [
+    {
+     "kural": "ONLEMLI_ALAN",
+     "murekkep_mm": [
+      12.04,
+      15.08
+     ],
+     "carpan": 0.5814
+    },
+    {
+     "kural": "1_DERECE_ONLEMLI_ALAN",
+     "murekkep_mm": [
+      12.04,
+      15.08
+     ],
+     "carpan": 0.5814
+    },
+    {
+     "kural": "2_DERECE_ONLEMLI_ALAN",
+     "murekkep_mm": [
+      12.04,
+      15.08
+     ],
+     "carpan": 0.5814
+    },
+    {
+     "kural": "3_DERECE_ONLEMLI_ALAN",
+     "murekkep_mm": [
+      12.04,
+      15.08
+     ],
+     "carpan": 0.5814
+    },
+    {
+     "kural": "4_DERECE_ONLEMLI_ALAN",
+     "murekkep_mm": [
+      12.04,
+      15.08
+     ],
+     "carpan": 0.5814
+    },
+    {
+     "kural": "5_DERECE_ONLEMLI_ALAN",
+     "murekkep_mm": [
+      12.04,
+      15.08
+     ],
+     "carpan": 0.5814
+    }
+   ],
+   "OzelEkosistem": [
+    {
+     "kural": "AKDENIZ_FOKU",
+     "murekkep_mm": [
+      15.15,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "DENIZ_KAPLUMBAGASI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "FLORA_FAUNA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "EKOLOJIK_KORUMA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    }
+   ],
+   "YapayAda": [
+    {
+     "kural": "nip_yapay_ada",
+     "murekkep_mm": [
+      14.95,
+      15.15
+     ],
+     "carpan": 0.4682
+    }
+   ],
+   "SaglikTesisAlani": [
+    {
+     "kural": "SAGLIK_TESIS_ALANI",
+     "murekkep_mm": [
+      11.91,
+      15.08
+     ],
+     "carpan": 0.5877
+    },
+    {
+     "kural": "OZEL_SAGLIK_TESISI_ALANI",
+     "murekkep_mm": [
+      10.98,
+      14.82
+     ],
+     "carpan": 0.6375
+    }
+   ],
+   "SitAlanlari": [
+    {
+     "kural": "1_DERECE_ARKEOLOJIK_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "2_DERECE_ARKEOLOJIK_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "3_DERECE_ARKEOLOJIK_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "KESIN_KORUNACAK_HASSAS_ALAN",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "NITELIKLI_DOGAL_KORUMA_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "SURDURULEBILIR_KORUMA_KONTROLLU_KULLANIM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "KENTSEL_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "1_DERECE_DOGAL_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "2_DERECE_DOGAL_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "3_DERECE_DOGAL_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "TARIHI_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "KENTSEL_ARKEOLOJIK_SIT",
+     "murekkep_mm": [
+      9.99,
+      9.13
+     ],
+     "carpan": 0.7667
+    }
+   ],
+   "SosyalKulturelAlan": [
+    {
+     "kural": "SOSYAL_TESIS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "KULTUREL_TESIS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "OZEL_SOSYAL_ALTYAPI_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "SPOR_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "OZEL_KULTUREL_TESIS_ALANI",
+     "murekkep_mm": [
+      14.95,
+      14.95
+     ],
+     "carpan": 0.4682
+    },
+    {
+     "kural": "OZEL_SPOR_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "SEMT_SPOR_ALANI",
+     "murekkep_mm": [
+      15.02,
+      15.08
+     ],
+     "carpan": 0.466
+    },
+    {
+     "kural": "OZEL_SOSYAL_TESIS_ALANI",
+     "murekkep_mm": [
+      14.95,
+      14.95
+     ],
+     "carpan": 0.4682
+    },
+    {
+     "kural": "SOKAK_HAYVANLARI_BARINAGI_ALANI",
+     "murekkep_mm": [
+      3.97,
+      3.97
+     ],
+     "carpan": 1.7632
+    }
+   ],
+   "SuKaptaj": [
+    {
+     "kural": "NIP_SU_KAPTAJ",
+     "murekkep_mm": [
+      11.91,
+      15.02
+     ],
+     "carpan": 0.5877
+    }
+   ],
+   "TehlikeliTesis": [
+    {
+     "kural": "BERTARAF",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "DEPOLAMA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    }
+   ],
+   "TeknikAltyapi": [
+    {
+     "kural": "ENERJI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "ICMESUYU",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "ATIKSU",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "KATI_ATIK",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "KANALIZASYON",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "ULASTIRMA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "HABERLESME",
+     "murekkep_mm": [
+      15.08,
+      15.02
+     ],
+     "carpan": 0.466
+    }
+   ],
+   "Terminal": [
+    {
+     "kural": "ANA_ISTASYON_GAR",
+     "murekkep_mm": [
+      11.84,
+      15.02
+     ],
+     "carpan": 0.5912
+    },
+    {
+     "kural": "TERMINAL_OTOGAR",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "RAYLI_TOPLU_TASIMA_ISTASYONU",
+     "murekkep_mm": [
+      12.04,
+      15.02
+     ],
+     "carpan": 0.5814
+    },
+    {
+     "kural": "HAVAI_HAT_ISTASYONU",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "HAVARAY_ISTASYONU",
+     "murekkep_mm": [
+      12.04,
+      14.95
+     ],
+     "carpan": 0.5814
+    }
+   ],
+   "TopluTasimaAktarimAlani": [
+    {
+     "kural": "NIP_TOPLU_TASIMA_AKTAR_ALAN",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    }
+   ],
+   "TurizmAlani": [
+    {
+     "kural": "GUNUBIRLIK_TESIS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "GOLF_TURIZM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    }
+   ],
+   "YeraltiSuKaynakKoruma": [
+    {
+     "kural": "nip_yeralti_su_kaynak_koruma",
+     "murekkep_mm": [
+      12.04,
+      15.08
+     ],
+     "carpan": 0.5814
+    }
+   ],
+   "AfetHizmetAlani": [
+    {
+     "kural": "AfetLojistikAlani",
+     "murekkep_mm": [
+      9.99,
+      9.39
+     ],
+     "carpan": 0.7455
+    }
+   ],
+   "YolDuzenlemeAlanlari": [
+    {
+     "kural": "Red Square Point",
+     "murekkep_mm": [
+      1.59,
+      1.59
+     ],
+     "carpan": null
+    }
+   ]
+  },
+  "CDP": {
+   "AcikYesilAlan": [
+    {
+     "kural": "MILLET_BAHCESI",
+     "murekkep_mm": [
+      7.81,
+      6.88
+     ],
+     "carpan": 0.7267
+    },
+    {
+     "kural": "FuarPanayirFestival",
+     "murekkep_mm": [
+      10.05,
+      9.92
+     ],
+     "carpan": 0.504
+    },
+    {
+     "kural": "AGACLANDIRILACAK_ALAN",
+     "murekkep_mm": [
+      10.05,
+      7.54
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "AtikGeriKazTesAlani": [
+    {
+     "kural": "CDP_ATIK_GERI_KAZ_TES_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    }
+   ],
+   "AskeriYskGuvenlikBlg": [
+    {
+     "kural": "ASKERI YASAK BOLGE",
+     "murekkep_mm": [
+      10.05,
+      11.24
+     ],
+     "carpan": 0.4975
+    },
+    {
+     "kural": "ASKERI YASAK VE GUVENLIK BOLGESI",
+     "murekkep_mm": [
+      10.05,
+      11.24
+     ],
+     "carpan": 0.4975
+    },
+    {
+     "kural": "TIP BILGISI OLMAYAN ESKI ASKERI ALAN",
+     "murekkep_mm": [
+      10.05,
+      11.24
+     ],
+     "carpan": 0.4975
+    }
+   ],
+   "AfetTehlikeliAlanlar": [
+    {
+     "kural": "SEL_TASKIN",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "JEOLOJIK_SAKINCALI_ALAN",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "DEPREM",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "CIG",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    }
+   ],
+   "AtiksuTesis": [
+    {
+     "kural": "ARITMA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "TERFI_MERKEZI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    }
+   ],
+   "EnerjiUretim": [
+    {
+     "kural": "ENERJI_URETIM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "HIDROELEKTRIK_SANTRAL_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "DIGER_URETIM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "SANTRAL_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "DOGALGAZ_CEVRIM_SANTRALI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "FOSIL_YAKIT_CIKARIM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "TERMIK_SANTRAL",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "RUZGAR_ENERJISI_SANTRALI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "JEOTERMAL_TESIS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "NUKLEER_ENERJI_SANTRALI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    }
+   ],
+   "EnerjiDagitimDepolama": [
+    {
+     "kural": "CDP_ENERJI_DAGITIM_DEPOLAMA",
+     "murekkep_mm": [
+      3.11,
+      3.9
+     ],
+     "carpan": 1.6077
+    }
+   ],
+   "HavaalaniHavalimani": [
+    {
+     "kural": "CDP_HAVAALANI_HAVALIMANI",
+     "murekkep_mm": [
+      30.16,
+      30.1
+     ],
+     "carpan": 0.1661
+    }
+   ],
+   "IcmesuTesis": [
+    {
+     "kural": "CDP_ICMESU_TESIS",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    }
+   ],
+   "KatiAtikTesis": [
+    {
+     "kural": "KATI ATIK TESİSLERİ ALANI (BOŞALTMA, BERTARAF, İŞLEME, TRANSFER VE DEPOLAMA)",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "VAHSI_COP_DEPOLAMA_ALANI",
+     "murekkep_mm": [
+      3.97,
+      3.97
+     ],
+     "carpan": 1.2594
+    }
+   ],
+   "KentselCalisma": [
+    {
+     "kural": "LOJISTIK_BOLGE",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 1.2594
+    },
+    {
+     "kural": "MERKEZI_IS_ALANI",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 1.2594
+    },
+    {
+     "kural": "ENDUSTRI_BOLGESI",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 1.2594
+    },
+    {
+     "kural": "SERBEST_BOLGE",
+     "murekkep_mm": [
+      3.11,
+      3.97
+     ],
+     "carpan": 1.6077
+    },
+    {
+     "kural": "OSB",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 1.2594
+    },
+    {
+     "kural": "TEKNOLOJI_GELISTIRME_BOLGESI",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 1.2594
+    },
+    {
+     "kural": "TALI_MERKEZ",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 1.2594
+    },
+    {
+     "kural": "ENDUSTRIYEL_GELISME_BOLGESI",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 1.2594
+    },
+    {
+     "kural": "Depolama AlanÄ±",
+     "murekkep_mm": [
+      10.05,
+      11.18
+     ],
+     "carpan": 0.4975
+    },
+    {
+     "kural": "KamuHizmetAlani",
+     "murekkep_mm": [
+      10.05,
+      10.05
+     ],
+     "carpan": 0.4975
+    }
+   ],
+   "KiyiYapilari": [
+    {
+     "kural": "KIYI_TESIS_ALANI",
+     "murekkep_mm": [
+      14.42,
+      14.35
+     ],
+     "carpan": 0.3484
+    },
+    {
+     "kural": "TERSANE_ALANI",
+     "murekkep_mm": [
+      11.91,
+      15.02
+     ],
+     "carpan": 0.4198
+    }
+   ],
+   "TerminalOtogar": [
+    {
+     "kural": "CDP_TERMINAL_OTOGAR",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    }
+   ],
+   "MilliPark": [
+    {
+     "kural": "TABIAT_PARKI_ALANI",
+     "murekkep_mm": [
+      11.97,
+      15.08
+     ],
+     "carpan": 0.4177
+    },
+    {
+     "kural": "TABIATI_KORUMA_ALANI",
+     "murekkep_mm": [
+      11.05,
+      15.08
+     ],
+     "carpan": 0.4525
+    },
+    {
+     "kural": "MILLI_PARK",
+     "murekkep_mm": [
+      11.91,
+      14.95
+     ],
+     "carpan": 0.4198
+    },
+    {
+     "kural": "YABAN_HAYATI_KORUMA_GELISTIRME_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    }
+   ],
+   "OckHassasAlan": [
+    {
+     "kural": "OCK_BOLGESI_HASSAS_ALAN_A",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "OCK_BOLGESI_HASSAS_ALAN_B",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "OCK_BOLGESI_HASSAS_ALAN_C",
+     "murekkep_mm": [
+      0.53,
+      0.6
+     ],
+     "carpan": null
+    }
+   ],
+   "OzelEkosistem": [
+    {
+     "kural": "EKOLOJIK_KORUMA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "FLORA_FAUNA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "AKDENIZ_FOKU",
+     "murekkep_mm": [
+      15.15,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "DENIZ_KAPLUMBAGASI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    }
+   ],
+   "SitAlanlari": [
+    {
+     "kural": "1_DERECE_ARKEOLOJIK_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "2_DERECE_ARKEOLOJIK_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "3_DERECE_ARKEOLOJIK_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "KESIN_KORUNACAK_HASSAS_ALAN",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "NITELIKLI_DOGAL_KORUMA_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "SURDURULEBILIR_KORUMA_KONTROLLU_KULLANIM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "KENTSEL_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "TARIHI_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "1_DERECE_DOGAL_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "2_DERECE_DOGAL_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "3_DERECE_DOGAL_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "KENTSEL_ARKEOLOJIK_SIT",
+     "murekkep_mm": [
+      10.05,
+      9.13
+     ],
+     "carpan": 0.5476
+    }
+   ],
+   "SosyalKulturelAlan": [
+    {
+     "kural": "UNIVERSITE_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "KENTSEL_BOLGESEL_SOSYAL_ALTYAPI_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "MESIRE_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    }
+   ],
+   "SuKaptaj": [
+    {
+     "kural": "CDP_SU_KAPTAJ",
+     "murekkep_mm": [
+      11.91,
+      15.02
+     ],
+     "carpan": 0.4198
+    }
+   ],
+   "TehlikeliTesis": [
+    {
+     "kural": "BERTARAF",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "DEPOLAMA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    }
+   ],
+   "TeknikAltyapi": [
+    {
+     "kural": "KANALIZASYON",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "ENERJI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "ICMESUYU",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "ATIKSU",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "KATI_ATIK",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "ULASTIRMA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "HABERLESME",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    }
+   ],
+   "TurizmAlani": [
+    {
+     "kural": "TURIZM_BOLGESI",
+     "murekkep_mm": [
+      9.0,
+      8.93
+     ],
+     "carpan": 0.5599
+    },
+    {
+     "kural": "GUNUBIRLIK_TURIZM",
+     "murekkep_mm": [
+      9.0,
+      9.0
+     ],
+     "carpan": 0.5556
+    },
+    {
+     "kural": "YAYLA_TURIZMI",
+     "murekkep_mm": [
+      9.0,
+      9.0
+     ],
+     "carpan": 0.5556
+    },
+    {
+     "kural": "KIS_TURIZMI",
+     "murekkep_mm": [
+      9.0,
+      7.47
+     ],
+     "carpan": 0.6693
+    },
+    {
+     "kural": "GOLF_TURIZMI",
+     "murekkep_mm": [
+      9.0,
+      9.26
+     ],
+     "carpan": 0.5556
+    },
+    {
+     "kural": "EKOTURIZM",
+     "murekkep_mm": [
+      9.0,
+      8.33
+     ],
+     "carpan": 0.6002
+    },
+    {
+     "kural": "SAGLIK_TURIZMI",
+     "murekkep_mm": [
+      9.0,
+      9.0
+     ],
+     "carpan": 0.5556
+    }
+   ],
+   "EgitimTesisAlanlari": [
+    {
+     "kural": "YUKSEK_OGRETIM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    }
+   ],
+   "YapayAda": [
+    {
+     "kural": "CDP_YAPAY_ADA",
+     "murekkep_mm": [
+      14.95,
+      15.15
+     ],
+     "carpan": 0.3344
+    }
+   ],
+   "YeraltiSuKaynakKoruma": [
+    {
+     "kural": "CDP_YERALTI_SU_KAYNAK_KORUMA",
+     "murekkep_mm": [
+      12.04,
+      15.08
+     ],
+     "carpan": 0.4153
+    }
+   ],
+   "AfetHizmetAlani": [
+    {
+     "kural": "AfetLojistikAlani",
+     "murekkep_mm": [
+      10.05,
+      9.39
+     ],
+     "carpan": 0.5325
+    }
+   ]
+  },
+  "MUIP": {
+   "OnlemliAlan": [
+    {
+     "kural": "ONLEMLI_ALAN",
+     "murekkep_mm": [
+      12.04,
+      15.08
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "1_DERECE_ONLEMLI_ALAN",
+     "murekkep_mm": [
+      12.04,
+      15.08
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "2_DERECE_ONLEMLI_ALAN",
+     "murekkep_mm": [
+      12.04,
+      15.08
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "3_DERECE_ONLEMLI_ALAN",
+     "murekkep_mm": [
+      12.04,
+      15.08
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "4_DERECE_ONLEMLI_ALAN",
+     "murekkep_mm": [
+      12.04,
+      15.08
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "5_DERECE_ONLEMLI_ALAN",
+     "murekkep_mm": [
+      12.04,
+      15.08
+     ],
+     "carpan": 0.8306
+    }
+   ],
+   "AfetTehlikeliAlanlar": [
+    {
+     "kural": "YAPI_YASAKLI_ALAN",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "HEYELAN_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "AYRINTILI_JEO_ETUT_GER_ALAN",
+     "murekkep_mm": [
+      10.91,
+      15.15
+     ],
+     "carpan": 0.9166
+    },
+    {
+     "kural": "HAF_YAS_UYG_AKT_HEYELAN_BOLGESI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "TOPOGRAFIK_SAK_ALAN",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "JEOLOJIK_SAK_ALAN",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "BIOMET_SAK_ALAN",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "GENEL_SIG_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.02
+     ],
+     "carpan": 0.6658
+    },
+    {
+     "kural": "AFET_MUDAHALE_YON_ALT_ALANI",
+     "murekkep_mm": [
+      12.04,
+      15.08
+     ],
+     "carpan": 0.8306
+    }
+   ],
+   "KorumaKusaklari": [
+    {
+     "kural": "YANICI_PAT_PAR_MAD_KOR_KUSAGI",
+     "murekkep_mm": [
+      12.04,
+      15.02
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "SU_KANALLARI_KORUMA_KUSAGI",
+     "murekkep_mm": [
+      12.17,
+      15.08
+     ],
+     "carpan": 0.8217
+    },
+    {
+     "kural": "ICMESUYU_KOR_KUSAGI",
+     "murekkep_mm": [
+      12.04,
+      14.95
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "YERALTI_SU_KAY_KOR_KUSAGI",
+     "murekkep_mm": [
+      12.04,
+      15.08
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "YANICI_PAT_PAR_MAD_MUV_ALINACAK_ALAN",
+     "murekkep_mm": [
+      11.38,
+      15.08
+     ],
+     "carpan": 0.8787
+    },
+    {
+     "kural": "OZEL_GUVENLIK_BOLGESI",
+     "murekkep_mm": [
+      10.72,
+      15.08
+     ],
+     "carpan": 0.9328
+    },
+    {
+     "kural": "SAGLIK_KORUMA_BANDI",
+     "murekkep_mm": [
+      12.04,
+      15.02
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "ENERJI_NAKIL_HATTI_KOR_KUSAGI",
+     "murekkep_mm": [
+      12.04,
+      15.08
+     ],
+     "carpan": 0.8306
+    }
+   ],
+   "Tarim": [
+    {
+     "kural": "MUTLAK_TARIM",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "OZEL_URUN",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "DIKILI_TARIM",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "MARJINAL_TARIM",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "ORGANIK_TARIM",
+     "murekkep_mm": [
+      12.04,
+      15.02
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "SULU_TARIM_ARAZISI",
+     "murekkep_mm": [
+      15.08,
+      15.02
+     ],
+     "carpan": 0.6658
+    }
+   ],
+   "SitAlanlari": [
+    {
+     "kural": "1_DERECE_ARKEOLOJIK_SIT_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "2_DERECE_ARKEOLOJIK_SIT_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "3_DERECE_ARKEOLOJIK_SIT_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "KESIN_KORUNACAK_HASSAS_ALAN",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "NITELIKLI_DOGAL_KORUMA_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "SURDURULEBILIR_KORUMA_VE_KONTROLLU_KULLANIM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "KENTSEL_SIT",
+     "murekkep_mm": [
+      0.99,
+      1.06
+     ],
+     "carpan": null
+    },
+    {
+     "kural": "TARIHI_SIT_ALANI",
+     "murekkep_mm": [
+      1.06,
+      1.06
+     ],
+     "carpan": null
+    },
+    {
+     "kural": "1_DERECE_DOGAL_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "2_DERECE_DOGAL_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "3_DERECE_DOGAL_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "KENTSEL_ARKEOLOJIK_SIT_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "KentinGGBolgeSiniri": [
+    {
+     "kural": "MUIP_KENTIN_GG_BOLGE_SINIRI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "TescilliAlanYapi": [
+    {
+     "kural": "TESCILLI_ANIT_YAPI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "TESCILLI_BINA",
+     "murekkep_mm": [
+      11.11,
+      14.95
+     ],
+     "carpan": 0.9001
+    },
+    {
+     "kural": "TESCILLI_TABIAT_VARLIGI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "KiyiKorumaYapilariBi": [
+    {
+     "kural": "DALGAKIRAN",
+     "murekkep_mm": [
+      12.1,
+      14.88
+     ],
+     "carpan": 0.8264
+    },
+    {
+     "kural": "MENFEZ",
+     "murekkep_mm": [
+      12.1,
+      15.08
+     ],
+     "carpan": 0.8264
+    },
+    {
+     "kural": "MAHMUZ",
+     "murekkep_mm": [
+      12.1,
+      15.08
+     ],
+     "carpan": 0.8264
+    },
+    {
+     "kural": "KOPRU",
+     "murekkep_mm": [
+      12.1,
+      14.88
+     ],
+     "carpan": 0.8264
+    },
+    {
+     "kural": "ISTINAT_DUVARI",
+     "murekkep_mm": [
+      12.1,
+      14.88
+     ],
+     "carpan": 0.8264
+    },
+    {
+     "kural": "MENDIREK",
+     "murekkep_mm": [
+      12.1,
+      14.88
+     ],
+     "carpan": 0.8264
+    }
+   ],
+   "AskeriYasakBolge": [
+    {
+     "kural": "MUIP_ASKERI_YASAK_BOLGE",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "MilliPark": [
+    {
+     "kural": "TABIAT_PARKI_ALANI",
+     "murekkep_mm": [
+      11.97,
+      15.08
+     ],
+     "carpan": 0.8354
+    },
+    {
+     "kural": "TABIATI_KORUMA_ALANI",
+     "murekkep_mm": [
+      11.05,
+      15.08
+     ],
+     "carpan": 0.905
+    },
+    {
+     "kural": "MILLI_PARK",
+     "murekkep_mm": [
+      11.91,
+      14.95
+     ],
+     "carpan": 0.8396
+    },
+    {
+     "kural": "YABAN_HAYATI_KORUMA_GELISTIRME_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "AV_YABAN_HAYVANLARI_URETME_ISTASYONU",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "TABIAT_ANIT_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.02
+     ],
+     "carpan": 0.6658
+    }
+   ],
+   "OckHassasAlan": [
+    {
+     "kural": "OCK_BOLGESI_HASSAS_ALAN_A",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "OCK_BOLGESI_HASSAS_ALAN_B",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "OCK_BOLGESI_HASSAS_ALAN_C",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "OzelEkosistem": [
+    {
+     "kural": "FLORA_FAUNA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "EKOLOJIK_KORUMA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "ENDEMIK_BIYOTOP",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "DENIZ_KAPLUMBAGASI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "AKDENIZ_FOKU",
+     "murekkep_mm": [
+      15.15,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "DogalKarakter": [
+    {
+     "kural": "AGACLIK",
+     "murekkep_mm": [
+      12.17,
+      15.08
+     ],
+     "carpan": 0.8217
+    },
+    {
+     "kural": "TASLIK",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "MAKILIK_CALILIK",
+     "murekkep_mm": [
+      15.08,
+      7.21
+     ],
+     "carpan": null
+    },
+    {
+     "kural": "JEOLOJIK_OZELLIGI_NEDENIYLE_KORUNACAK_ALAN",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "SAZLIK_BATAKLIK",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "KAYALIK",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "KUMUL",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "TeknikAltyapi": [
+    {
+     "kural": "ENERJI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "ICMESUYU",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "ATIKSU",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "KATI_ATIK",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "KANALIZASYON",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "ULASTIRMA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "HABERLESME",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "TehlikeliTesis": [
+    {
+     "kural": "BERTARAF",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "DEPOLAMA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "KatiAtikTesis": [
+    {
+     "kural": "KATI ATIK TESİSLERİ ALANI (BOŞALTMA, BERTARAF, İŞLEME, TRANSFER VE DEPOLAMA)",
+     "murekkep_mm": [
+      31.22,
+      15.08
+     ],
+     "carpan": null
+    }
+   ],
+   "AtiksuTesis": [
+    {
+     "kural": "ARITMA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "TERFI_MERKEZI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "EnerjiDagitimDepo": [
+    {
+     "kural": "REGULATOR_ALANI",
+     "murekkep_mm": [
+      12.1,
+      15.08
+     ],
+     "carpan": 0.8264
+    },
+    {
+     "kural": "TURBIN_ALANI",
+     "murekkep_mm": [
+      11.38,
+      14.68
+     ],
+     "carpan": 0.8787
+    },
+    {
+     "kural": "DOGALGAZ_ILETIM_DAGITIM_TESISI_ALANI",
+     "murekkep_mm": [
+      12.04,
+      15.08
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "YANICI_PARLAYICI_PATLAYICI_MADDELER_URETIM_DEPO_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "AKARYAKIT_URUNLERI_DEPOLAMA_ALANI",
+     "murekkep_mm": [
+      12.04,
+      15.02
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "TRAFO_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "ELEKTRONIK_HABERLESME_ALTYAPI_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.02
+     ],
+     "carpan": 0.6658
+    },
+    {
+     "kural": "RAFINERI_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "FOSIL_YAKIT_CIKARMA_ALANI",
+     "murekkep_mm": [
+      12.44,
+      15.74
+     ],
+     "carpan": 0.8039
+    },
+    {
+     "kural": "DOGALGAZ_CNG_DEPOLAMA_ALANI",
+     "murekkep_mm": [
+      12.3,
+      15.08
+     ],
+     "carpan": 0.813
+    },
+    {
+     "kural": "LPG_DEPOLAMA_ALANI",
+     "murekkep_mm": [
+      12.04,
+      15.08
+     ],
+     "carpan": 0.8306
+    }
+   ],
+   "EnerjiUretim": [
+    {
+     "kural": "TERMIK_SANTRAL_ALANI",
+     "murekkep_mm": [
+      11.64,
+      14.82
+     ],
+     "carpan": 0.8591
+    },
+    {
+     "kural": "YENILENEBILIR_ENERJI_KAY_DAY_URE_TES_ALANI",
+     "murekkep_mm": [
+      11.38,
+      15.08
+     ],
+     "carpan": 0.8787
+    },
+    {
+     "kural": "DOGALGAZ_CEVRIM_SANTRALI",
+     "murekkep_mm": [
+      12.7,
+      15.74
+     ],
+     "carpan": 0.7874
+    },
+    {
+     "kural": "ENERJI_URETIM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "NUKLEER_ENERJI_SANTRAL_ALANI",
+     "murekkep_mm": [
+      12.04,
+      15.02
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "HIDROLIK_SANTRAL_ALANI",
+     "murekkep_mm": [
+      12.04,
+      15.08
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "HIDROLIK_TERMIK_SANTRALLER",
+     "murekkep_mm": [
+      15.15,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "Durak": [
+    {
+     "kural": "TERMINAL_OTOGAR",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "RAYLI_TOPLU_TASIMA_ISTASYONU",
+     "murekkep_mm": [
+      10.85,
+      15.08
+     ],
+     "carpan": 0.9217
+    },
+    {
+     "kural": "HAVAI_HAT_ISTASYONU",
+     "murekkep_mm": [
+      14.95,
+      15.02
+     ],
+     "carpan": 0.6689
+    },
+    {
+     "kural": "TOPLU_TASIM_TURLERI_ARASI_DEGISIM_AKTARMA_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "TOPLU_TASIM_DURAKLARI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "HAVARAY_ISTASYONU",
+     "murekkep_mm": [
+      11.11,
+      14.88
+     ],
+     "carpan": 0.9001
+    }
+   ],
+   "HavayoluTesisleri": [
+    {
+     "kural": "HAVAALANI_HAVALIMANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "HELIKOPTER_INIS_ALANI",
+     "murekkep_mm": [
+      15.15,
+      15.15
+     ],
+     "carpan": 0.6601
+    }
+   ],
+   "IcmesuTesis": [
+    {
+     "kural": "İÇME SUYU TESİSLERİ ALANI (DEPOLAMA-ARITMA-TERFİ MERKEZİ)",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "KiyiYapilari": [
+    {
+     "kural": "KONTEYNER_LIMANI",
+     "murekkep_mm": [
+      12.04,
+      15.02
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "YAT_LIMANI",
+     "murekkep_mm": [
+      11.77,
+      14.88
+     ],
+     "carpan": 0.8496
+    },
+    {
+     "kural": "BALIKCI_BARINAGI",
+     "murekkep_mm": [
+      11.58,
+      14.68
+     ],
+     "carpan": 0.8636
+    },
+    {
+     "kural": "ISKELE",
+     "murekkep_mm": [
+      11.11,
+      14.75
+     ],
+     "carpan": 0.9001
+    },
+    {
+     "kural": "RIHTIM",
+     "murekkep_mm": [
+      11.64,
+      14.82
+     ],
+     "carpan": 0.8591
+    },
+    {
+     "kural": "DOLFEN_PLATFORM",
+     "murekkep_mm": [
+      11.64,
+      14.75
+     ],
+     "carpan": 0.8591
+    },
+    {
+     "kural": "LIMAN",
+     "murekkep_mm": [
+      11.91,
+      15.08
+     ],
+     "carpan": 0.8396
+    },
+    {
+     "kural": "TERSANE_ALANI",
+     "murekkep_mm": [
+      11.91,
+      15.02
+     ],
+     "carpan": 0.8396
+    },
+    {
+     "kural": "KRUVAZIYER_LIMANI",
+     "murekkep_mm": [
+      12.04,
+      14.88
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "RO_RO_LIMANI",
+     "murekkep_mm": [
+      12.04,
+      15.02
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "TEKNE_IMAL_CEKEK_YERI",
+     "murekkep_mm": [
+      12.04,
+      15.02
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "GEMI_SOKUM_YERI",
+     "murekkep_mm": [
+      12.04,
+      15.08
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "BARINAK",
+     "murekkep_mm": [
+      12.04,
+      15.02
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "TEKNE_IMAL_BAKIM_YERI",
+     "murekkep_mm": [
+      10.72,
+      14.82
+     ],
+     "carpan": 0.9328
+    },
+    {
+     "kural": "DENIZ_INIS_RAMPASI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "YAT_LIMANI_BALIKCI_BARINAGI",
+     "murekkep_mm": [
+      13.96,
+      15.08
+     ],
+     "carpan": 0.7163
+    },
+    {
+     "kural": "LIMAN_GERI_HIZMET_ALANI",
+     "murekkep_mm": [
+      11.91,
+      15.08
+     ],
+     "carpan": 0.8396
+    },
+    {
+     "kural": "BALIKCI_BARINAGI_HIZMET_ALANI",
+     "murekkep_mm": [
+      12.04,
+      15.02
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "DENIZ_OTOBUSU_FERIBOT_ISKELESI",
+     "murekkep_mm": [
+      11.38,
+      15.08
+     ],
+     "carpan": 0.8787
+    },
+    {
+     "kural": "REKREATIF_AMACLI_ISKELE",
+     "murekkep_mm": [
+      11.38,
+      15.15
+     ],
+     "carpan": 0.8787
+    },
+    {
+     "kural": "YUZER_ISKELE",
+     "murekkep_mm": [
+      11.38,
+      15.08
+     ],
+     "carpan": 0.8787
+    },
+    {
+     "kural": "YANASMA_YERI",
+     "murekkep_mm": [
+      12.17,
+      15.08
+     ],
+     "carpan": 0.8217
+    },
+    {
+     "kural": "SAMANDRA",
+     "murekkep_mm": [
+      11.51,
+      15.21
+     ],
+     "carpan": 0.8688
+    },
+    {
+     "kural": "TASFIYE_POMPAJ_ISTASYONU",
+     "murekkep_mm": [
+      11.91,
+      15.08
+     ],
+     "carpan": 0.8396
+    }
+   ],
+   "BisikletParki": [
+    {
+     "kural": "MUIP_BISIKLET_PARKI",
+     "murekkep_mm": [
+      15.15,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "KarayoluTesisleri": [
+    {
+     "kural": "GENEL_OTOPARK",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "TIR_KAMYON_MAKINA_PARK_GARAJ_ALANI",
+     "murekkep_mm": [
+      15.08,
+      14.42
+     ],
+     "carpan": 0.6935
+    }
+   ],
+   "AcikYesilAlan": [
+    {
+     "kural": "PARK",
+     "murekkep_mm": [
+      53.84,
+      15.08
+     ],
+     "carpan": null
+    },
+    {
+     "kural": "MESIRE_YERI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "HIPODROM",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "MEYDAN",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "BAKI_SEYIR_TERASI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "KENT_ORMANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "ARBORETUM_BOTANIK_PARKI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "KORUNACAK_BAHCE",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "REKREATIF_ALAN",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "PIKNIK_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "OZEL_ORMAN_ALANI",
+     "murekkep_mm": [
+      12.04,
+      15.08
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "HAYVANAT_BAHCESI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "DOGA_SPORLARI_BASLANGIC_BITIS_NOKTALARI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "KUR_PARKI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "SuKaptaj": [
+    {
+     "kural": "MUIP_SU_KAPTAJ",
+     "murekkep_mm": [
+      15.08,
+      7.28
+     ],
+     "carpan": null
+    }
+   ],
+   "KentselCalisma": [
+    {
+     "kural": "TICARET_KONUT_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "TICARET_TURIZM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "TOPTAN_TICARET_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "BELEDIYE_HIZMET_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "YONETIM_MERKEZLERI",
+     "murekkep_mm": [
+      14.88,
+      14.95
+     ],
+     "carpan": 0.672
+    },
+    {
+     "kural": "RESMI_KURUM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "BAKIM_AKARYAKIT_ISTASYONU",
+     "murekkep_mm": [
+      11.77,
+      15.08
+     ],
+     "carpan": 0.8496
+    },
+    {
+     "kural": "ENDUSTRIYEL_GELISME_BOLGESI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "LOJISTIK_TESIS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "PAZARLAMA_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "BETON_SANTRALI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "KAMU_HIZMET_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "BUYUK_ALAN_GEREKTIREN_KAMU_KURULUS_ALANI",
+     "murekkep_mm": [
+      11.58,
+      15.08
+     ],
+     "carpan": 0.8636
+    },
+    {
+     "kural": "ARGE_MERKEZ_VE_ENSTITULERI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "BUYUK_OLCEKLI_TUKETIM_ALANI_AVM",
+     "murekkep_mm": [
+      15.08,
+      15.02
+     ],
+     "carpan": 0.6658
+    },
+    {
+     "kural": "HAYVAN_PAZARI_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "OSB_HIZMET_DESTEK_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "TARIMSAL_DEPOLAMA_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.02
+     ],
+     "carpan": 0.6658
+    },
+    {
+     "kural": "ENTEGRE_OLMAYAN_TARIMSAL_TESIS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "TICARET_TURIZM_KONUT_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "TOPLU_ISYERLERI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "MADEN_CIKARIM_REZERV_ALAN_SINIRI",
+     "murekkep_mm": [
+      11.58,
+      15.15
+     ],
+     "carpan": 0.8636
+    },
+    {
+     "kural": "SU_URUNLERI_URETIM_VE_YETISTIRME_TESISI",
+     "murekkep_mm": [
+      11.24,
+      14.95
+     ],
+     "carpan": 0.8897
+    },
+    {
+     "kural": "GUMRUK_ALANI",
+     "murekkep_mm": [
+      11.24,
+      15.08
+     ],
+     "carpan": 0.8897
+    },
+    {
+     "kural": "SIVIL_TOPLUM_KURULUSLARI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "TARIMA_DAYALI_IHTISAS_OSB",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "IlanEdilCalsmaAlan": [
+    {
+     "kural": "TEKNOLOJI_GELISTIRME_BOLGESI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "SERBEST_BOLGE",
+     "murekkep_mm": [
+      11.71,
+      15.08
+     ],
+     "carpan": 0.854
+    },
+    {
+     "kural": "ENDUSTRI_BOLGESI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "SosyalKulturelAlan": [
+    {
+     "kural": "SPOR_TESISLERI_ALANI",
+     "murekkep_mm": [
+      11.77,
+      15.02
+     ],
+     "carpan": 0.8496
+    },
+    {
+     "kural": "TEMEL_EGIT_ONCESI_OGR_ALANI",
+     "murekkep_mm": [
+      15.02,
+      5.36
+     ],
+     "carpan": null
+    },
+    {
+     "kural": "SOSYAL_TESIS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "OZEL_SOSYAL_ALTYAPI_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "YURT_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "KONGRE_SERGI_MERKEZI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "SOSYAL_KULTUREL_TESIS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "OZEL_SOSYAL_KULTUREL_TESIS_ALANI",
+     "murekkep_mm": [
+      14.95,
+      14.95
+     ],
+     "carpan": 0.6689
+    },
+    {
+     "kural": "OZEL_YURT_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "OZEL_SPOR_TESISI_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "SEFKAT_EVLERI_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "IbadetAlani": [
+    {
+     "kural": "CAMI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "MESCIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "KILISE",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "DINI_TESIS_ALANI",
+     "murekkep_mm": [
+      29.1,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "SAPEL",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "SINAGOG",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "SaglikTesisAlani": [
+    {
+     "kural": "OZEL_SAGLIK_TESISI_ALANI",
+     "murekkep_mm": [
+      12.96,
+      15.08
+     ],
+     "carpan": 0.7716
+    },
+    {
+     "kural": "HASTANE",
+     "murekkep_mm": [
+      12.04,
+      14.95
+     ],
+     "carpan": 0.8306
+    },
+    {
+     "kural": "AILE_SAGLIGI_MERKEZI",
+     "murekkep_mm": [
+      11.11,
+      15.15
+     ],
+     "carpan": 0.9001
+    }
+   ],
+   "EgitimTesisAlani": [
+    {
+     "kural": "ANAOKULU_ALANI",
+     "murekkep_mm": [
+      11.51,
+      15.02
+     ],
+     "carpan": 0.8688
+    },
+    {
+     "kural": "ILKOKUL_ALANI",
+     "murekkep_mm": [
+      11.51,
+      15.02
+     ],
+     "carpan": 0.8688
+    },
+    {
+     "kural": "ORTAOKUL_ALANI",
+     "murekkep_mm": [
+      11.77,
+      15.02
+     ],
+     "carpan": 0.8496
+    },
+    {
+     "kural": "OZEL_EGITIM_ALANI",
+     "murekkep_mm": [
+      11.44,
+      15.02
+     ],
+     "carpan": 0.8741
+    },
+    {
+     "kural": "YUKSEK_OGRETIM_TESIS_KAMPUS_ALANI",
+     "murekkep_mm": [
+      9.99,
+      9.92
+     ],
+     "carpan": 1.0081
+    },
+    {
+     "kural": "HALK_EGITIM_MERKEZI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "ILKOGRETIM_ALANI",
+     "murekkep_mm": [
+      69.45,
+      15.08
+     ],
+     "carpan": null
+    },
+    {
+     "kural": "ORTAOGRETIM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      6.88
+     ],
+     "carpan": null
+    },
+    {
+     "kural": "OZEL_MESLEKI_VE_TEKNIK_OGRETIM_TESIS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "OZEL_OKUL_ONCESI_OGRETIM_TESIS_ALANI",
+     "murekkep_mm": [
+      11.38,
+      15.08
+     ],
+     "carpan": 0.8787
+    },
+    {
+     "kural": "OZEL_TEMEL_OGRETIM_TESIS_ALANI",
+     "murekkep_mm": [
+      11.31,
+      15.08
+     ],
+     "carpan": 0.8842
+    },
+    {
+     "kural": "OZEL_ORTAOGRETIM_TESIS_ALANI",
+     "murekkep_mm": [
+      11.51,
+      15.08
+     ],
+     "carpan": 0.8688
+    },
+    {
+     "kural": "OZEL_YUKSEKOGRETIM_TESIS_ALANI",
+     "murekkep_mm": [
+      12.96,
+      15.08
+     ],
+     "carpan": 0.7716
+    },
+    {
+     "kural": "LISE_ALANI",
+     "murekkep_mm": [
+      11.38,
+      15.02
+     ],
+     "carpan": 0.8787
+    },
+    {
+     "kural": "OZEL_EGITIM_GEREKTIREN_BIREYLER_ICIN_EGITIM_TESIS_ALANI",
+     "murekkep_mm": [
+      11.51,
+      15.08
+     ],
+     "carpan": 0.8688
+    }
+   ],
+   "TurizmAlani": [
+    {
+     "kural": "PANSIYON_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "OTEL_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "TATIL_KOYU_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "TERMAL_TURIZM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "KAMPING_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "GUNUBIRLIK_TESIS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "GOLF_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "KIS_SPORLARI_VE_KAYAK_TESIS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "TURIZM_TESIS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "TURIZM_KOMPLEKS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "KONAKLAMA_TESIS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "EGLENCE_MERKEZI",
+     "murekkep_mm": [
+      15.08,
+      15.02
+     ],
+     "carpan": 0.6658
+    },
+    {
+     "kural": "EKOLOJIK_TURIZM_ALANI",
+     "murekkep_mm": [
+      10.58,
+      15.08
+     ],
+     "carpan": 0.9452
+    },
+    {
+     "kural": "KAYAK_VE_YURUYUS_HATTI_PARKURU",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "KAYAK_TOPLANMA_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.21
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "APART_OTEL_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "MOTEL_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "HOSTEL_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "KAMU_EGITIM_DINLENME_TESIS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "SAGLIK_ODAKLI_TURIZM_KOYU",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "TURIZM_KOMPLEKS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "TERMAL_KUR_TESIS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "TEMALI_PARK_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    },
+    {
+     "kural": "GOLF_ALANI_KONAKLAMALI",
+     "murekkep_mm": [
+      10.58,
+      15.08
+     ],
+     "carpan": 0.9452
+    },
+    {
+     "kural": "YAYLA_TURIZM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.21
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "HafriyatDokumAlani": [
+    {
+     "kural": "MUIP_HAFRIYAT_DOKUM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.6631
+    }
+   ]
+  },
+  "MNIP": {
+   "AskeriKoruma": [
+    {
+     "kural": "ASKERI_GUVENLIK_BOLGESI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "OZEL_GUVENLIK_BOLGESI",
+     "murekkep_mm": [
+      10.72,
+      15.08
+     ],
+     "carpan": 0.653
+    },
+    {
+     "kural": "KUL_SEK_ASK_AMACI_OZEL_ONLEM_ALAN_SINIRI",
+     "murekkep_mm": [
+      33.87,
+      15.21
+     ],
+     "carpan": null
+    }
+   ],
+   "TeknikAltyapi": [
+    {
+     "kural": "ENERJI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "ICMESUYU",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "ATIKSU",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "KATI_ATIK",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "KANALIZASYON",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "ULASTIRMA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "HABERLESME",
+     "murekkep_mm": [
+      15.08,
+      15.02
+     ],
+     "carpan": 0.466
+    }
+   ],
+   "TehlikeliTesis": [
+    {
+     "kural": "BERTARAF",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "DEPOLAMA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    }
+   ],
+   "KatiAtikTesis": [
+    {
+     "kural": "KATI ATIK TESİSLERİ ALANI (BOŞALTMA, BERTARAF, İŞLEME, TRANSFER VE DEPOLAMA)",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    }
+   ],
+   "AtiksuTesis": [
+    {
+     "kural": "ARITMA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "TERFI_MERKEZI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    }
+   ],
+   "EnerjiDagitimDepo": [
+    {
+     "kural": "REGULATOR_ALANI",
+     "murekkep_mm": [
+      12.1,
+      15.08
+     ],
+     "carpan": 0.5785
+    },
+    {
+     "kural": "TURBIN_ALANI",
+     "murekkep_mm": [
+      11.58,
+      14.88
+     ],
+     "carpan": 0.6045
+    },
+    {
+     "kural": "DOGALGAZ_ILETIM_DAGITIM_TESISI_ALANI",
+     "murekkep_mm": [
+      12.04,
+      15.08
+     ],
+     "carpan": 0.5814
+    },
+    {
+     "kural": "YANICI_PARLAYICI_PATLAYICI_MADDE_URETIM_DEPO_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "TRAFO_MERKEZI",
+     "murekkep_mm": [
+      17.07,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "DOGALGAZ_CEVRIM_SANTRALI",
+     "murekkep_mm": [
+      12.57,
+      15.74
+     ],
+     "carpan": 0.5569
+    },
+    {
+     "kural": "DOGALGAZ_CNG_DEPOLAMA_ALANI",
+     "murekkep_mm": [
+      12.1,
+      15.08
+     ],
+     "carpan": 0.5785
+    },
+    {
+     "kural": "ENERJI_DEPOLAMA_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "DOGALGAZ_LPG_DEPOLAMA_ALANI",
+     "murekkep_mm": [
+      12.3,
+      15.15
+     ],
+     "carpan": 0.5691
+    },
+    {
+     "kural": "RAFINERI_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    }
+   ],
+   "EnerjiUretim": [
+    {
+     "kural": "NUKLEER_ENERJI_URETIM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      14.95
+     ],
+     "carpan": 0.4682
+    },
+    {
+     "kural": "HIDROLIK_TERMIK_SANTRALLER",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "ENERJI_URETIM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    }
+   ],
+   "OnlemliAlan": [
+    {
+     "kural": "OZEL_ONLEM_GEREKTIREN_ALAN",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "1_DERECE_ONLEMLI_ALAN",
+     "murekkep_mm": [
+      10.85,
+      14.82
+     ],
+     "carpan": 0.6452
+    },
+    {
+     "kural": "2_DERECE_ONLEMLI_ALAN",
+     "murekkep_mm": [
+      10.85,
+      14.82
+     ],
+     "carpan": 0.6452
+    },
+    {
+     "kural": "3_DERECE_ONLEMLI_ALAN",
+     "murekkep_mm": [
+      10.85,
+      14.82
+     ],
+     "carpan": 0.6452
+    },
+    {
+     "kural": "4_DERECE_ONLEMLI_ALAN",
+     "murekkep_mm": [
+      10.85,
+      14.82
+     ],
+     "carpan": 0.6452
+    },
+    {
+     "kural": "5_DERECE_ONLEMLI_ALAN",
+     "murekkep_mm": [
+      10.85,
+      14.82
+     ],
+     "carpan": 0.6452
+    },
+    {
+     "kural": "AYRINTILI_JEO_ETUT_GER_ALAN",
+     "murekkep_mm": [
+      10.85,
+      14.82
+     ],
+     "carpan": 0.6452
+    }
+   ],
+   "AfetTehlikeliAlanlar": [
+    {
+     "kural": "HEYELAN_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "HAF_YAS_UYG_AFET_BOLGESI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "AFET_MUDAHALE_YON_ALT_ALANI",
+     "murekkep_mm": [
+      12.04,
+      15.08
+     ],
+     "carpan": 0.5814
+    },
+    {
+     "kural": "GENEL_SIGINAK_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.02
+     ],
+     "carpan": 0.466
+    },
+    {
+     "kural": "AFETE_MARUZ_BOLGE",
+     "murekkep_mm": [
+      11.64,
+      15.02
+     ],
+     "carpan": 0.6014
+    },
+    {
+     "kural": "OZEL_ONLEM_GEREKTIREN_YAPI_YASAKLI_ALAN",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    }
+   ],
+   "KorumaKusaklari": [
+    {
+     "kural": "HAVAALANI_UCUS_KOR_KOR_KUSAGI",
+     "murekkep_mm": [
+      12.04,
+      15.02
+     ],
+     "carpan": 0.5814
+    },
+    {
+     "kural": "SU_KANALLARI_KORUMA_KUSAGI",
+     "murekkep_mm": [
+      15.08,
+      4.76
+     ],
+     "carpan": null
+    },
+    {
+     "kural": "YERALTI_SU_KAY_KOR_KUSAGI",
+     "murekkep_mm": [
+      12.04,
+      15.08
+     ],
+     "carpan": 0.5814
+    },
+    {
+     "kural": "YANICI_PAT_PAR_MAD_KOR_KUSAGI",
+     "murekkep_mm": [
+      12.04,
+      15.02
+     ],
+     "carpan": 0.5814
+    },
+    {
+     "kural": "SAGLIK_KORUMA_BANDI",
+     "murekkep_mm": [
+      12.04,
+      15.02
+     ],
+     "carpan": 0.5814
+    },
+    {
+     "kural": "ENERJI_NAKIL_HATTI_KOR_KUSAGI",
+     "murekkep_mm": [
+      12.04,
+      15.08
+     ],
+     "carpan": 0.5814
+    },
+    {
+     "kural": "ICMESUYU_HATTI_KORUMA",
+     "murekkep_mm": [
+      12.04,
+      14.95
+     ],
+     "carpan": 0.5814
+    },
+    {
+     "kural": "YANICI_PAT_PAR_MAD_MUV_ALINACAK_ALAN",
+     "murekkep_mm": [
+      11.77,
+      15.08
+     ],
+     "carpan": 0.5947
+    }
+   ],
+   "Tarim": [
+    {
+     "kural": "MUTLAK_TARIM",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "OZEL_URUN",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "DIKILI_TARIM",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "SULU_TARIM_ARAZISI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "MARJINAL_TARIM",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "TARIM_HAVZASI",
+     "murekkep_mm": [
+      1.06,
+      1.06
+     ],
+     "carpan": null
+    }
+   ],
+   "SitAlanlari": [
+    {
+     "kural": "1_DERECE_ARKEOLOJIK_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "2_DERECE_ARKEOLOJIK_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "3_DERECE_ARKEOLOJIK_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "KESIN_KORUNACAK_HASSAS_ALAN",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "NITELIKLI_DOGAL_KORUMA_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "SURDURULEBILIR_KORUMA_KONTROLLU_KULLANIM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "KENTSEL_SIT",
+     "murekkep_mm": [
+      0.99,
+      1.06
+     ],
+     "carpan": null
+    },
+    {
+     "kural": "TARIHI_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "1_DERECE_DOGAL_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "2_DERECE_DOGAL_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "3_DERECE_DOGAL_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "KENTSEL_ARKEOLOJIK_SIT",
+     "murekkep_mm": [
+      1.06,
+      1.06
+     ],
+     "carpan": null
+    }
+   ],
+   "KentselCalisma": [
+    {
+     "kural": "TICARET_KONUT_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "TICARET_TURIZM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "TOPTAN_TICARET_ALANI",
+     "murekkep_mm": [
+      15.08,
+      8.07
+     ],
+     "carpan": 0.8674
+    },
+    {
+     "kural": "BELEDIYE_HIZMET_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "YONETIM_MERKEZLERI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "RESMI_KURUM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "BAKIM_AKARYAKIT_ISTASYONU",
+     "murekkep_mm": [
+      11.77,
+      15.08
+     ],
+     "carpan": 0.5947
+    },
+    {
+     "kural": "ENDUSTRIYEL_GELISME_BOLGESI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "LOJISTIK_TESIS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "PAZARLAMA_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "1_DERECE_TICARET_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "2_DERECE_TICARET_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "3_DERECE_TICARET_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "SU_URUNLERI_URETIM_VE_YETISTIRME_TESISI",
+     "murekkep_mm": [
+      11.24,
+      14.95
+     ],
+     "carpan": 0.6228
+    },
+    {
+     "kural": "TICARET_TURIZM_KONUT_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "OSB",
+     "murekkep_mm": [
+      15.08,
+      15.02
+     ],
+     "carpan": 0.466
+    },
+    {
+     "kural": "ENDUSTRI_BOLGESI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "SERBEST_BOLGE",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "TEKNOLOJI_GELISTIRME_BOLGESI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "MERKEZI_IS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "KAMU_HIZMET_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "TOPLU_ISYERLERI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "BUYUK_ALAN_GEREKTIREN_KAMU_KURULUS_ALANI",
+     "murekkep_mm": [
+      39.29,
+      15.08
+     ],
+     "carpan": null
+    },
+    {
+     "kural": "GUMRUK_ALANI",
+     "murekkep_mm": [
+      11.24,
+      15.08
+     ],
+     "carpan": 0.6228
+    },
+    {
+     "kural": "SIVIL_TOPLUM_KURULUSLARI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "BUYUK_OLCEKLI_TUKETIM_ALANI_AVM",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "HAYVAN_PAZARI_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "OSB_HIZMET_DESTEK_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "TARIMSAL_DEPOLAMA_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "ENTEGRE_OLMAYAN_TARIMSAL_TESIS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "TARIMA_DAYALI_IHTISAS_OSB",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "MADEN_CIKARIM_VE_REZERV_ALANI",
+     "murekkep_mm": [
+      41.14,
+      15.08
+     ],
+     "carpan": null
+    }
+   ],
+   "KiyiKorumaYapilari": [
+    {
+     "kural": "KIYI_KORUMA_YAPILARI",
+     "murekkep_mm": [
+      12.1,
+      14.88
+     ],
+     "carpan": 0.5785
+    },
+    {
+     "kural": "DENIZ_INIS_RAMPASI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    }
+   ],
+   "KumsalPlaj": [
+    {
+     "kural": "MNIP_KUMSAL_PLAJ",
+     "murekkep_mm": [
+      14.95,
+      18.79
+     ],
+     "carpan": 0.4682
+    }
+   ],
+   "Durak": [
+    {
+     "kural": "TERMINAL_OTOGAR",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "RAYLI_TOPLU_TASIMA_ISTASYONU",
+     "murekkep_mm": [
+      12.04,
+      15.02
+     ],
+     "carpan": 0.5814
+    },
+    {
+     "kural": "HAVAI_HAT_ISTASYONU",
+     "murekkep_mm": [
+      14.95,
+      15.02
+     ],
+     "carpan": 0.4682
+    },
+    {
+     "kural": "TOPLU_TASIM_TURLERI_ARASI_DEGISIM_AKTARMA_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "HAVARAY_ISTASYONU",
+     "murekkep_mm": [
+      12.04,
+      14.95
+     ],
+     "carpan": 0.5814
+    }
+   ],
+   "HavayoluTesisleri": [
+    {
+     "kural": "HAVAALANI_HAVALIMANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "HELIKOPTER_INIS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    }
+   ],
+   "AskeriYasakBolge": [
+    {
+     "kural": "MNIP_ASKERI_YASAK_BOLGE",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    }
+   ],
+   "SuDepolamaTesis": [
+    {
+     "kural": "DEPOLAMA",
+     "murekkep_mm": [
+      15.08,
+      7.94
+     ],
+     "carpan": 0.8816
+    },
+    {
+     "kural": "ARITMA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "TERFI_MERKEZI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    }
+   ],
+   "MilliPark": [
+    {
+     "kural": "TABIAT_PARKI_ALANI",
+     "murekkep_mm": [
+      11.97,
+      15.08
+     ],
+     "carpan": 0.5848
+    },
+    {
+     "kural": "TABIATI_KORUMA_ALANI",
+     "murekkep_mm": [
+      11.05,
+      15.08
+     ],
+     "carpan": 0.6335
+    },
+    {
+     "kural": "YABAN_HAYATI_KORUMA_GELISTIRME_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "AV_YABAN_HAYVANLARI_URETME_ISTASYONU",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    }
+   ],
+   "OckHassasAlan": [
+    {
+     "kural": "OCK_BOLGESI_HASSAS_ALAN_A",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "OCK_BOLGESI_HASSAS_ALAN_B",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "OCK_BOLGESI_HASSAS_ALAN_C",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    }
+   ],
+   "KiyiYapilari": [
+    {
+     "kural": "TERSANE_ALANI",
+     "murekkep_mm": [
+      11.91,
+      15.02
+     ],
+     "carpan": 0.5877
+    },
+    {
+     "kural": "YAT_LIMANI",
+     "murekkep_mm": [
+      11.77,
+      14.88
+     ],
+     "carpan": 0.5947
+    },
+    {
+     "kural": "LIMAN",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "TEKNE_IMAL_CEKEK_YERI",
+     "murekkep_mm": [
+      10.98,
+      14.75
+     ],
+     "carpan": 0.6375
+    },
+    {
+     "kural": "ISKELE",
+     "murekkep_mm": [
+      13.89,
+      15.08
+     ],
+     "carpan": 0.504
+    },
+    {
+     "kural": "TEKNE_IMAL_BAKIM_YERI",
+     "murekkep_mm": [
+      10.72,
+      14.82
+     ],
+     "carpan": 0.653
+    },
+    {
+     "kural": "BALIKCI_BARINAGI",
+     "murekkep_mm": [
+      12.04,
+      15.02
+     ],
+     "carpan": 0.5814
+    },
+    {
+     "kural": "YAT_LIMANI_BALIKCI_BARINAGI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "TEKNE_IMAL_YERI",
+     "murekkep_mm": [
+      12.04,
+      15.08
+     ],
+     "carpan": 0.5814
+    },
+    {
+     "kural": "LIMAN_GERI_HIZMET_ALANI",
+     "murekkep_mm": [
+      11.91,
+      15.08
+     ],
+     "carpan": 0.5877
+    },
+    {
+     "kural": "DENIZ_OTOBUSU_FERIBOT_ISKELESI",
+     "murekkep_mm": [
+      11.24,
+      14.95
+     ],
+     "carpan": 0.6228
+    },
+    {
+     "kural": "REKREATIF_AMACLI_ISKELE",
+     "murekkep_mm": [
+      11.38,
+      15.08
+     ],
+     "carpan": 0.6151
+    },
+    {
+     "kural": "GEMI_SOKUM_YERI",
+     "murekkep_mm": [
+      11.64,
+      14.75
+     ],
+     "carpan": 0.6014
+    },
+    {
+     "kural": "YUZER_ISKELE",
+     "murekkep_mm": [
+      11.24,
+      15.08
+     ],
+     "carpan": 0.6228
+    },
+    {
+     "kural": "YANASMA_YERI",
+     "murekkep_mm": [
+      13.89,
+      15.08
+     ],
+     "carpan": 0.504
+    },
+    {
+     "kural": "TASFIYE_POMPAJ_ISTASYONU",
+     "murekkep_mm": [
+      12.04,
+      15.08
+     ],
+     "carpan": 0.5814
+    }
+   ],
+   "OzelEkosistem": [
+    {
+     "kural": "FLORA_FAUNA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "EKOLOJIK_KORUMA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "AKDENIZ_FOKU",
+     "murekkep_mm": [
+      15.15,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "DENIZ_KAPLUMBAGASI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    }
+   ],
+   "HafriyatDokumAlani": [
+    {
+     "kural": "MNIP_HAFRIYAT_DOKUM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    }
+   ],
+   "KarayoluTesisleri": [
+    {
+     "kural": "GENEL_OTOPARK",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "KARAYOLLARI_HIZMET_TESIS_ALANI",
+     "murekkep_mm": [
+      12.17,
+      14.88
+     ],
+     "carpan": 0.5752
+    },
+    {
+     "kural": "TIR_KAMYON_MAKINA_PARK_GARAJ_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    }
+   ],
+   "DogalKarakter": [
+    {
+     "kural": "JEOLOJIK_OZELLIGI_NEDENIYLE_KORUNACAK_ALAN",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "AGACLIK",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "KAYALIK",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "KUMUL",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "MAKILIK_FUNDALIK_CALILIK",
+     "murekkep_mm": [
+      15.08,
+      7.21
+     ],
+     "carpan": null
+    },
+    {
+     "kural": "TUZLA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "AZMAK",
+     "murekkep_mm": [
+      15.15,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "SAZLIK_BATAKLIK",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    }
+   ],
+   "AcikYesilAlan": [
+    {
+     "kural": "REKREASYON_ALANI",
+     "murekkep_mm": [
+      0.99,
+      1.06
+     ],
+     "carpan": null
+    },
+    {
+     "kural": "FUAR_PANAYIR_FESTIVAL_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "MESIRE_YERI",
+     "murekkep_mm": [
+      15.08,
+      15.28
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "COCUK_BAHCESI",
+     "murekkep_mm": [
+      17.33,
+      15.02
+     ],
+     "carpan": 0.466
+    },
+    {
+     "kural": "KENT_ORMANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "OYUN_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "PIKNIK_ALAN",
+     "murekkep_mm": [
+      15.08,
+      15.28
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "DOGA_SPORLARI_BASLANGIC_BITIS_NOKTALARI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "KUR_PARKI",
+     "murekkep_mm": [
+      14.09,
+      15.08
+     ],
+     "carpan": 0.4968
+    },
+    {
+     "kural": "MEZARLIK_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "OZEL_ORMAN_ALANI",
+     "murekkep_mm": [
+      12.04,
+      15.08
+     ],
+     "carpan": 0.5814
+    },
+    {
+     "kural": "REKREATIF_ALAN",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    }
+   ],
+   "SosyalKulturelAlan": [
+    {
+     "kural": "SOSYAL_TESIS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "KULTUREL_TESIS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "OZEL_SOSYAL_ALTYAPI_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "KAPALI_ACIK_SEMT_SPOR_ALANI",
+     "murekkep_mm": [
+      16.87,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "KENTSEL_BOLGESEL_BUYUK_SPOR_ALANI",
+     "murekkep_mm": [
+      15.21,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "KONGRE_SERGI_MERKEZI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "SOSYAL_KULTUREL_TESIS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "OZEL_SOSYAL_KULTUREL_TESIS_ALANI",
+     "murekkep_mm": [
+      11.51,
+      15.08
+     ],
+     "carpan": 0.6082
+    },
+    {
+     "kural": "OZEL_SPOR_TESISI_ALANI",
+     "murekkep_mm": [
+      11.51,
+      15.08
+     ],
+     "carpan": 0.6082
+    },
+    {
+     "kural": "OZEL_KULTUREL_TESIS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "YURT_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "OZEL_YURT_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    }
+   ],
+   "IbadetAlani": [
+    {
+     "kural": "CAMI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "MESCIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "KILISE",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "SAPEL",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "SINAGOG_HAVRA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "DINI_TESISLER_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "IBADET_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    }
+   ],
+   "SuKaptaj": [
+    {
+     "kural": "MNIP_SU_KAPTAJ",
+     "murekkep_mm": [
+      15.08,
+      7.28
+     ],
+     "carpan": null
+    }
+   ],
+   "SaglikTesisAlani": [
+    {
+     "kural": "SAGLIK_TESIS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "OZEL_SAGLIK_TESISI_ALANI",
+     "murekkep_mm": [
+      11.77,
+      15.08
+     ],
+     "carpan": 0.5947
+    }
+   ],
+   "EgitimTesisAlani": [
+    {
+     "kural": "ILKOKUL_ALANI",
+     "murekkep_mm": [
+      12.04,
+      14.95
+     ],
+     "carpan": 0.5814
+    },
+    {
+     "kural": "ORTAOKUL_ALANI",
+     "murekkep_mm": [
+      12.04,
+      14.55
+     ],
+     "carpan": 0.5814
+    },
+    {
+     "kural": "ORTAOGRETIM_TESIS_ALANI",
+     "murekkep_mm": [
+      14.95,
+      15.02
+     ],
+     "carpan": 0.4682
+    },
+    {
+     "kural": "OZEL_EGITIM_ALANI",
+     "murekkep_mm": [
+      12.04,
+      15.15
+     ],
+     "carpan": 0.5814
+    },
+    {
+     "kural": "MESLEKI_TEKNIK_OGRETIM_ALANI",
+     "murekkep_mm": [
+      15.15,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "YUKSEKOGRETIM_TESIS_KAMPUS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.02
+     ],
+     "carpan": 0.466
+    },
+    {
+     "kural": "ILKOGRETIM_ALANI",
+     "murekkep_mm": [
+      15.02,
+      15.02
+     ],
+     "carpan": 0.466
+    },
+    {
+     "kural": "OZEL_OKUL_ONCESI_OGRETIM_TESIS_ALANI",
+     "murekkep_mm": [
+      11.77,
+      15.02
+     ],
+     "carpan": 0.5947
+    },
+    {
+     "kural": "OZEL_ILKOGRETIM_ALANI",
+     "murekkep_mm": [
+      12.04,
+      15.02
+     ],
+     "carpan": 0.5814
+    },
+    {
+     "kural": "OZEL_ILKOKUL_ALANI",
+     "murekkep_mm": [
+      12.04,
+      15.15
+     ],
+     "carpan": 0.5814
+    },
+    {
+     "kural": "OZEL_LISE_ALANI",
+     "murekkep_mm": [
+      11.97,
+      15.02
+     ],
+     "carpan": 0.5848
+    },
+    {
+     "kural": "OZEL_MESLEKI_VE_TEKNIK_OGRETIM_TESIS_ALANI",
+     "murekkep_mm": [
+      11.77,
+      15.08
+     ],
+     "carpan": 0.5947
+    },
+    {
+     "kural": "OZEL_ORTAOKUL_ALANI",
+     "murekkep_mm": [
+      11.91,
+      15.02
+     ],
+     "carpan": 0.5877
+    },
+    {
+     "kural": "OZEL_YUKSEKOGRETIM_TESIS_ALANI",
+     "murekkep_mm": [
+      11.77,
+      15.08
+     ],
+     "carpan": 0.5947
+    },
+    {
+     "kural": "EGITIM_ALANI",
+     "murekkep_mm": [
+      16.14,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "OZEL_EGITIM_GEREKTIREN_BIREYLER_ICIN_EGITIM_TESIS_ALANI",
+     "murekkep_mm": [
+      11.97,
+      15.02
+     ],
+     "carpan": 0.5848
+    },
+    {
+     "kural": "OZEL_TEMEL_OGRETIM_TESIS_ALANI",
+     "murekkep_mm": [
+      11.58,
+      15.02
+     ],
+     "carpan": 0.6045
+    },
+    {
+     "kural": "OZEL_ORTAOGRETIM_TESIS_ALANI",
+     "murekkep_mm": [
+      11.91,
+      15.02
+     ],
+     "carpan": 0.5877
+    },
+    {
+     "kural": "ANAOKULU_ALANI",
+     "murekkep_mm": [
+      11.18,
+      15.02
+     ],
+     "carpan": 0.6261
+    },
+    {
+     "kural": "LISE_ALANI",
+     "murekkep_mm": [
+      15.02,
+      15.02
+     ],
+     "carpan": 0.466
+    }
+   ],
+   "TurizmAlani": [
+    {
+     "kural": "OTEL_MOTEL",
+     "murekkep_mm": [
+      15.08,
+      8.07
+     ],
+     "carpan": 0.8674
+    },
+    {
+     "kural": "KAMPING_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "TATIL_KOYU_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "PANSIYON_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "KAMU_EGITIM_DINLENME_TESIS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "TURIZM_KOMPLEKS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "GUNUBIRLIK_TESIS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "EGLENCE_MERKEZI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "TERMAL_KUR_TESIS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "EKOLOJIK_TURIZM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "TEMALI_PARK_ALANI",
+     "murekkep_mm": [
+      15.15,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "GOLF_ALANI_KONAKLAMALI",
+     "murekkep_mm": [
+      10.72,
+      15.28
+     ],
+     "carpan": 0.653
+    },
+    {
+     "kural": "KAYAK_VE_YURUYUS_HATTI_PARKURU",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "KAYAK_TOPLANMA_ALANI",
+     "murekkep_mm": [
+      12.44,
+      14.95
+     ],
+     "carpan": 0.5627
+    },
+    {
+     "kural": "TERCIHLI_KULLANIM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    },
+    {
+     "kural": "YAYLA_TURIZM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.4642
+    }
+   ]
+  },
+  "MCDP25": {
+   "TeknikAltyapi": [
+    {
+     "kural": "KANALIZASYON",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "ENERJI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "ICMESUYU",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "ATIKSU",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "KATI_ATIK",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "ULASTIRMA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "HABERLESME",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    }
+   ],
+   "TehlikeliTesis": [
+    {
+     "kural": "BERTARAF",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "DEPOLAMA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    }
+   ],
+   "KatiAtikTesis": [
+    {
+     "kural": "KATI ATIK TESİSLERİ ALANI (BOŞALTMA, BERTARAF, İŞLEME, TRANSFER VE DEPOLAMA)",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    }
+   ],
+   "AtiksuTesis": [
+    {
+     "kural": "ARITMA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "TERFI_MERKEZI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    }
+   ],
+   "EnerjiUretim": [
+    {
+     "kural": "ENERJI_URETIM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "HIDROELEKTRIK_SANTRAL_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "DIGER_URETIM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "SANTRAL_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "DOGALGAZ_CEVRIM_SANTRALI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "FOSIL_YAKIT_CIKARIM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    }
+   ],
+   "AfetTehlikeliAlanlar": [
+    {
+     "kural": "JEOLOJIK_SAKINCALI_ALAN",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    }
+   ],
+   "SitAlanlari": [
+    {
+     "kural": "1_DERECE_ARKEOLOJIK_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "2_DERECE_ARKEOLOJIK_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "3_DERECE_ARKEOLOJIK_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "KESIN_KORUNACAK_HASSAS_ALAN",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "NITELIKLI_DOGAL_KORUMA_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "SURDURULEBILIR_KORUMA_KONTROLLU_KULLANIM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "KENTSEL_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "TARIHI_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "1_DERECE_DOGAL_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "2_DERECE_DOGAL_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "3_DERECE_DOGAL_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "KENTSEL_ARKEOLOJIK_SIT",
+     "murekkep_mm": [
+      10.05,
+      9.13
+     ],
+     "carpan": 0.5476
+    }
+   ],
+   "KentselCalisma": [
+    {
+     "kural": "ENDUSTRI_BOLGESI",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 1.2594
+    },
+    {
+     "kural": "SERBEST_BOLGE",
+     "murekkep_mm": [
+      3.11,
+      3.97
+     ],
+     "carpan": 1.6077
+    },
+    {
+     "kural": "OSB",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 1.2594
+    },
+    {
+     "kural": "ENDUSTRIYEL_GELISME_BOLGESI",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 1.2594
+    },
+    {
+     "kural": "Depolama AlanÄ±",
+     "murekkep_mm": [
+      10.05,
+      11.18
+     ],
+     "carpan": 0.4975
+    }
+   ],
+   "HavaalaniHavalimani": [
+    {
+     "kural": "CDP_HAVAALANI_HAVALIMANI",
+     "murekkep_mm": [
+      30.16,
+      30.1
+     ],
+     "carpan": 0.1661
+    }
+   ],
+   "IcmeSuTesis": [
+    {
+     "kural": "CDP_ICMESU_TESIS",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    }
+   ],
+   "MilliPark": [
+    {
+     "kural": "TABIAT_PARKI_ALANI",
+     "murekkep_mm": [
+      11.97,
+      15.08
+     ],
+     "carpan": 0.4177
+    },
+    {
+     "kural": "TABIATI_KORUMA_ALANI",
+     "murekkep_mm": [
+      11.05,
+      15.08
+     ],
+     "carpan": 0.4525
+    },
+    {
+     "kural": "MILLI_PARK",
+     "murekkep_mm": [
+      11.91,
+      14.95
+     ],
+     "carpan": 0.4198
+    },
+    {
+     "kural": "YABAN_HAYATI_KORUMA_GELISTIRME_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    }
+   ],
+   "OckHassasAlan": [
+    {
+     "kural": "OCK_BOLGESI_HASSAS_ALAN_A",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "OCK_BOLGESI_HASSAS_ALAN_B",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "OCK_BOLGESI_HASSAS_ALAN_C",
+     "murekkep_mm": [
+      0.53,
+      0.6
+     ],
+     "carpan": null
+    }
+   ],
+   "KiyiYapilari": [
+    {
+     "kural": "TERSANE_ALANI",
+     "murekkep_mm": [
+      11.91,
+      15.02
+     ],
+     "carpan": 0.4198
+    }
+   ],
+   "OzelEkosistem": [
+    {
+     "kural": "EKOLOJIK_KORUMA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "FLORA_FAUNA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "AKDENIZ_FOKU",
+     "murekkep_mm": [
+      15.15,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "DENIZ_KAPLUMBAGASI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    }
+   ],
+   "AcikYesilAlan": [
+    {
+     "kural": "FuarPanayirFestival",
+     "murekkep_mm": [
+      10.05,
+      9.92
+     ],
+     "carpan": 0.504
+    },
+    {
+     "kural": "AGACLANDIRILACAK_ALAN",
+     "murekkep_mm": [
+      10.05,
+      7.54
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "SuKaptaj": [
+    {
+     "kural": "CDP_SU_KAPTAJ",
+     "murekkep_mm": [
+      11.91,
+      15.02
+     ],
+     "carpan": 0.4198
+    }
+   ],
+   "EnerjiDagitimDepo": [
+    {
+     "kural": "CDP_ENERJI_DAGITIM_DEPOLAMA",
+     "murekkep_mm": [
+      3.11,
+      3.9
+     ],
+     "carpan": 1.6077
+    }
+   ],
+   "TurizmAlani": [
+    {
+     "kural": "YAYLA_TURIZMI",
+     "murekkep_mm": [
+      9.0,
+      9.0
+     ],
+     "carpan": 0.5556
+    }
+   ]
+  },
+  "MCDP100": {
+   "TeknikAltyapi": [
+    {
+     "kural": "KANALIZASYON",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "ENERJI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "ICMESUYU",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "ATIKSU",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "KATI_ATIK",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "ULASTIRMA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "HABERLESME",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    }
+   ],
+   "TehlikeliTesis": [
+    {
+     "kural": "BERTARAF",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "DEPOLAMA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    }
+   ],
+   "KatiAtikTesis": [
+    {
+     "kural": "KATI ATIK TESİSLERİ ALANI (BOŞALTMA, BERTARAF, İŞLEME, TRANSFER VE DEPOLAMA)",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    }
+   ],
+   "AtiksuTesis": [
+    {
+     "kural": "ARITMA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "TERFI_MERKEZI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    }
+   ],
+   "EnerjiUretim": [
+    {
+     "kural": "ENERJI_URETIM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "HIDROELEKTRIK_SANTRAL_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "DIGER_URETIM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "SANTRAL_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "DOGALGAZ_CEVRIM_SANTRALI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "FOSIL_YAKIT_CIKARIM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "TERMIK_SANTRAL",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "RUZGAR_ENERJISI_SANTRALI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "JEOTERMAL_TESIS_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "NUKLEER_ENERJI_SANTRALI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    }
+   ],
+   "AfetTehlikeliAlanlar": [
+    {
+     "kural": "JEOLOJIK_SAKINCALI_ALAN",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    }
+   ],
+   "SitAlanlari": [
+    {
+     "kural": "1_DERECE_ARKEOLOJIK_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "2_DERECE_ARKEOLOJIK_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "3_DERECE_ARKEOLOJIK_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "KESIN_KORUNACAK_HASSAS_ALAN",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "NITELIKLI_DOGAL_KORUMA_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "SURDURULEBILIR_KORUMA_KONTROLLU_KULLANIM_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "KENTSEL_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "TARIHI_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "1_DERECE_DOGAL_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "2_DERECE_DOGAL_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "3_DERECE_DOGAL_SIT",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "KENTSEL_ARKEOLOJIK_SIT",
+     "murekkep_mm": [
+      10.05,
+      9.13
+     ],
+     "carpan": 0.5476
+    }
+   ],
+   "KentselCalisma": [
+    {
+     "kural": "LOJISTIK_BOLGE",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 1.2594
+    },
+    {
+     "kural": "ENDUSTRI_BOLGESI",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 1.2594
+    },
+    {
+     "kural": "SERBEST_BOLGE",
+     "murekkep_mm": [
+      3.11,
+      3.97
+     ],
+     "carpan": 1.6077
+    },
+    {
+     "kural": "OSB",
+     "murekkep_mm": [
+      3.97,
+      4.03
+     ],
+     "carpan": 1.2594
+    },
+    {
+     "kural": "Depolama AlanÄ±",
+     "murekkep_mm": [
+      10.05,
+      11.18
+     ],
+     "carpan": 0.4975
+    }
+   ],
+   "HavaalaniHavalimani": [
+    {
+     "kural": "CDP_HAVAALANI_HAVALIMANI",
+     "murekkep_mm": [
+      30.16,
+      30.1
+     ],
+     "carpan": 0.1661
+    }
+   ],
+   "IcmeSuTesis": [
+    {
+     "kural": "CDP_ICMESU_TESIS",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    }
+   ],
+   "MilliPark": [
+    {
+     "kural": "TABIAT_PARKI_ALANI",
+     "murekkep_mm": [
+      11.97,
+      15.08
+     ],
+     "carpan": 0.4177
+    },
+    {
+     "kural": "TABIATI_KORUMA_ALANI",
+     "murekkep_mm": [
+      11.05,
+      15.08
+     ],
+     "carpan": 0.4525
+    },
+    {
+     "kural": "MILLI_PARK",
+     "murekkep_mm": [
+      11.91,
+      14.95
+     ],
+     "carpan": 0.4198
+    },
+    {
+     "kural": "YABAN_HAYATI_KORUMA_GELISTIRME_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    }
+   ],
+   "OckHassasAlan": [
+    {
+     "kural": "OCK_BOLGESI_HASSAS_ALAN_A",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "OCK_BOLGESI_HASSAS_ALAN_B",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "OCK_BOLGESI_HASSAS_ALAN_C",
+     "murekkep_mm": [
+      0.53,
+      0.6
+     ],
+     "carpan": null
+    }
+   ],
+   "KiyiYapilari": [
+    {
+     "kural": "TERSANE_ALANI",
+     "murekkep_mm": [
+      11.91,
+      15.02
+     ],
+     "carpan": 0.4198
+    }
+   ],
+   "OzelEkosistem": [
+    {
+     "kural": "FLORA_FAUNA",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "AKDENIZ_FOKU",
+     "murekkep_mm": [
+      15.15,
+      15.08
+     ],
+     "carpan": 0.3316
+    },
+    {
+     "kural": "DENIZ_KAPLUMBAGASI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    }
+   ],
+   "AcikYesilAlan": [
+    {
+     "kural": "AGACLANDIRILACAK_ALAN",
+     "murekkep_mm": [
+      10.05,
+      7.54
+     ],
+     "carpan": 0.6631
+    }
+   ],
+   "SosyalKulturelAlan": [
+    {
+     "kural": "KENTSEL_BOLGESEL_SOSYAL_ALTYAPI_ALANI",
+     "murekkep_mm": [
+      15.08,
+      15.08
+     ],
+     "carpan": 0.3316
+    }
+   ],
+   "SuKaptaj": [
+    {
+     "kural": "CDP_SU_KAPTAJ",
+     "murekkep_mm": [
+      11.91,
+      15.02
+     ],
+     "carpan": 0.4198
+    }
+   ],
+   "EnerjiDagitimDepo": [
+    {
+     "kural": "CDP_ENERJI_DAGITIM_DEPOLAMA",
+     "murekkep_mm": [
+      3.11,
+      3.9
+     ],
+     "carpan": 1.6077
+    }
+   ]
+  }
+ }
+}

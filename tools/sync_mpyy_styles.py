@@ -41,13 +41,13 @@ PLUGIN_ROOT = os.path.dirname(HERE)
 TARGET = os.path.join(PLUGIN_ROOT, "mpyy")
 
 MODULES = (
-    "db_factory", "fonts", "form_rules", "legend_scope", "mpyy_detail_catalog",
+    "centre_symbols", "db_factory", "fonts", "form_rules", "legend_scope", "mpyy_detail_catalog",
     "mpyy_detail_hierarchy", "mpyy_import", "mpyy_workspace", "schema", "tabaka_matching",
 )
 STYLE_FILES = (
     "mpyy_schema.json", "mpyy_m_schema.json", "mpyy_tabaka_crosswalk.json",
     "mpyy_detail_hierarchy.json", "mpyy_detail_catalog.json", "mpyy_line_labels.json",
-    "provenance.json", "water.svg", "Cross4.svg",
+    "mpyy_centre_symbols.json", "provenance.json", "water.svg", "Cross4.svg",
 )
 STYLE_DIRS = ("mpyy_detail_catalog",)
 SLD_LEVELS = ("UIP", "NIP", "CDP")
