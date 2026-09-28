@@ -1162,6 +1162,38 @@ def plan_label_expression(
     return None
 
 
+PLAN_REFERENCE_SCALES = {"UIP": 1000, "NIP": 5000, "CDP": 25000}
+DEFAULT_TEXT_HEIGHT_M = 2.5
+
+
+def use_drawing_text_height(settings: Any, text_format: Any, field_names: Any) -> bool:
+    """Size CAD text by the drawing's own text height, in metres on the ground.
+
+    Netcad and DXF texts carry their height in drawing units (``text_h``, metres):
+    a PARK label drawn 5 m high. Rendered at a fixed point size instead, the same
+    label covers the sheet when zoomed out and is a speck when zoomed in. In map
+    units it stays exactly as drawn at every scale. Returns False (nothing changed)
+    when the layer has no ``text_h``.
+    """
+    if "text_h" not in set(field_names or ()):
+        return False
+    from qgis.core import QgsProperty, QgsUnitTypes  # type: ignore
+
+    meters = QgsUnitTypes.RenderUnit.RenderMetersInMapUnits
+    text_format.setSizeUnit(meters)
+    text_format.setSize(DEFAULT_TEXT_HEIGHT_M)
+    buffer = text_format.buffer()
+    buffer.setSizeUnit(meters)
+    buffer.setSize(0.15 * DEFAULT_TEXT_HEIGHT_M)
+    text_format.setBuffer(buffer)
+    size_key = getattr(getattr(type(settings), "Property", type(settings)), "Size")
+    settings.dataDefinedProperties().setProperty(
+        size_key, QgsProperty.fromExpression(
+            f'if("text_h" > 0, "text_h", {DEFAULT_TEXT_HEIGHT_M})'))
+    settings.setFormat(text_format)
+    return True
+
+
 def apply_plan_symbology(
     qgis_layer: Any,
     plan_scale: str = "1/1000",
@@ -1342,8 +1374,15 @@ def apply_plan_symbology(
         buffer_settings.setColor(QColor("#FFFFFF"))
         text_format.setBuffer(buffer_settings)
         layer_settings.setFormat(text_format)
+        if int(geom_type) == 0 and not is_expression:
+            # The drawing's own text: its own height, in metres.
+            use_drawing_text_height(layer_settings, text_format, field_names)
         qgis_layer.setLabeling(QgsVectorLayerSimpleLabeling(layer_settings))
         qgis_layer.setLabelsEnabled(True)
 
+    # Paper-unit sizes (mm, pt, px) behave like the printed sheet at the plan's
+    # scale, so they zoom together with everything drawn in ground metres.
+    with suppress(Exception):
+        qgis_layer.renderer().setReferenceScale(PLAN_REFERENCE_SCALES.get(plan_type, 1000))
     qgis_layer.triggerRepaint()
     return True

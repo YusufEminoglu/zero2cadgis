@@ -248,6 +248,30 @@ class TestPlanPipelineQgis(unittest.TestCase):
                                                ((5, 5), (0, 5)), ((0, 5), (0, 0)))]
         self.assertEqual(polygonize_cad_entities(bridge), [])
 
+    def test_cad_text_is_drawn_at_its_own_height_in_metres(self):
+        from qgis.core import QgsFeature, QgsField, QgsGeometry, QgsUnitTypes, QgsVectorLayer
+        from qgis.PyQt.QtCore import QMetaType
+        from zero2cadgis.core.symbology import apply_plan_symbology
+
+        layer = QgsVectorLayer("Point?crs=EPSG:5253", "YAZI_FONKSIYON_POINT", "memory")
+        layer.dataProvider().addAttributes([
+            QgsField("layer_name", QMetaType.Type.QString),
+            QgsField("label", QMetaType.Type.QString),
+            QgsField("text_h", QMetaType.Type.Double),
+        ])
+        layer.updateFields()
+        f = QgsFeature(layer.fields())
+        f.setGeometry(QgsGeometry.fromWkt("POINT(500000 4250000)"))
+        f.setAttributes(["YAZI_FONKSIYON", "PARK", 4.9])
+        layer.dataProvider().addFeatures([f])
+        self.assertTrue(apply_plan_symbology(layer, plan_type="UIP"))
+        settings = layer.labeling().settings()
+        self.assertEqual(settings.format().sizeUnit(), QgsUnitTypes.RenderUnit.RenderMetersInMapUnits)
+        size_key = getattr(getattr(type(settings), "Property", type(settings)), "Size")
+        self.assertTrue(settings.dataDefinedProperties().isActive(size_key))
+        self.assertIn("text_h", settings.dataDefinedProperties().property(size_key).expressionString())
+        self.assertEqual(layer.renderer().referenceScale(), 1000)
+
     def test_plan_symbology_labels_render_and_catch_all_is_neutral(self):
         from qgis.core import (QgsExpression, QgsExpressionContext, QgsFeature,
                                QgsField, QgsGeometry, QgsVectorLayer)
@@ -370,6 +394,10 @@ class TestMpyyStructureImportQgis(unittest.TestCase):
             # A numeric field gets a bounded widget (TAKS 0-1) from the MPYY forms.
             taks = by_name["Konut"].fields().indexFromName("Taks")
             self.assertEqual(by_name["Konut"].editorWidgetSetup(taks).type(), "Range")
+            # Everything zooms together like the printed sheet: MPYY layers and the
+            # 02CadGis layers of unmatched tabaka carry the UİP reference scale.
+            for layer in result.layers + result.leftovers:
+                self.assertEqual(layer.renderer().referenceScale(), 1000, layer.name())
             # Not in the crosswalk: reported and kept, never guessed.
             self.assertEqual([r["tabaka"] for r in result.unmatched], ["CIZPEN"])
             self.assertEqual(sum(l.featureCount() for l in result.leftovers), 1)

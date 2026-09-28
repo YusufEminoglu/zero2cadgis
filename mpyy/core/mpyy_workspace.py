@@ -331,6 +331,8 @@ def load_mpyy_layers(path, project=None, dataset_id=None, level=None):
                 apply_eplan_symbology(layer, level, feature_type["name"])  # default style missing or replaced
             if not layer.labelsEnabled() and not apply_line_labels(layer, level, feature_type["name"]):
                 apply_building_notation(layer)
+            # Workspaces saved before the reference scale existed carry a style without it.
+            apply_plan_reference_scale(layer, level)
             # Legend lists only the symbols this plan uses; the full set returns
             # while the layer is edited (see core/legend_scope.py).
             limit_to_present(layer)
@@ -528,6 +530,25 @@ def _restore_source_ground_units(symbol):
             _restore_source_ground_units(layer.subSymbol())
 
 
+def apply_plan_reference_scale(layer, level):
+    """Draw every paper-unit size (mm, pt, px) and label as paper at the plan's scale.
+
+    The Ministry SLDs size marks, hatch tiles, line widths and texts in paper units,
+    while the catalogue redraws and boundary bands are in ground metres. Mixed, a
+    PARK glyph stays the same size on screen when zooming out and covers the sheet,
+    while an askeri alan band shrinks with the map. A symbology reference scale
+    makes the paper units behave like the printed sheet: exact at 1:1000 for a UİP,
+    and smaller together with the ground-unit parts at every other scale.
+    """
+    from .mpyy_detail_catalog import _level_scale
+
+    renderer = layer.renderer()
+    if renderer is None:
+        return False
+    renderer.setReferenceScale(_level_scale(level))
+    return True
+
+
 def apply_eplan_symbology(layer, level, type_name):
     """Apply the official SLD of this MPYY type; returns False when the Ministry set has none."""
     source = SLD_DIR / level / f"{type_name}.sld"
@@ -645,6 +666,7 @@ def apply_eplan_symbology(layer, level, type_name):
     from .mpyy_detail_hierarchy import apply_renderer_hierarchy
 
     apply_renderer_hierarchy(layer, level, type_name)
+    apply_plan_reference_scale(layer, level)
     layer.setCustomProperty("mpyy/symbology", "e-Plan SLD: " + level + "/" + type_name)
     if missing:
         layer.setCustomProperty("mpyy/missing_symbols", ", ".join(sorted(missing)))

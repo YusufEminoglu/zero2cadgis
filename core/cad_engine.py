@@ -274,7 +274,7 @@ class CadStylingEngine:
 
     @staticmethod
     def apply_buffered_labels(layer: QgsVectorLayer) -> None:
-        from .symbology import pick_label_field
+        from .symbology import pick_label_field, use_drawing_text_height
 
         # Bind to the column that actually holds the drawing's text. Naming one
         # outright is how this silently produced blank labels once already.
@@ -295,6 +295,8 @@ class CadStylingEngine:
         label_settings.fieldName = field
         label_settings.isExpression = False
         label_settings.placement = QgsPalLayerSettings.Placement.OverPoint
+        # The drawing's own text height (metres) when the layer carries it.
+        use_drawing_text_height(label_settings, text_format, layer.fields().names())
 
         simple_labeling = QgsVectorLayerSimpleLabeling(label_settings)
         layer.setLabeling(simple_labeling)

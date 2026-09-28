@@ -92,13 +92,21 @@ def _prune_rule(rule, used) -> bool:
 
 
 def full_renderer(layer):
-    """The layer's complete renderer: the stored one, or the current one if none is stored."""
+    """The layer's complete renderer: the stored one, or the current one if none is stored.
+
+    The layer's current symbology reference scale wins over a stored one: a full
+    set saved before the plan reference scale was introduced must not bring the
+    paper-unit sizes back to fixed screen size.
+    """
+    current = layer.renderer()
     stored = layer.customProperty(FULL_PROPERTY)
     if stored:
         renderer = _decode(stored)
         if renderer is not None:
+            if current is not None and current.referenceScale() > 0:
+                renderer.setReferenceScale(current.referenceScale())
             return renderer
-    return layer.renderer().clone() if layer.renderer() else None
+    return current.clone() if current else None
 
 
 def limit_to_present(layer) -> tuple[int, int]:
@@ -111,8 +119,9 @@ def limit_to_present(layer) -> tuple[int, int]:
     renderer = full_renderer(layer)
     if renderer is None:
         return 0, 0
-    if not layer.customProperty(FULL_PROPERTY):
-        layer.setCustomProperty(FULL_PROPERTY, _encode(renderer))
+    encoded = _encode(renderer)
+    if layer.customProperty(FULL_PROPERTY) != encoded:
+        layer.setCustomProperty(FULL_PROPERTY, encoded)
     used = _used_keys(layer, renderer) if isinstance(renderer, QgsRuleBasedRenderer) else set()
     trimmed = renderer.clone()
     if isinstance(trimmed, QgsRuleBasedRenderer):
@@ -146,10 +155,9 @@ def limit_to_present(layer) -> tuple[int, int]:
 
 def show_full(layer) -> bool:
     """Put the complete symbol set back. Returns False when none was stored."""
-    stored = layer.customProperty(FULL_PROPERTY)
-    if not stored:
+    if not layer.customProperty(FULL_PROPERTY):
         return False
-    renderer = _decode(stored)
+    renderer = full_renderer(layer)
     if renderer is None:
         return False
     layer.setRenderer(renderer)
