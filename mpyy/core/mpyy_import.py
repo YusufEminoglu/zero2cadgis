@@ -9,9 +9,7 @@ not fit the MPYY type, is reported and left out.
 import contextlib
 import csv
 import json
-import re
 import sqlite3
-import unicodedata
 from contextlib import closing
 from pathlib import Path
 
@@ -27,6 +25,7 @@ from qgis.core import (
 )
 
 from .form_rules import cross_field_findings, rule_for, value_in_rule
+from .tabaka_matching import load_user_mappings, normalize_tabaka as _normalize_tabaka, resolve
 from .mpyy_workspace import all_levels, level_schema
 
 CROSSWALK_PATH = Path(__file__).resolve().parents[1] / "styles" / "mpyy_tabaka_crosswalk.json"
@@ -42,10 +41,8 @@ FAMILY_NAME = {Qgis.GeometryType.Polygon: "alan", Qgis.GeometryType.Line: "çizg
 SYSTEM_TABLES = {"mpyy_sema", "layer_styles", "mpyy_metadata"}
 
 
-def normalize_tabaka(name):
-    text = str(name or "").replace("ı", "i").replace("İ", "I")
-    text = "".join(c for c in unicodedata.normalize("NFKD", text) if not unicodedata.combining(c))
-    return re.sub(r"[^A-Z0-9]+", "_", text.upper()).strip("_")
+# One spelling rule for every caller: the matcher owns it.
+normalize_tabaka = _normalize_tabaka
 
 
 def crosswalk(level):
@@ -97,6 +94,7 @@ def import_cad_layer(source, tabaka_field, workspace, feedback=None, project=Non
     if source.fields().indexFromName(tabaka_field) < 0:
         raise ValueError(f'Kaynakta tabaka alanı yok: {tabaka_field}')
     table = crosswalk(level)
+    user_mappings = load_user_mappings()
     types = {t["name"]: t for t in level_schema(level)["feature_types"]}
     groups = {}
     for feature in source.getFeatures(QgsFeatureRequest()):
@@ -111,11 +109,15 @@ def import_cad_layer(source, tabaka_field, workspace, feedback=None, project=Non
                 break
             feedback.setProgress(100 * step / total)
         key = normalize_tabaka(tabaka)
-        entry = table["entries"].get(key)
+        # Exact, then a confirmed mapping, then a meaning-preserving spelling rule;
+        # a mere suggestion is never applied here (core/tabaka_matching.py).
+        match = resolve(level, tabaka, user=user_mappings)
+        entry = match.entry
         row = {"tabaka": tabaka, "adet": len(features), "mpyy_tipi": "", "oznitelik": "", "aktarilan": 0,
-               "geometri_uyusmayan": 0, "durum": ""}
+               "geometri_uyusmayan": 0, "durum": "", "eslesme": match.method,
+               "eslesme_kurali": match.rule}
         if entry is None:
-            row["durum"] = table["skipped"].get(key) or "eşleşme tablosunda yok"
+            row["durum"] = table["skipped"].get(key) or match.rule or "eşleşme tablosunda yok"
             report.append(row)
             continue
         type_name = entry["feature"]

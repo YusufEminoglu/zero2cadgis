@@ -83,8 +83,7 @@ from ..core.csv_sniffer import (
     sniff_delimited_dataset,
 )
 from ..core.cad_engine import CadCleanupEngine, CadStylingEngine, CadFeatureAugmenter, CadExportEngine
-from ..core.symbology import PlanSymbologyMatcher, apply_plan_symbology
-from ..core.plangml_schema import lookup_tabaka, upper_group_of
+from ..core.symbology import PLAN_REFERENCE_SCALES
 from ..core.path_utils import ensure_extension, has_extension
 from ..core.qgis_compat import (
     add_features_or_raise,
@@ -871,10 +870,6 @@ class Zero2CadGisDockWidget(QDockWidget):
         self.chk_conv_load.setChecked(True)
         opt_form.addRow(self.chk_conv_load)
 
-        self.chk_conv_symbology = QCheckBox(
-            "Auto-apply plan symbology (e-Plan / Mevzuat Lejanti)")
-        self.chk_conv_symbology.setChecked(True)
-        opt_form.addRow(self.chk_conv_symbology)
 
         cad_gis_layout.addWidget(opt_group)
 
@@ -1067,13 +1062,15 @@ class Zero2CadGisDockWidget(QDockWidget):
         ncz_opt_form.addRow(self.chk_ncz_style)
 
         self.chk_ncz_plan_symbology = QCheckBox(
-            "PlanGML spatial planning mode (official schema and symbology)")
+            "Plan modu: MPYY yapısı ve stilleri (UİP / NİP / ÇDP)")
         self.chk_ncz_plan_symbology.setToolTip(
-            "Turn this on for imar plan drawings only. Layers are grouped into "
-            "the official PlanGML upper groups, the PlanGML schema columns are "
-            "added, and each tabaka is drawn with its official e-Plan "
-            "gösterim. Left off, raw CAD layers, attributes and colors are "
-            "kept exactly as they are.")
+            "Turn this on for imar plan drawings. Each tabaka is written to its "
+            "MPYY 1.1.7 feature type with its XSD attributes and drawn with the "
+            "MPYY style of the plan level. Names are resolved exactly, by a "
+            "confirmed mapping, or by a spelling rule that cannot change the "
+            "meaning; anything else is only proposed for you to confirm. "
+            "Tabaka without an MPYY type keep the drawing's own colours and "
+            "text heights. Left off, raw CAD layers are kept as they are.")
         self.chk_ncz_plan_symbology.setChecked(False)
         self.chk_ncz_plan_symbology.toggled.connect(
             lambda _checked: self._sync_merge_geometry_availability())
@@ -1090,18 +1087,7 @@ class Zero2CadGisDockWidget(QDockWidget):
             "Which official e-Plan style set to draw with. Auto reads the "
             "scale from the file name: 1000 uses uygulama imar, 5000 nazım "
             "imar, 25000 and above çevre düzeni.")
-        ncz_opt_form.addRow("Plan type (official symbology):", self.cmb_plan_type)
-
-        self.chk_ncz_mpyy = QCheckBox(
-            "MPYY yapısında aktar (MPYY UİP / NİP / ÇDP stilleri)")
-        self.chk_ncz_mpyy.setToolTip(
-            "Writes the drawing into a MPYY 1.1.7 workspace GeoPackage: each "
-            "tabaka goes to its MPYY feature type with its XSD attributes "
-            "(e.g. Konut, KonutTip=GelismeKonut) and is drawn with the MPYY "
-            "e-Plan style of the chosen plan level. Tabaka the crosswalk does "
-            "not define are not guessed; they stay in a separate group.")
-        self.chk_ncz_mpyy.setChecked(False)
-        ncz_opt_form.addRow(self.chk_ncz_mpyy)
+        ncz_opt_form.addRow("Plan kademesi:", self.cmb_plan_type)
 
         self.chk_ncz_label = QCheckBox("Convert text elements to map labels")
         self.chk_ncz_label.setChecked(True)
@@ -1894,11 +1880,6 @@ class Zero2CadGisDockWidget(QDockWidget):
 
                 group = root.addGroup(group_name)
                 for cl in loaded_layers:
-                    if getattr(self, "chk_conv_symbology", None) is None or self.chk_conv_symbology.isChecked():
-                        with suppress(Exception):
-                            from ..core.symbology import apply_plan_symbology
-                            apply_plan_symbology(
-                                cl, source_name=os.path.basename(src))
                     QgsProject.instance().addMapLayer(cl, False)
                     node = group.addLayer(cl)
                     from ..core.cad_engine import is_helper_or_noise_layer
@@ -2228,42 +2209,17 @@ class Zero2CadGisDockWidget(QDockWidget):
         if chk_merge is None:
             return
         chk_plan = getattr(self, "chk_ncz_plan_symbology", None)
-        is_plangml = chk_plan is not None and chk_plan.isChecked()
+        is_plan = chk_plan is not None and chk_plan.isChecked()
 
-        chk_merge.setEnabled(is_batch_import or is_plangml)
-        if is_plangml:
-            chk_merge.setChecked(True)
-        elif not is_batch_import:
+        # Merging CAD layers only makes sense across several drawings; in plan
+        # mode the MPYY workspace is the structure, so nothing is merged there.
+        chk_merge.setEnabled(is_batch_import and not is_plan)
+        if is_plan or not is_batch_import:
             chk_merge.setChecked(False)
 
         combo_plan = getattr(self, "cmb_plan_type", None)
         if combo_plan is not None:
-            combo_plan.setEnabled(is_plangml)
-        chk_mpyy = getattr(self, "chk_ncz_mpyy", None)
-        if chk_mpyy is not None:
-            chk_mpyy.setEnabled(is_plangml)
-            if not is_plangml:
-                chk_mpyy.setChecked(False)
-
-        chk_style = getattr(self, "chk_ncz_style", None)
-        if chk_style is not None:
-            was_enabled = chk_style.isEnabled()
-            chk_style.setEnabled(not is_plangml)
-            if is_plangml:
-                # Remember the user's choice only when leaving the free state,
-                # so a second sync in PlanGML mode cannot overwrite it.
-                if was_enabled:
-                    self._ncz_style_before_plangml = chk_style.isChecked()
-                chk_style.setChecked(False)
-                chk_style.setToolTip(
-                    "PlanGML spatial planning mode applies official Ministry legislation "
-                    "symbology; raw CAD colors are bypassed.")
-            else:
-                if not was_enabled:
-                    chk_style.setChecked(
-                        getattr(self, "_ncz_style_before_plangml", True))
-                chk_style.setToolTip(
-                    "Apply original Netcad entity and layer ARGB colors.")
+            combo_plan.setEnabled(is_plan)
 
     def _selected_plan_type(self) -> str:
         """Official e-Plan style set chosen in the UI: AUTO / UIP / NIP / CDP."""
@@ -2392,7 +2348,7 @@ class Zero2CadGisDockWidget(QDockWidget):
                         continue
 
                     layer_name = entity.layer_name or f"LAYER_{entity.layer_code}"
-                    is_plangml = getattr(self, "chk_ncz_plan_symbology", None) is not None and self.chk_ncz_plan_symbology.isChecked()
+                    is_plangml = self.chk_ncz_plan_symbology.isChecked()
                     from ..core.cad_engine import is_helper_or_noise_layer
                     is_noise = is_helper_or_noise_layer(layer_name)
 
@@ -2400,15 +2356,6 @@ class Zero2CadGisDockWidget(QDockWidget):
                         display_name = f"{file_base_name}_{self._sanitize_name(layer_name)}_{family}"
                         group_name = f"{file_base_name}_CAD_DRAFT" if merge_geometry_types else f"{file_base_name}_{family}"
                         bucket_key = (entity.layer_code, layer_name, family)
-                    elif merge_geometry_types and is_plangml:
-                        # Grouped by the Ministry's own upper groups, so the
-                        # layer tree is organised the way the regulation is.
-                        ust_token = self._sanitize_name(
-                            upper_group_of(layer_name))
-                        family_token = self._sanitize_name(family)
-                        display_name = f"{file_base_name}_{ust_token}_{family_token}"
-                        group_name = file_base_name
-                        bucket_key = (ust_token, family, geometry_type)
                     else:
                         display_name = f"{file_base_name}_{self._sanitize_name(layer_name)}_{family}"
                         group_name = f"{file_base_name}_{family}"
@@ -2442,13 +2389,6 @@ class Zero2CadGisDockWidget(QDockWidget):
                                     display_name = f"{file_base_name}_{self._sanitize_name(layer_name)}_{family}"
                                     group_name = f"{file_base_name}_CAD_DRAFT" if merge_geometry_types else f"{file_base_name}_{family}"
                                     bucket_key = (entity.layer_code, layer_name, family)
-                                elif merge_geometry_types and is_plangml:
-                                    ust_token = self._sanitize_name(
-                                        upper_group_of(layer_name))
-                                    family_token = self._sanitize_name(family)
-                                    display_name = f"{file_base_name}_{ust_token}_{family_token}"
-                                    group_name = file_base_name
-                                    bucket_key = (ust_token, family, geometry_type)
                                 else:
                                     display_name = f"{file_base_name}_{self._sanitize_name(layer_name)}_{family}"
                                     group_name = f"{file_base_name}_{family}"
@@ -2500,7 +2440,7 @@ class Zero2CadGisDockWidget(QDockWidget):
                 raise ValueError(
                     "Selected Netcad data did not produce any valid layers.")
 
-            if getattr(self, "chk_ncz_mpyy", None) is not None and self.chk_ncz_mpyy.isChecked():
+            if self.chk_ncz_plan_symbology.isChecked():
                 from ..core.mpyy_transfer import mpyy_level_for
                 level = mpyy_level_for(self._resolve_plan_type(first_file))
                 if level is None:
@@ -2615,6 +2555,45 @@ class Zero2CadGisDockWidget(QDockWidget):
                 "Import Error",
                 f"Failed to import Netcad dataset:\n{exc}")
 
+    #: Set False to import without asking (tests, batch runs): proposals then
+    #: stay unapplied, exactly as if every row were left unticked.
+    ask_tabaka_confirmation = True
+
+    def _confirm_proposed_tabaka(self, layers: list, level: str,
+                                 tabaka_field: str = "layer_name") -> list[tuple[str, str]]:
+        """Ask the planner about tabaka that have proposals but no safe match.
+
+        Returns the confirmed (tabaka, key) pairs; they are stored per user and
+        resolve by themselves from then on.
+        """
+        from collections import Counter
+        from ..mpyy.core import tabaka_matching as matching
+        from .tabaka_confirm_dialog import TabakaConfirmDialog
+
+        counts = Counter()
+        for layer in layers:
+            if layer.fields().indexFromName(tabaka_field) < 0:
+                continue
+            for feature in layer.getFeatures():
+                counts[str(feature[tabaka_field] or "")] += 1
+        user = matching.load_user_mappings()
+        pending = []
+        for tabaka, count in counts.most_common():
+            if not tabaka or matching.resolve(level, tabaka, user=user).resolved:
+                continue
+            proposals = matching.suggest(level, tabaka)
+            if proposals:
+                pending.append((tabaka, count, proposals))
+        if not pending or not self.ask_tabaka_confirmation:
+            return []
+        dialog = TabakaConfirmDialog(level, pending, self)
+        if dialog.exec() != QDialog.DialogCode.Accepted:
+            return []
+        confirmed = dialog.selections()
+        for tabaka, key in confirmed:
+            matching.confirm(level, tabaka, key)
+        return confirmed
+
     def _finish_mpyy_import(
             self,
             layer_groups: list[LayerGroup],
@@ -2643,6 +2622,8 @@ class Zero2CadGisDockWidget(QDockWidget):
             if os.path.exists(workspace):
                 os.remove(workspace)   # overwrite was confirmed in the save dialog
 
+        self._confirm_proposed_tabaka(spatial, level)
+
         self.progress_ncz.setValue(85)
         self.progress_ncz.setFormat(
             f"MPYY {LEVEL_TITLES.get(level, level)} çalışma alanına aktarılıyor...")
@@ -2657,7 +2638,7 @@ class Zero2CadGisDockWidget(QDockWidget):
                 name=f"{base_name}_ESLESMEYEN_TABAKALAR", layers=result.leftovers))
         extra.extend(tables)
         if extra:
-            self._add_groups_to_project(extra)
+            self._add_groups_to_project(extra, plan_type=level)
         with suppress(Exception):
             if hasattr(self.iface, "mapCanvas") and self.iface.mapCanvas():
                 self.iface.mapCanvas().refresh()
@@ -2717,13 +2698,7 @@ class Zero2CadGisDockWidget(QDockWidget):
                             if augmented_layer.featureCount() == temp_layer.featureCount():
                                 processed_layer = augmented_layer
 
-                    if getattr(self, "chk_ncz_plan_symbology", None) is None or self.chk_ncz_plan_symbology.isChecked():
-                        with suppress(Exception):
-                            apply_plan_symbology(
-                                processed_layer,
-                                plan_type=self._resolve_plan_type(source_file_name),
-                                source_name=source_file_name)
-                    elif self.chk_ncz_style.isChecked():
+                    if self.chk_ncz_style.isChecked():
                         with suppress(Exception):
                             CadStylingEngine.apply_argb_renderer(
                                 processed_layer, bucket.geometry_type)
@@ -2775,24 +2750,11 @@ class Zero2CadGisDockWidget(QDockWidget):
         if not layer.isValid():
             return None
 
-        is_plangml = getattr(self, "chk_ncz_plan_symbology", None) is not None and self.chk_ncz_plan_symbology.isChecked()
         field_defs = list(self.CAD_FIELD_DEFINITIONS)
-        if is_plangml:
-            field_defs.extend(self.PLANGML_FIELD_DEFINITIONS)
 
         provider = layer.dataProvider()
         provider.addAttributes(field_defs)
         layer.updateFields()
-
-        # Symbology rule and official identity depend only on the tabaka name
-        # and the plan type; a drawing has dozens of tabaka and ~1e5 features.
-        plan_type = self._resolve_plan_type(source_file_name) if is_plangml else ""
-        plan_kodu = {
-            "UIP": "UIP_1000",
-            "NIP": "NIP_5000",
-            "CDP": "CDP_25000",
-        }.get(plan_type, "UIP_1000")
-        tabaka_memo: dict[str, tuple] = {}
 
         features = []
         for entity in entities:
@@ -2847,61 +2809,6 @@ class Zero2CadGisDockWidget(QDockWidget):
                 entity.grid_x,
                 entity.grid_y,
             ]
-
-            if is_plangml:
-                memo = tabaka_memo.get(tabaka_name)
-                if memo is None:
-                    memo = (
-                        PlanSymbologyMatcher.match_rule(
-                            tabaka_name, plan_type=plan_type),
-                        lookup_tabaka(tabaka_name),
-                    )
-                    tabaka_memo[tabaka_name] = memo
-                rule, identity = memo
-
-                # The codes are the Ministry's, taken from its own UİP tabaka
-                # catalog. A tabaka the catalog does not define — a CAD symbol
-                # or text layer, or a local name with no unambiguous official
-                # counterpart — gets empty code cells rather than invented ones.
-                if identity is not None:
-                    ust_grup_id = identity.ust_grup_id
-                    ust_grup_adi = identity.ust_grup_adi
-                    alt_grup_id = identity.fonksiyon_kodu
-                    alt_grup_adi = identity.fonksiyon_adi
-                    fonksiyon_kodu = identity.fonksiyon_kodu
-                    tam_adi = identity.fonksiyon_adi
-                else:
-                    ust_grup_id = ""
-                    ust_grup_adi = ""
-                    alt_grup_id = ""
-                    alt_grup_adi = ""
-                    fonksiyon_kodu = ""
-                    tam_adi = ""
-
-                attr_values.extend([
-                    ust_grup_id,
-                    ust_grup_adi,
-                    alt_grup_id,
-                    alt_grup_adi,
-                    plan_kodu,
-                    fonksiyon_kodu,
-                    tam_adi,
-                    rule.display_name,   # GISTERIM: how it is drawn
-                    tabaka_name,         # uip_tabaka: the drawing's own name
-                    "",                  # YapiDuzeni
-                    None,                # KatAdedi
-                    None,                # EmsalKaks
-                    None,                # Taks
-                    None,                # YapiYuksekligi
-                    "",                  # Yencok
-                    None,                # OnBahceMesafesi
-                    None,                # YanBahceMesafesi
-                    None,                # ArkaBahceMesafesi
-                    "",                  # AdaNo
-                    "",                  # ParselNo
-                    None,                # YolGenisligi
-                    "",                  # PlanNotu
-                ])
 
             feature = QgsFeature(layer.fields())
             feature.setGeometry(geom)
@@ -2974,7 +2881,8 @@ class Zero2CadGisDockWidget(QDockWidget):
             layer, features, f"NCZ attribute table {table_name}")
         return layer
 
-    def _add_groups_to_project(self, layer_groups: list[LayerGroup]) -> None:
+    def _add_groups_to_project(self, layer_groups: list[LayerGroup],
+                               plan_type: str | None = None) -> None:
         project = QgsProject.instance()
         root = project.layerTreeRoot()
         from ..core.cad_engine import is_helper_or_noise_layer, CadStylingEngine
@@ -2989,16 +2897,7 @@ class Zero2CadGisDockWidget(QDockWidget):
             is_draft_group = "CAD_DRAFT" in item.name.upper()
 
             for layer in item.layers:
-                is_plangml = (getattr(self, "chk_ncz_plan_symbology", None) is None
-                              or self.chk_ncz_plan_symbology.isChecked())
-
-                if is_plangml:
-                    with suppress(Exception):
-                        apply_plan_symbology(
-                            layer,
-                            plan_type=self._selected_plan_type(),
-                            source_name=layer.name())
-                elif getattr(self, "chk_ncz_style", None) and self.chk_ncz_style.isChecked():
+                if getattr(self, "chk_ncz_style", None) and self.chk_ncz_style.isChecked():
                     with suppress(Exception):
                         geom_type = layer.geometryType()
                         geom_str = "Polygon" if geom_type == QgsWkbTypes.GeometryType.PolygonGeometry else ("LineString" if geom_type == QgsWkbTypes.GeometryType.LineGeometry else "Point")
@@ -3007,6 +2906,9 @@ class Zero2CadGisDockWidget(QDockWidget):
                 if getattr(self, "chk_ncz_label", None) and self.chk_ncz_label.isChecked() and layer.geometryType() == QgsWkbTypes.GeometryType.PointGeometry:
                     with suppress(Exception):
                         CadStylingEngine.apply_buffered_labels(layer)
+                if plan_type in PLAN_REFERENCE_SCALES and layer.renderer() is not None:
+                    # A plan sheet: paper sizes zoom together with the drawing.
+                    layer.renderer().setReferenceScale(PLAN_REFERENCE_SCALES[plan_type])
 
                 project.addMapLayer(layer, False)
                 node = group.addLayer(layer)

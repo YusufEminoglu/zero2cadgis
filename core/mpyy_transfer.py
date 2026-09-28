@@ -50,6 +50,14 @@ class MpyyTransferResult:
         left = sorted({r["tabaka"] for r in self.unmatched if r.get("tabaka")})
         text = (f"MPYY {LEVEL_TITLES.get(self.level, self.level)}: {self.transferred} nesne "
                 f"{len(self.layers)} MPYY katmanına aktarıldı")
+        by_method = {}
+        for row in self.report:
+            if row.get("aktarilan"):
+                by_method.setdefault(row.get("eslesme", "tam"), set()).add(row["tabaka"])
+        extra = [f"{len(by_method[m])} tabaka {label}" for m, label in
+                 (("kural", "yazım kuralıyla"), ("onayli", "onaylı eşleştirmeyle")) if by_method.get(m)]
+        if extra:
+            text += " (" + ", ".join(extra) + ")"
         if left:
             shown = ", ".join(left[:12]) + (" …" if len(left) > 12 else "")
             text += f"; eşleşmeyen {len(left)} tabaka ayrı grupta kaldı ({shown})"

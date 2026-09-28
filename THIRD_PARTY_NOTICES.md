@@ -6,34 +6,18 @@ under GPL-2.0-or-later; see `LICENSE` for the complete license text.
 
 ## e-Plan Plan Gösterimleri (official planning symbology)
 
-`core/eplan_catalog.py` and the 131 tarama (hatch pattern) tiles under
-`resources/eplan_tarama/` reproduce the **official Turkish planning
-symbology**, so that an imar plan imported from CAD is drawn the way the
-regulation requires.
+Plan drawings are drawn with the **official Turkish planning symbology**: the
+plan gösterimleri of **Ek-2 of the Mekânsal Planlar Yapım Yönetmeliği**,
+published as a GeoServer SLD style set on the e-Plan portal of the **T.C.
+Çevre, Şehircilik ve İklim Değişikliği Bakanlığı — Coğrafi Bilgi Sistemleri
+Genel Müdürlüğü** (<https://eplan.csb.gov.tr/>).
 
-- Source: the e-Plan portal of the **T.C. Çevre, Şehircilik ve İklim
-  Değişikliği Bakanlığı — Coğrafi Bilgi Sistemleri Genel Müdürlüğü**,
-  <https://eplan.csb.gov.tr/>, from its published GeoServer SLD style set.
-- Standard: the plan gösterimleri are **Ek-2 of the Mekânsal Planlar Yapım
-  Yönetmeliği**. They are a mandated legend: a plan that does not reproduce
-  them exactly is not a valid plan.
-
-What is reproduced:
-
-- The tarama tiles are redistributed **byte for byte, unmodified**, under
-  their original file names.
-- The gösterim values in `core/eplan_catalog.py` — fill colors, stroke colors
-  and widths, dash arrays, and the official rule names — are extracted
-  mechanically from the published SLD files by
-  `tools/compile_eplan_catalog.py`.
-
-What is **not** included:
-
-- The symbol fonts the SLD set references for point symbolizers
-  (`uygulama_imar_*`, `OG_V_*`, `UIP_*`, `Intelli Eplan`,
-  `ESRI Default Marker`, `Calibri`) are not used by *this* catalog, whose
-  point symbolizers are not implemented. The separate MPYY style bundle under
-  `mpyy/` **does** ship them — see "MPYY UİP / NİP / ÇDP styles" below.
+Since the MPYY switch this symbology reaches 02CadGis only through the MPYY
+style bundle under `mpyy/` (see "MPYY UİP / NİP / ÇDP styles" below and
+`mpyy/THIRD_PARTY_NOTICES.md`), which carries the Ministry SLDs rewritten to
+the MPYY 1.1.7 schema together with the tarama tiles they reference. The
+earlier stand-alone e-Plan catalogue (`core/eplan_catalog.py`, its compiler
+and the 131 tiles under `resources/eplan_tarama/`) is no longer shipped.
 
 Copyright:
 
@@ -42,9 +26,6 @@ Copyright:
   As legislative and official material it falls under FSEK Art. 31; as of
   2026-08-01 the portal publishes no separate terms-of-use or licence
   statement alongside the style set.
-- The compiler, the CAD tabaka to official rule mapping, the plan-type
-  resolution, and the translation into native QGIS symbol layers are:
-  Copyright (C) 2026 Yusuf Eminoğlu.
 
 02CadGis is an independent project and is not endorsed by, affiliated with,
 or produced in cooperation with the Ministry or any of its directorates.

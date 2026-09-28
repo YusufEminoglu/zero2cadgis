@@ -251,7 +251,7 @@ class TestPlanPipelineQgis(unittest.TestCase):
     def test_cad_text_is_drawn_at_its_own_height_in_metres(self):
         from qgis.core import QgsFeature, QgsField, QgsGeometry, QgsUnitTypes, QgsVectorLayer
         from qgis.PyQt.QtCore import QMetaType
-        from zero2cadgis.core.symbology import apply_plan_symbology
+        from zero2cadgis.core.cad_engine import CadStylingEngine
 
         layer = QgsVectorLayer("Point?crs=EPSG:5253", "YAZI_FONKSIYON_POINT", "memory")
         layer.dataProvider().addAttributes([
@@ -264,58 +264,12 @@ class TestPlanPipelineQgis(unittest.TestCase):
         f.setGeometry(QgsGeometry.fromWkt("POINT(500000 4250000)"))
         f.setAttributes(["YAZI_FONKSIYON", "PARK", 4.9])
         layer.dataProvider().addFeatures([f])
-        self.assertTrue(apply_plan_symbology(layer, plan_type="UIP"))
+        CadStylingEngine.apply_buffered_labels(layer)
         settings = layer.labeling().settings()
         self.assertEqual(settings.format().sizeUnit(), QgsUnitTypes.RenderUnit.RenderMetersInMapUnits)
         size_key = getattr(getattr(type(settings), "Property", type(settings)), "Size")
         self.assertTrue(settings.dataDefinedProperties().isActive(size_key))
         self.assertIn("text_h", settings.dataDefinedProperties().property(size_key).expressionString())
-        self.assertEqual(layer.renderer().referenceScale(), 1000)
-
-    def test_plan_symbology_labels_render_and_catch_all_is_neutral(self):
-        from qgis.core import (QgsExpression, QgsExpressionContext, QgsFeature,
-                               QgsField, QgsGeometry, QgsVectorLayer)
-        from qgis.PyQt.QtCore import QMetaType
-        from zero2cadgis.core.symbology import UNMATCHED_RULE, apply_plan_symbology
-
-        layer = QgsVectorLayer("Polygon?crs=EPSG:5253", "UIP_TEST", "memory")
-        provider = layer.dataProvider()
-        provider.addAttributes([
-            QgsField("uip_tabaka", QMetaType.Type.QString),
-            QgsField("TAM_ADI", QMetaType.Type.QString),
-            QgsField("YapiDuzeni", QMetaType.Type.QString),
-            QgsField("KatAdedi", QMetaType.Type.Int),
-        ])
-        layer.updateFields()
-        rows = [("PL_KONUT", "YERLEŞİK KONUT ALANI", "AYRIK", 3),
-                ("PL_PARK", "PARK", None, None)]
-        feats = []
-        for i, values in enumerate(rows):
-            f = QgsFeature(layer.fields())
-            f.setGeometry(QgsGeometry.fromWkt(
-                f"POLYGON(({i*100} 0,{i*100+50} 0,{i*100+50} 50,{i*100} 50,{i*100} 0))"))
-            f.setAttributes(list(values))
-            feats.append(f)
-        provider.addFeatures(feats)
-        layer.updateExtents()
-        self.assertTrue(apply_plan_symbology(layer, plan_type="UIP"))
-
-        renderer = layer.renderer()
-        cats = {c.value(): c for c in renderer.categories()}
-        self.assertIn("", cats)                       # all other values
-        self.assertEqual(cats[""].label(), UNMATCHED_RULE.display_name)
-
-        settings = layer.labeling().settings()
-        self.assertTrue(settings.isExpression)
-        expression = QgsExpression(settings.fieldName)
-        self.assertFalse(expression.hasParserError(), expression.parserErrorString())
-        context = QgsExpressionContext()
-        texts = []
-        for f in layer.getFeatures():
-            context.setFeature(f)
-            texts.append(expression.evaluate(context))
-        self.assertFalse(expression.hasEvalError(), expression.evalErrorString())
-        self.assertEqual(texts, ["AYRIK-3", "PARK"])
 
 
 class TestMpyyStructureImportQgis(unittest.TestCase):
@@ -328,15 +282,24 @@ class TestMpyyStructureImportQgis(unittest.TestCase):
         QMessageBox.critical = staticmethod(lambda *a, **k: self.errors.append(a[2:]))
         QMessageBox.warning = staticmethod(lambda *a, **k: self.errors.append(a[2:]))
         self.work = tempfile.mkdtemp(prefix="zero2cadgis-mpyy-")
+        # Confirmed mappings go to a scratch file, never the planner's own.
+        self._mapping_env = os.environ.get("MPYY_TABAKA_ESLESME")
+        os.environ["MPYY_TABAKA_ESLESME"] = os.path.join(self.work, "eslesme.json")
 
     def tearDown(self):
         from qgis.PyQt.QtWidgets import QMessageBox
         QMessageBox.critical, QMessageBox.warning = self._critical, self._warning
+        if self._mapping_env is None:
+            os.environ.pop("MPYY_TABAKA_ESLESME", None)
+        else:
+            os.environ["MPYY_TABAKA_ESLESME"] = self._mapping_env
         QgsProject.instance().removeAllMapLayers()
         QgsProject.instance().layerTreeRoot().removeAllChildren()
         gc.collect()
 
-    def test_ncz_import_in_mpyy_structure(self):
+    TABAKA = [b"PL_KONUT", b"PL_GELISME_KONUT", b"ADAKENARI", b"CIZPEN", b"PL_ILKOKUL", b"PL_DINI_TESIS"]
+
+    def _import(self):
         from qgis.PyQt.QtCore import Qt
         from zero2cadgis.dialogs.dock import Zero2CadGisDockWidget
         from zero2cadgis.tests import ncz_fixtures as fx
@@ -345,38 +308,76 @@ class TestMpyyStructureImportQgis(unittest.TestCase):
         with open(path, "wb") as handle:
             handle.write(b"".join([
                 fx.version_block(),
-                fx.layer_table_block([b"PL_KONUT", b"PL_GELISME_KONUT", b"ADAKENARI", b"CIZPEN"]),
+                fx.layer_table_block(self.TABAKA),
                 fx.polyline_block(layer=0, closed=True),
                 fx.polyline_block(layer=1, closed=True),
                 fx.line_block(layer=2),
                 fx.polyline_block(layer=3, closed=True),
+                fx.polyline_block(layer=4, closed=True),     # PL_ILKOKUL: spelling rule
+                fx.polyline_block(layer=5, closed=True),     # PL_DINI_TESIS: proposal only
             ]))
-
         window = QMainWindow()
         iface = MagicMock()
         iface.mainWindow.return_value = window
         icon_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "icons"))
         dock = Zero2CadGisDockWidget(iface, icon_dir, window)
+        self.addCleanup(lambda: (dock.close(), dock.setParent(None)))
+        dock._load_ncz_paths([path])
+        tree = dock.ncz_layer_tree
+        for i in range(tree.topLevelItemCount()):
+            top = tree.topLevelItem(i)
+            for j in range(top.childCount()):
+                for k in range(top.child(j).childCount()):
+                    top.child(j).child(k).setCheckState(0, Qt.CheckState.Checked)
+        dock.ncz_crs_selector.setCrs(QgsCoordinateReferenceSystem("EPSG:5253"))
+        dock.chk_ncz_temporary.setChecked(True)
+        dock.chk_ncz_plan_symbology.setChecked(True)     # plan mode = MPYY
+        return dock
+
+    def test_a_confirmed_proposal_is_transferred_and_remembered(self):
+        from zero2cadgis.dialogs import tabaka_confirm_dialog as tcd
+        from zero2cadgis.mpyy.core import tabaka_matching
+
+        asked = []
+
+        def fake_exec(dialog):
+            asked.extend(tabaka for tabaka, _n, _s in dialog.rows)
+            dialog.checks[[r[0] for r in dialog.rows].index("PL_DINI_TESIS")].setChecked(True)
+            combo = dialog.combos[[r[0] for r in dialog.rows].index("PL_DINI_TESIS")]
+            combo.setCurrentIndex(combo.findData("PL_CAMI"))
+            return tcd.QDialog.DialogCode.Accepted
+
+        original = tcd.TabakaConfirmDialog.exec
+        tcd.TabakaConfirmDialog.exec = fake_exec
         try:
-            dock._load_ncz_paths([path])
-            tree = dock.ncz_layer_tree
-            for i in range(tree.topLevelItemCount()):
-                top = tree.topLevelItem(i)
-                for j in range(top.childCount()):
-                    for k in range(top.child(j).childCount()):
-                        top.child(j).child(k).setCheckState(0, Qt.CheckState.Checked)
-            dock.ncz_crs_selector.setCrs(QgsCoordinateReferenceSystem("EPSG:5253"))
-            dock.chk_ncz_temporary.setChecked(True)
-            dock.chk_ncz_plan_symbology.setChecked(True)
-            self.assertTrue(dock.chk_ncz_mpyy.isEnabled())
-            dock.chk_ncz_mpyy.setChecked(True)
+            dock = self._import()
+            dock._import_netcad_dataset()
+        finally:
+            tcd.TabakaConfirmDialog.exec = original
+        self.assertEqual(self.errors, [])
+        self.assertIn("PL_DINI_TESIS", asked)          # proposals are asked about ...
+        self.assertNotIn("PL_ILKOKUL", asked)          # ... safe rules are not
+        result = dock.last_mpyy_result
+        ibadet = {l.name(): l for l in result.layers}["IbadetAlani"]
+        self.assertEqual([f["IbadetTip"] for f in ibadet.getFeatures()], ["Cami"])
+        self.assertEqual(tabaka_matching.load_user_mappings()["UIP"]["PL_DINI_TESIS"], "PL_CAMI")
+        self.assertIn("onaylı", result.summary())
+
+    def test_ncz_import_in_mpyy_structure(self):
+        dock = self._import()
+        dock.ask_tabaka_confirmation = False
+        try:
             dock._import_netcad_dataset()
             self.assertEqual(self.errors, [])
 
             result = dock.last_mpyy_result
             self.assertEqual(result.level, "UIP")
             by_name = {layer.name(): layer for layer in result.layers}
-            self.assertEqual(set(by_name), {"Konut", "AdaKenari"})
+            # PL_ILKOKUL reaches its type by a spelling rule, without being asked.
+            self.assertEqual(set(by_name), {"Konut", "AdaKenari", "EgitimTesisAlani"})
+            self.assertEqual([f["EgitimTesisTip"] for f in by_name["EgitimTesisAlani"].getFeatures()],
+                             ["IlkokulAlani"])
+            self.assertIn("yazım kuralıyla", result.summary())
             konut_tip = sorted(f["KonutTip"] for f in by_name["Konut"].getFeatures())
             self.assertEqual(konut_tip, ["GelismeKonut", "YerlesikKonut"])
             for layer in result.layers:
@@ -399,8 +400,9 @@ class TestMpyyStructureImportQgis(unittest.TestCase):
             for layer in result.layers + result.leftovers:
                 self.assertEqual(layer.renderer().referenceScale(), 1000, layer.name())
             # Not in the crosswalk: reported and kept, never guessed.
-            self.assertEqual([r["tabaka"] for r in result.unmatched], ["CIZPEN"])
-            self.assertEqual(sum(l.featureCount() for l in result.leftovers), 1)
+            # Not confirmed, so a proposal is not applied: PL_DINI_TESIS stays unmatched.
+            self.assertEqual(sorted(r["tabaka"] for r in result.unmatched), ["CIZPEN", "PL_DINI_TESIS"])
+            self.assertEqual(sum(l.featureCount() for l in result.leftovers), 2)
             root = QgsProject.instance().layerTreeRoot()
             self.assertIsNotNone(root.findGroup("1000_TEST_UIP_MPYY_UIP"))
             self.assertIsNotNone(root.findGroup("1000_TEST_UIP_ESLESMEYEN_TABAKALAR"))

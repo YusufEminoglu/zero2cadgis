@@ -42,7 +42,7 @@ TARGET = os.path.join(PLUGIN_ROOT, "mpyy")
 
 MODULES = (
     "db_factory", "fonts", "form_rules", "legend_scope", "mpyy_detail_catalog",
-    "mpyy_detail_hierarchy", "mpyy_import", "mpyy_workspace", "schema",
+    "mpyy_detail_hierarchy", "mpyy_import", "mpyy_workspace", "schema", "tabaka_matching",
 )
 STYLE_FILES = (
     "mpyy_schema.json", "mpyy_m_schema.json", "mpyy_tabaka_crosswalk.json",
