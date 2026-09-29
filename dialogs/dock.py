@@ -78,6 +78,7 @@ from ..core.netcad_parser import (
     NetcadLazyReader,
 )
 from ..core.gis_engine import GisConverterEngine
+from .column_picker import ColumnPicker
 from ..core.csv_sniffer import (
     CsvGeometryProfile,
     sniff_delimited_dataset,
@@ -532,6 +533,17 @@ class Zero2CadGisDockWidget(QDockWidget):
         QgsField("grid_y", QMetaType.Type.Double),
     ]
 
+    # Added by "Calculate geometry metadata" (CadFeatureAugmenter).
+    AUGMENT_FIELD_NAMES = ("geom_len", "geom_area", "cent_x", "cent_y")
+    # CAD columns another step reads: never dropped by the column picker.
+    NCZ_LOCKED_COLUMNS = {
+        "layer_name": "the tabaka: styles, three-layer categories and TR-Only MPYY Style read it",
+        "color_argb": "the drawing colour the style uses",
+        "label": "the text the labels show",
+        "name": "the text the labels show when 'label' is empty",
+        "text_h": "the drawing's text height the labels use",
+    }
+
     PLANGML_FIELD_DEFINITIONS = [
         QgsField("UST_GRUP_ID", QMetaType.Type.QString),
         QgsField("UST_GRUP_ADI", QMetaType.Type.QString),
@@ -813,6 +825,13 @@ class Zero2CadGisDockWidget(QDockWidget):
             lambda: self._set_src_tree_checked(Qt.CheckState.Unchecked))
         src_sel_layout.addWidget(btn_src_all)
         src_sel_layout.addWidget(btn_src_none)
+        self.src_columns = ColumnPicker(self)
+        self.src_columns.setToolTip(
+            "Attribute columns to write. Untick a column to leave it out of the "
+            "converted layers (GeoPackage and temporary layers; a live reference "
+            "always shows the source as it is). The CAD layer column a split "
+            "uses, and the tabaka column TR-Only MPYY Style reads, are always kept.")
+        src_sel_layout.addWidget(self.src_columns)
         src_preview_layout.addLayout(src_sel_layout)
 
         self.src_preview_group.setVisible(False)
@@ -871,7 +890,7 @@ class Zero2CadGisDockWidget(QDockWidget):
         opt_form.addRow(self.chk_conv_load)
 
         self.chk_conv_mpyy = QCheckBox(
-            "Plan modu (DXF / DWG): MPYY yapısı ve stilleri")
+            "TR-Only MPYY Style (DXF / DWG): MPYY structure and styles")
         self.chk_conv_mpyy.setToolTip(
             "For imar plan drawings in DXF or DWG. Each CAD layer (tabaka) is "
             "written to its MPYY 1.1.7 type and drawn with the MPYY style of the "
@@ -883,11 +902,11 @@ class Zero2CadGisDockWidget(QDockWidget):
         self.cmb_conv_plan_type = QComboBox()
         self.cmb_conv_plan_type.addItems([
             "Auto (detect from file name)",
-            "Uygulama İmar Planı (1/1000)",
-            "Nazım İmar Planı (1/5000)",
-            "Çevre Düzeni Planı (1/25.000+)",
+            "Implementation plan – UİP (1/1000)",
+            "Master plan – NİP (1/5000)",
+            "Environmental plan – ÇDP (1/25,000+)",
         ])
-        opt_form.addRow("Plan kademesi:", self.cmb_conv_plan_type)
+        opt_form.addRow("Plan level:", self.cmb_conv_plan_type)
 
 
         cad_gis_layout.addWidget(opt_group)
@@ -1021,6 +1040,21 @@ class Zero2CadGisDockWidget(QDockWidget):
         ncz_tree_layout.setContentsMargins(4, 8, 4, 4)
         ncz_tree_layout.setSpacing(2)
 
+        self.txt_ncz_layer_filter = QLineEdit()
+        self.txt_ncz_layer_filter.setPlaceholderText("Filter by layer or geometry… (e.g. askeri, LINE, PL_ polygon)")
+        self.txt_ncz_layer_filter.setClearButtonEnabled(True)
+        self.txt_ncz_layer_filter.setToolTip(
+            "Filters the list by layer name and geometry. Every word must match: "
+            "LINE, POLYGON, POINT or TEXT keep the layers holding that geometry, "
+            "any other word must be part of the name (\"PL_ line\" lists the plan "
+            "layers that have lines). Turkish letters are matched loosely: "
+            "ı / i / İ / I are the same letter and ş ç ğ ö ü match s c g o u, so "
+            "\"askeri\" finds PL_ASKERI_ALAN and \"yapı\" finds SM_YAPILASMA. "
+            "Select All / Deselect All act on the listed layers only; hidden "
+            "layers keep their state.")
+        self.txt_ncz_layer_filter.textChanged.connect(self._apply_ncz_layer_filter)
+        ncz_tree_layout.addWidget(self.txt_ncz_layer_filter)
+
         self.ncz_layer_tree = QTreeWidget()
         self.ncz_layer_tree.setHeaderLabels(
             ["Layer Name", "Geometry", "Count"])
@@ -1081,7 +1115,7 @@ class Zero2CadGisDockWidget(QDockWidget):
         ncz_opt_form.addRow(self.chk_ncz_style)
 
         self.chk_ncz_plan_symbology = QCheckBox(
-            "Plan modu: MPYY yapısı ve stilleri (UİP / NİP / ÇDP)")
+            "TR-Only MPYY Style: MPYY structure and styles (UİP / NİP / ÇDP)")
         self.chk_ncz_plan_symbology.setToolTip(
             "Turn this on for imar plan drawings. Each tabaka is written to its "
             "MPYY 1.1.7 feature type with its XSD attributes and drawn with the "
@@ -1098,15 +1132,15 @@ class Zero2CadGisDockWidget(QDockWidget):
         self.cmb_plan_type = QComboBox()
         self.cmb_plan_type.addItems([
             "Auto (detect from file name)",
-            "Uygulama İmar Planı (1/1000)",
-            "Nazım İmar Planı (1/5000)",
-            "Çevre Düzeni Planı (1/25.000+)",
+            "Implementation plan – UİP (1/1000)",
+            "Master plan – NİP (1/5000)",
+            "Environmental plan – ÇDP (1/25,000+)",
         ])
         self.cmb_plan_type.setToolTip(
             "Which official e-Plan style set to draw with. Auto reads the "
-            "scale from the file name: 1000 uses uygulama imar, 5000 nazım "
-            "imar, 25000 and above çevre düzeni.")
-        ncz_opt_form.addRow("Plan kademesi:", self.cmb_plan_type)
+            "scale from the file name: 1000 uses the implementation plan (UİP), "
+            "5000 the master plan (NİP), 25000 and above the environmental plan (ÇDP).")
+        ncz_opt_form.addRow("Plan level:", self.cmb_plan_type)
 
         self.chk_ncz_label = QCheckBox("Convert text elements to map labels")
         self.chk_ncz_label.setChecked(True)
@@ -1117,6 +1151,16 @@ class Zero2CadGisDockWidget(QDockWidget):
         self.chk_ncz_join.setChecked(True)
         ncz_opt_form.addRow(self.chk_ncz_join)
 
+        self.ncz_columns = ColumnPicker(self)
+        self.ncz_columns.setToolTip(
+            "Attribute columns the imported CAD layers keep. Untick a column to "
+            "leave it out. Columns the styles and labels read are locked. MPYY "
+            "layers always have their own MPYY 1.1.7 columns.")
+        self.ncz_columns.set_columns(
+            [f.name() for f in self.CAD_FIELD_DEFINITIONS] + list(self.AUGMENT_FIELD_NAMES),
+            self.NCZ_LOCKED_COLUMNS)
+        ncz_opt_form.addRow("Attribute columns:", self.ncz_columns)
+
         self.chk_ncz_merge_geometry = QCheckBox(
             "Build unified upper layers (Polygon / Line / Point)")
         self.chk_ncz_merge_geometry.setToolTip(
@@ -1126,6 +1170,20 @@ class Zero2CadGisDockWidget(QDockWidget):
         self.chk_ncz_merge_geometry.setChecked(True)
         self.chk_ncz_merge_geometry.setEnabled(True)
         ncz_opt_form.addRow(self.chk_ncz_merge_geometry)
+
+        self.chk_ncz_three_layers = QCheckBox(
+            "Merge all layers into 3 layers (Polygon / Line / Point-Text)")
+        self.chk_ncz_three_layers.setToolTip(
+            "Instead of one layer per tabaka, write every tabaka of a drawing into "
+            "three layers: polygons, lines and points/texts. Each feature keeps "
+            "its tabaka in 'layer_name', and the style is categorized by it: every "
+            "tabaka keeps its own drawing colour, helper/pen tabaka are listed "
+            "but switched off, texts keep their labels and heights. With several "
+            "drawings and unified upper layers on, all of them share the three "
+            "layers. In plan mode, tabaka that have no MPYY type stay in these "
+            "three layers.")
+        self.chk_ncz_three_layers.setChecked(False)
+        ncz_opt_form.addRow(self.chk_ncz_three_layers)
 
         self.chk_ncz_temporary = QCheckBox(
             "Import directly as temporary scratch layers (no GPKG)")
@@ -1557,6 +1615,7 @@ class Zero2CadGisDockWidget(QDockWidget):
         self.src_preview_group.setVisible(False)
         self.src_csv_profile = None
         self._cad_split_field = ""
+        self.src_columns.set_columns([])
         self.lbl_src_status.setText(
             "Tip: drag && drop any supported file onto this panel.")
 
@@ -1666,6 +1725,14 @@ class Zero2CadGisDockWidget(QDockWidget):
             self.src_preview_group.setVisible(False)
             self.lbl_src_status.setText(f"Could not inspect dataset: {exc}")
             return
+
+        with suppress(Exception):
+            columns_probe = GisConverterEngine(
+                file_path, "", QgsProject.instance().crs(), csv_profile=self.src_csv_profile)
+            columns = columns_probe.source_field_names(is_kmz=has_extension(file_path, ".kmz"))
+            columns_probe.cleanup()
+            locked = {self._cad_split_field: "the CAD layer column the output is split by"}                 if self._cad_split_field else {}
+            self.src_columns.set_columns(columns, locked)
 
         header = ("CAD Layer" if self._cad_split_field else "Layer Name")
         self.src_layer_tree.setHeaderLabels([header, "Geometry", "Features"])
@@ -1835,6 +1902,9 @@ class Zero2CadGisDockWidget(QDockWidget):
                 source_crs=src_crs_param)
             if self._cad_split_field and self._is_cad_format(fmt):
                 self.gis_converter.cad_split_field = self._cad_split_field
+            self.gis_converter.dropped_fields = self.src_columns.dropped()
+            if self.chk_conv_mpyy.isChecked():
+                self.gis_converter.required_fields = {"Layer", "layer", "layer_name"}
 
             layer_total = max(
                 len(selected_layers) if selected_layers is not None else 1, 1)
@@ -1885,11 +1955,11 @@ class Zero2CadGisDockWidget(QDockWidget):
             if self.chk_conv_mpyy.isChecked() and loaded_layers:
                 if fmt.key not in ("dxf", "dwg"):
                     self.iface.messageBar().pushMessage(
-                        "02CadGis", "Plan modu yalnız DXF / DWG çizimleri için: "
-                        "tabaka adı bu biçimlerde okunur.", Qgis.MessageLevel.Warning, 8)
+                        "02CadGis", "TR-Only MPYY Style works on DXF / DWG drawings only: "
+                        "the CAD layer (tabaka) name is read from those formats.", Qgis.MessageLevel.Warning, 8)
                 else:
                     self.progress_conv.setValue(80)
-                    self.progress_conv.setFormat("MPYY çalışma alanına aktarılıyor...")
+                    self.progress_conv.setFormat("Writing the MPYY workspace...")
                     QApplication.processEvents()
                     result = self._transfer_converted_to_mpyy(
                         loaded_layers, src, is_temp or is_live, dst)
@@ -2186,6 +2256,9 @@ class Zero2CadGisDockWidget(QDockWidget):
                     item.setData(0, Qt.ItemDataRole.UserRole,
                                  ("TABLE", table.table_ref, "TABLE"))
 
+        # A new drawing keeps the typed filter.
+        self._apply_ncz_layer_filter()
+
     def _select_all_ncz_layers(self) -> None:
         self._set_ncz_tree_checked_state(Qt.CheckState.Checked)
 
@@ -2193,14 +2266,68 @@ class Zero2CadGisDockWidget(QDockWidget):
         self._set_ncz_tree_checked_state(Qt.CheckState.Unchecked)
 
     def _set_ncz_tree_checked_state(self, state: Qt.CheckState) -> None:
+        """Check or uncheck the layers the filter lists; hidden ones keep their state.
+
+        Only the leaves are set: the file and group rows are auto-tristate and
+        follow them, and setting a parent would reach the hidden leaves too.
+        With no filter every leaf is listed, so this is the old select-all.
+        """
         for index in range(self.ncz_layer_tree.topLevelItemCount()):
             item = self.ncz_layer_tree.topLevelItem(index)
-            item.setCheckState(0, state)
+            if item.childCount() == 0:
+                item.setCheckState(0, state)
             for child_idx in range(item.childCount()):
                 sub = item.child(child_idx)
-                sub.setCheckState(0, state)
+                if sub.childCount() == 0 and not sub.isHidden():
+                    sub.setCheckState(0, state)
                 for g_child_idx in range(sub.childCount()):
-                    sub.child(g_child_idx).setCheckState(0, state)
+                    leaf = sub.child(g_child_idx)
+                    if not leaf.isHidden():
+                        leaf.setCheckState(0, state)
+
+    @staticmethod
+    def _fold_turkish(text: str) -> str:
+        """Search key: case and Turkish letters folded (İ I ı i -> i, ş -> s, ç -> c ...)."""
+        import unicodedata
+        text = str(text or "").replace("İ", "i").replace("I", "i").replace("ı", "i")
+        text = unicodedata.normalize("NFKD", text)
+        return "".join(c for c in text if not unicodedata.combining(c)).lower()
+
+    # Geometry words the filter understands (folded) and the family they name.
+    # English only: ALAN, YAZI, NOKTA are everyday parts of tabaka names
+    # (PL_ASKERI_ALAN, YAZI_FONKSIYON), so they stay name words.
+    GEOMETRY_FILTER_WORDS = {
+        "line": "LINE", "lines": "LINE", "linestring": "LINE", "polyline": "LINE",
+        "polygon": "POLYGON", "polygons": "POLYGON",
+        "point": "POINT", "points": "POINT",
+        "text": "TEXT", "texts": "TEXT",
+    }
+
+    def _apply_ncz_layer_filter(self, *_args) -> None:
+        """Show the layers matching every typed word, by name or by geometry.
+
+        Words are Turkish-folded. A geometry word (LINE, POLYGON, POINT, TEXT)
+        keeps the layers that hold that geometry, so "PL_ line" lists the plan
+        layers that have lines. Any other word must be part of the name.
+        """
+        field = getattr(self, "txt_ncz_layer_filter", None)
+        words = self._fold_turkish(field.text()).split() if field is not None else []
+        for index in range(self.ncz_layer_tree.topLevelItemCount()):
+            file_item = self.ncz_layer_tree.topLevelItem(index)
+            for child_idx in range(file_item.childCount()):
+                sub = file_item.child(child_idx)
+                shown = 0
+                for g_child_idx in range(sub.childCount()):
+                    leaf = sub.child(g_child_idx)
+                    name = self._fold_turkish(leaf.text(0))
+                    families = set(str(leaf.text(1)).upper().split("/"))
+                    match = all(
+                        (self.GEOMETRY_FILTER_WORDS[word] in families)
+                        if word in self.GEOMETRY_FILTER_WORDS else word in name
+                        for word in words)
+                    leaf.setHidden(not match)
+                    shown += match
+                sub.setHidden(bool(words) and sub.childCount() > 0 and shown == 0)
 
     def _geometry_family(
             self,
@@ -2225,6 +2352,28 @@ class Zero2CadGisDockWidget(QDockWidget):
                     return "POLYGON", "Polygon"
             return "LINE", "LineString"
         return None, None
+
+    def _bucket_placement(self, file_base_name: str, batch_name: str, entity, layer_name: str,
+                          family: str, merge_geometry_types: bool) -> tuple:
+        """(layer display name, layer-tree group, bucket key) of one decoded entity.
+
+        Default: one layer per tabaka and geometry family, helper tabaka in a
+        ``_CAD_DRAFT`` group when unified upper layers are on. With the three-layer
+        option every tabaka of a drawing (of all drawings, when unified upper
+        layers are on) shares one layer per family; the tabaka stays in each
+        feature's ``layer_name`` and the style is categorized by it.
+        """
+        three = getattr(self, "chk_ncz_three_layers", None)
+        if three is not None and three.isChecked():
+            owner = batch_name if merge_geometry_types else file_base_name
+            return f"{owner}_{family}", owner, ("*", family)
+        from ..core.cad_engine import is_helper_or_noise_layer
+        display_name = f"{file_base_name}_{self._sanitize_name(layer_name)}_{family}"
+        if is_helper_or_noise_layer(layer_name) and merge_geometry_types:
+            group_name = f"{file_base_name}_CAD_DRAFT"
+        else:
+            group_name = f"{file_base_name}_{family}"
+        return display_name, group_name, (entity.layer_code, layer_name, family)
 
     def _sanitize_name(self, value: str) -> str:
         text = re.sub(r"\W+", "_", str(value).strip(), flags=re.UNICODE)
@@ -2251,6 +2400,24 @@ class Zero2CadGisDockWidget(QDockWidget):
         chk_merge.setEnabled(is_batch_import and not is_plan)
         if is_plan or not is_batch_import:
             chk_merge.setChecked(False)
+
+        # TR-Only MPYY Style draws MPYY layers with the MPYY styles; layers
+        # without an MPYY type keep the drawing's own colours by themselves.
+        # So the ARGB choice is not the user's in that mode: shown ticked and
+        # locked, and the user's own choice comes back when the mode is left.
+        chk_style = getattr(self, "chk_ncz_style", None)
+        if chk_style is not None:
+            if is_plan and chk_style.isEnabled():
+                self._argb_choice_outside_plan = chk_style.isChecked()
+                chk_style.setChecked(True)
+                chk_style.setEnabled(False)
+                chk_style.setToolTip(
+                    "Locked by TR-Only MPYY Style: MPYY layers use the MPYY styles, and "
+                    "layers without an MPYY type keep the drawing's own ARGB colours.")
+            elif not is_plan and not chk_style.isEnabled():
+                chk_style.setChecked(getattr(self, "_argb_choice_outside_plan", True))
+                chk_style.setEnabled(True)
+                chk_style.setToolTip("")
 
         combo_plan = getattr(self, "cmb_plan_type", None)
         if combo_plan is not None:
@@ -2384,17 +2551,8 @@ class Zero2CadGisDockWidget(QDockWidget):
 
                     layer_name = entity.layer_name or f"LAYER_{entity.layer_code}"
                     is_plangml = self.chk_ncz_plan_symbology.isChecked()
-                    from ..core.cad_engine import is_helper_or_noise_layer
-                    is_noise = is_helper_or_noise_layer(layer_name)
-
-                    if is_noise:
-                        display_name = f"{file_base_name}_{self._sanitize_name(layer_name)}_{family}"
-                        group_name = f"{file_base_name}_CAD_DRAFT" if merge_geometry_types else f"{file_base_name}_{family}"
-                        bucket_key = (entity.layer_code, layer_name, family)
-                    else:
-                        display_name = f"{file_base_name}_{self._sanitize_name(layer_name)}_{family}"
-                        group_name = f"{file_base_name}_{family}"
-                        bucket_key = (entity.layer_code, layer_name, family)
+                    display_name, group_name, bucket_key = self._bucket_placement(
+                        file_base_name, base_name, entity, layer_name, family, merge_geometry_types)
 
                     bucket = grouped_entities.setdefault(
                         group_name,
@@ -2419,15 +2577,9 @@ class Zero2CadGisDockWidget(QDockWidget):
                                 if not family:
                                     continue
                                 layer_name = entity.layer_name or f"LAYER_{entity.layer_code}"
-                                is_poly_noise = is_helper_or_noise_layer(layer_name)
-                                if is_poly_noise:
-                                    display_name = f"{file_base_name}_{self._sanitize_name(layer_name)}_{family}"
-                                    group_name = f"{file_base_name}_CAD_DRAFT" if merge_geometry_types else f"{file_base_name}_{family}"
-                                    bucket_key = (entity.layer_code, layer_name, family)
-                                else:
-                                    display_name = f"{file_base_name}_{self._sanitize_name(layer_name)}_{family}"
-                                    group_name = f"{file_base_name}_{family}"
-                                    bucket_key = (entity.layer_code, layer_name, family)
+                                display_name, group_name, bucket_key = self._bucket_placement(
+                                    file_base_name, base_name, entity, layer_name, family,
+                                    merge_geometry_types)
 
                                 bucket = grouped_entities.setdefault(
                                     group_name,
@@ -2480,7 +2632,7 @@ class Zero2CadGisDockWidget(QDockWidget):
                 level = mpyy_level_for(self._resolve_plan_type(first_file))
                 if level is None:
                     raise ValueError(
-                        "MPYY aktarımı için plan kademesi (UİP / NİP / ÇDP) belirlenemedi.")
+                        "TR-Only MPYY Style: the plan level (UİP / NİP / ÇDP) could not be determined.")
                 self._finish_mpyy_import(layer_groups, level, base_name, is_temp, gpkg_path)
                 return
 
@@ -2615,7 +2767,7 @@ class Zero2CadGisDockWidget(QDockWidget):
                       if spatial and spatial[0].fields().indexFromName(name) >= 0), None)
         if field is None:
             self.iface.messageBar().pushMessage(
-                "02CadGis", "Plan modu: katmanlarda tabaka adı alanı (Layer) yok.",
+                "02CadGis", "TR-Only MPYY Style: the layers have no CAD layer name field (Layer).",
                 Qgis.MessageLevel.Warning, 8)
             return None
         base = self._sanitize_name(os.path.splitext(os.path.basename(source.rstrip("/\\")))[0])
@@ -2721,7 +2873,7 @@ class Zero2CadGisDockWidget(QDockWidget):
 
         self.progress_ncz.setValue(85)
         self.progress_ncz.setFormat(
-            f"MPYY {LEVEL_TITLES.get(level, level)} çalışma alanına aktarılıyor...")
+            f"Writing the MPYY {LEVEL_TITLES.get(level, level)} workspace...")
         QApplication.processEvents()
         result = transfer_to_mpyy(
             spatial, level, workspace, f"{base_name}_MPYY_{level}")
@@ -2833,12 +2985,25 @@ class Zero2CadGisDockWidget(QDockWidget):
                                 assign_road_widths_to_lines(lyr, text_pts)
 
             if layers:
+                for lyr in layers:
+                    self._drop_unticked_cad_columns(lyr)
                 layer_groups.append(
                     LayerGroup(
                         name=group_name,
                         layers=layers))
 
         return layer_groups
+
+    def _drop_unticked_cad_columns(self, layer) -> None:
+        """Remove the CAD columns the user unticked, after every step that reads them."""
+        picker = getattr(self, "ncz_columns", None)
+        dropped = picker.dropped() if picker is not None else set()
+        if not dropped:
+            return
+        indexes = [i for i, name in enumerate(layer.fields().names())
+                   if name in dropped and name not in self.NCZ_LOCKED_COLUMNS]
+        if indexes and layer.dataProvider().deleteAttributes(indexes):
+            layer.updateFields()
 
     def _create_temp_vector_layer(
         self,

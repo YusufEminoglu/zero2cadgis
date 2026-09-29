@@ -228,23 +228,54 @@ class CadStylingEngine:
 
     @staticmethod
     def apply_argb_renderer(layer: QgsVectorLayer, geometry_type: str) -> None:
-        color_rgb = None
+        """The drawing's own colour: one symbol per layer, one category per tabaka.
+
+        A layer holding a single tabaka (the default import) gets one symbol in
+        that tabaka's colour. A layer holding several (the three-layer import)
+        is categorized by ``layer_name``, each category drawn exactly as its own
+        layer would be; helper / pen tabaka are listed but switched off, as
+        their layers are hidden in the default import.
+        """
+        colors = {}
+        tabaka_field = layer.fields().indexFromName("layer_name")
         for feature in layer.getFeatures():
+            tabaka = feature[tabaka_field] if tabaka_field >= 0 else None
+            if tabaka in colors and colors[tabaka] is not None:
+                continue
+            colors.setdefault(tabaka, None)
             color_str = feature["color_argb"]
             if color_str:
                 try:
                     argb = int(color_str)
-                    red = (argb >> 16) & 0xFF
-                    green = (argb >> 8) & 0xFF
-                    blue = argb & 0xFF
-                    color_rgb = QColor(red, green, blue)
-                    break
+                    colors[tabaka] = QColor((argb >> 16) & 0xFF, (argb >> 8) & 0xFF, argb & 0xFF)
                 except ValueError:
                     pass
+        if len(colors) > 1:
+            from qgis.core import QgsCategorizedSymbolRenderer, QgsRendererCategory
 
+            categories = []
+            for tabaka in sorted(colors, key=lambda value: str(value)):
+                symbol = CadStylingEngine._argb_symbol(
+                    geometry_type, colors[tabaka] or QColor(110, 110, 110))
+                if symbol is None:
+                    return
+                categories.append(QgsRendererCategory(
+                    tabaka, symbol, str(tabaka), not is_helper_or_noise_layer(str(tabaka or ""))))
+            layer.setRenderer(QgsCategorizedSymbolRenderer("layer_name", categories))
+            layer.triggerRepaint()
+            return
+        color_rgb = next(iter(colors.values()), None)
         if not color_rgb:
             color_rgb = QColor(110, 110, 110)
 
+        symbol = CadStylingEngine._argb_symbol(geometry_type, color_rgb)
+        if symbol:
+            renderer = QgsSingleSymbolRenderer(symbol)
+            layer.setRenderer(renderer)
+            layer.triggerRepaint()
+
+    @staticmethod
+    def _argb_symbol(geometry_type: str, color_rgb: QColor):
         symbol = None
         if geometry_type == "Point":
             symbol = QgsMarkerSymbol.createSimple({
@@ -266,11 +297,7 @@ class CadStylingEngine:
                 "outline_color": color_rgb.name(),
                 "outline_width": "0.5"
             })
-
-        if symbol:
-            renderer = QgsSingleSymbolRenderer(symbol)
-            layer.setRenderer(renderer)
-            layer.triggerRepaint()
+        return symbol
 
     @staticmethod
     def apply_buffered_labels(layer: QgsVectorLayer) -> None:

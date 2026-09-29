@@ -159,6 +159,12 @@ def import_cad_layer(source, tabaka_field, workspace, feedback=None, project=Non
             report.append(row)
             continue
         type_name = entry["feature"]
+        if type_name not in types:
+            # A stored mapping to something that is not one MPYY table (an older
+            # confirmation of a composite road record): reported, never opened.
+            row["durum"] = f"MPYY şemasında tek bir tablo değil: {type_name}"
+            report.append(row)
+            continue
         row["mpyy_tipi"] = type_name
         row["oznitelik"] = ", ".join(f"{k}={v}" for k, v in entry["attrs"].items())
         target = targets.get(type_name)

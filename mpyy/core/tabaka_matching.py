@@ -85,6 +85,7 @@ STOP_WORDS = frozenset(("ALAN", "ALANI", "ALANLARI", "ALANLAR", "TESIS", "TESISI
                         "SAHA", "SAHASI", "VE", "ILE", "VEYA", "TIP", "TUR", "MERKEZI", "DIGER"))
 LAYER_PREFIXES = frozenset(("PL", "HAT", "SNR", "KA", "KST", "TR", "SM", "UIP", "NIP", "CDP"))
 PLURALS = ("LERI", "LARI", "LER", "LAR")
+AMBIGUOUS_SINGLE_WORD = 8     # a one-word name fitting more functions than this gets no proposal
 # After a vowel: DEPO+SU, BAHCE+SI. Not YI/YU: that would make SANAYI "SANA".
 POSSESSIVES = ("SI", "SU")
 # Layers that are never a plan function, so nothing is proposed for them: Netcad
@@ -220,7 +221,10 @@ def _rule_candidates(name: str, table: _Level) -> dict[str, str]:
         if name.endswith(suffix) and len(name) > len(suffix):
             bases[name[: -len(suffix)]] = "Netcad dışa aktarım eki"
             break
-    for base, why in bases.items():
+    # PL_ only says "plan layer": PL_ADAKENARI is ADAKENARI, PL_KALDIRIM is KALDIRIM.
+    if name.startswith("PL_") and len(name) > 3:
+        bases.setdefault(name[3:], "PL_ öneki")
+    for base, why in list(bases.items()):
         hit(base, why)
         for suffix in AREA_SUFFIXES:
             if base.endswith(suffix):
@@ -303,6 +307,10 @@ def targets(level: str) -> dict:
     by_function: dict = {}
 
     def target_for(feature, attrs):
+        # Only a real MPYY table can receive features: six Ek-1e road records name
+        # "Yolorta + AdaKenari + DigerYolNesneleri", drawn by three tables at once.
+        if geometry and feature not in geometry:
+            return None
         ident = (feature, tuple(sorted(attrs.items())))
         if ident not in by_function:
             names = [_split_code(v) for v in attrs.values()] or [_split_code(feature)]
@@ -317,6 +325,8 @@ def targets(level: str) -> dict:
     for key in sorted(table.entries, key=lambda k: (len(k), k)):
         entry = table.entries[key]
         target = target_for(entry["feature"], entry.get("attrs", {}))
+        if target is None:
+            continue
         target.key = target.key or key
         target.names.append(key)
         target.prefixes.add(key.split("_")[0])
@@ -328,6 +338,8 @@ def targets(level: str) -> dict:
         functions = []
     for function in functions:
         target = target_for(function.feature_type, dict(function.attrs))
+        if target is None:
+            continue
         target.key = target.key or "fn:" + function.record_id
         target.label = target.label or function.name
         target.names.append(function.name)
@@ -490,5 +502,10 @@ def suggest(level: str, tabaka, limit: int = 5, minimum: float = 0.45,
         if score >= minimum:
             scored.append((score, key, target, best[1]))
     scored.sort(key=lambda row: (-row[0], row[1]))
+    # One word that fits many functions says nothing about which: A_SINIR
+    # ("boundary") drew "Önlemli alan" 0.93 on a municipal plan. Such a name is
+    # left for a hand pick instead of an arbitrary top proposal.
+    if len(set(words)) == 1 and len(scored) > AMBIGUOUS_SINGLE_WORD:
+        return []
     return [Suggestion(key, target.entry, round(score, 2), reason, target.label)
             for score, key, target, reason in scored[:limit]]

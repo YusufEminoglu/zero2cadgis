@@ -43,7 +43,7 @@
 - Extracts KML/KMZ `GroundOverlay` images as georeferenced GeoTIFF layers.
 - Simplifies collinear CAD vertices, removes duplicate nodes, and closes small polygon gaps by tolerance.
 - Preserves CAD color intent with QGIS renderers and optional buffered labels for text elements.
-- **Draws imar plans with the official e-Plan symbology.** In PlanGML mode, each CAD tabaka is matched against the plan gösterimleri style set published by the Ministry on [eplan.csb.gov.tr](https://eplan.csb.gov.tr/) and rendered with its official color, tarama pattern and line type. The rules and the tarama tiles are compiled into the plugin, so nothing is downloaded and no style server is needed. The gösterim is the official standard, not 02CadGis artwork — see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+- **TR-Only MPYY Style for Turkish imar plans.** Each CAD layer (tabaka) of an NCZ, DXF or DWG plan is written to its MPYY 1.1.7 feature type in a MPYY workspace GeoPackage and drawn with the MPYY UİP / NİP / ÇDP styles — the Ministry's e-Plan SLDs with the Ek-1e catalogue corrections and the plan symbol fonts, carried inside the plugin (see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)). Zoning values in the drawing (nizam, kat, TAKS, KAKS, setbacks, including Netcad Smart Object properties) fill the MPYY fields. Unknown layer names are only proposed, never guessed.
 - Exports active QGIS vector layers and map canvases to **DXF, KML, KMZ, or Web Map Tiles (MBTiles / TMS / XYZ)**, either for individual layers or the entire active project canvas. Features automated Web Mercator (EPSG:3857) reprojection, configurable zoom pyramids, PNG transparency, and 1-click Netcad-to-MBTiles workflow. Atomic publishing protects existing deliverables from interrupted writes.
 - Publishes imported GeoPackages transactionally as well: all selected layers
   must finish before the existing destination is replaced.
@@ -136,41 +136,52 @@ The Netcad panel is intentionally detailed because these drawings often contain 
 - **Styling:** ARGB colors and text labels can be carried into QGIS for easier review.
 - **Joins:** `@TAB` tables are linked back to geometry where matching name or label fields are available.
 
-#### PlanGML mode and official symbology
+#### TR-Only MPYY Style (Turkish imar plans)
 
-**PlanGML mode is off by default and should stay off for non-planning drawings** —
-topographic surveys, utility networks, cadastral and civil engineering files keep
-their raw tabaka names, their CAD attributes and their original ARGB colors.
+**TR-Only MPYY Style is off by default and should stay off for non-planning
+drawings** — topographic surveys, utility networks, cadastral and civil
+engineering files keep their raw layer names, their CAD attributes and their
+original ARGB colors.
 
-Turn it on for an imar plan and 02CadGis will:
+Turn it on for an imar plan (NCZ tab, or DXF / DWG in the converter) and 02CadGis will:
 
-- group tabaka into the **official upper groups** of the Ministry's UİP tabaka
-  catalog — `KONUT ALANLARI / YERLEŞİM ALANLARI`, `KENTSEL ÇALIŞMA ALANLARI`,
-  `AÇIK VE YEŞİL ALANLAR`, `EĞİTİM TESİSLERİ ALANI`, `PLANLAMA SINIRLARI`, … —
-  one layer per upper group and geometry type, so the layer tree is organised
-  the way the regulation is. Tabaka the catalog does not define go to a single
-  `DİĞER PLAN ALANLARI` layer, which is the only group name here that is not
-  the Ministry's own;
-- fill the PlanGML schema columns (`UST_GRUP_ID`, `UST_GRUP_ADI`,
-  `ALT_GRUP_ID`, `ALT_GRUP_ADI`, `PLAN_KODU`, `FONKSIYON_KODU`, `TAM_ADI`,
-  `GISTERIM`, `uip_tabaka`) with the **official codes** from the Ministry's UİP
-  tabaka catalog — `PL_KONUT` comes out as group `112000` "KONUT ALANLARI /
-  YERLEŞİM ALANLARI", function `112002` "YERLEŞİK KONUT ALANI" — keeping the
-  drawing's own tabaka name in `uip_tabaka`. A tabaka the catalog does not
-  define, such as a CAD symbol or text layer, gets empty code cells rather than
-  invented ones;
-- style each layer from the **official e-Plan style set** — a categorized renderer
-  over `uip_tabaka`, so every land use inside a merged layer keeps its own official
-  gösterim rather than a single flat color.
+- create a **MPYY 1.1.7 workspace GeoPackage** for the plan level and write each
+  CAD layer (tabaka) into its MPYY feature type with its code values —
+  `PL_KONUT` becomes `Konut` with `KonutTip = YerlesikKonut`;
+- resolve layer names **exactly**, by a **mapping you confirmed before**, or by a
+  **spelling rule that cannot change the meaning** (a copy number, a Netcad
+  export suffix, the `_ALANI` ending, a `PL_` prefix). Anything else is only
+  *proposed* in a confirmation table, ranked word by word against the
+  Ek-1e function names and MPYY codes; you tick what is right or type to pick
+  any function by hand, and confirmed mappings are remembered;
+- carry the drawing's **zoning values** — nizam, kat, TAKS, KAKS / emsal,
+  Hmax, setbacks, read from notation texts and from Netcad 8 Smart Object
+  properties — into the MPYY fields, but only values the MPYY form accepts;
+- draw the MPYY layers with the **MPYY UİP / NİP / ÇDP styles**, at the plan's
+  reference scale (1:1000 / 1:5000 / 1:25000) so symbols and texts zoom like
+  the printed sheet, with area pictograms at the regulated 10 / 7 / 5 mm, and a
+  legend that lists only the values the plan uses;
+- keep every layer that has no MPYY type, and every feature whose geometry does
+  not fit its type (texts, open lines), in a separate group in the drawing's own
+  ARGB colors. The ARGB option is locked on in this mode for that reason.
 
-The **plan type** selector picks which official set is used. *Auto* reads the scale
-from the file name — `1000_…` uses uygulama imar (1/1000), `5000_…` nazım imar
-(1/5000), `25000` and above çevre düzeni — and words such as `NAZIM` or `ÇEVRE`
-override the number. Choose the type explicitly when the file name says nothing.
+The **plan level** selector picks UİP, NİP or ÇDP. *Auto* reads the scale from
+the file name — `1000_…` implementation plan (UİP), `5000_…` master plan (NİP),
+`25000` and above environmental plan (ÇDP). Choose the level explicitly when
+the file name says nothing.
 
-Tabaka the official set does not cover (CAD helper layers such as symbol, text
-anchor or rölöve layers) fall back to a neutral style and are never given a
-planning meaning they do not have.
+#### Layer selection, columns and the three-layer import
+
+- **Filter** the layer list by name or geometry: every word must match, and
+  `LINE`, `POLYGON`, `POINT` or `TEXT` keep the layers holding that geometry
+  (`PL_ line`). Turkish letters are matched loosely (ı / i / İ / I, ş / s …).
+  Select All / Deselect All act on the listed layers only.
+- **Attribute columns** (NCZ tab and converter): untick the columns you do not
+  want written. Columns the styles, labels and MPYY transfer read are locked.
+- **Merge all layers into 3 layers** writes every tabaka into one polygon, one
+  line and one point/text layer. The style is categorized by `layer_name`, so
+  every tabaka keeps its own drawing color; helper and pen layers are listed but
+  switched off.
 
 If a file does not parse as expected, retry with cleanup disabled and inspect the raw layer selection before increasing tolerance.
 

@@ -44,23 +44,35 @@ class MpyyTransferResult:
 
     @property
     def unmatched(self) -> List[Dict[str, Any]]:
+        """Rows with features left behind: no MPYY type, or a type their geometry does not fit."""
         return [r for r in self.report if not r.get("aktarilan") or r.get("geometri_uyusmayan")]
 
     def summary(self) -> str:
-        left = sorted({r["tabaka"] for r in self.unmatched if r.get("tabaka")})
-        text = (f"MPYY {LEVEL_TITLES.get(self.level, self.level)}: {self.transferred} nesne "
-                f"{len(self.layers)} MPYY katmanına aktarıldı")
+        # A tabaka with an MPYY type is not "unmatched" because some of its
+        # features are texts or open lines: PL_ASKERI_ALAN, ADAKENARI and
+        # KALDIRIM were listed as unmatched while their areas were transferred.
+        left = sorted({r["tabaka"] for r in self.report
+                       if r.get("tabaka") and not r.get("mpyy_tipi")})
+        partial = [r for r in self.report if r.get("mpyy_tipi") and r.get("geometri_uyusmayan")]
+        text = (f"MPYY {LEVEL_TITLES.get(self.level, self.level)}: {self.transferred} feature(s) written to "
+                f"{len(self.layers)} MPYY layer(s)")
         by_method = {}
         for row in self.report:
             if row.get("aktarilan"):
                 by_method.setdefault(row.get("eslesme", "tam"), set()).add(row["tabaka"])
-        extra = [f"{len(by_method[m])} tabaka {label}" for m, label in
-                 (("kural", "yazım kuralıyla"), ("onayli", "onaylı eşleştirmeyle")) if by_method.get(m)]
+        extra = [f"{len(by_method[m])} layer(s) {label}" for m, label in
+                 (("kural", "by a spelling rule"), ("onayli", "by a confirmed mapping")) if by_method.get(m)]
         if extra:
             text += " (" + ", ".join(extra) + ")"
         if left:
             shown = ", ".join(left[:12]) + (" …" if len(left) > 12 else "")
-            text += f"; eşleşmeyen {len(left)} tabaka ayrı grupta kaldı ({shown})"
+            text += f"; {len(left)} unmatched layer(s) kept in a separate group ({shown})"
+        if partial:
+            count = sum(int(r["geometri_uyusmayan"]) for r in partial)
+            names = sorted({r["tabaka"] for r in partial})
+            shown = ", ".join(names[:8]) + (" …" if len(names) > 8 else "")
+            text += (f"; {count} feature(s) of {len(names)} matched layer(s) do not fit their MPYY "
+                     f"type (texts, open lines…) and were kept in a separate group ({shown})")
         return text
 
 
@@ -88,7 +100,7 @@ def transfer_to_mpyy(
     layers = [lyr for lyr in layers if lyr is not None and lyr.isValid()
               and lyr.fields().indexFromName(tabaka_field) >= 0]
     if not layers:
-        raise ValueError(f"Aktarılacak katmanlarda tabaka alanı yok: {tabaka_field}")
+        raise ValueError(f"The layers to transfer have no CAD layer field: {tabaka_field}")
 
     mpyy_workspace.create_mpyy_workspace(workspace_path, layers[0].crs(), level)
     result = MpyyTransferResult(level=level, workspace=workspace_path)
@@ -140,7 +152,7 @@ def _load_filled_types(mpyy_workspace, workspace_path, level, filled, group_name
             layer = QgsVectorLayer(
                 f"{workspace_path}|layername={feature_type['name']}", feature_type["name"], "ogr")
             if not layer.isValid():
-                raise RuntimeError("Katman açılamadı: " + feature_type["name"])
+                raise RuntimeError("Could not open MPYY layer: " + feature_type["name"])
             mpyy_workspace.configure_mpyy_layer(layer, feature_type, schema["codelists"])
             if not str(layer.customProperty("mpyy/symbology") or "").startswith(
                     ("e-Plan SLD", "Detay kataloğu")):

@@ -66,6 +66,10 @@ def plan_functions(level: str) -> list[PlanFunction]:
     for record in _records():
         if record["plan_kademesi"] != level:
             continue
+        if "+" in record["plan_gml_tipi"]:
+            # Six road records ("Yolorta + AdaKenari + DigerYolNesneleri") are drawn
+            # by three tables together: no single layer to draw them in.
+            continue
         rules = {rule["title"]: rule for rule in types.get(record["plan_gml_tipi"], {}).get("rules", [])}
         rule = rules.get(record["sld_kurali"])
         attrs = ()

@@ -11,3 +11,6 @@ docs
 .github
 benchmarks
 
+
+# Left over from the retired e-Plan / PlanGML styling; no code path opens it.
+symbology-style.db

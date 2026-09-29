@@ -361,7 +361,160 @@ class TestMpyyStructureImportQgis(unittest.TestCase):
         ibadet = {l.name(): l for l in result.layers}["IbadetAlani"]
         self.assertEqual([f["IbadetTip"] for f in ibadet.getFeatures()], ["Cami"])
         self.assertEqual(tabaka_matching.load_user_mappings()["UIP"]["PL_DINI_TESIS"], "PL_CAMI")
-        self.assertIn("onaylı", result.summary())
+        self.assertIn("by a confirmed mapping", result.summary())
+
+    def _leaves(self, dock):
+        tree, leaves = dock.ncz_layer_tree, {}
+        for i in range(tree.topLevelItemCount()):
+            top = tree.topLevelItem(i)
+            for j in range(top.childCount()):
+                for k in range(top.child(j).childCount()):
+                    leaf = top.child(j).child(k)
+                    leaves[leaf.text(0)] = leaf
+        return leaves
+
+    def test_the_layer_filter_folds_turkish_letters(self):
+        from qgis.PyQt.QtCore import Qt
+
+        dock = self._import()
+        leaves = self._leaves(dock)
+        shown = lambda: sorted(n for n, leaf in leaves.items() if not leaf.isHidden())  # noqa: E731
+        for typed, expected in (("konut", ["PL_GELISME_KONUT", "PL_KONUT"]),
+                                ("İLKOKUL", ["PL_ILKOKUL"]),       # İ is i
+                                ("dını", ["PL_DINI_TESIS"]),       # ı is i
+                                ("çizpen", ["CIZPEN"]),            # ç is c
+                                ("", sorted(leaves))):
+            dock.txt_ncz_layer_filter.setText(typed)
+            self.assertEqual(shown(), expected, typed)
+        # Select / deselect all act on the listed layers only.
+        dock.txt_ncz_layer_filter.setText("konut")
+        dock._deselect_all_ncz_layers()
+        unchecked = sorted(n for n, leaf in leaves.items() if leaf.checkState(0) != Qt.CheckState.Checked)
+        self.assertEqual(unchecked, ["PL_GELISME_KONUT", "PL_KONUT"])
+        dock.txt_ncz_layer_filter.clear()
+        dock._select_all_ncz_layers()
+        self.assertTrue(all(leaf.checkState(0) == Qt.CheckState.Checked for leaf in leaves.values()))
+
+    def test_the_filter_also_takes_geometry_words(self):
+        dock = self._import()
+        leaves = self._leaves(dock)
+        shown = lambda: sorted(n for n, leaf in leaves.items() if not leaf.isHidden())  # noqa: E731
+        with_lines = sorted(n for n, leaf in leaves.items() if "LINE" in leaf.text(1).upper().split("/"))
+        self.assertTrue(with_lines)
+        dock.txt_ncz_layer_filter.setText("line")
+        self.assertEqual(shown(), with_lines)
+        dock.txt_ncz_layer_filter.setText("PL_ polygon")          # every word must match
+        self.assertEqual(shown(), sorted(n for n, leaf in leaves.items()
+                                         if n.startswith("PL_") and "POLYGON" in leaf.text(1).upper()))
+        self.assertNotIn("ADAKENARI", shown())
+
+    def test_mpyy_style_locks_the_argb_choice_and_gives_it_back(self):
+        dock = self._import()                                      # plan mode on
+        self.assertTrue(dock.chk_ncz_style.isChecked())
+        self.assertFalse(dock.chk_ncz_style.isEnabled())
+        dock.chk_ncz_plan_symbology.setChecked(False)
+        self.assertTrue(dock.chk_ncz_style.isEnabled())
+        dock.chk_ncz_style.setChecked(False)                       # the user's own choice ...
+        dock.chk_ncz_plan_symbology.setChecked(True)
+        self.assertTrue(dock.chk_ncz_style.isChecked() and not dock.chk_ncz_style.isEnabled())
+        dock.chk_ncz_plan_symbology.setChecked(False)
+        self.assertFalse(dock.chk_ncz_style.isChecked())           # ... comes back
+
+    def test_unticked_cad_columns_are_left_out_and_required_ones_stay(self):
+        dock = self._import()
+        dock.chk_ncz_plan_symbology.setChecked(False)
+        for name in ("grid_x", "grid_y", "scale", "layer_name"):
+            dock.ncz_columns.set_checked(name, False)             # layer_name is locked: ignored
+        self.assertEqual(dock.ncz_columns.dropped(), {"grid_x", "grid_y", "scale"})
+        dock._import_netcad_dataset()
+        self.assertEqual(self.errors, [])
+        layers = [l for l in QgsProject.instance().mapLayers().values() if l.name().startswith("1000_TEST_UIP")]
+        self.assertTrue(layers)
+        for layer in layers:
+            names = layer.fields().names()
+            self.assertFalse({"grid_x", "grid_y", "scale"} & set(names), layer.name())
+            self.assertTrue({"layer_name", "color_argb", "label", "text_h", "layer_code"} <= set(names))
+
+    def test_the_converter_writes_only_the_ticked_columns(self):
+        from osgeo import ogr
+        from qgis.core import QgsCoordinateReferenceSystem as Crs
+        from zero2cadgis.core.gis_engine import GisConverterEngine
+
+        dxf = os.path.join(self.work, "cols.dxf")
+        ds = ogr.GetDriverByName("DXF").CreateDataSource(dxf)
+        entities = ds.CreateLayer("entities")
+        for wkt in ("LINESTRING(500000 4250000,500100 4250000)", "POINT(500050 4250050)"):
+            feature = ogr.Feature(entities.GetLayerDefn())
+            feature.SetField("Layer", "PL_KONUT")
+            feature.SetGeometry(ogr.CreateGeometryFromWkt(wkt))
+            entities.CreateFeature(feature)
+        ds = None
+        engine = GisConverterEngine(dxf, os.path.join(self.work, "cols.gpkg"), Crs("EPSG:5253"))
+        offered = engine.source_field_names()
+        self.assertIn("Layer", offered)
+        self.assertIn("EntityHandle", offered)
+        engine.dropped_fields = {"EntityHandle", "Linetype", "Layer"}
+        engine.required_fields = {"Layer"}                         # the tabaka MPYY reads stays
+        memory = engine.convert_to_memory()
+        written = engine.convert()
+        self.assertEqual(sum(l.featureCount() for l in memory), 2)  # both geometries kept
+        for layer in memory + written:
+            names = set(layer.fields().names())
+            self.assertIn("Layer", names, layer.name())
+            self.assertFalse({"EntityHandle", "Linetype"} & names, layer.name())
+
+    def _cad_import(self, three_layers):
+        dock = self._import()
+        dock.chk_ncz_plan_symbology.setChecked(False)          # plain CAD import
+        dock.chk_ncz_style.setChecked(True)                     # the drawing's own colours
+        dock.chk_ncz_three_layers.setChecked(three_layers)
+        dock._import_netcad_dataset()
+        self.assertEqual(self.errors, [])
+        layers = [l for l in QgsProject.instance().mapLayers().values()
+                  if l.name().startswith("1000_TEST_UIP")]
+        return dock, layers
+
+    def test_three_layers_keep_every_tabaka_and_its_colour(self):
+        from qgis.core import QgsCategorizedSymbolRenderer, QgsSingleSymbolRenderer
+
+        _dock, per_tabaka = self._cad_import(False)
+        expected = {(l.geometryType(), f["layer_name"]) for l in per_tabaka for f in l.getFeatures()}
+        colours = {next(l.getFeatures())["layer_name"]: l.renderer().symbol().color().name()
+                   for l in per_tabaka}
+        self.assertTrue(all(isinstance(l.renderer(), QgsSingleSymbolRenderer) for l in per_tabaka))
+        self.assertGreater(len(per_tabaka), 3)                  # one layer per tabaka by default
+        QgsProject.instance().removeAllMapLayers()
+        QgsProject.instance().layerTreeRoot().removeAllChildren()
+
+        _dock, merged = self._cad_import(True)
+        self.assertLessEqual(len(merged), 3)
+        self.assertEqual({(l.geometryType(), f["layer_name"]) for l in merged for f in l.getFeatures()}, expected)
+        for layer in merged:
+            renderer = layer.renderer()
+            tabakas = {f["layer_name"] for f in layer.getFeatures()}
+            if len(tabakas) == 1:
+                self.assertIsInstance(renderer, QgsSingleSymbolRenderer)
+                continue
+            self.assertIsInstance(renderer, QgsCategorizedSymbolRenderer)
+            self.assertEqual(renderer.classAttribute(), "layer_name")
+            by_value = {c.value(): c for c in renderer.categories()}
+            self.assertEqual(set(by_value), tabakas)
+            for tabaka, category in by_value.items():
+                self.assertEqual(category.symbol().color().name(), colours[tabaka], tabaka)
+                self.assertEqual(category.renderState(), tabaka != "CIZPEN", tabaka)   # pen layer off
+
+    def test_the_summary_tells_unmatched_from_partly_transferred(self):
+        from zero2cadgis.core.mpyy_transfer import MpyyTransferResult
+
+        result = MpyyTransferResult("UIP", "w.gpkg", report=[
+            {"tabaka": "PL_ASKERI_ALAN", "mpyy_tipi": "KentselCalisma", "aktarilan": 12, "geometri_uyusmayan": 3},
+            {"tabaka": "GRID", "mpyy_tipi": "", "aktarilan": 0, "geometri_uyusmayan": 0},
+        ])
+        text = result.summary()
+        self.assertIn("1 unmatched layer(s) kept in a separate group (GRID)", text)
+        self.assertIn("3 feature(s) of 1 matched layer(s) do not fit their MPYY type", text)
+        self.assertIn("(PL_ASKERI_ALAN)", text)
+        self.assertNotIn("PL_ASKERI_ALAN, GRID", text)
 
     def test_any_function_can_be_picked_by_hand_in_the_confirmation_table(self):
         from zero2cadgis.dialogs.tabaka_confirm_dialog import TabakaConfirmDialog
@@ -438,7 +591,7 @@ class TestMpyyStructureImportQgis(unittest.TestCase):
             self.assertEqual(set(by_name), {"Konut", "AdaKenari", "EgitimTesisAlani"})
             self.assertEqual([f["EgitimTesisTip"] for f in by_name["EgitimTesisAlani"].getFeatures()],
                              ["IlkokulAlani"])
-            self.assertIn("yazım kuralıyla", result.summary())
+            self.assertIn("by a spelling rule", result.summary())
             konut_tip = sorted(f["KonutTip"] for f in by_name["Konut"].getFeatures())
             self.assertEqual(konut_tip, ["GelismeKonut", "YerlesikKonut"])
             for layer in result.layers:

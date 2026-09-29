@@ -179,6 +179,11 @@ class GisConverterEngine:
         # When set (to "Layer"/"Level"), the single CAD entities layer is
         # split into one output layer per distinct CAD-layer value.
         self.cad_split_field: str = ""
+        # Columns the user unticked; everything else is written, including
+        # columns only made on the way (KML balloon tables). The CAD split field
+        # and ``required_fields`` (the tabaka the MPYY transfer reads) are kept.
+        self.dropped_fields: set = set()
+        self.required_fields: set = set()
 
         self.source_crs: Optional[QgsCoordinateReferenceSystem] = None
         if source_crs:
@@ -1169,6 +1174,48 @@ class GisConverterEngine:
             raise ValueError(
                 "No layers discovered inside the source GIS dataset.")
 
+    def _kept_indexes(self, fields) -> list[int]:
+        """Indexes of ``fields`` to write, in their order (all of them by default)."""
+        names = fields.names()
+        protected = set(self.required_fields) | ({self.cad_split_field} if self.cad_split_field else set())
+        return [i for i, name in enumerate(names)
+                if name not in self.dropped_fields or name in protected]
+
+    def _kept_fields(self, fields):
+        kept = QgsFields()
+        for index in self._kept_indexes(fields):
+            kept.append(fields[index])
+        return kept
+
+    def source_field_names(self, is_kmz: bool = False) -> list[str]:
+        """Every column name of the source's layers, first seen first; [] when unreadable.
+
+        Read from the layer definitions only (no features), so it is cheap even
+        for a large drawing.
+        """
+        names: list[str] = []
+
+        def add(values):
+            for value in values:
+                if value not in names:
+                    names.append(value)
+
+        with contextlib.suppress(Exception):
+            if self.is_delimited:
+                profile = self._ensure_csv_profile()
+                uri = build_delimitedtext_uri(self.source_path, profile, self.csv_source_crs)
+                add(QgsVectorLayer(uri, "probe", "delimitedtext").fields().names())
+                return names
+            for _prefix, src in self._ogr_sources(is_kmz):
+                ds = ogr.Open(src)
+                if ds is None:
+                    continue
+                for index in range(ds.GetLayerCount()):
+                    defn = ds.GetLayerByIndex(index).GetLayerDefn()
+                    add(defn.GetFieldDefn(i).GetName() for i in range(defn.GetFieldCount()))
+                ds = None
+        return names
+
     def cleanup(self):
         for temp_dir in self.temp_dirs:
             if os.path.exists(temp_dir):
@@ -1290,6 +1337,8 @@ class GisConverterEngine:
                 options = QgsVectorFileWriter.SaveVectorOptions()
                 options.driverName = "GPKG"
                 options.layerName = self._sanitize_column_name(layer_name)
+                if self.dropped_fields:
+                    options.attributes = self._kept_indexes(processed_layer.fields())
 
                 fid_index = processed_layer.fields().lookupField("fid")
                 if fid_index >= 0:
@@ -1367,7 +1416,8 @@ class GisConverterEngine:
             mem_uri = f"{geom_type_str}?crs={self.target_crs.authid()}"
             mem_layer = QgsVectorLayer(mem_uri, layer_name, "memory")
             prov = mem_layer.dataProvider()
-            fields = QgsFields(processed_layer.fields())
+            kept = self._kept_indexes(processed_layer.fields())
+            fields = self._kept_fields(processed_layer.fields())
             if dgn_layer_names and "dgn_level_name" not in fields.names():
                 fields.append(QgsField("dgn_level_name", QMetaType.Type.QString))
             prov.addAttributes(fields)
@@ -1378,9 +1428,10 @@ class GisConverterEngine:
                 new_feat = QgsFeature(mem_layer.fields())
                 coerced = self._coerce_geometry_for_layer(geom, geom_type_str)
                 new_feat.setGeometry(coerced or geom)
+                source_attrs = original_feat.attributes()
                 attrs = [
-                    fix_mojibake(a) if isinstance(a, str) else a
-                    for a in original_feat.attributes()
+                    fix_mojibake(source_attrs[i]) if isinstance(source_attrs[i], str) else source_attrs[i]
+                    for i in kept
                 ]
                 if len(attrs) < len(mem_layer.fields()):
                     attrs.extend([None] * (len(mem_layer.fields()) - len(attrs)))
@@ -1947,7 +1998,8 @@ class GisConverterEngine:
                 )
                 mem_layer = QgsVectorLayer(mem_uri, mem_layer_name, "memory")
                 prov = mem_layer.dataProvider()
-                prov.addAttributes(processed_layer.fields())
+                kept = self._kept_indexes(processed_layer.fields())
+                prov.addAttributes(self._kept_fields(processed_layer.fields()))
                 mem_layer.updateFields()
 
                 # Reconstruct features with target memory layer's fields
@@ -1956,9 +2008,10 @@ class GisConverterEngine:
                     new_feat = QgsFeature(mem_layer.fields())
                     coerced = self._coerce_geometry_for_layer(geom, geom_type_str)
                     new_feat.setGeometry(coerced or geom)
+                    source_attrs = original_feat.attributes()
                     fixed_attrs = [
-                        fix_mojibake(a) if isinstance(a, str) else a
-                        for a in original_feat.attributes()
+                        fix_mojibake(source_attrs[i]) if isinstance(source_attrs[i], str) else source_attrs[i]
+                        for i in kept
                     ]
                     new_feat.setAttributes(fixed_attrs)
                     features.append(new_feat)

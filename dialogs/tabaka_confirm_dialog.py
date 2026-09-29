@@ -34,7 +34,14 @@ from qgis.PyQt.QtWidgets import (
 )
 
 LEVEL_TITLES = {"UIP": "UİP", "NIP": "NİP", "CDP": "ÇDP"}
-GEOMETRY_TITLES = {"polygon": "Alan", "line": "Çizgi", "point": "Nokta", "": ""}
+GEOMETRY_TITLES = {"polygon": "Polygon", "line": "Line", "point": "Point", "": ""}
+# The matcher (shared with MPYY Studio) states its reasons in Turkish.
+REASONS = {"eş anlam": "synonym", "ek/kısaltma": "suffix / abbreviation", "kısaltma": "abbreviation",
+           "aynı kelimeler": "same words", "yazım benzerliği": "similar spelling"}
+
+
+def reason_text(reason: str) -> str:
+    return ", ".join(REASONS.get(part.strip(), part.strip()) for part in str(reason or "").split(","))
 
 
 def describe_entry(label: str, entry: dict) -> str:
@@ -59,21 +66,22 @@ class TabakaConfirmDialog(QDialog):
         self.rows = list(rows)
         functions = functions or {}
         geometries = geometries or {}
-        self.setWindowTitle(f"MPYY {LEVEL_TITLES.get(level, level)} — tabaka eşleştirme")
+        self.setWindowTitle(f"TR-Only MPYY Style {LEVEL_TITLES.get(level, level)} — match CAD layers")
         self.resize(1080, 580)
         layout = QVBoxLayout(self)
         info = QLabel(
-            "Bu tabakalar tam adla, daha önce onayladığın bir eşleştirmeyle ya da anlamı "
-            "değiştirmeyen bir yazım kuralıyla bulunamadı. Listedekiler yalnızca öneridir; "
-            "istersen kutuya yazarak başka bir MPYY fonksiyonu seçebilirsin (elle seçim satırı "
-            "işaretler). İşaretlediğin satırlar MPYY türüne aktarılır ve sonraki dosyalar için "
-            "hatırlanır; işaretlemediklerin çizimin kendi renkleriyle ayrı grupta kalır.")
+            "These CAD layers (tabaka) were not found by exact name, by a mapping you "
+            "confirmed before, or by a spelling rule that cannot change the meaning. The "
+            "entries are proposals only; type in a box to pick any other MPYY function "
+            "(a hand pick ticks the row). Ticked rows are transferred to their MPYY type and "
+            "remembered for later drawings; unticked ones stay in a separate group in the "
+            "drawing's own colours.")
         info.setWordWrap(True)
         layout.addWidget(info)
 
         self.table = QTableWidget(len(self.rows), 6, self)
         self.table.setHorizontalHeaderLabels(
-            ["Onayla", "Tabaka", "Geometri", "Nesne", "MPYY karşılığı (yazarak ara)", "Gerekçe"])
+            ["Confirm", "CAD layer", "Geometry", "Features", "MPYY function (type to search)", "Reason"])
         self.table.verticalHeader().setVisible(False)
         self.table.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         header = self.table.horizontalHeader()
@@ -96,7 +104,8 @@ class TabakaConfirmDialog(QDialog):
                 item = QTableWidgetItem(text)
                 item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
                 self.table.setItem(row, column, item)
-            reason = QTableWidgetItem(suggestions[0].reason if suggestions else "öneri yok — elle seç")
+            reason = QTableWidgetItem(reason_text(suggestions[0].reason) if suggestions
+                                      else "no proposal — pick by hand")
             reason.setFlags(reason.flags() & ~Qt.ItemFlag.ItemIsEditable)
             self.table.setItem(row, 5, reason)
             combo = self._function_combo(suggestions, functions, geometry)
@@ -108,15 +117,15 @@ class TabakaConfirmDialog(QDialog):
                 self._unproposed_rows.append(row)
         layout.addWidget(self.table)
 
-        self.chk_show_all = QCheckBox(f"Önerisi olmayan {len(self._unproposed_rows)} tabakayı da göster")
+        self.chk_show_all = QCheckBox(f"Also show the {len(self._unproposed_rows)} layer(s) without a proposal")
         self.chk_show_all.toggled.connect(self._show_unproposed)
         self.chk_show_all.setVisible(bool(self._unproposed_rows))
         layout.addWidget(self.chk_show_all)
         self._show_unproposed(False)
 
         buttons = QDialogButtonBox(self)
-        self.btn_apply = buttons.addButton("İşaretlileri onayla ve aktar", QDialogButtonBox.ButtonRole.AcceptRole)
-        self.btn_skip = buttons.addButton("Onaylamadan aktar", QDialogButtonBox.ButtonRole.RejectRole)
+        self.btn_apply = buttons.addButton("Confirm ticked and transfer", QDialogButtonBox.ButtonRole.AcceptRole)
+        self.btn_skip = buttons.addButton("Transfer without confirming", QDialogButtonBox.ButtonRole.RejectRole)
         buttons.accepted.connect(self.accept)
         buttons.rejected.connect(self.reject)
         layout.addWidget(buttons)
@@ -127,7 +136,7 @@ class TabakaConfirmDialog(QDialog):
         combo.setEditable(True)
         combo.setInsertPolicy(QComboBox.InsertPolicy.NoInsert)
         if not suggestions:
-            combo.addItem("— seçilmedi —", None)
+            combo.addItem("— not chosen —", None)
         for suggestion in suggestions:
             combo.addItem(f"{describe(suggestion)}   [{suggestion.score:.2f}]", suggestion.key)
         proposed = {s.key for s in suggestions}
@@ -148,12 +157,12 @@ class TabakaConfirmDialog(QDialog):
 
     def _picked(self, row: int, index: int, proposals: int) -> None:
         combo = self.combos[row]
-        offset = 0 if proposals else 1          # the "— seçilmedi —" item
+        offset = 0 if proposals else 1          # the "— not chosen —" item
         if index >= proposals + offset and combo.itemData(index):
             self.checks[row].setChecked(True)   # a hand pick is the planner's own decision
-            self.table.item(row, 5).setText("elle seçildi")
+            self.table.item(row, 5).setText("picked by hand")
         elif 0 <= index < proposals:
-            self.table.item(row, 5).setText(self.rows[row][2][index].reason)
+            self.table.item(row, 5).setText(reason_text(self.rows[row][2][index].reason))
 
     def _show_unproposed(self, shown: bool) -> None:
         for row in self._unproposed_rows:
