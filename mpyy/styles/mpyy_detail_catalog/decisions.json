@@ -1,9 +1,9 @@
 {
- "note": "Ek-1e Mek\u00e2nsal Planlar Detay Kataloglar\u0131 (22.01.2026) esas al\u0131n\u0131r. Bakanl\u0131k SLD'sinin yay\u0131mlanmam\u0131\u015f TaramaSembol SVG'si ya da ar\u015fivde olmayan Intelli Eplan karakteri yerine ayn\u0131 kalemin katalog sembol\u00fc kullan\u0131l\u0131r: 'svg' ve 'glyphs' o kayna\u011f\u0131 kullanan her kademedeki her kurala uygulan\u0131r. 'rules' katalo\u011fun sembol istedi\u011fi ama SLD'nin sembol vermedi\u011fi kurallara sembol\u00fc ekler.",
+ "note": "Ek-1e Mekânsal Planlar Detay Katalogları (22.01.2026) esas alınır. Bakanlık SLD'sinin yayımlanmamış TaramaSembol SVG'si ya da arşivde olmayan Intelli Eplan karakteri yerine aynı kalemin katalog sembolü kullanılır: 'svg' ve 'glyphs' o kaynağı kullanan her kademedeki her kurala uygulanır. 'rules' kataloğun sembol istediği ama SLD'nin sembol vermediği kurallara sembolü ekler.",
  "symbols": {
   "askeri_yasak_guvenlik": {
    "page": 24,
-   "title": "ASKER\u0130 YASAK VE G\u00dcVENL\u0130K B\u00d6LGES\u0130",
+   "title": "ASKERİ YASAK VE GÜVENLİK BÖLGESİ",
    "svg": [
     "AskeriAlan.svg"
    ]
@@ -17,14 +17,14 @@
   },
   "stratejik_karar": {
    "page": 38,
-   "title": "STRATEJ\u0130K KARAR",
+   "title": "STRATEJİK KARAR",
    "svg": [
     "StratejikKarar.svg"
    ]
   },
   "golf_turizmi": {
    "page": 57,
-   "title": "GOLF TUR\u0130ZM\u0130",
+   "title": "GOLF TURİZMİ",
    "svg": [
     "GolfTurizmi.svg"
    ],
@@ -32,18 +32,18 @@
     0,
     0
    ],
-   "note": "Katalog h\u00fccresinde GTB, GTA, GTT yan yana; \u00c7DP kural\u0131 b\u00f6lge \u00f6l\u00e7e\u011findedir (GTB)."
+   "note": "Katalog hücresinde GTB, GTA, GTT yan yana; ÇDP kuralı bölge ölçeğindedir (GTB)."
   },
   "turizm_bolgesi": {
    "page": 57,
-   "title": "TUR\u0130ZM B\u00d6LGES\u0130",
+   "title": "TURİZM BÖLGESİ",
    "svg": [
     "TurizmAlani.svg"
    ]
   },
   "kamu_hizmet_alani": {
    "page": 62,
-   "title": "KAMU H\u0130ZMET ALANI",
+   "title": "KAMU HİZMET ALANI",
    "svg": [
     "KamuHizmetAlani.svg"
    ]
@@ -57,42 +57,42 @@
   },
   "kentsel_arkeolojik_sit": {
    "page": 83,
-   "title": "KENTSEL ARKEOLOJ\u0130K S\u0130T ALANI",
+   "title": "KENTSEL ARKEOLOJİK SİT ALANI",
    "svg": [
     "KentselArkeolojikSitAlani.svg"
    ]
   },
   "afet_lojistik": {
    "page": 136,
-   "title": "AFET ARAMA KURTARMA H\u0130ZMET LOJ\u0130ST\u0130K MERKEZLER\u0130 ALANI",
+   "title": "AFET ARAMA KURTARMA HİZMET LOJİSTİK MERKEZLERİ ALANI",
    "svg": [
     "AfetLojistikAlani.svg"
    ]
   },
   "fuar_panayir": {
    "page": 138,
-   "title": "FUAR, PANAYIR VE FEST\u0130VAL/G\u00d6STER\u0130 ALANI",
+   "title": "FUAR, PANAYIR VE FESTİVAL/GÖSTERİ ALANI",
    "svg": [
     "FuarPanayirFestival.svg"
    ]
   },
   "agaclandirilacak": {
    "page": 142,
-   "title": "A\u011eA\u00c7LANDIRILACAK ALAN",
+   "title": "AĞAÇLANDIRILACAK ALAN",
    "svg": [
     "AgaclandirilacakAlan.svg"
    ]
   },
   "yenilenebilir_enerji": {
    "page": 174,
-   "title": "YEN\u0130LENEB\u0130L\u0130R ENERJ\u0130 KAYNAKLARINA DAYALI \u00dcRET\u0130M TES\u0130S\u0130 ALANI",
+   "title": "YENİLENEBİLİR ENERJİ KAYNAKLARINA DAYALI ÜRETİM TESİSİ ALANI",
    "svg": [
     "YenilenebilirEnerjiKaynaklarinaDayaliEnerjiUretimTesisAlani.svg"
    ]
   },
   "kentsel_risk": {
    "page": 189,
-   "title": "KENTSEL R\u0130SK ALANI",
+   "title": "KENTSEL RİSK ALANI",
    "svg": [
     "KentselRiskAlani.svg"
    ],
@@ -100,19 +100,19 @@
     0,
     0
    ],
-   "note": "Katalog h\u00fccresinde kutunun alt\u0131nda a\u00e7\u0131klama metni var; yaln\u0131z kutu al\u0131n\u0131r. Parantez i\u00e7i (KRA (\u2026.)) risk t\u00fcr\u00fc nesnenin a\u00e7\u0131klamas\u0131yla doldurulur.",
+   "note": "Katalog hücresinde kutunun altında açıklama metni var; yalnız kutu alınır. Parantez içi (KRA (….)) risk türü nesnenin açıklamasıyla doldurulur.",
    "rows_first": true
   },
   "tsunami_riskli": {
    "page": 189,
-   "title": "TSUNAM\u0130 R\u0130SKL\u0130 ALAN",
+   "title": "TSUNAMİ RİSKLİ ALAN",
    "svg": [
     "TsunamiRiskliAlan.svg"
    ]
   },
   "kutle_hareketi_riskli": {
    "page": 190,
-   "title": "K\u00dcTLE HAREKET\u0130 R\u0130SKL\u0130 ALAN",
+   "title": "KÜTLE HAREKETİ RİSKLİ ALAN",
    "svg": [
     "KutleHareketiRiskAlan.svg"
    ],
@@ -120,26 +120,26 @@
     0,
     0
    ],
-   "note": "Katalog h\u00fccresinde kutunun alt\u0131nda a\u00e7\u0131klama metni var; yaln\u0131z kutu al\u0131n\u0131r. Parantez i\u00e7i (KRA (\u2026.)) risk t\u00fcr\u00fc nesnenin a\u00e7\u0131klamas\u0131yla doldurulur.",
+   "note": "Katalog hücresinde kutunun altında açıklama metni var; yalnız kutu alınır. Parantez içi (KRA (….)) risk türü nesnenin açıklamasıyla doldurulur.",
    "rows_first": true
   },
   "vahsi_cop": {
    "page": 191,
-   "title": "VAH\u015e\u0130 \u00c7\u00d6P DEPOLAMA REHAB\u0130L\u0130TASYON VE KAPATMA ALANI",
+   "title": "VAHŞİ ÇÖP DEPOLAMA REHABİLİTASYON VE KAPATMA ALANI",
    "svg": [
     "VahsiCopVeRehabilitasyonMerkezi.svg"
    ]
   },
   "sokak_hayvanlari": {
    "page": 192,
-   "title": "SOKAK HAYVANLARI BARINA\u011eI ALANI",
+   "title": "SOKAK HAYVANLARI BARINAĞI ALANI",
    "svg": [
     "SokakHayvanlariBarinagiAlani.svg"
    ]
   },
   "ekoturizm_kirsal": {
    "page": 77,
-   "title": "EKOTUR\u0130ZM/KIRSAL TUR\u0130ZM",
+   "title": "EKOTURİZM/KIRSAL TURİZM",
    "svg": [
     "Ekoturizm.svg"
    ],
@@ -156,21 +156,21 @@
   },
   "millet_bahcesi": {
    "page": 137,
-   "title": "M\u0130LLET BAH\u00c7ES\u0130",
+   "title": "MİLLET BAHÇESİ",
    "glyphs": [
     "Intelli Eplan#A"
    ]
   },
   "sagliklastirma": {
    "page": 18,
-   "title": "SA\u011eLIKLA\u015eTIRMA ALANI SINIRI",
+   "title": "SAĞLIKLAŞTIRMA ALANI SINIRI",
    "glyphs": [
     "Intelli Eplan#L"
    ]
   },
   "makilik_fundalik": {
    "page": 96,
-   "title": "MAK\u0130L\u0130K- FUNDALIK ALAN",
+   "title": "MAKİLİK- FUNDALIK ALAN",
    "rules": [
     {
      "levels": [
@@ -184,7 +184,7 @@
   },
   "tarimsal_nitelikli": {
    "page": 100,
-   "title": "TARIMSAL N\u0130TEL\u0130KL\u0130 ALAN",
+   "title": "TARIMSAL NİTELİKLİ ALAN",
    "rules": [
     {
      "levels": [
@@ -197,19 +197,19 @@
   },
   "bisiklet_yolu": {
    "page": 153,
-   "title": "B\u0130S\u0130KLET YOLU",
-   "note": "vectors -> UIP/BisikletYolu/* \u00e7izgisinin ortas\u0131na konur."
+   "title": "BİSİKLET YOLU",
+   "note": "vectors -> UIP/BisikletYolu/* çizgisinin ortasına konur."
   },
   "ekolojik_oneme_sahip": {
    "page": 90,
-   "title": "EKOLOJ\u0130K \u00d6NEME SAH\u0130P ALAN",
+   "title": "EKOLOJİK ÖNEME SAHİP ALAN",
    "cell": "TARAMA",
    "part": [
     1,
     1
    ],
    "use": "hatch",
-   "note": "SLD bu SVG'yi GraphicFill (tarama) olarak kullan\u0131r; katalog tarama h\u00fccresindeki tek motif kesilir, katalogdaki karolaj aral\u0131\u011f\u0131yla dizilir.",
+   "note": "SLD bu SVG'yi GraphicFill (tarama) olarak kullanır; katalog tarama hücresindeki tek motif kesilir, katalogdaki karolaj aralığıyla dizilir.",
    "hatch": [
     "EkolojikOnemeSahipAlan.svg"
    ],
@@ -217,14 +217,14 @@
   },
   "dogal_karakteri_korunacak": {
    "page": 95,
-   "title": "DO\u011eAL KARAKTER\u0130 KORUNACAK ALAN",
+   "title": "DOĞAL KARAKTERİ KORUNACAK ALAN",
    "cell": "TARAMA",
    "part": [
     1,
     1
    ],
    "use": "hatch",
-   "note": "SLD bu SVG'yi GraphicFill (tarama) olarak kullan\u0131r; katalog tarama h\u00fccresindeki tek motif kesilir, katalogdaki karolaj aral\u0131\u011f\u0131yla dizilir.",
+   "note": "SLD bu SVG'yi GraphicFill (tarama) olarak kullanır; katalog tarama hücresindeki tek motif kesilir, katalogdaki karolaj aralığıyla dizilir.",
    "hatch": [
     "DogalKarakteriKorunacakAlan.svg"
    ],
@@ -232,28 +232,28 @@
   },
   "saglik_odakli_tatil_koyu": {
    "page": 74,
-   "title": "SA\u011eLIK ODAKLI TAT\u0130L K\u00d6Y\u00dc",
+   "title": "SAĞLIK ODAKLI TATİL KÖYÜ",
    "svg": [
     "SaglikTurizmi.svg"
    ]
   },
   "gunubirlik_tesis": {
    "page": 76,
-   "title": "G\u00dcN\u00dcB\u0130RL\u0130K TES\u0130S ALANI",
+   "title": "GÜNÜBİRLİK TESİS ALANI",
    "svg": [
     "GunubirlikTurizm.svg"
    ]
   },
   "kis_sporlari_kayak": {
    "page": 76,
-   "title": "KI\u015e SPORLARI VE KAYAK TES\u0130S\u0130 ALANI",
+   "title": "KIŞ SPORLARI VE KAYAK TESİSİ ALANI",
    "svg": [
     "KisTurizmi.svg"
    ]
   },
   "kongre_sergi_merkezi": {
    "page": 128,
-   "title": "KONGRE VE SERG\u0130 MERKEZ\u0130 ALANI",
+   "title": "KONGRE VE SERGİ MERKEZİ ALANI",
    "glyphs": [
     "uygulama_imar_07_2#?"
    ]
@@ -267,62 +267,62 @@
   },
   "yuksekogretim_tesis_alani": {
    "page": 120,
-   "title": "Y\u00dcKSEK \u00d6\u011eRET\u0130M ALANI",
+   "title": "YÜKSEK ÖĞRETİM ALANI",
    "glyphs": [
     "Intelli Eplan#O"
    ]
   },
   "ozel_kulturel_tesis": {
    "page": "sentez",
-   "title": "\u00d6ZEL K\u00dcLT\u00dcREL TES\u0130S ALANI (sentez: s.124 sembol\u00fc + s.125 '\u00d6' kural\u0131)",
+   "title": "ÖZEL KÜLTÜREL TESİS ALANI (sentez: s.124 sembolü + s.125 'Ö' kuralı)",
    "glyphs": [
     "Intelli Eplan#D"
    ]
   },
   "ozel_sosyal_tesis": {
    "page": "sentez",
-   "title": "\u00d6ZEL SOSYAL TES\u0130S ALANI (sentez: s.124 sembol\u00fc + s.125 '\u00d6' kural\u0131)",
+   "title": "ÖZEL SOSYAL TESİS ALANI (sentez: s.124 sembolü + s.125 'Ö' kuralı)",
    "glyphs": [
     "Intelli Eplan#E"
    ]
   },
   "ozel_acik_spor_tesis": {
    "page": "sentez",
-   "title": "\u00d6ZEL A\u00c7IK SPOR TES\u0130S\u0130 ALANI (sentez: s.126 sembol\u00fc + s.125 '\u00d6' kural\u0131)",
+   "title": "ÖZEL AÇIK SPOR TESİSİ ALANI (sentez: s.126 sembolü + s.125 'Ö' kuralı)",
    "glyphs": [
     "Intelli Eplan#C"
    ]
   },
   "ozel_kapali_spor_tesis": {
    "page": "sentez",
-   "title": "\u00d6ZEL KAPALI SPOR TES\u0130S\u0130 ALAN (sentez: s.127 sembol\u00fc + s.125 '\u00d6' kural\u0131)",
+   "title": "ÖZEL KAPALI SPOR TESİSİ ALAN (sentez: s.127 sembolü + s.125 'Ö' kuralı)",
    "glyphs": [
     "Intelli Eplan#B"
    ]
   },
   "ozel_sosyal_kulturel_tesis": {
    "page": "sentez",
-   "title": "\u00d6ZEL SOSYAL K\u00dcLT\u00dcREL TES\u0130S ALANI (sentez: MUIPE_10_2 'V' = 'STK' + s.125 '\u00d6' kural\u0131)",
+   "title": "ÖZEL SOSYAL KÜLTÜREL TESİS ALANI (sentez: MUIPE_10_2 'V' = 'STK' + s.125 'Ö' kuralı)",
    "glyphs": [
     "Intelli Eplan#V"
    ]
   },
   "yayla_turizmi": {
    "page": "sentez",
-   "title": "YAYLA TUR\u0130ZM\u0130",
+   "title": "YAYLA TURİZMİ",
    "svg": [
     "YaylaTurizmi.svg"
    ]
   }
  },
  "levels_scale": {
-  "note": "Katalog \u00f6l\u00e7\u00fcleri paftadaki milimetredir. Harita metresi gereken sembollerde 1 mm = \u00f6l\u00e7ek/1000 m al\u0131n\u0131r.",
+  "note": "Katalog ölçüleri paftadaki milimetredir. Harita metresi gereken sembollerde 1 mm = ölçek/1000 m alınır.",
   "UIP": 1000,
   "NIP": 5000,
   "CDP": 25000
  },
  "vectors": {
-  "note": "Katalogda \u00f6l\u00e7\u00fcyle tarif edilen, SLD'de ise ar\u015fivde olmayan Intelli Eplan karakteriyle \u00e7izilen semboller. Anahtar KADEME/Tip/Kural ba\u015fl\u0131\u011f\u0131; '*' tipin t\u00fcm kurallar\u0131. M serisinde g\u00fcncel kademeden \u00f6d\u00fcn\u00e7 al\u0131nm\u0131\u015f ayn\u0131 kurala da uygulan\u0131r. AdaKenari/KORUNAN, DUZELTILEN, ONERILEN (Cephe \u00e7izgileri, s.45-46) katalo\u011fun \u00f6l\u00e7\u00fcs\u00fc yok: '\u00c7\u0130ZG\u0130 KALINLI\u011eI: Yol geni\u015fli\u011fine g\u00f6re' diyor ama bu \u00e7izgi tipinin kendi \u015femas\u0131nda bir yol geni\u015fli\u011fi alan\u0131 yok (yol geni\u015fli\u011fi kom\u015fu yol nesnesinde); sabit bir mm de\u011feri uydurmak yanl\u0131\u015f olur, d\u00fczeltilmedi.",
+  "note": "Katalogda ölçüyle tarif edilen, SLD'de ise arşivde olmayan Intelli Eplan karakteriyle çizilen semboller. Anahtar KADEME/Tip/Kural başlığı; '*' tipin tüm kuralları. M serisinde güncel kademeden ödünç alınmış aynı kurala da uygulanır. AdaKenari/KORUNAN, DUZELTILEN, ONERILEN (Cephe çizgileri, s.45-46) kataloğun ölçüsü yok: 'ÇİZGİ KALINLIĞI: Yol genişliğine göre' diyor ama bu çizgi tipinin kendi şemasında bir yol genişliği alanı yok (yol genişliği komşu yol nesnesinde); sabit bir mm değeri uydurmak yanlış olur, düzeltilmedi.",
   "UIP::AdaKenari::KADEME_HATTI": {
    "page": 44,
    "kind": "line_solid",
@@ -842,39 +842,39 @@
   }
  },
  "fills": {
-  "note": "Katalogdaki renk kutusunun dolgu rengi (PDF \u00e7iziminden okunmu\u015ftur). s.95 'Do\u011fal ve ekolojik yap\u0131s\u0131 korunacak alan' kutusu 209/255/155'tir; yan\u0131ndaki '102/153/205' yaz\u0131s\u0131 kutuyla \u00e7eli\u015fir, eklentideki renk kutuyla ayn\u0131 oldu\u011fu i\u00e7in de\u011fi\u015ftirilmez.",
-  "UIP/YapayAda/*": {
+  "note": "Katalogdaki renk kutusunun dolgu rengi (PDF çiziminden okunmuştur). s.95 'Doğal ve ekolojik yapısı korunacak alan' kutusu 209/255/155'tir; yanındaki '102/153/205' yazısı kutuyla çelişir, eklentideki renk kutuyla aynı olduğu için değiştirilmez.",
+  "UIP::YapayAda::*": {
    "page": 100,
    "rgb": "225/225/225"
   },
-  "NIP/YapayAda/*": {
+  "NIP::YapayAda::*": {
    "page": 100,
    "rgb": "225/225/225"
   },
-  "CDP/YapayAda/*": {
+  "CDP::YapayAda::*": {
    "page": 100,
    "rgb": "225/225/225"
   },
-  "CDP/KiyiYapilari/KIYI_TESIS_ALANI": {
+  "CDP::KiyiYapilari::KIYI_TESIS_ALANI": {
    "page": 107,
    "rgb": "225/225/225"
   },
-  "UIP/TopluTasimTurleriArasiDegisimAktarmaAlani/*": {
+  "UIP::TopluTasimTurleriArasiDegisimAktarmaAlani::*": {
    "page": 172,
    "rgb": "178/178/178"
   },
-  "NIP/TopluTasimaAktarimAlani/*": {
+  "NIP::TopluTasimaAktarimAlani::*": {
    "page": 172,
    "rgb": "178/178/178"
   },
-  "UIP/AtikGeriKazTesAlani/*": {
+  "UIP::AtikGeriKazTesAlani::*": {
    "page": 187,
    "rgb": "178/178/178"
   }
  },
  "hatches": {
-  "note": "SLD'de olmayan ya da QGIS'e aktar\u0131lamayan katalog taramalar\u0131; \u00f6l\u00e7\u00fcler pafta milimetresi. keep_fills: SLD'de SVG taramas\u0131 olan PolygonSymbolizer QGIS'e gri d\u00fcz dolgu olarak gelir; ilk keep_fills kadar d\u00fcz dolgu tutulur, gerisi silinir (s.90 saydam, s.95 209/255/155 zemin).",
-  "UIP/AraziKullanimiDevamEttirilerekKorunacakAlanlar/Dogal Ekolojik Korunacak Alan": {
+  "note": "SLD'de olmayan ya da QGIS'e aktarılamayan katalog taramaları; ölçüler pafta milimetresi. keep_fills: SLD'de SVG taraması olan PolygonSymbolizer QGIS'e gri düz dolgu olarak gelir; ilk keep_fills kadar düz dolgu tutulur, gerisi silinir (s.90 saydam, s.95 209/255/155 zemin).",
+  "UIP::AraziKullanimiDevamEttirilerekKorunacakAlanlar::Dogal Ekolojik Korunacak Alan": {
    "page": 95,
    "kind": "motif",
    "motif": "dogal_karakteri_korunacak",
@@ -882,7 +882,7 @@
    "size_mm": 3,
    "keep_fills": 1
   },
-  "NIP/AraziKullanimiDevamEttirilerekKorunacakAlanlar/Dogal Ekolojik Korunacak Alan": {
+  "NIP::AraziKullanimiDevamEttirilerekKorunacakAlanlar::Dogal Ekolojik Korunacak Alan": {
    "page": 95,
    "kind": "motif",
    "motif": "dogal_karakteri_korunacak",
@@ -890,7 +890,7 @@
    "size_mm": 3,
    "keep_fills": 1
   },
-  "CDP/AraziKullanimiDevamEttirilerekKorunacakAlanlar/Dogal Ekolojik Korunacak Alan": {
+  "CDP::AraziKullanimiDevamEttirilerekKorunacakAlanlar::Dogal Ekolojik Korunacak Alan": {
    "page": 95,
    "kind": "motif",
    "motif": "dogal_karakteri_korunacak",
@@ -898,7 +898,7 @@
    "size_mm": 3,
    "keep_fills": 1
   },
-  "UIP/AraziKullanimiDevamEttirilerekKorunacakAlanlar/EkolojikOnemeSahipAlan": {
+  "UIP::AraziKullanimiDevamEttirilerekKorunacakAlanlar::EkolojikOnemeSahipAlan": {
    "page": 90,
    "kind": "motif",
    "motif": "ekolojik_oneme_sahip",
@@ -906,7 +906,7 @@
    "size_mm": 3,
    "keep_fills": 0
   },
-  "NIP/AraziKullanimiDevamEttirilerekKorunacakAlanlar/EkolojikOnemeSahipAlan": {
+  "NIP::AraziKullanimiDevamEttirilerekKorunacakAlanlar::EkolojikOnemeSahipAlan": {
    "page": 90,
    "kind": "motif",
    "motif": "ekolojik_oneme_sahip",
@@ -914,7 +914,7 @@
    "size_mm": 3,
    "keep_fills": 0
   },
-  "CDP/AraziKullanimiDevamEttirilerekKorunacakAlanlar/EkolojikOnemeSahipAlan": {
+  "CDP::AraziKullanimiDevamEttirilerekKorunacakAlanlar::EkolojikOnemeSahipAlan": {
    "page": 90,
    "kind": "motif",
    "motif": "ekolojik_oneme_sahip",
@@ -922,14 +922,14 @@
    "size_mm": 3,
    "keep_fills": 0
   },
-  "UIP/AtikGeriKazTesAlani/*": {
+  "UIP::AtikGeriKazTesAlani::*": {
    "page": 187,
    "kind": "dots",
    "spacing_mm": 7,
    "dot_mm": 0.4,
    "color": "0/0/0"
   },
-  "CDP/AcikYesilAlan/FuarPanayirFestival": {
+  "CDP::AcikYesilAlan::FuarPanayirFestival": {
    "page": 138,
    "kind": "random_dots",
    "fill": "36/156/34",
@@ -937,19 +937,19 @@
    "dot_mm": 0.3,
    "color": "0/0/0"
   },
-  "NIP/AfetTehlikeliAlanlar/TASKINA_MARUZ_ALAN": {
+  "NIP::AfetTehlikeliAlanlar::TASKINA_MARUZ_ALAN": {
    "page": 145,
    "kind": "copy",
    "from": "UIP/AfetTehlikeliAlanlar/TASKINA_MARUZ_ALAN",
-   "note": "Katalog U\u0130P ve N\u0130P i\u00e7in ayn\u0131 taramay\u0131 tan\u0131mlar; N\u0130P SLD'si yaln\u0131z saydam dolgu verir."
+   "note": "Katalog UİP ve NİP için aynı taramayı tanımlar; NİP SLD'si yalnız saydam dolgu verir."
   },
-  "UIP/EnerjiDagitimDepolama/YED": {
+  "UIP::EnerjiDagitimDepolama::YED": {
    "page": 174,
    "kind": "copy",
    "from": "UIP/EnerjiUretim/YED",
-   "note": "Ayn\u0131 YED katalog g\u00f6sterimi Enerji \u00dcretim katman\u0131nda do\u011fru, Da\u011f\u0131t\u0131m/Depolama SLD'sinde ise siyah dolguya d\u00f6n\u00fc\u015f\u00fcyor."
+   "note": "Aynı YED katalog gösterimi Enerji Üretim katmanında doğru, Dağıtım/Depolama SLD'sinde ise siyah dolguya dönüşüyor."
   },
-  "UIP/SitAlanlari/KENTSEL_ARKEOLOJIK_SIT": {
+  "UIP::SitAlanlari::KENTSEL_ARKEOLOJIK_SIT": {
    "page": 83,
    "kind": "double_lines",
    "color": "255/0/0",
@@ -958,7 +958,7 @@
    "spacing_mm": 3,
    "angle_deg": 0
   },
-  "NIP/SitAlanlari/KENTSEL_ARKEOLOJIK_SIT": {
+  "NIP::SitAlanlari::KENTSEL_ARKEOLOJIK_SIT": {
    "page": 83,
    "kind": "double_lines",
    "color": "255/0/0",
@@ -967,7 +967,7 @@
    "spacing_mm": 3,
    "angle_deg": 0
   },
-  "CDP/SitAlanlari/KENTSEL_ARKEOLOJIK_SIT": {
+  "CDP::SitAlanlari::KENTSEL_ARKEOLOJIK_SIT": {
    "page": 83,
    "kind": "double_lines",
    "color": "255/0/0",
@@ -976,17 +976,17 @@
    "spacing_mm": 3,
    "angle_deg": 0
   },
-  "UIP/Durak/HAVAI_HAT_ISTASYONU": {
+  "UIP::Durak::HAVAI_HAT_ISTASYONU": {
    "page": 171,
    "kind": "tile",
    "tile": "havai_hat_istasyonu_tarama"
   }
  },
  "tiles": {
-  "note": "Katalogun \u00f6l\u00e7\u00fcyle tarif etti\u011fi ve QGIS desen dolgusuyla k\u0131rp\u0131lamayan taramalar i\u00e7in \u00fcretilen kesintisiz karolar. E\u011fik \u00e7izgi y\u00f6n\u00fc katalog \u00e7izimindeki g\u00f6r\u00fcn\u00fc\u015fe g\u00f6re al\u0131nm\u0131\u015ft\u0131r ('330 derece' yaz\u0131s\u0131n\u0131n hangi eksene g\u00f6re \u00f6l\u00e7\u00fcld\u00fc\u011f\u00fc katalogda belirtilmez).",
+  "note": "Katalogun ölçüyle tarif ettiği ve QGIS desen dolgusuyla kırpılamayan taramalar için üretilen kesintisiz karolar. Eğik çizgi yönü katalog çizimindeki görünüşe göre alınmıştır ('330 derece' yazısının hangi eksene göre ölçüldüğü katalogda belirtilmez).",
   "havai_hat_istasyonu_tarama": {
    "page": 171,
-   "title": "HAVA\u0130 HAT \u0130STASYONU",
+   "title": "HAVAİ HAT İSTASYONU",
    "period_mm": 5,
    "band_mm": 2,
    "line_spacing_mm": 1,
@@ -995,16 +995,16 @@
   }
  },
  "labels": {
-  "note": "Katalogun yaz\u0131yla g\u00f6sterdi\u011fi \u00f6l\u00e7\u00fcler.",
-  "UIP/YayaYolu/*": {
+  "note": "Katalogun yazıyla gösterdiği ölçüler.",
+  "UIP::YayaYolu::*": {
    "page": 155,
    "kind": "road_width",
    "field": "Genislik",
-   "note": "Yaya yolu geni\u015fli\u011fi, ta\u015f\u0131t yolundaki gibi aks ortas\u0131nda daire i\u00e7inde yaz\u0131l\u0131r."
+   "note": "Yaya yolu genişliği, taşıt yolundaki gibi aks ortasında daire içinde yazılır."
   }
  },
  "borders": {
-  "note": "Katalogun \u00f6l\u00e7\u00fcyle tan\u0131mlad\u0131\u011f\u0131 s\u0131n\u0131r \u00e7izgileri. SLD'den gelen i\u015faret \u00e7izgileri kald\u0131r\u0131l\u0131p yerine katalog \u00e7izgisi konur. \u0130dari S\u0131n\u0131rlar (s.12-15): SLD'nin GraphicStroke/glyph denemesi yerine katalogun \u00e7izgi+nokta/\u00e7entik tarifi. Nokta \u00f6be\u011fi aral\u0131\u011f\u0131 yaln\u0131z Belediye/M\u00fccavir Alan/Mahalle S\u0131n\u0131r\u0131 metninde 'aral\u0131' ile verilir (1 mm); \u0130l\u00e7e/K\u00f6y'de verilmeyip katalog \u00e7iziminde noktalar biti\u015fik g\u00f6r\u00fcnd\u00fc\u011f\u00fcnden 0 al\u0131n\u0131r.",
+  "note": "Katalogun ölçüyle tanımladığı sınır çizgileri. SLD'den gelen işaret çizgileri kaldırılıp yerine katalog çizgisi konur. İdari Sınırlar (s.12-15): SLD'nin GraphicStroke/glyph denemesi yerine katalogun çizgi+nokta/çentik tarifi. Nokta öbeği aralığı yalnız Belediye/Mücavir Alan/Mahalle Sınırı metninde 'aralı' ile verilir (1 mm); İlçe/Köy'de verilmeyip katalog çiziminde noktalar bitişik göründüğünden 0 alınır.",
   "UIP::AskeriYasakBolge::*": {
    "page": 24,
    "kind": "cross",
@@ -1323,7 +1323,7 @@
    "circle_mm": 4,
    "gap_mm": 2.5,
    "alternate": true,
-   "note": "Katalog s.19 k\u00fc\u00e7\u00fck g\u00f6sterim kutusunda mavi renk kutusu g\u00f6r\u00fcnm\u00fcyor; s.16-20 ayn\u0131 'Planlama S\u0131n\u0131rlar\u0131' ailesindeki t\u00fcm karde\u015fleri 0/92/230 kulland\u0131\u011f\u0131 i\u00e7in o renk al\u0131nd\u0131, son kontrol Yusuf'ta."
+   "note": "Katalog s.19 küçük gösterim kutusunda mavi renk kutusu görünmüyor; s.16-20 aynı 'Planlama Sınırları' ailesindeki tüm kardeşleri 0/92/230 kullandığı için o renk alındı, son kontrol Yusuf'ta."
   },
   "UIP::OzelProjeAlanSiniri::*": {
    "page": 20,
@@ -1352,7 +1352,7 @@
    "dash_mm": 2.5,
    "filled": true
   },
-  "_note_disli": "Di\u015fli ailesi (s.21-23): di\u015f say\u0131s\u0131 (10) ve di\u015f derinli\u011fi katalo\u011fun \u00f6l\u00e7\u00fcyle vermedi\u011fi bir \u00e7izim ayr\u0131nt\u0131s\u0131d\u0131r; s.21'deki k\u00fc\u00e7\u00fck di\u015fli simgesinden say\u0131lm\u0131\u015f, g\u00f6vde/di\u015f s\u0131n\u0131r\u0131 i\u00e7 ve d\u0131\u015f \u00e7ap ortas\u0131 al\u0131nm\u0131\u015ft\u0131r. PNG'ler resources/katalog_sembol/disli_*.png, \u00fcretim beti\u011fi tools/build_gear_symbols.py.",
+  "_note_disli": "Dişli ailesi (s.21-23): diş sayısı (10) ve diş derinliği kataloğun ölçüyle vermediği bir çizim ayrıntısıdır; s.21'deki küçük dişli simgesinden sayılmış, gövde/diş sınırı iç ve dış çap ortası alınmıştır. PNG'ler resources/katalog_sembol/disli_*.png, üretim betiği tools/build_gear_symbols.py.",
   "UIP::IlanEdilenClsmaAlan::TEKNOLOJI_GELISTIRME_BOLGESI": {
    "page": 21,
    "kind": "gears",
@@ -1725,7 +1725,7 @@
    "dash_mm": 5,
    "alternate": true
   },
-  "_note_metin": "AYB (s.24) ve Riskli Alan/Rezerv Yap\u0131 Alan\u0131/Yenileme Alan\u0131 S\u0131n\u0131r\u0131 (s.29-30) katalo\u011fu ayr\u0131ca 's\u0131n\u0131r \u00fczerine AYB/RA/RYA/YEN\u0130LEME yaz\u0131lacak' diyor: PerimeterCurved + repeatDistance ile \u00e7izgi boyunca tekrarlanan yaz\u0131 olarak core/mpyy_workspace.py:_apply_border_text_labels'te uyguland\u0131. Aral\u0131k katalo\u011fun \u00f6l\u00e7medi\u011fi bir de\u011fer (BORDER_TEXT_REPEAT_MM = 40 mm).",
+  "_note_metin": "AYB (s.24) ve Riskli Alan/Rezerv Yapı Alanı/Yenileme Alanı Sınırı (s.29-30) kataloğu ayrıca 'sınır üzerine AYB/RA/RYA/YENİLEME yazılacak' diyor: PerimeterCurved + repeatDistance ile çizgi boyunca tekrarlanan yazı olarak core/mpyy_workspace.py:_apply_border_text_labels'te uygulandı. Aralık kataloğun ölçmediği bir değer (BORDER_TEXT_REPEAT_MM = 40 mm).",
   "NIP::KentselDonusumSinirlari::RISKLI_ALAN_SINIRI": {
    "page": 29,
    "kind": "dashed",
@@ -1751,7 +1751,7 @@
    "width_mm": 0.5,
    "dash_mm": 5,
    "gap_mm": 1,
-   "text": "YEN\u0130LEME"
+   "text": "YENİLEME"
   },
   "NIP::StatusuOzelKanunlarlaBelirlenenAlanlar::*": {
    "page": 30,
@@ -1799,7 +1799,7 @@
    "gap_mm": 2,
    "dot_mm": 0.8,
    "dot_count": 1,
-   "note": "Nokta \u00e7ap\u0131 katalogda verilmiyor ('kesik \u00e7izgi aras\u0131 nokta'); okunakl\u0131 bir k\u00fc\u00e7\u00fck de\u011fer (0.8mm) al\u0131nd\u0131."
+   "note": "Nokta çapı katalogda verilmiyor ('kesik çizgi arası nokta'); okunaklı bir küçük değer (0.8mm) alındı."
   },
   "UIP::SitAlanlari::1_DERECE_DOGAL_SIT": {
    "page": 31,
@@ -2344,7 +2344,7 @@
    "width_mm": 0.3,
    "interval_mm": 7,
    "size_mm": 3,
-   "text": "\u0130SK"
+   "text": "İSK"
   },
   "UIP::KorumaKusaklari::YERALTI_SU_KORUMA_KUSAGI": {
    "page": 113,
@@ -2418,7 +2418,7 @@
    "size_mm": 3,
    "text": "YSK"
   },
-  "_note_schema_geometri": "Mania Plan\u0131 Alan\u0131 ve Havaalan\u0131 Hava Koridoru katalo\u011fu GEOMETR\u0130 T\u0130P\u0130'ni '\u00c7OKLU \u00c7\u0130ZG\u0130' yazar ama mpyy_schema.json'da ikisi de MultiPolygon; s\u0131n\u0131r \u00e7izgisi ger\u00e7ekte poligonun kenar\u0131d\u0131r, 'vectors' de\u011fil 'borders' alt\u0131nda (boundary($geometry) ile).",
+  "_note_schema_geometri": "Mania Planı Alanı ve Havaalanı Hava Koridoru kataloğu GEOMETRİ TİPİ'ni 'ÇOKLU ÇİZGİ' yazar ama mpyy_schema.json'da ikisi de MultiPolygon; sınır çizgisi gerçekte poligonun kenarıdır, 'vectors' değil 'borders' altında (boundary($geometry) ile).",
   "UIP::ManiaPlani::*": {
    "page": 109,
    "kind": "solid",
@@ -2623,7 +2623,7 @@
    "dot_mm": 2,
    "gap_mm": 4,
    "dash_mm": 0,
-   "note": "Katalo\u011fun 'X mm aral\u0131kl\u0131' ifadesi tek bo\u015fluk de\u011feri veriyor; simetrik gap_mm olarak al\u0131nd\u0131, dash_mm=0 (ba\u011flant\u0131 \u00e7izgisi yok)."
+   "note": "Kataloğun 'X mm aralıklı' ifadesi tek boşluk değeri veriyor; simetrik gap_mm olarak alındı, dash_mm=0 (bağlantı çizgisi yok)."
   },
   "NIP::SozlesmeKoruma::*": {
    "page": 85,
@@ -2637,7 +2637,7 @@
    "dot_mm": 2,
    "gap_mm": 4,
    "dash_mm": 0,
-   "note": "Katalo\u011fun 'X mm aral\u0131kl\u0131' ifadesi tek bo\u015fluk de\u011feri veriyor; simetrik gap_mm olarak al\u0131nd\u0131, dash_mm=0 (ba\u011flant\u0131 \u00e7izgisi yok)."
+   "note": "Kataloğun 'X mm aralıklı' ifadesi tek boşluk değeri veriyor; simetrik gap_mm olarak alındı, dash_mm=0 (bağlantı çizgisi yok)."
   },
   "CDP::SozlesmeKoruma::*": {
    "page": 85,
@@ -2651,7 +2651,7 @@
    "dot_mm": 1,
    "gap_mm": 4,
    "dash_mm": 0,
-   "note": "Katalo\u011fun 'X mm aral\u0131kl\u0131' ifadesi tek bo\u015fluk de\u011feri veriyor; simetrik gap_mm olarak al\u0131nd\u0131, dash_mm=0 (ba\u011flant\u0131 \u00e7izgisi yok)."
+   "note": "Kataloğun 'X mm aralıklı' ifadesi tek boşluk değeri veriyor; simetrik gap_mm olarak alındı, dash_mm=0 (bağlantı çizgisi yok)."
   },
   "UIP::OckBolge::*": {
    "page": 87,
@@ -2918,7 +2918,7 @@
    "inner_filled": true,
    "continuous": true,
    "gap_mm": 1.5,
-   "note": "Katalog '7 mm aral\u0131kla' diyor, toplam tekrar mesafesi olarak okundu (gap_mm = 7 - circle_mm)."
+   "note": "Katalog '7 mm aralıkla' diyor, toplam tekrar mesafesi olarak okundu (gap_mm = 7 - circle_mm)."
   },
   "UIP::IcmeKullanmaSuyuKoruma::MUTLAK_KORUMA_ALANI": {
    "page": 102,
@@ -2937,7 +2937,7 @@
     false
    ],
    "inner_dot_mm": 0.5,
-   "note": "\u0130\u00e7 nokta \u00e7ap\u0131 katalogda verilmiyor ('i\u00e7i noktal\u0131 daire'); okunakl\u0131 bir k\u00fc\u00e7\u00fck de\u011fer (0.5mm) al\u0131nd\u0131."
+   "note": "İç nokta çapı katalogda verilmiyor ('içi noktalı daire'); okunaklı bir küçük değer (0.5mm) alındı."
   },
   "UIP::IcmeKullanmaSuyuKoruma::KISA_MESAFELI_KORUMA_ALANI": {
    "page": 102,
@@ -2955,7 +2955,7 @@
     false
    ],
    "inner_dot_mm": 0.5,
-   "note": "\u0130\u00e7 nokta \u00e7ap\u0131 katalogda verilmiyor ('i\u00e7i noktal\u0131 daire'); okunakl\u0131 bir k\u00fc\u00e7\u00fck de\u011fer (0.5mm) al\u0131nd\u0131."
+   "note": "İç nokta çapı katalogda verilmiyor ('içi noktalı daire'); okunaklı bir küçük değer (0.5mm) alındı."
   },
   "UIP::IcmeKullanmaSuyuKoruma::ORTA_MESAFELI_KORUMA_ALANI": {
    "page": 103,
@@ -2972,7 +2972,7 @@
     false
    ],
    "inner_dot_mm": 0.5,
-   "note": "\u0130\u00e7 nokta \u00e7ap\u0131 katalogda verilmiyor ('i\u00e7i noktal\u0131 daire'); okunakl\u0131 bir k\u00fc\u00e7\u00fck de\u011fer (0.5mm) al\u0131nd\u0131."
+   "note": "İç nokta çapı katalogda verilmiyor ('içi noktalı daire'); okunaklı bir küçük değer (0.5mm) alındı."
   },
   "UIP::IcmeKullanmaSuyuKoruma::UZUN_MESAFELI_KORUMA_ALANI": {
    "page": 103,
@@ -2988,7 +2988,7 @@
     false
    ],
    "inner_dot_mm": 0.5,
-   "note": "\u0130\u00e7 nokta \u00e7ap\u0131 katalogda verilmiyor ('i\u00e7i noktal\u0131 daire'); okunakl\u0131 bir k\u00fc\u00e7\u00fck de\u011fer (0.5mm) al\u0131nd\u0131."
+   "note": "İç nokta çapı katalogda verilmiyor ('içi noktalı daire'); okunaklı bir küçük değer (0.5mm) alındı."
   },
   "NIP::IcmeKullanmaSuyuKoruma::MUTLAK_KORUMA_ALANI": {
    "page": 102,
@@ -3007,7 +3007,7 @@
     false
    ],
    "inner_dot_mm": 0.5,
-   "note": "\u0130\u00e7 nokta \u00e7ap\u0131 katalogda verilmiyor ('i\u00e7i noktal\u0131 daire'); okunakl\u0131 bir k\u00fc\u00e7\u00fck de\u011fer (0.5mm) al\u0131nd\u0131."
+   "note": "İç nokta çapı katalogda verilmiyor ('içi noktalı daire'); okunaklı bir küçük değer (0.5mm) alındı."
   },
   "NIP::IcmeKullanmaSuyuKoruma::KISA_MESAFELI_KORUMA_ALANI": {
    "page": 102,
@@ -3025,7 +3025,7 @@
     false
    ],
    "inner_dot_mm": 0.5,
-   "note": "\u0130\u00e7 nokta \u00e7ap\u0131 katalogda verilmiyor ('i\u00e7i noktal\u0131 daire'); okunakl\u0131 bir k\u00fc\u00e7\u00fck de\u011fer (0.5mm) al\u0131nd\u0131."
+   "note": "İç nokta çapı katalogda verilmiyor ('içi noktalı daire'); okunaklı bir küçük değer (0.5mm) alındı."
   },
   "NIP::IcmeKullanmaSuyuKoruma::ORTA_MESAFELI_KORUMA_ALANI": {
    "page": 103,
@@ -3042,7 +3042,7 @@
     false
    ],
    "inner_dot_mm": 0.5,
-   "note": "\u0130\u00e7 nokta \u00e7ap\u0131 katalogda verilmiyor ('i\u00e7i noktal\u0131 daire'); okunakl\u0131 bir k\u00fc\u00e7\u00fck de\u011fer (0.5mm) al\u0131nd\u0131."
+   "note": "İç nokta çapı katalogda verilmiyor ('içi noktalı daire'); okunaklı bir küçük değer (0.5mm) alındı."
   },
   "NIP::IcmeKullanmaSuyuKoruma::UZUN_MESAFELI_KORUMA_ALANI": {
    "page": 103,
@@ -3058,7 +3058,7 @@
     false
    ],
    "inner_dot_mm": 0.5,
-   "note": "\u0130\u00e7 nokta \u00e7ap\u0131 katalogda verilmiyor ('i\u00e7i noktal\u0131 daire'); okunakl\u0131 bir k\u00fc\u00e7\u00fck de\u011fer (0.5mm) al\u0131nd\u0131."
+   "note": "İç nokta çapı katalogda verilmiyor ('içi noktalı daire'); okunaklı bir küçük değer (0.5mm) alındı."
   },
   "CDP::IcmeKullanmaSuyuKoruma::MUTLAK_KORUMA_ALANI": {
    "page": 102,
@@ -3077,7 +3077,7 @@
     false
    ],
    "inner_dot_mm": 0.5,
-   "note": "\u0130\u00e7 nokta \u00e7ap\u0131 katalogda verilmiyor ('i\u00e7i noktal\u0131 daire'); okunakl\u0131 bir k\u00fc\u00e7\u00fck de\u011fer (0.5mm) al\u0131nd\u0131."
+   "note": "İç nokta çapı katalogda verilmiyor ('içi noktalı daire'); okunaklı bir küçük değer (0.5mm) alındı."
   },
   "CDP::IcmeKullanmaSuyuKoruma::KISA_MESAFELI_KORUMA_ALANI": {
    "page": 102,
@@ -3095,7 +3095,7 @@
     false
    ],
    "inner_dot_mm": 0.5,
-   "note": "\u0130\u00e7 nokta \u00e7ap\u0131 katalogda verilmiyor ('i\u00e7i noktal\u0131 daire'); okunakl\u0131 bir k\u00fc\u00e7\u00fck de\u011fer (0.5mm) al\u0131nd\u0131."
+   "note": "İç nokta çapı katalogda verilmiyor ('içi noktalı daire'); okunaklı bir küçük değer (0.5mm) alındı."
   },
   "CDP::IcmeKullanmaSuyuKoruma::ORTA_MESAFELI_KORUMA_ALANI": {
    "page": 103,
@@ -3112,7 +3112,7 @@
     false
    ],
    "inner_dot_mm": 0.5,
-   "note": "\u0130\u00e7 nokta \u00e7ap\u0131 katalogda verilmiyor ('i\u00e7i noktal\u0131 daire'); okunakl\u0131 bir k\u00fc\u00e7\u00fck de\u011fer (0.5mm) al\u0131nd\u0131."
+   "note": "İç nokta çapı katalogda verilmiyor ('içi noktalı daire'); okunaklı bir küçük değer (0.5mm) alındı."
   },
   "CDP::IcmeKullanmaSuyuKoruma::UZUN_MESAFELI_KORUMA_ALANI": {
    "page": 103,
@@ -3128,7 +3128,7 @@
     false
    ],
    "inner_dot_mm": 0.5,
-   "note": "\u0130\u00e7 nokta \u00e7ap\u0131 katalogda verilmiyor ('i\u00e7i noktal\u0131 daire'); okunakl\u0131 bir k\u00fc\u00e7\u00fck de\u011fer (0.5mm) al\u0131nd\u0131."
+   "note": "İç nokta çapı katalogda verilmiyor ('içi noktalı daire'); okunaklı bir küçük değer (0.5mm) alındı."
   },
   "UIP::SulakAlan::SULAK_ALAN_SINIRI": {
    "page": 104,
@@ -3141,7 +3141,7 @@
    "dot_mm": 1,
    "dot_count": 2,
    "dot_spacing_mm": 0,
-   "note": "Katalog 'dalgal\u0131 \u00e7izgi' diyor; burada d\u00fcz kesik \u00e7izgi ile yakla\u015f\u0131kland\u0131 (QGIS temel sembol katmanlar\u0131nda dalga deseni yok). Tampon B\u00f6lgesi'nin \u00e7ift paralel \u00e7izgisi de tek \u00e7izgiye indirgendi."
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
   },
   "UIP::SulakAlan::SULAK_ALAN_BOLGESI": {
    "page": 104,
@@ -3154,7 +3154,7 @@
    "dot_mm": 1,
    "dot_count": 2,
    "dot_spacing_mm": 0,
-   "note": "Katalog 'dalgal\u0131 \u00e7izgi' diyor; burada d\u00fcz kesik \u00e7izgi ile yakla\u015f\u0131kland\u0131 (QGIS temel sembol katmanlar\u0131nda dalga deseni yok). Tampon B\u00f6lgesi'nin \u00e7ift paralel \u00e7izgisi de tek \u00e7izgiye indirgendi."
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
   },
   "UIP::SulakAlan::SULAK_ALAN_TAMPON_BOLGESI": {
    "page": 105,
@@ -3167,7 +3167,7 @@
    "dot_mm": 1,
    "dot_count": 1,
    "dot_spacing_mm": 0,
-   "note": "Katalog 'dalgal\u0131 \u00e7izgi' diyor; burada d\u00fcz kesik \u00e7izgi ile yakla\u015f\u0131kland\u0131 (QGIS temel sembol katmanlar\u0131nda dalga deseni yok). Tampon B\u00f6lgesi'nin \u00e7ift paralel \u00e7izgisi de tek \u00e7izgiye indirgendi."
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
   },
   "UIP::SulakAlan::SULAK_ALAN_EKOLOJIK_ETKILENME_BOLGESI": {
    "page": 105,
@@ -3180,7 +3180,7 @@
    "dot_mm": 1,
    "dot_count": 3,
    "dot_spacing_mm": 0,
-   "note": "Katalog 'dalgal\u0131 \u00e7izgi' diyor; burada d\u00fcz kesik \u00e7izgi ile yakla\u015f\u0131kland\u0131 (QGIS temel sembol katmanlar\u0131nda dalga deseni yok). Tampon B\u00f6lgesi'nin \u00e7ift paralel \u00e7izgisi de tek \u00e7izgiye indirgendi."
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
   },
   "UIP::SulakAlan::SULAK_ALAN_OZEL_HUKUM_BOLGESI": {
    "page": 106,
@@ -3193,7 +3193,7 @@
    "dot_mm": 1,
    "dot_count": 1,
    "dot_spacing_mm": 0,
-   "note": "Katalog 'dalgal\u0131 \u00e7izgi' diyor; burada d\u00fcz kesik \u00e7izgi ile yakla\u015f\u0131kland\u0131 (QGIS temel sembol katmanlar\u0131nda dalga deseni yok). Tampon B\u00f6lgesi'nin \u00e7ift paralel \u00e7izgisi de tek \u00e7izgiye indirgendi."
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
   },
   "UIP::SulakAlan::SULAK_ALAN_MUTLAK_KORUMA_BOLGESI": {
    "page": 106,
@@ -3206,7 +3206,7 @@
    "dot_mm": 1,
    "dot_count": 1,
    "dot_spacing_mm": 0,
-   "note": "Katalog 'dalgal\u0131 \u00e7izgi' diyor; burada d\u00fcz kesik \u00e7izgi ile yakla\u015f\u0131kland\u0131 (QGIS temel sembol katmanlar\u0131nda dalga deseni yok). Tampon B\u00f6lgesi'nin \u00e7ift paralel \u00e7izgisi de tek \u00e7izgiye indirgendi."
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
   },
   "NIP::SulakAlan::SULAK_ALAN_SINIRI": {
    "page": 104,
@@ -3219,7 +3219,7 @@
    "dot_mm": 1,
    "dot_count": 2,
    "dot_spacing_mm": 0,
-   "note": "Katalog 'dalgal\u0131 \u00e7izgi' diyor; burada d\u00fcz kesik \u00e7izgi ile yakla\u015f\u0131kland\u0131 (QGIS temel sembol katmanlar\u0131nda dalga deseni yok). Tampon B\u00f6lgesi'nin \u00e7ift paralel \u00e7izgisi de tek \u00e7izgiye indirgendi."
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
   },
   "NIP::SulakAlan::SULAK_ALAN_BOLGESI": {
    "page": 104,
@@ -3232,7 +3232,7 @@
    "dot_mm": 1,
    "dot_count": 2,
    "dot_spacing_mm": 0,
-   "note": "Katalog 'dalgal\u0131 \u00e7izgi' diyor; burada d\u00fcz kesik \u00e7izgi ile yakla\u015f\u0131kland\u0131 (QGIS temel sembol katmanlar\u0131nda dalga deseni yok). Tampon B\u00f6lgesi'nin \u00e7ift paralel \u00e7izgisi de tek \u00e7izgiye indirgendi."
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
   },
   "NIP::SulakAlan::SULAK_ALAN_TAMPON_BOLGESI": {
    "page": 105,
@@ -3245,7 +3245,7 @@
    "dot_mm": 1,
    "dot_count": 1,
    "dot_spacing_mm": 0,
-   "note": "Katalog 'dalgal\u0131 \u00e7izgi' diyor; burada d\u00fcz kesik \u00e7izgi ile yakla\u015f\u0131kland\u0131 (QGIS temel sembol katmanlar\u0131nda dalga deseni yok). Tampon B\u00f6lgesi'nin \u00e7ift paralel \u00e7izgisi de tek \u00e7izgiye indirgendi."
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
   },
   "NIP::SulakAlan::SULAK_ALAN_EKOLOJIK_ETKILENME_BOLGESI": {
    "page": 105,
@@ -3258,7 +3258,7 @@
    "dot_mm": 1,
    "dot_count": 3,
    "dot_spacing_mm": 0,
-   "note": "Katalog 'dalgal\u0131 \u00e7izgi' diyor; burada d\u00fcz kesik \u00e7izgi ile yakla\u015f\u0131kland\u0131 (QGIS temel sembol katmanlar\u0131nda dalga deseni yok). Tampon B\u00f6lgesi'nin \u00e7ift paralel \u00e7izgisi de tek \u00e7izgiye indirgendi."
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
   },
   "NIP::SulakAlan::SULAK_ALAN_OZEL_HUKUM_BOLGESI": {
    "page": 106,
@@ -3271,7 +3271,7 @@
    "dot_mm": 1,
    "dot_count": 1,
    "dot_spacing_mm": 0,
-   "note": "Katalog 'dalgal\u0131 \u00e7izgi' diyor; burada d\u00fcz kesik \u00e7izgi ile yakla\u015f\u0131kland\u0131 (QGIS temel sembol katmanlar\u0131nda dalga deseni yok). Tampon B\u00f6lgesi'nin \u00e7ift paralel \u00e7izgisi de tek \u00e7izgiye indirgendi."
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
   },
   "NIP::SulakAlan::SULAK_ALAN_MUTLAK_KORUMA_BOLGESI": {
    "page": 106,
@@ -3284,7 +3284,7 @@
    "dot_mm": 1,
    "dot_count": 1,
    "dot_spacing_mm": 0,
-   "note": "Katalog 'dalgal\u0131 \u00e7izgi' diyor; burada d\u00fcz kesik \u00e7izgi ile yakla\u015f\u0131kland\u0131 (QGIS temel sembol katmanlar\u0131nda dalga deseni yok). Tampon B\u00f6lgesi'nin \u00e7ift paralel \u00e7izgisi de tek \u00e7izgiye indirgendi."
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
   },
   "CDP::SulakAlan::SULAK_ALAN_SINIRI": {
    "page": 104,
@@ -3297,7 +3297,7 @@
    "dot_mm": 1,
    "dot_count": 2,
    "dot_spacing_mm": 0,
-   "note": "Katalog 'dalgal\u0131 \u00e7izgi' diyor; burada d\u00fcz kesik \u00e7izgi ile yakla\u015f\u0131kland\u0131 (QGIS temel sembol katmanlar\u0131nda dalga deseni yok). Tampon B\u00f6lgesi'nin \u00e7ift paralel \u00e7izgisi de tek \u00e7izgiye indirgendi."
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
   },
   "CDP::SulakAlan::SULAK_ALAN_BOLGESI": {
    "page": 104,
@@ -3310,7 +3310,7 @@
    "dot_mm": 1,
    "dot_count": 2,
    "dot_spacing_mm": 0,
-   "note": "Katalog 'dalgal\u0131 \u00e7izgi' diyor; burada d\u00fcz kesik \u00e7izgi ile yakla\u015f\u0131kland\u0131 (QGIS temel sembol katmanlar\u0131nda dalga deseni yok). Tampon B\u00f6lgesi'nin \u00e7ift paralel \u00e7izgisi de tek \u00e7izgiye indirgendi."
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
   },
   "CDP::SulakAlan::SULAK_ALAN_TAMPON_BOLGESI": {
    "page": 105,
@@ -3323,7 +3323,7 @@
    "dot_mm": 1,
    "dot_count": 1,
    "dot_spacing_mm": 0,
-   "note": "Katalog 'dalgal\u0131 \u00e7izgi' diyor; burada d\u00fcz kesik \u00e7izgi ile yakla\u015f\u0131kland\u0131 (QGIS temel sembol katmanlar\u0131nda dalga deseni yok). Tampon B\u00f6lgesi'nin \u00e7ift paralel \u00e7izgisi de tek \u00e7izgiye indirgendi."
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
   },
   "CDP::SulakAlan::SULAK_ALAN_EKOLOJIK_ETKILENME_BOLGESI": {
    "page": 105,
@@ -3336,7 +3336,7 @@
    "dot_mm": 1,
    "dot_count": 3,
    "dot_spacing_mm": 0,
-   "note": "Katalog 'dalgal\u0131 \u00e7izgi' diyor; burada d\u00fcz kesik \u00e7izgi ile yakla\u015f\u0131kland\u0131 (QGIS temel sembol katmanlar\u0131nda dalga deseni yok). Tampon B\u00f6lgesi'nin \u00e7ift paralel \u00e7izgisi de tek \u00e7izgiye indirgendi."
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
   },
   "CDP::SulakAlan::SULAK_ALAN_OZEL_HUKUM_BOLGESI": {
    "page": 106,
@@ -3349,7 +3349,7 @@
    "dot_mm": 1,
    "dot_count": 1,
    "dot_spacing_mm": 0,
-   "note": "Katalog 'dalgal\u0131 \u00e7izgi' diyor; burada d\u00fcz kesik \u00e7izgi ile yakla\u015f\u0131kland\u0131 (QGIS temel sembol katmanlar\u0131nda dalga deseni yok). Tampon B\u00f6lgesi'nin \u00e7ift paralel \u00e7izgisi de tek \u00e7izgiye indirgendi."
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
   },
   "CDP::SulakAlan::SULAK_ALAN_MUTLAK_KORUMA_BOLGESI": {
    "page": 106,
@@ -3362,7 +3362,7 @@
    "dot_mm": 1,
    "dot_count": 3,
    "dot_spacing_mm": 0,
-   "note": "Katalog 'dalgal\u0131 \u00e7izgi' diyor; burada d\u00fcz kesik \u00e7izgi ile yakla\u015f\u0131kland\u0131 (QGIS temel sembol katmanlar\u0131nda dalga deseni yok). Tampon B\u00f6lgesi'nin \u00e7ift paralel \u00e7izgisi de tek \u00e7izgiye indirgendi."
+   "note": "Katalog 'dalgalı çizgi' diyor; burada düz kesik çizgi ile yaklaşıklandı (QGIS temel sembol katmanlarında dalga deseni yok). Tampon Bölgesi'nin çift paralel çizgisi de tek çizgiye indirgendi."
   },
   "UIP::TunelEtkiAlani::UIP_TUNEL_ETKI_ALANI": {
    "kind": "cross",

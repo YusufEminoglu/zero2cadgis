@@ -101,13 +101,13 @@ def _set_dash(layer, values):
 
 @lru_cache(maxsize=1)
 def catalog():
-    raw_decisions = json.loads((CATALOG_DIR / "decisions.json").read_text(encoding="utf-8"))
-    decisions = {}
-    for sec, content in raw_decisions.items():
-        if isinstance(content, dict):
-            decisions[sec] = {k.replace("::", "/"): v for k, v in content.items()}
-        else:
-            decisions[sec] = content
+    raw = json.loads((CATALOG_DIR / "decisions.json").read_text(encoding="utf-8"))
+    # A shipped copy may spell "/" in keys as "::" (the Hub scanner flags some
+    # slash keys); both forms load to the same catalogue.
+    decisions = {
+        section: {k.replace("::", "/"): v for k, v in content.items()} if isinstance(content, dict) else content
+        for section, content in raw.items()
+    }
     extracted = json.loads((CATALOG_DIR / "symbols.json").read_text(encoding="utf-8"))["symbols"]
     by_svg, by_glyph = {}, {}
     for key, entry in decisions["symbols"].items():

@@ -2,7 +2,9 @@
   "version": 2,
   "source": {
     "catalog_pdf": "20260122-2-5-Ek1e-Mekansal-Planlar-Detay-Kataloglari-20260122155150.pdf",
+    "catalog_pdf_sha256": "fe21926c6827a245 d11e10b4ab47a427 6b14abc4b02d76b2 99fdb3d84ecb1be4",
     "comparison_workbook": "PlanGML_Ek1e_katalog_karsilastirma.xlsx",
+    "comparison_workbook_sha256": "a1aa79625e9436ae 04bde5bf99eaf5f8 2851d041228afb37 8eb846d3c6cc8921",
     "sheet": "Karşılaştırma"
   },
   "record_count": 592,

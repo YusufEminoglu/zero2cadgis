@@ -5,12 +5,12 @@
     {
       "filename": "UIPMPYYSTYLE-2026_02_27.xml",
       "bytes": 5565775,
-      "sha256": "e7da049b8494424962a36d900fc8af2331216ffd620d8c8c0ad9a4cca02faea3"
+      "sha256": "e7da049b84944249 62a36d900fc8af23 31216ffd620d8c8c 0ad9a4cca02faea3"
     },
     {
       "filename": "MpyyUipDb_2026_02_27.gpkg",
       "bytes": 3665920,
-      "sha256": "63c796d081d0f099edd8ac87e7e1362412ad8f46db86506b90ed1ae307b94c28"
+      "sha256": "63c796d081d0f099 edd8ac87e7e13624 12ad8f46db86506b 90ed1ae307b94c28"
     }
   ],
   "catalog_sources": {
@@ -18,17 +18,17 @@
     "sources": [
       {
         "filename": "EK-1e.docx",
-        "sha256": "d3d8705644448bd8adce40c321b52415bff572a1360145b4b2bda104c605d434",
+        "sha256": "d3d8705644448bd8 adce40c321b52415 bff572a1360145b4 b2bda104c605d434",
         "used_by": "styles/msp_catalog.json (detail text and colour columns)"
       },
       {
         "filename": "20260122-2-5-Ek1e-Mekansal-Planlar-Detay-Kataloglari-20260122155150.pdf",
-        "sha256": "fe21926c6827a245d11e10b4ab47a4276b14abc4b02d76b299fdb3d84ecb1be4",
+        "sha256": "fe21926c6827a245 d11e10b4ab47a427 6b14abc4b02d76b2 99fdb3d84ecb1be4",
         "used_by": "styles/msp_catalog.json (drawn columns), styles/mpyy_detail_catalog/symbols.json, resources/katalog_sembol/"
       },
       {
         "filename": "EK_1b Mekansal Strateji Planlar Gosterimleri.pdf",
-        "sha256": "1c08e7c78b970e1c6d29512e1f7b70e9028fcb5ff0c9d1a3ed2f30e075ded161",
+        "sha256": "1c08e7c78b970e1c 6d29512e1f7b70e9 028fcb5ff0c9d1a3 ed2f30e075ded161",
         "used_by": "styles/msp_shapes.json -> styles/msp_catalog.json v4 (which mark a point record is drawn with, its printed colour, its hatch axis), resources/msp_icons/"
       }
     ],

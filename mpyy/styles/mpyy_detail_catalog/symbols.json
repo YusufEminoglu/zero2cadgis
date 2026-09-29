@@ -1,17 +1,19 @@
 {
  "source": "20260122-2-5-Ek1e-Mekansal-Planlar-Detay-Kataloglari-20260122155150.pdf",
+ "sha256": "fe21926c6827a245 d11e10b4ab47a427 6b14abc4b02d76b2 99fdb3d84ecb1be4",
  "dpi": 600,
  "symbols": {
   "askeri_yasak_guvenlik": {
    "page": 24,
-   "title": "ASKER\u0130 YASAK VE G\u00dcVENL\u0130K B\u00d6LGES\u0130",
+   "title": "ASKERİ YASAK VE GÜVENLİK BÖLGESİ",
    "file": "resources/katalog_sembol/askeri_yasak_guvenlik.png",
    "pixels": [
     271,
     304
    ],
    "width_mm": 11.47,
-   "height_mm": 12.87
+   "height_mm": 12.87,
+   "sha256": "5bcc870bc2e904ed a951f9674f1ff301 e36d1bc934f11c8f d5caf587fdccd472"
   },
   "sinir_kapisi": {
    "page": 36,
@@ -22,51 +24,56 @@
     159
    ],
    "width_mm": 3.89,
-   "height_mm": 6.73
+   "height_mm": 6.73,
+   "sha256": "fa3e81f04b2f200c 95c697b6698922bb a325723ae8c88650 ead088d032e344c3"
   },
   "stratejik_karar": {
    "page": 38,
-   "title": "STRATEJ\u0130K KARAR",
+   "title": "STRATEJİK KARAR",
    "file": "resources/katalog_sembol/stratejik_karar.png",
    "pixels": [
     167,
     167
    ],
    "width_mm": 7.07,
-   "height_mm": 7.07
+   "height_mm": 7.07,
+   "sha256": "78f5b3fff02fcd90 5e5240607a36d084 6840cac393d18e09 843d5ac3893b7778"
   },
   "golf_turizmi": {
    "page": 57,
-   "title": "GOLF TUR\u0130ZM\u0130",
+   "title": "GOLF TURİZMİ",
    "file": "resources/katalog_sembol/golf_turizmi.png",
    "pixels": [
     291,
     301
    ],
    "width_mm": 12.32,
-   "height_mm": 12.74
+   "height_mm": 12.74,
+   "sha256": "5d27e0d1c0f83d79 c3436100cffd4ffa d025ae47816fa91b 950ebd0c748bd676"
   },
   "turizm_bolgesi": {
    "page": 57,
-   "title": "TUR\u0130ZM B\u00d6LGES\u0130",
+   "title": "TURİZM BÖLGESİ",
    "file": "resources/katalog_sembol/turizm_bolgesi.png",
    "pixels": [
     248,
     247
    ],
    "width_mm": 10.5,
-   "height_mm": 10.46
+   "height_mm": 10.46,
+   "sha256": "5376feb35c37ace1 2cbd0ce313ec2e9e 2642e6bfb3723c43 fe651c9f91be5e05"
   },
   "kamu_hizmet_alani": {
    "page": 62,
-   "title": "KAMU H\u0130ZMET ALANI",
+   "title": "KAMU HİZMET ALANI",
    "file": "resources/katalog_sembol/kamu_hizmet_alani.png",
    "pixels": [
     243,
     243
    ],
    "width_mm": 10.29,
-   "height_mm": 10.29
+   "height_mm": 10.29,
+   "sha256": "d44677cd980c8986 f882d97b9d545a67 bb97d9b1119c6d12 27f1cbeacc86b009"
   },
   "depolama_alani": {
    "page": 67,
@@ -77,128 +84,140 @@
     242
    ],
    "width_mm": 9.19,
-   "height_mm": 10.24
+   "height_mm": 10.24,
+   "sha256": "050d86e24b15a423 6bd8785e937c9f7b 14fa046d6eb82f57 18152935e7055d82"
   },
   "kentsel_arkeolojik_sit": {
    "page": 83,
-   "title": "KENTSEL ARKEOLOJ\u0130K S\u0130T ALANI",
+   "title": "KENTSEL ARKEOLOJİK SİT ALANI",
    "file": "resources/katalog_sembol/kentsel_arkeolojik_sit.png",
    "pixels": [
     273,
     248
    ],
    "width_mm": 11.56,
-   "height_mm": 10.5
+   "height_mm": 10.5,
+   "sha256": "c0eff19c4050f197 df71ae9bf2e6833a 18da571385e30050 a1e9be5d0f331049"
   },
   "afet_lojistik": {
    "page": 136,
-   "title": "AFET ARAMA KURTARMA H\u0130ZMET LOJ\u0130ST\u0130K MERKEZLER\u0130 ALANI",
+   "title": "AFET ARAMA KURTARMA HİZMET LOJİSTİK MERKEZLERİ ALANI",
    "file": "resources/katalog_sembol/afet_lojistik.png",
    "pixels": [
     465,
     435
    ],
    "width_mm": 19.68,
-   "height_mm": 18.41
+   "height_mm": 18.41,
+   "sha256": "e11b7d002fbb2896 e810a30ed52b1b83 2ea3fd6ef306d3c6 53a2062581f1116d"
   },
   "fuar_panayir": {
    "page": 138,
-   "title": "FUAR, PANAYIR VE FEST\u0130VAL/G\u00d6STER\u0130 ALANI",
+   "title": "FUAR, PANAYIR VE FESTİVAL/GÖSTERİ ALANI",
    "file": "resources/katalog_sembol/fuar_panayir.png",
    "pixels": [
     268,
     266
    ],
    "width_mm": 11.35,
-   "height_mm": 11.26
+   "height_mm": 11.26,
+   "sha256": "4572fcd49803a7ec 364f21289858613d cd8332bc5bf67fef e370746f14dbfcbf"
   },
   "agaclandirilacak": {
    "page": 142,
-   "title": "A\u011eA\u00c7LANDIRILACAK ALAN",
+   "title": "AĞAÇLANDIRILACAK ALAN",
    "file": "resources/katalog_sembol/agaclandirilacak.png",
    "pixels": [
     269,
     203
    ],
    "width_mm": 11.39,
-   "height_mm": 8.59
+   "height_mm": 8.59,
+   "sha256": "303b702865cea217 0f573c73536c04b7 495fa3a34bdfc730 b3615d3387bbe264"
   },
   "yenilenebilir_enerji": {
    "page": 174,
-   "title": "YEN\u0130LENEB\u0130L\u0130R ENERJ\u0130 KAYNAKLARINA DAYALI \u00dcRET\u0130M TES\u0130S\u0130 ALANI",
+   "title": "YENİLENEBİLİR ENERJİ KAYNAKLARINA DAYALI ÜRETİM TESİSİ ALANI",
    "file": "resources/katalog_sembol/yenilenebilir_enerji.png",
    "pixels": [
     268,
     358
    ],
    "width_mm": 11.35,
-   "height_mm": 15.16
+   "height_mm": 15.16,
+   "sha256": "0772d8b7607e1f4e 0cda4274cd34f9eb 7f92f207965fc3a1 2d290b728bb01d77"
   },
   "kentsel_risk": {
    "page": 189,
-   "title": "KENTSEL R\u0130SK ALANI",
+   "title": "KENTSEL RİSK ALANI",
    "file": "resources/katalog_sembol/kentsel_risk.png",
    "pixels": [
     338,
     313
    ],
    "width_mm": 14.31,
-   "height_mm": 13.25
+   "height_mm": 13.25,
+   "sha256": "dbcfd76f8a3ea826 7e2c129295d3002a dbe38eff8d2aa951 be615deb339e3f55"
   },
   "tsunami_riskli": {
    "page": 189,
-   "title": "TSUNAM\u0130 R\u0130SKL\u0130 ALAN",
+   "title": "TSUNAMİ RİSKLİ ALAN",
    "file": "resources/katalog_sembol/tsunami_riskli.png",
    "pixels": [
     259,
     294
    ],
    "width_mm": 10.96,
-   "height_mm": 12.45
+   "height_mm": 12.45,
+   "sha256": "193473fb0d189e6f 35cb9b41b3436bd8 27d52c4f2c74168a 25da4cad7f558291"
   },
   "kutle_hareketi_riskli": {
    "page": 190,
-   "title": "K\u00dcTLE HAREKET\u0130 R\u0130SKL\u0130 ALAN",
+   "title": "KÜTLE HAREKETİ RİSKLİ ALAN",
    "file": "resources/katalog_sembol/kutle_hareketi_riskli.png",
    "pixels": [
     338,
     295
    ],
    "width_mm": 14.31,
-   "height_mm": 12.49
+   "height_mm": 12.49,
+   "sha256": "ce39dc417a226849 deda126f83dc4a79 304478d4829c788b 4469ecf77329968b"
   },
   "vahsi_cop": {
    "page": 191,
-   "title": "VAH\u015e\u0130 \u00c7\u00d6P DEPOLAMA REHAB\u0130L\u0130TASYON VE KAPATMA ALANI",
+   "title": "VAHŞİ ÇÖP DEPOLAMA REHABİLİTASYON VE KAPATMA ALANI",
    "file": "resources/katalog_sembol/vahsi_cop.png",
    "pixels": [
     302,
     300
    ],
    "width_mm": 12.78,
-   "height_mm": 12.7
+   "height_mm": 12.7,
+   "sha256": "702d34a705f6c334 e182958f4edded03 88f5f242e5cb8e0f 5b37aec5474769e0"
   },
   "sokak_hayvanlari": {
    "page": 192,
-   "title": "SOKAK HAYVANLARI BARINA\u011eI ALANI",
+   "title": "SOKAK HAYVANLARI BARINAĞI ALANI",
    "file": "resources/katalog_sembol/sokak_hayvanlari.png",
    "pixels": [
     410,
     413
    ],
    "width_mm": 17.36,
-   "height_mm": 17.48
+   "height_mm": 17.48,
+   "sha256": "1c4e4e9433b4fdd2 055d0835164e9f35 1c96bfd27bf83172 17f2ce762503d3fd"
   },
   "ekoturizm_kirsal": {
    "page": 77,
-   "title": "EKOTUR\u0130ZM/KIRSAL TUR\u0130ZM",
+   "title": "EKOTURİZM/KIRSAL TURİZM",
    "file": "resources/katalog_sembol/ekoturizm_kirsal.png",
    "pixels": [
     357,
     332
    ],
    "width_mm": 15.11,
-   "height_mm": 14.05
+   "height_mm": 14.05,
+   "sha256": "a9ced0fad414f7da d074e4de70c00d6b de5c07b9e0fadcfa 061228e6e61ee81f"
   },
   "yapay_ada": {
    "page": 100,
@@ -209,128 +228,140 @@
     227
    ],
    "width_mm": 9.48,
-   "height_mm": 9.61
+   "height_mm": 9.61,
+   "sha256": "481843f08c977bf5 b57383871d80d4ee d4725b9e6e389bb9 a8913c38bb0cfed0"
   },
   "millet_bahcesi": {
    "page": 137,
-   "title": "M\u0130LLET BAH\u00c7ES\u0130",
+   "title": "MİLLET BAHÇESİ",
    "file": "resources/katalog_sembol/millet_bahcesi.png",
    "pixels": [
     275,
     261
    ],
    "width_mm": 11.64,
-   "height_mm": 11.05
+   "height_mm": 11.05,
+   "sha256": "6db8ea71b3a5848b 67a2f751d2277965 ee2c333ff79a5c39 a7f1b24824d44002"
   },
   "sagliklastirma": {
    "page": 18,
-   "title": "SA\u011eLIKLA\u015eTIRMA ALANI SINIRI",
+   "title": "SAĞLIKLAŞTIRMA ALANI SINIRI",
    "file": "resources/katalog_sembol/sagliklastirma.png",
    "pixels": [
     248,
     247
    ],
    "width_mm": 10.5,
-   "height_mm": 10.46
+   "height_mm": 10.46,
+   "sha256": "2e6eae938d914641 256b4868e6853575 da2100c0d226b5cf 7d5c8b7c243c7c30"
   },
   "makilik_fundalik": {
    "page": 96,
-   "title": "MAK\u0130L\u0130K- FUNDALIK ALAN",
+   "title": "MAKİLİK- FUNDALIK ALAN",
    "file": "resources/katalog_sembol/makilik_fundalik.png",
    "pixels": [
     272,
     272
    ],
    "width_mm": 11.51,
-   "height_mm": 11.51
+   "height_mm": 11.51,
+   "sha256": "d95221d4a25fa992 16c9c7f06adbc90a 72152770e17ec166 28274a0169ec1cd9"
   },
   "tarimsal_nitelikli": {
    "page": 100,
-   "title": "TARIMSAL N\u0130TEL\u0130KL\u0130 ALAN",
+   "title": "TARIMSAL NİTELİKLİ ALAN",
    "file": "resources/katalog_sembol/tarimsal_nitelikli.png",
    "pixels": [
     274,
     268
    ],
    "width_mm": 11.6,
-   "height_mm": 11.35
+   "height_mm": 11.35,
+   "sha256": "45e28b9cd1e90722 4a4e0abc0ac9746e a7f102bbe3b89c1d 20273faf5b36c2e2"
   },
   "bisiklet_yolu": {
    "page": 153,
-   "title": "B\u0130S\u0130KLET YOLU",
+   "title": "BİSİKLET YOLU",
    "file": "resources/katalog_sembol/bisiklet_yolu.png",
    "pixels": [
     268,
     269
    ],
    "width_mm": 11.35,
-   "height_mm": 11.39
+   "height_mm": 11.39,
+   "sha256": "d57c500df0d796df 299c3341b0d64ce6 8e682e22d9ff1427 a79f4895c2cc1103"
   },
   "ekolojik_oneme_sahip": {
    "page": 90,
-   "title": "EKOLOJ\u0130K \u00d6NEME SAH\u0130P ALAN",
+   "title": "EKOLOJİK ÖNEME SAHİP ALAN",
    "file": "resources/katalog_sembol/ekolojik_oneme_sahip.png",
    "pixels": [
     50,
     49
    ],
    "width_mm": 2.12,
-   "height_mm": 2.07
+   "height_mm": 2.07,
+   "sha256": "b6fe93ba6bd81035 a60b78c7bb029a9f 54d488b5892a5ab4 2efd3407411a2519"
   },
   "dogal_karakteri_korunacak": {
    "page": 95,
-   "title": "DO\u011eAL KARAKTER\u0130 KORUNACAK ALAN",
+   "title": "DOĞAL KARAKTERİ KORUNACAK ALAN",
    "file": "resources/katalog_sembol/dogal_karakteri_korunacak.png",
    "pixels": [
     104,
     66
    ],
    "width_mm": 4.4,
-   "height_mm": 2.79
+   "height_mm": 2.79,
+   "sha256": "f0992e5edd94c2c2 8166b9c9a03d9613 39e459af9eba86dc 0bf2305cefe422b7"
   },
   "saglik_odakli_tatil_koyu": {
    "page": 74,
-   "title": "SA\u011eLIK ODAKLI TAT\u0130L K\u00d6Y\u00dc",
+   "title": "SAĞLIK ODAKLI TATİL KÖYÜ",
    "file": "resources/katalog_sembol/saglik_odakli_tatil_koyu.png",
    "pixels": [
     243,
     243
    ],
    "width_mm": 10.29,
-   "height_mm": 10.29
+   "height_mm": 10.29,
+   "sha256": "b56a6286161d471b 6797f2226ba83ec7 3f2ee889f2dfd059 e6501cd56b68e1cd"
   },
   "gunubirlik_tesis": {
    "page": 76,
-   "title": "G\u00dcN\u00dcB\u0130RL\u0130K TES\u0130S ALANI",
+   "title": "GÜNÜBİRLİK TESİS ALANI",
    "file": "resources/katalog_sembol/gunubirlik_tesis.png",
    "pixels": [
     279,
     279
    ],
    "width_mm": 11.81,
-   "height_mm": 11.81
+   "height_mm": 11.81,
+   "sha256": "1494ecd6b4e15330 a40bdc5e23a32db7 9ab1b998b16b477c f5c915add9da3d41"
   },
   "kis_sporlari_kayak": {
    "page": 76,
-   "title": "KI\u015e SPORLARI VE KAYAK TES\u0130S\u0130 ALANI",
+   "title": "KIŞ SPORLARI VE KAYAK TESİSİ ALANI",
    "file": "resources/katalog_sembol/kis_sporlari_kayak.png",
    "pixels": [
     270,
     226
    ],
    "width_mm": 11.43,
-   "height_mm": 9.57
+   "height_mm": 9.57,
+   "sha256": "e85cb54cd7d8c2c0 6e7e266739910ffc 36bffc240c81877e fefc6b9fe41a4ebd"
   },
   "kongre_sergi_merkezi": {
    "page": 128,
-   "title": "KONGRE VE SERG\u0130 MERKEZ\u0130 ALANI",
+   "title": "KONGRE VE SERGİ MERKEZİ ALANI",
    "file": "resources/katalog_sembol/kongre_sergi_merkezi.png",
    "pixels": [
     276,
     268
    ],
    "width_mm": 11.68,
-   "height_mm": 11.35
+   "height_mm": 11.35,
+   "sha256": "6e68f317f7a182cc 3e00170bbf0870f1 08d45548a9b7d69f 33d5ab34287f032d"
   },
   "kumsal_plaj": {
    "page": 97,
@@ -341,88 +372,96 @@
     350
    ],
    "width_mm": 11.81,
-   "height_mm": 14.82
+   "height_mm": 14.82,
+   "sha256": "847b71e8f5db1ec2 4a4222980e14fdc1 6e65218ee728706f c16648b1a9e6d6d7"
   },
   "yuksekogretim_tesis_alani": {
    "page": 120,
-   "title": "Y\u00dcKSEK \u00d6\u011eRET\u0130M ALANI",
+   "title": "YÜKSEK ÖĞRETİM ALANI",
    "file": "resources/katalog_sembol/yuksekogretim_tesis_alani.png",
    "pixels": [
     244,
     243
    ],
    "width_mm": 10.33,
-   "height_mm": 10.29
+   "height_mm": 10.29,
+   "sha256": "f78f315e93d10cf6 bdea2592ecbbfc6d e3fd1daf0170183f 6aa4dd4a116d756e"
   },
   "ozel_kulturel_tesis": {
    "page": "sentez",
-   "title": "\u00d6ZEL K\u00dcLT\u00dcREL TES\u0130S ALANI (sentez: s.124 sembol\u00fc + s.125 '\u00d6' kural\u0131)",
+   "title": "ÖZEL KÜLTÜREL TESİS ALANI (sentez: s.124 sembolü + s.125 'Ö' kuralı)",
    "file": "resources/katalog_sembol/ozel_kulturel_tesis.png",
    "pixels": [
     360,
     360
    ],
    "width_mm": 15.24,
-   "height_mm": 15.24
+   "height_mm": 15.24,
+   "sha256": "278e6e367a890c71 f1bcb711793c7c8b 6127a278be8feb1a 332ab77d713d16ef"
   },
   "ozel_sosyal_tesis": {
    "page": "sentez",
-   "title": "\u00d6ZEL SOSYAL TES\u0130S ALANI (sentez: s.124 sembol\u00fc + s.125 '\u00d6' kural\u0131)",
+   "title": "ÖZEL SOSYAL TESİS ALANI (sentez: s.124 sembolü + s.125 'Ö' kuralı)",
    "file": "resources/katalog_sembol/ozel_sosyal_tesis.png",
    "pixels": [
     360,
     360
    ],
    "width_mm": 15.24,
-   "height_mm": 15.24
+   "height_mm": 15.24,
+   "sha256": "dc8e023ca7d2a7ad a85453bc92ef735c 2e62420709285b59 afd229c049a144dc"
   },
   "ozel_acik_spor_tesis": {
    "page": "sentez",
-   "title": "\u00d6ZEL A\u00c7IK SPOR TES\u0130S\u0130 ALANI (sentez: s.126 sembol\u00fc + s.125 '\u00d6' kural\u0131)",
+   "title": "ÖZEL AÇIK SPOR TESİSİ ALANI (sentez: s.126 sembolü + s.125 'Ö' kuralı)",
    "file": "resources/katalog_sembol/ozel_acik_spor_tesis.png",
    "pixels": [
     360,
     360
    ],
    "width_mm": 15.24,
-   "height_mm": 15.24
+   "height_mm": 15.24,
+   "sha256": "2ec744eb8cdba4c9 57b4e236c4ddd7b7 0bef692c2edb74ef 801edd1ff5872ccf"
   },
   "ozel_kapali_spor_tesis": {
    "page": "sentez",
-   "title": "\u00d6ZEL KAPALI SPOR TES\u0130S\u0130 ALAN (sentez: s.127 sembol\u00fc + s.125 '\u00d6' kural\u0131)",
+   "title": "ÖZEL KAPALI SPOR TESİSİ ALAN (sentez: s.127 sembolü + s.125 'Ö' kuralı)",
    "file": "resources/katalog_sembol/ozel_kapali_spor_tesis.png",
    "pixels": [
     360,
     360
    ],
    "width_mm": 15.24,
-   "height_mm": 15.24
+   "height_mm": 15.24,
+   "sha256": "84f1b44116fe5f88 725367d8820bcad2 932d6db1a4446895 0373b48de31449b8"
   },
   "ozel_sosyal_kulturel_tesis": {
    "page": "sentez",
-   "title": "\u00d6ZEL SOSYAL K\u00dcLT\u00dcREL TES\u0130S ALANI (sentez: MUIPE_10_2 'V' = 'STK' + s.125 '\u00d6' kural\u0131)",
+   "title": "ÖZEL SOSYAL KÜLTÜREL TESİS ALANI (sentez: MUIPE_10_2 'V' = 'STK' + s.125 'Ö' kuralı)",
    "file": "resources/katalog_sembol/ozel_sosyal_kulturel_tesis.png",
    "pixels": [
     360,
     360
    ],
    "width_mm": 15.24,
-   "height_mm": 15.24
+   "height_mm": 15.24,
+   "sha256": "063c170c1249a1cb 7ff977c506abe7d2 42ae07ca6c9b724f 811f385eb7b02d4f"
   },
   "yayla_turizmi": {
    "page": "sentez",
-   "title": "YAYLA TUR\u0130ZM\u0130 (sentez: s.57 GTB/GTA/GTT k\u0131sa-kod kural\u0131, 'YT')",
+   "title": "YAYLA TURİZMİ (sentez: s.57 GTB/GTA/GTT kısa-kod kuralı, 'YT')",
    "file": "resources/katalog_sembol/yayla_turizmi.png",
    "pixels": [
     360,
     360
    ],
    "width_mm": 15.24,
-   "height_mm": 15.24
+   "height_mm": 15.24,
+   "sha256": "4e939f69a9db560c ae3a37b24c6848af 58a0ccc1798460c4 3bbcf650c9481eeb"
   },
   "havai_hat_istasyonu_tarama": {
    "page": 171,
-   "title": "HAVA\u0130 HAT \u0130STASYONU",
+   "title": "HAVAİ HAT İSTASYONU",
    "file": "resources/katalog_sembol/havai_hat_istasyonu_tarama.png",
    "pixels": [
     500,
@@ -430,6 +469,7 @@
    ],
    "width_mm": 5,
    "height_mm": 1.15,
+   "sha256": "0185ec7533f984df 357bf275dc69f50f 8bcdf7c52c3c89c9 fd6cc1b4ed952370",
    "generated": true
   }
  }

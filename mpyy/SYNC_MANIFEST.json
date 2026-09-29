@@ -1,15 +1,15 @@
 {
  "files": {
   "core/centre_symbols.py": "9e3b7a08c7a4a8f7ef15723598417973ffe4bd669372e569310546b98ade35be",
-  "core/db_factory.py": "96c12a68be60f7773ea5172e90a0997c0820dc46d5fd803f1a173f25d59ca01d",
+  "core/db_factory.py": "c7d136ed342417f6219ea3c5a7f123eb658a6d19bda23d270743f6b629c510e1",
   "core/fonts.py": "8289d4f4a3026abbb5dda1b26dd52cef20debb91940ff35152ba104d905a3e39",
   "core/form_rules.py": "7018b4cdc02bef99669861efa9a15e896ecca229143462eff57fa210956adedb",
   "core/function_picker.py": "a32652484b86d718acb0b16f1d44338d5d70e1d328c07e90eca524c4beda8d49",
   "core/legend_scope.py": "efaa78cd359947b4c9c21bbc6b30f30cacbc2a1002262f2f682597523b072adc",
-  "core/mpyy_detail_catalog.py": "ec496265008c0aad2897165101ca3545f735d38c8dcdde178146d1b95eb33338",
+  "core/mpyy_detail_catalog.py": "c80a7edea23bb63f48627fd19c5f709d1c27925d4acea9ac491b9e1a7d80d76a",
   "core/mpyy_detail_hierarchy.py": "d791954f54e75273293e2384cb5bd776bfc4c503d9ed1c8ca59b666833628ed7",
   "core/mpyy_import.py": "4c2261936f47a71b65a453fd38317fe531de66eff3ff623e24f80ce0f79581db",
-  "core/mpyy_workspace.py": "6f2550692d27f145ef04e6943c9941af222e2cbb357fd3799235bc4dd7da0f04",
+  "core/mpyy_workspace.py": "0aec7923b6cfd4a16fc22d7c3cbe8856beeb9b5266fcec38dd5dc5c7e09057d5",
   "core/schema.py": "f087eb753f58d9beb1a0b099d92c6db0b8332d91023f6cda335ab41e7faa1d38",
   "core/tabaka_matching.py": "7fd09db13b6f6a68921b7fe5d8ad3d6e7c0799cb23ba5ccd07b0d3360a132eb4",
   "resources/0059bd4f-a7e1-48ae-97b6-8ae40fd67ba5.png": "9783addfe0ad768a894d4107dadf917086d7caad0711ae5463e96b8577c34edd",
