@@ -1,5 +1,38 @@
 # Changelog
 
+## [4.0.0] - 2026-09-29
+
+TR-Only MPYY Style replaces the PlanGML / e-Plan styling mode.
+
+- **TR-Only MPYY Style** (NCZ tab, and DXF / DWG in the converter): each CAD layer
+  (tabaka) of an imar plan is written to its MPYY 1.1.7 feature type in a MPYY
+  workspace GeoPackage and drawn with the MPYY UİP / NİP / ÇDP styles carried
+  inside the plugin (Ministry e-Plan SLDs, Ek-1e corrections, plan symbol fonts).
+  The PlanGML schema columns, the e-Plan tarama catalogue and the upper-group
+  layer tree are removed.
+- **Layer name matching**: exact names, mappings you confirmed, and spelling rules
+  that cannot change the meaning (copy number, Netcad suffix, `_ALANI`, `PL_`
+  prefix) resolve by themselves. Everything else is proposed in a confirmation
+  table, ranked word by word against the Ek-1e function names and MPYY codes
+  (abbreviations, plural endings, run-together names, same-concept words) and
+  filtered by geometry; any function can be picked by hand. Cadastre, notation
+  and one-word ambiguous names get no proposal. Confirmed mappings are remembered.
+- **Zoning values** (nizam, kat, TAKS, KAKS / emsal, Hmax, setbacks) are read from
+  notation texts and from Netcad 8 Smart Object properties and carried into the
+  MPYY fields when the MPYY form accepts them.
+- **Plan reference scale**: symbols and texts zoom like the printed sheet; CAD
+  texts are drawn at their own height; area pictograms at the regulated
+  10 / 7 / 5 mm (UİP / NİP / ÇDP); the legend lists only the values used.
+- **Layer filter** by name and geometry (`LINE`, `POLYGON`, `POINT`, `TEXT`),
+  Turkish-letter tolerant; Select / Deselect All act on the listed layers.
+- **Attribute column picker** on the NCZ tab and in the converter.
+- **Merge all layers into 3 layers** (polygon / line / point-text), categorized by
+  layer name so every tabaka keeps its own drawing color.
+- The import summary tells unmatched layers apart from features whose geometry
+  does not fit their MPYY type. The ARGB option is locked on in MPYY mode.
+- The plugin interface is English throughout; MPYY function names stay Turkish.
+- The unused `symbology-style.db` no longer ships in the plugin archive.
+
 ## [3.3.2] - 2026-09-25
 
 - Protect MBTiles exporter against global basemap runaway extents, add live tile estimator, set metatile 1 and zoom 14-16 fast defaults
