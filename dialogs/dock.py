@@ -531,6 +531,9 @@ class Zero2CadGisDockWidget(QDockWidget):
         QgsField("scale", QMetaType.Type.Double),
         QgsField("grid_x", QMetaType.Type.Double),
         QgsField("grid_y", QMetaType.Type.Double),
+        # The drawing layer's pen width in mm (Netcad LEX.ST2), empty when the
+        # layer draws with the default pen. The style draws it at that width.
+        QgsField("line_width_mm", QMetaType.Type.Double),
     ]
 
     # Added by "Calculate geometry metadata" (CadFeatureAugmenter).
@@ -3122,6 +3125,7 @@ class Zero2CadGisDockWidget(QDockWidget):
                 entity.scale,
                 entity.grid_x,
                 entity.grid_y,
+                getattr(entity, "line_width", None),
             ]
 
             feature = QgsFeature(layer.fields())

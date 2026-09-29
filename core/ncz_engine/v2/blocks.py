@@ -4,6 +4,8 @@
 """Block scanning and drawing-metadata decoding for NCZ Engine v2."""
 from __future__ import annotations
 
+import struct
+
 from dataclasses import dataclass, field
 from typing import Iterator
 
@@ -108,6 +110,8 @@ class DrawingMetadata:
     """Layer table, colours and CRS hints accumulated during the scan."""
     layer_names: list[str] = field(default_factory=list)
     layer_colors: list[int] = field(default_factory=list)
+    # Pen width in mm per layer (LEX.ST2); 0.0 where the layer sets none.
+    layer_widths: list[float] = field(default_factory=list)
     version_name: str = ""
     projection_text: str = ""
     epsg: str = ""
@@ -124,6 +128,14 @@ class DrawingMetadata:
                 return _normalize_color(self.layer_colors[candidate])
         return None
 
+    def layer_width(self, layer_code: int) -> float | None:
+        """The layer's own pen width in mm, or None when it sets none."""
+        for candidate in (layer_code, layer_code - 1):
+            if 0 <= candidate < len(self.layer_widths):
+                width = self.layer_widths[candidate]
+                return width if width > 0 else None
+        return None
+
     def resolve_color(self, layer_code: int, color_code: int) -> int | None:
         if color_code == 1:
             return _argb(0, 0, 255)
@@ -137,6 +149,7 @@ class DrawingMetadata:
         return {
             "layer_names": list(self.layer_names),
             "layer_colors": list(self.layer_colors),
+            "layer_widths": list(self.layer_widths),
             "version_name": self.version_name,
             "projection_text": self.projection_text,
             "epsg": self.epsg,
@@ -147,6 +160,7 @@ class DrawingMetadata:
         return cls(
             layer_names=list(data.get("layer_names", [])),
             layer_colors=list(data.get("layer_colors", [])),
+            layer_widths=list(data.get("layer_widths", [])),
             version_name=data.get("version_name", ""),
             projection_text=data.get("projection_text", ""),
             epsg=data.get("epsg", ""),
@@ -205,16 +219,27 @@ def apply_metadata_block(cursor: Cursor, block: RawBlock,
         metadata.epsg = _read_epsg(
             cursor, base, min(block.size + 1, cursor.size - base))
     elif name == "LEX.ST2":
+        # One 256-byte style item per layer: RGB at +56; the pen width in mm
+        # as an f64 at +63, valid when bit 0x10 of the flags at +71 is set
+        # (Tire UİP: SNR_YAPI_YAKLASMA 1.0, PARSEL 0.3, ADA_AYRIM 0.5; a
+        # layer without the bit draws with Netcad's default pen).
         if base + 20 < cursor.size:
             count = cursor.u8(base + 20)
             for index in range(count):
-                item = base + 23 + index * 256 + 56
+                start = base + 23 + index * 256
+                item = start + 56
                 if item + 2 >= cursor.size:
                     break
                 metadata.layer_colors.append(_argb(
                     cursor.u8(item),
                     cursor.u8(item + 1),
                     cursor.u8(item + 2)))
+                width = 0.0
+                if start + 71 < cursor.size and cursor.u8(start + 71) & 0x10:
+                    value = struct.unpack_from("<d", cursor.raw(start + 63, 8))[0]
+                    if 0.0 < value < 100.0:
+                        width = round(float(value), 3)
+                metadata.layer_widths.append(width)
 
 
 def _read_epsg(cursor: Cursor, base: int, max_length: int) -> str:

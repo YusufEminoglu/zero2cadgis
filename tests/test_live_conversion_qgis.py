@@ -516,6 +516,36 @@ class TestMpyyStructureImportQgis(unittest.TestCase):
         self.assertIn("(PL_ASKERI_ALAN)", text)
         self.assertNotIn("PL_ASKERI_ALAN, GRID", text)
 
+    def test_lines_draw_at_the_drawing_layers_own_pen(self):
+        from qgis.core import QgsCategorizedSymbolRenderer, QgsFeature, QgsField, QgsGeometry, QgsPointXY, QgsVectorLayer
+        from qgis.PyQt.QtCore import QMetaType
+        from zero2cadgis.core.cad_engine import CadStylingEngine
+
+        def lines(rows):
+            layer = QgsVectorLayer("LineString?crs=EPSG:5253", "l", "memory")
+            layer.dataProvider().addAttributes([QgsField("layer_name", QMetaType.Type.QString),
+                                                QgsField("color_argb", QMetaType.Type.QString),
+                                                QgsField("line_width_mm", QMetaType.Type.Double)])
+            layer.updateFields()
+            for tabaka, width in rows:
+                feature = QgsFeature(layer.fields())
+                feature.setGeometry(QgsGeometry.fromPolylineXY([QgsPointXY(0, 0), QgsPointXY(1, 1)]))
+                feature.setAttributes([tabaka, str(0xFF000000), width])
+                layer.dataProvider().addFeature(feature)
+            return layer
+
+        single = lines([("SNR_YAPI_YAKLASMA", 1.0)])
+        CadStylingEngine.apply_argb_renderer(single, "LineString")
+        self.assertAlmostEqual(single.renderer().symbol().width(), 1.0)
+        default = lines([("H_H", None)])
+        CadStylingEngine.apply_argb_renderer(default, "LineString")
+        self.assertAlmostEqual(default.renderer().symbol().width(), CadStylingEngine.DEFAULT_PEN_MM)
+        merged = lines([("PARSEL", 0.3), ("SNR_YAPI_YAKLASMA", 1.0), ("H_H", None)])
+        CadStylingEngine.apply_argb_renderer(merged, "LineString")
+        self.assertIsInstance(merged.renderer(), QgsCategorizedSymbolRenderer)
+        widths = {c.value(): c.symbol().width() for c in merged.renderer().categories()}
+        self.assertEqual(widths, {"PARSEL": 0.3, "SNR_YAPI_YAKLASMA": 1.0, "H_H": CadStylingEngine.DEFAULT_PEN_MM})
+
     def test_plan_notation_layers_and_the_frames_they_replace(self):
         from qgis.core import QgsFeature, QgsField, QgsGeometry, QgsPointXY, QgsVectorLayer
         from qgis.PyQt.QtCore import QMetaType

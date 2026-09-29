@@ -47,6 +47,7 @@ class NetcadEntity:
     # Netcad 8 Smart Object values (nizam, kat, taks, kaks, hmax, genislik ...),
     # set ones only; empty for every other entity.
     properties: dict[str, str] = field(default_factory=dict)
+    line_width: float | None = None   # the layer's pen width in mm (Netcad LEX.ST2), if set
 
 
 @dataclass

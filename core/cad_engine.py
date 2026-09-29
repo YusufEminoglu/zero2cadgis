@@ -45,7 +45,10 @@ NOISE_LAYER_KEYWORDS = (
     "TAMPON", "TEMP", "DRAFT", "YARDIMCI", "CALISMA", "ESKI", "DENEME", "YEDEK",
     "TARAMA_CIZGI", "TARAMA", "HATCH", "HATCHES",
     "KOT", "ROPER", "POLIGON_NOKTA", "NIRENGI", "MIHENK",
-    "ROL_CEPHE", "Z_ADAPARSEL_PL", "SNR_GIS", "SM_AGAC",
+    # ROL_CEPHE is not here: it is the plan's cephe notation (the setback
+    # between ada kenari and yapi yaklasma sinirI, ticks and "5" / "10 m"),
+    # and hiding it hid 1820 features of the Tire UIP.
+    "Z_ADAPARSEL_PL", "SNR_GIS", "SM_AGAC",
     "ANTET", "LEJANT", "LEGEND", "CERCEVE", "BORDER", "FRAME",
     "MUELLIF", "ONAMA", "ONAY",
 )
@@ -236,10 +239,18 @@ class CadStylingEngine:
         layer would be; helper / pen tabaka are listed but switched off, as
         their layers are hidden in the default import.
         """
-        colors = {}
+        colors, widths = {}, {}
         tabaka_field = layer.fields().indexFromName("layer_name")
+        width_field = layer.fields().indexFromName("line_width_mm")
         for feature in layer.getFeatures():
             tabaka = feature[tabaka_field] if tabaka_field >= 0 else None
+            if width_field >= 0 and widths.get(tabaka) is None:
+                try:
+                    width = float(feature[width_field])
+                    if width > 0:
+                        widths[tabaka] = width
+                except (TypeError, ValueError):
+                    pass
             if tabaka in colors and colors[tabaka] is not None:
                 continue
             colors.setdefault(tabaka, None)
@@ -256,7 +267,7 @@ class CadStylingEngine:
             categories = []
             for tabaka in sorted(colors, key=lambda value: str(value)):
                 symbol = CadStylingEngine._argb_symbol(
-                    geometry_type, colors[tabaka] or QColor(110, 110, 110))
+                    geometry_type, colors[tabaka] or QColor(110, 110, 110), widths.get(tabaka))
                 if symbol is None:
                     return
                 categories.append(QgsRendererCategory(
@@ -268,14 +279,20 @@ class CadStylingEngine:
         if not color_rgb:
             color_rgb = QColor(110, 110, 110)
 
-        symbol = CadStylingEngine._argb_symbol(geometry_type, color_rgb)
+        symbol = CadStylingEngine._argb_symbol(geometry_type, color_rgb, next(iter(widths.values()), None))
         if symbol:
             renderer = QgsSingleSymbolRenderer(symbol)
             layer.setRenderer(renderer)
             layer.triggerRepaint()
 
+    # A drawing layer without its own pen draws with Netcad's default, a thin
+    # line; 0.7 mm made every contour and helper line of a plan bold.
+    DEFAULT_PEN_MM = 0.25
+
     @staticmethod
-    def _argb_symbol(geometry_type: str, color_rgb: QColor):
+    def _argb_symbol(geometry_type: str, color_rgb: QColor, width_mm: float | None = None):
+        """The drawing's colour, and its pen width in mm when the layer sets one."""
+        pen = f"{width_mm:g}" if width_mm else f"{CadStylingEngine.DEFAULT_PEN_MM:g}"
         symbol = None
         if geometry_type == "Point":
             symbol = QgsMarkerSymbol.createSimple({
@@ -288,14 +305,14 @@ class CadStylingEngine:
         elif geometry_type == "LineString":
             symbol = QgsLineSymbol.createSimple({
                 "color": color_rgb.name(),
-                "width": "0.7",
+                "width": pen,
                 "line_style": "solid"
             })
         elif geometry_type == "Polygon":
             symbol = QgsFillSymbol.createSimple({
                 "color": f"{color_rgb.red()},{color_rgb.green()},{color_rgb.blue()},70",
                 "outline_color": color_rgb.name(),
-                "outline_width": "0.5"
+                "outline_width": pen
             })
         return symbol
 

@@ -1284,6 +1284,7 @@ class NetcadBinaryReader:
                 for coord in payload.get("coordinates", [])
             ],
             properties=dict(payload.get("properties") or {}),
+            line_width=payload.get("line_width"),
         )
 
     def _attribute_table_from_dict(self, payload) -> NetcadAttributeTable:

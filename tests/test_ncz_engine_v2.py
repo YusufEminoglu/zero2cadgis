@@ -337,6 +337,39 @@ class TestNczIndexCache(unittest.TestCase):
         reopened = NetcadLazyReader(path).index()
         self.assertFalse(reopened.from_cache)
 
+    def test_layer_pen_widths_reach_the_entities_and_survive_the_cache(self):
+        # LEX.ST2 carries each layer's pen width (Tire: SNR_YAPI_YAKLASMA 1.0,
+        # PARSEL 0.3 mm); a layer without the flag draws with the default pen.
+        from zero2cadgis.core.netcad_parser import NetcadLazyReader
+
+        drawing = b"".join([
+            fx.version_block(),
+            fx.layer_table_block([b"PARSEL", b"SNR_YAPIYAK", b"H_H"]),
+            fx.color_table_block([(0, 0, 0), (255, 0, 0), (128, 128, 128)], widths=[0.3, 1.0, None]),
+            fx.line_block(layer=0), fx.line_block(layer=1), fx.line_block(layer=2),
+        ])
+        path = self._write(drawing)
+        for reader in (NetcadLazyReader(path).index(), NetcadLazyReader(path).index()):   # fresh, then cached
+            entities = reader.decode_layers([s.layer_code for s in reader.layer_summaries()])
+            widths = {e.layer_name: e.line_width for e in entities}
+            self.assertEqual(widths, {"PARSEL": 0.3, "SNR_YAPIYAK": 1.0, "H_H": None})
+
+    def test_cache_is_a_miss_after_any_decoder_change(self):
+        # A catalog cached by an older decoder hid 16 of K34C10B4C.NCZ's 28
+        # layers (SM_YAPILASMA with emsal / yençok among them) because the
+        # decoder changed and the version number did not.
+        from unittest import mock
+        from zero2cadgis.core.netcad_parser import NetcadLazyReader
+
+        path = self._write(fx.full_drawing())
+        NetcadLazyReader(path).index()                       # cached by this decoder
+        self.assertTrue(NetcadLazyReader(path).index().from_cache)
+        with mock.patch.object(self.ncz_cache, "engine_signature", return_value="an-older-decoder"):
+            self.assertFalse(NetcadLazyReader(path).index().from_cache)
+        signature = self.ncz_cache.engine_signature()
+        self.assertEqual(len(signature), 16)
+        self.assertEqual(signature, self.ncz_cache.engine_signature())   # stable within a build
+
     def test_cache_can_be_disabled_by_env(self):
         from unittest import mock
         from zero2cadgis.core.netcad_parser import NetcadLazyReader

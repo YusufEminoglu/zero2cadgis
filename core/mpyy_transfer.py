@@ -25,6 +25,9 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
 MPYY_LEVELS = ("UIP", "NIP", "CDP")
+# MPYY fields filled from 02CadGis columns of another name: AdaKenari's line
+# width is the drawing layer's own pen (Netcad LEX.ST2), in mm.
+CARRIED_ALIASES = {"CizgiKalinligi": "line_width_mm"}
 LEVEL_TITLES = {"UIP": "UİP", "NIP": "NİP", "CDP": "ÇDP"}
 
 
@@ -106,7 +109,8 @@ def transfer_to_mpyy(
     result = MpyyTransferResult(level=level, workspace=workspace_path)
     left_by_layer: Dict[int, set] = {}
     for index, layer in enumerate(layers):
-        rows = mpyy_import.import_cad_layer(layer, tabaka_field, workspace_path, project=project)
+        rows = mpyy_import.import_cad_layer(layer, tabaka_field, workspace_path, project=project,
+                                          aliases=CARRIED_ALIASES)
         result.report.extend(rows)
         left_by_layer[index] = {r["tabaka"] for r in rows
                                 if not r.get("aktarilan") or r.get("geometri_uyusmayan")}

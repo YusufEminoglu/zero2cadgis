@@ -299,16 +299,22 @@ def layer_table_block(names: list[bytes]) -> bytes:
     return block(6, body)
 
 
-def color_table_block(colors: list[tuple[int, int, int]]) -> bytes:
+def color_table_block(colors: list[tuple[int, int, int]], widths: list | None = None) -> bytes:
+    """LEX.ST2: RGB at item+56; a pen width (mm) as f64 at item+63 with flag 0x10 at +71."""
     size = 23 + len(colors) * 256 + 64
     body = _body(size)
     _put_text(body, 5, b"LEX.ST2")
     _put_u8(body, 20, len(colors))
     for index, (red, green, blue) in enumerate(colors):
-        item = 23 + index * 256 + 56
+        start = 23 + index * 256
+        item = start + 56
         _put_u8(body, item, red)
         _put_u8(body, item + 1, green)
         _put_u8(body, item + 2, blue)
+        width = (widths or [None] * len(colors))[index]
+        if width is not None:
+            _put_f64(body, start + 63, width)
+            _put_u8(body, start + 71, 0x11)
     return block(28, body)
 
 

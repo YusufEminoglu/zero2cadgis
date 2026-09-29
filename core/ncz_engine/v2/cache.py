@@ -11,7 +11,15 @@ its blocks. Geometry is still decoded from the file on import.
 The cache is a best-effort optimization: any read/write/validation error is
 swallowed and the caller simply rebuilds the index. Content is stored as
 JSON (never pickle) under a per-user cache directory. Invalidation is by a
-``(size, mtime_ns)`` fingerprint plus a bumped :data:`CACHE_VERSION`.
+``(size, mtime_ns)`` fingerprint, :data:`CACHE_VERSION`, and a hash of the
+decoder sources themselves (:func:`engine_signature`).
+
+The decoder hash is what keeps the cache honest: the Netcad 8 Smart Object
+realignment (3.2.0) changed which layers a drawing has, but the version number
+was not bumped, so drawings opened before it kept showing their old, shorter
+layer list — K34C10B4C.NCZ offered 12 of its 28 layers, without SM_YAPILASMA
+(emsal / yençok), SM_YOL, SNR_YAPIYAK or KALDIRIM. Any change to a decoder file
+now makes every stored catalog a miss.
 """
 from __future__ import annotations
 
@@ -23,9 +31,27 @@ from pathlib import Path
 
 from .blocks import DrawingMetadata
 
-# Bump when the cached layout or the decoders change in a way that would make
-# a stored catalog inconsistent with a fresh decode.
-CACHE_VERSION = 2
+# Bump when the cached layout changes. Decoder changes are caught by
+# engine_signature() without a bump.
+CACHE_VERSION = 3
+
+# The files whose code decides what a catalog contains.
+_ENGINE_FILES = ("blocks.py", "parser.py", "geometry.py", "properties.py", "cache.py")
+_ENGINE_SIGNATURE = None
+
+
+def engine_signature() -> str:
+    """Hash of the v2 decoder sources: a stored catalog is valid for this code only."""
+    global _ENGINE_SIGNATURE
+    if _ENGINE_SIGNATURE is None:
+        digest = hashlib.sha256()
+        here = Path(__file__).resolve().parent
+        for name in _ENGINE_FILES:
+            with suppress(OSError):
+                digest.update(name.encode("ascii"))
+                digest.update((here / name).read_bytes().replace(b"\r\n", b"\n"))
+        _ENGINE_SIGNATURE = digest.hexdigest()[:16]
+    return _ENGINE_SIGNATURE
 
 _DISABLE_ENV = "ZERO2CADGIS_NCZ_CACHE_DISABLE"
 
@@ -76,6 +102,8 @@ def load(file_path: str) -> dict | None:
 
     if stored.get("cache_version") != CACHE_VERSION:
         return None
+    if stored.get("engine") != engine_signature():
+        return None
     if stored.get("fingerprint") != current:
         return None
 
@@ -105,6 +133,7 @@ def save(file_path: str, metadata: DrawingMetadata,
 
     payload = {
         "cache_version": CACHE_VERSION,
+        "engine": engine_signature(),
         "fingerprint": current,
         "source": os.path.basename(file_path),
         "metadata": metadata.to_dict(),

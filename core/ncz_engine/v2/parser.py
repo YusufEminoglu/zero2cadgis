@@ -167,6 +167,7 @@ class NczCatalog:
             # code) falls back to the layer's own colour.
             color = metadata.resolve_color(layer_code, 0)
         payload["color_argb"] = color
+        payload["line_width"] = metadata.layer_width(layer_code)
 
     # ── attribute tables ──────────────────────────────────────────
 

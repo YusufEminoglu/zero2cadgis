@@ -232,6 +232,8 @@ class TestZoningTextExtractor(unittest.TestCase):
                 self.assertFalse(is_helper_or_noise_layer(name))
         self.assertTrue(is_helper_or_noise_layer("CIZPEN"))
         self.assertTrue(is_helper_or_noise_layer("PAFTA_GRID"))
+        # the cephe setback notation of a UIP is plan content, not a helper layer
+        self.assertFalse(is_helper_or_noise_layer("ROL_CEPHE"))
 
 
     def test_netcad_smart_object_values_become_the_same_notation(self):

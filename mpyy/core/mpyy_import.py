@@ -120,8 +120,11 @@ def carry_value(value, field, codelists):
     return None, None
 
 
-def import_cad_layer(source, tabaka_field, workspace, feedback=None, project=None):
+def import_cad_layer(source, tabaka_field, workspace, feedback=None, project=None, aliases=None):
     """Write ``source`` features into the MPYY workspace by their tabaka name.
+
+    ``aliases`` maps an MPYY field to the source column that holds its value
+    under another name ({"CizgiKalinligi": "line_width_mm"}: the drawing's pen).
 
     Returns one report row per tabaka: count, MPYY type, written, and why the rest was not."""
     level = workspace_level(workspace)
@@ -177,8 +180,9 @@ def import_cad_layer(source, tabaka_field, workspace, feedback=None, project=Non
         # Plan values the source already carries under the schema's own field
         # names (KatAdedi, Taks, YapiDuzeni ... read from the drawing's texts):
         # carried over, but only as the form would accept them.
+        aliases = aliases or {}
         carried = [f for f in types[type_name]["fields"]
-                   if f["name"] in source_names and f["name"] not in entry["attrs"]]
+                   if aliases.get(f["name"], f["name"]) in source_names and f["name"] not in entry["attrs"]]
         row["tasinan_deger"] = 0
         row["atlanan_deger"] = []
         new_features = []
@@ -199,7 +203,8 @@ def import_cad_layer(source, tabaka_field, workspace, feedback=None, project=Non
                 for field, value in entry["attrs"].items():
                     out[field] = value
                 for field in carried:
-                    value, why = carry_value(feature[field["name"]], field, schema["codelists"])
+                    value, why = carry_value(feature[aliases.get(field["name"], field["name"])],
+                                             field, schema["codelists"])
                     if value is not None:
                         out[field["name"]] = value
                         row["tasinan_deger"] += 1

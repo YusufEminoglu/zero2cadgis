@@ -35,6 +35,7 @@ from qgis.core import (
     QgsFieldConstraints,
     QgsFontMarkerSymbolLayer,
     QgsProject,
+    QgsProperty,
     QgsRuleBasedRenderer,
     QgsSymbol,
     QgsSymbolLayer,
@@ -440,6 +441,56 @@ def _sld_graphics(sld_text, line_layer=False):
     return rules
 
 
+def _sld_field_widths(sld_text):
+    """Per rule, (field, offset factor) when its stroke width is an attribute, else None.
+
+    UIP/NIP AdaKenari draws önerilen / korunan / düzeltilen cephe with
+    ``stroke-width = CizgiKalinligi`` and a perpendicular offset of half of it.
+    QGIS's SLD reader keeps neither: every such cephe came in at one fixed
+    width whatever the feature said."""
+    from qgis.PyQt.QtXml import QDomDocument
+
+    doc = QDomDocument()
+    doc.setContent(sld_text, True)
+    sld, ogc = "http://www.opengis.net/sld", "http://www.opengis.net/ogc"
+    found = []
+    rules = doc.elementsByTagNameNS(sld, "Rule")
+    for i in range(rules.count()):
+        rule = rules.at(i).toElement()
+        entry = None
+        parameters = rule.elementsByTagNameNS(sld, "CssParameter")
+        for j in range(parameters.count()):
+            parameter = parameters.at(j).toElement()
+            if parameter.attribute("name") != "stroke-width":
+                continue
+            name = parameter.firstChildElement("PropertyName")
+            if name.isNull():
+                continue
+            factor = None
+            offsets = rule.elementsByTagNameNS(sld, "PerpendicularOffset")
+            if offsets.count():
+                literal = offsets.at(0).toElement().elementsByTagNameNS(ogc, "Literal")
+                if literal.count():
+                    factor = _number(literal.at(0).toElement().text())
+            entry = (name.text().strip(), factor)
+            break
+        found.append(entry)
+    return found
+
+
+def _apply_field_width(symbol, field, offset_factor):
+    """Draw the symbol's lines at ``field`` (mm), their stored width when it is empty."""
+    for index in range(symbol.symbolLayerCount()):
+        line = symbol.symbolLayer(index)
+        if line.layerType() != "SimpleLine":
+            continue
+        width = f'coalesce("{field}", {line.width()!r})'
+        line.setDataDefinedProperty(QgsSymbolLayer.Property.StrokeWidth, QgsProperty.fromExpression(width))
+        if offset_factor:
+            line.setDataDefinedProperty(QgsSymbolLayer.Property.Offset,
+                                        QgsProperty.fromExpression(f"({width}) * {offset_factor!r}"))
+
+
 def _css(element, name):
     """Value of the ``<CssParameter name=...>`` directly under ``element``."""
     child = element.firstChildElement("CssParameter")
@@ -579,6 +630,7 @@ def apply_eplan_symbology(layer, level, type_name, centre_sizes=True):
         return False
 
     marks = _sld_graphics(text, layer.geometryType() == Qgis.GeometryType.Line)
+    field_widths = _sld_field_widths(text)
     renderer = layer.renderer()
     if isinstance(renderer, QgsRuleBasedRenderer):
         root = renderer.rootRule()
@@ -597,7 +649,7 @@ def apply_eplan_symbology(layer, level, type_name, centre_sizes=True):
 
     families = installed_font_families()
     missing = {}  # rule label -> gaps left in that rule
-    for symbol, rule_marks, label, setter in zip(symbols, marks, labels, setters):
+    for rule_index, (symbol, rule_marks, label, setter) in enumerate(zip(symbols, marks, labels, setters)):
         if symbol is None:
             continue
         if _mark_missing_svg_symbols(symbol):
@@ -641,6 +693,8 @@ def apply_eplan_symbology(layer, level, type_name, centre_sizes=True):
             setter(sized)
             symbol = sized
         _embed_images(symbol)
+        if rule_index < len(field_widths) and field_widths[rule_index]:
+            _apply_field_width(symbol, *field_widths[rule_index])
 
     applied, redrawn, border_text, line_text = apply_catalog_overrides(layer, level, type_name)
     from .mpyy_detail_catalog import catalog_labels
@@ -1135,7 +1189,7 @@ def apply_building_notation(layer):
     has_nizam, has_taks = order, f"(({taks}) OR ({kaks}))"
 
     def rule(expression, filter_expression, description, size=NOTATION_TEXT_M, font="DejaVu Sans",
-             dx=0.0, dy=0.0, underline=False, below=False, html=False, side=0):
+             dx=0.0, dy=0.0, underline=False, below=False, html=False, side=0, text_block=False):
         settings = QgsPalLayerSettings()
         settings.isExpression = True
         settings.fieldName = expression
@@ -1150,6 +1204,13 @@ def apply_building_notation(layer):
             properties = settings.dataDefinedProperties()
             properties.setProperty(QgsPalLayerSettings.Property.OffsetXY, QgsProperty.fromExpression(
                 f"to_string((CASE WHEN {other} THEN {shift} ELSE 0 END) + {dx - shift}) || ',' || to_string({dy})"))
+            settings.setDataDefinedProperties(properties)
+        if on_points and text_block:
+            # A point with no circle (an emsal / yençok object) carries its text
+            # on the point itself; below the circles otherwise.
+            properties = settings.dataDefinedProperties()
+            properties.setProperty(QgsPalLayerSettings.Property.OffsetXY, QgsProperty.fromExpression(
+                f"'0,' || to_string(CASE WHEN {has_nizam} OR {has_taks} THEN {dy} ELSE {-NOTATION_TEXT_M} END)"))
             settings.setDataDefinedProperties(properties)
         if below:
             settings.quadOffset = Qgis.LabelQuadrantPosition.Below
@@ -1180,7 +1241,7 @@ def apply_building_notation(layer):
     root.appendChild(rule("'('", taks, "TAKS/KAKS dairesi", circle_size, "ESRI Default Marker", gap, glyph_drop, side=1))
     root.appendChild(rule("""format_number("Taks", 2, 'en')""", taks, "TAKS", dx=gap, dy=-2.6, underline=True, side=1))
     root.appendChild(rule("""format_number("EmsalKaks", 2, 'en')""", f"({taks}) AND ({kaks})", "KAKS", dx=gap, dy=3.4, side=1))
-    root.appendChild(rule(texts, "", "Emsal ve yençok", dy=radius + 1.5, below=True, html=True))
+    root.appendChild(rule(texts, "", "Emsal ve yençok", dy=radius + 1.5, below=True, html=True, text_block=True))
     layer.setLabeling(QgsRuleBasedLabeling(root))
     layer.setLabelsEnabled(True)
     layer.setCustomProperty("mpyy/building_notation", "Ek-1e detay kataloğu yapılaşma notasyonu")
