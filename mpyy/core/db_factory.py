@@ -204,7 +204,6 @@ def _create(output_path, crs, tables, kind, levels=()):
                 con.execute(
                     "INSERT INTO gpkg_contents(table_name,data_type,identifier) VALUES ('saha_kullanim_kodlari','attributes','Land use / field survey use code dictionary')"
                 )
-                from .schema import LAND_USE_CLASSES
                 con.executemany(
                     "INSERT INTO saha_kullanim_kodlari (kod, ad, ana_grup, renk_hex, aciklama) VALUES (?,?,?,?,?)",
                     LAND_USE_CLASSES,

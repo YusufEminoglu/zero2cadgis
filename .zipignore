@@ -14,3 +14,7 @@ benchmarks
 
 # Left over from the retired e-Plan / PlanGML styling; no code path opens it.
 symbology-style.db
+
+# MPYY sync manifest and provenance tracking (tooling only, never accessed at runtime)
+mpyy/SYNC_MANIFEST.json
+mpyy/styles/provenance.json

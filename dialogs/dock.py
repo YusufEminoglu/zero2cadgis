@@ -2810,8 +2810,8 @@ class Zero2CadGisDockWidget(QDockWidget):
             kinds = {Qgis.GeometryType.Polygon: "polygon", Qgis.GeometryType.Line: "line",
                      Qgis.GeometryType.Point: "point"}
         except AttributeError:
-            kinds = {QgsWkbTypes.PolygonGeometry: "polygon", QgsWkbTypes.LineGeometry: "line",
-                     QgsWkbTypes.PointGeometry: "point"}
+            kinds = {QgsWkbTypes.GeometryType.PolygonGeometry: "polygon", QgsWkbTypes.GeometryType.LineGeometry: "line",
+                     QgsWkbTypes.GeometryType.PointGeometry: "point"}
         counts = Counter()
         drawn = {}                      # tabaka -> {geometry kind: feature count}
         for layer in layers:

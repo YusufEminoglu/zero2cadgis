@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.1.1] - 2026-09-29
+
+- **Security & Quality Scan baseline**: Add `.secrets.baseline` and exclude non-runtime sync tooling metadata (`mpyy/SYNC_MANIFEST.json` and `mpyy/styles/provenance.json`) from the distribution archive to resolve false-positive high-entropy string detections in MPYY symbology catalogs during QGIS Hub validation.
+- **Qt6 enum compatibility**: Scope geometry enums in fallback layer checks (`QgsWkbTypes.GeometryType.*`) to resolve QGIS 4 enum validation advisories.
+- **Code hygiene**: Remove redundant local import of `LAND_USE_CLASSES` in `db_factory.py`.
+
 ## [4.1.0] - 2026-09-29
 
 - **Plan notation where the drawing places it**: every Netcad 8 building-rights
