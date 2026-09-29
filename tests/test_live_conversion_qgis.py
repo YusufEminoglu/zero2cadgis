@@ -363,6 +363,31 @@ class TestMpyyStructureImportQgis(unittest.TestCase):
         self.assertEqual(tabaka_matching.load_user_mappings()["UIP"]["PL_DINI_TESIS"], "PL_CAMI")
         self.assertIn("onaylı", result.summary())
 
+    def test_any_function_can_be_picked_by_hand_in_the_confirmation_table(self):
+        from zero2cadgis.dialogs.tabaka_confirm_dialog import TabakaConfirmDialog
+        from zero2cadgis.mpyy.core import tabaka_matching as matching
+
+        functions = matching.targets("UIP")
+        rows = [("PL_ARITMA", 3, matching.suggest("UIP", "PL_ARITMA", geometry="polygon")),
+                ("PL_KDKCA", 2, matching.suggest("UIP", "PL_KDKCA", geometry="polygon"))]
+        self.assertTrue(rows[0][2])
+        self.assertEqual(rows[1][2], [])                    # nothing to propose ...
+        dialog = TabakaConfirmDialog("UIP", rows, None, functions=functions,
+                                     geometries={"PL_ARITMA": "polygon", "PL_KDKCA": "polygon"})
+        self.addCleanup(dialog.deleteLater)
+        self.assertTrue(dialog.table.isRowHidden(1))        # ... listed, hidden until asked for
+        dialog.chk_show_all.setChecked(True)
+        self.assertFalse(dialog.table.isRowHidden(1))
+        self.assertFalse(any(box.isChecked() for box in dialog.checks))   # proposals start unticked
+        self.assertEqual(dialog.selections(), [])
+        combo = dialog.combos[1]
+        offered = {combo.itemData(i) for i in range(combo.count())}
+        self.assertTrue(all(functions[k].geometry in ("polygon", "") for k in offered if k))
+        lise = next(k for k, t in functions.items() if t.entry["attrs"].get("EgitimTesisTip") == "LiseAlani")
+        combo.setCurrentIndex(combo.findData(lise))
+        self.assertTrue(dialog.checks[1].isChecked())        # a hand pick is the planner's decision
+        self.assertEqual(dialog.selections(), [("PL_KDKCA", lise)])
+
     def test_dxf_layers_go_to_mpyy_through_the_converter_path(self):
         from osgeo import ogr
         from qgis.core import QgsVectorLayer

@@ -41,7 +41,7 @@ PLUGIN_ROOT = os.path.dirname(HERE)
 TARGET = os.path.join(PLUGIN_ROOT, "mpyy")
 
 MODULES = (
-    "centre_symbols", "db_factory", "fonts", "form_rules", "legend_scope", "mpyy_detail_catalog",
+    "centre_symbols", "db_factory", "fonts", "form_rules", "function_picker", "legend_scope", "mpyy_detail_catalog",
     "mpyy_detail_hierarchy", "mpyy_import", "mpyy_workspace", "schema", "tabaka_matching",
 )
 STYLE_FILES = (

@@ -2650,23 +2650,38 @@ class Zero2CadGisDockWidget(QDockWidget):
         from ..mpyy.core import tabaka_matching as matching
         from .tabaka_confirm_dialog import TabakaConfirmDialog
 
+        try:        # QGIS >= 3.30 / 4
+            kinds = {Qgis.GeometryType.Polygon: "polygon", Qgis.GeometryType.Line: "line",
+                     Qgis.GeometryType.Point: "point"}
+        except AttributeError:
+            kinds = {QgsWkbTypes.PolygonGeometry: "polygon", QgsWkbTypes.LineGeometry: "line",
+                     QgsWkbTypes.PointGeometry: "point"}
         counts = Counter()
+        drawn = {}                      # tabaka -> {geometry kind: feature count}
         for layer in layers:
             if layer.fields().indexFromName(tabaka_field) < 0:
                 continue
+            kind = kinds.get(layer.geometryType(), "")
             for feature in layer.getFeatures():
-                counts[str(feature[tabaka_field] or "")] += 1
+                tabaka = str(feature[tabaka_field] or "")
+                counts[tabaka] += 1
+                drawn.setdefault(tabaka, Counter())[kind] += 1
         user = matching.load_user_mappings()
-        pending = []
+        pending, geometries = [], {}
         for tabaka, count in counts.most_common():
             if not tabaka or matching.resolve(level, tabaka, user=user).resolved:
                 continue
-            proposals = matching.suggest(level, tabaka)
-            if proposals:
-                pending.append((tabaka, count, proposals))
-        if not pending or not self.ask_tabaka_confirmation:
+            # An area function is what a tabaka most likely names: polygons first,
+            # then lines, then points (texts of a notation layer come as points).
+            kind = next((k for k in ("polygon", "line", "point") if drawn[tabaka].get(k)), "")
+            geometries[tabaka] = kind
+            pending.append((tabaka, count, matching.suggest(level, tabaka, geometry=kind or None)))
+        # Rows with a proposal first; the rest stay listed for a hand pick.
+        pending.sort(key=lambda row: (not row[2], -row[1]))
+        if not any(row[2] for row in pending) or not self.ask_tabaka_confirmation:
             return []
-        dialog = TabakaConfirmDialog(level, pending, self)
+        dialog = TabakaConfirmDialog(level, pending, self, functions=matching.targets(level),
+                                     geometries=geometries)
         if dialog.exec() != QDialog.DialogCode.Accepted:
             return []
         confirmed = dialog.selections()
