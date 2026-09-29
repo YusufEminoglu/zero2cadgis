@@ -1,5 +1,9 @@
 # Changelog
 
+## [4.0.1] - 2026-09-29
+
+- Fixed TR-Only MPYY Style styling failing now and then on QGIS 4 with "'QgsSimpleLineSymbolLayer' object has no attribute 'sizeUnit'" while sizing the area centre pictograms (a stale Python wrapper of a deleted symbol layer). The sizes are now applied on the symbol's XML; the drawn sizes are unchanged.
+
 ## [4.0.0] - 2026-09-29
 
 TR-Only MPYY Style replaces the PlanGML / e-Plan styling mode.
