@@ -161,9 +161,20 @@ Turn it on for an imar plan (NCZ tab, or DXF / DWG in the converter) and 02CadGi
   reference scale (1:1000 / 1:5000 / 1:25000) so symbols and texts zoom like
   the printed sheet, with area pictograms at the regulated 10 / 7 / 5 mm, and a
   legend that lists only the values the plan uses;
+- draw the drawing's own **plan notation** where the planner placed it: every
+  Netcad 8 building-rights and road-width Smart Object becomes a point in
+  `<file>_PLAN_NOTATION` — "Building notation" (nizam / kat circle, TAKS / KAKS
+  circle, E =, Yençok) and "Road widths" (the width in a circle), drawn with the
+  Ek-1e notation. The plan areas keep the values, and their own notation labels
+  are switched off then, so nothing is drawn twice;
 - keep every layer that has no MPYY type, and every feature whose geometry does
   not fit its type (texts, open lines), in a separate group in the drawing's own
   ARGB colors. The ARGB option is locked on in this mode for that reason.
+
+Lines keep the **drawing's own pen**: Netcad stores a pen width in mm per layer
+(for example yapı yaklaşma 1.0, parsel 0.3), and CAD layers are drawn at it —
+0.25 mm where a layer sets none. Önerilen / korunan / düzeltilen cephe take
+their width from `CizgiKalinligi`, filled from the drawing's pen.
 
 The **plan level** selector picks UİP, NİP or ÇDP. *Auto* reads the scale from
 the file name — `1000_…` implementation plan (UİP), `5000_…` master plan (NİP),
