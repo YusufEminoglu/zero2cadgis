@@ -25,8 +25,6 @@ import json
 from functools import lru_cache
 from pathlib import Path
 
-from qgis.core import Qgis
-
 PLUGIN_ROOT = Path(__file__).resolve().parents[1]
 TABLE_PATH = PLUGIN_ROOT / "styles" / "mpyy_centre_symbols.json"
 
@@ -38,31 +36,110 @@ MM_PER_PIXEL = 25.4 / 96.0
 MEASURE_DPI = 384.0  # 0.07 mm a pixel: a 4 mm glyph scaled 2.4x stays within 0.2 mm
 
 
-def centre_markers(renderer):
-    """(rule label, CentroidFill symbol layer) for every centre marker, in rule order."""
+# The work is done on each rule symbol's XML (saveSymbol / loadSymbol), never on
+# the symbol-layer objects inside it. A Python wrapper of a symbol layer that
+# C++ deleted stays in sip's address map; a new layer allocated at that address
+# is then handed back under the old wrapper and its old class. On QGIS 4 a
+# centre marker came back as a QgsSimpleLineSymbolLayer ("no attribute
+# sizeUnit") in about half the runs of the level suite, and the process died at
+# exit (docs/TRAPS.md 4.7). A symbol saved to XML carries no such wrapper.
+SIZE_OPTIONS = (("size", "size_unit"), ("offset", "offset_unit"), ("outline_width", "outline_width_unit"))
+
+
+def _rule_symbols(renderer):
+    """(label, symbol, setter) for every top-level symbol of ``renderer``, in rule order."""
     from qgis.core import QgsRuleBasedRenderer
 
     if isinstance(renderer, QgsRuleBasedRenderer):
-        symbols = [(rule.label(), rule.symbol()) for rule in renderer.rootRule().children()]
-    else:
-        symbols = [("*", renderer.symbol())] if hasattr(renderer, "symbol") else []
+        return [(rule.label(), rule.symbol(), rule.setSymbol)
+                for rule in renderer.rootRule().children() if rule.symbol() is not None]
+    if hasattr(renderer, "symbol") and renderer.symbol() is not None:
+        return [("*", renderer.symbol(), renderer.setSymbol)]
+    return []
+
+
+def _symbol_element(symbol):
+    from qgis.core import QgsReadWriteContext, QgsSymbolLayerUtils
+    from qgis.PyQt.QtXml import QDomDocument
+
+    document = QDomDocument()
+    element = QgsSymbolLayerUtils.saveSymbol("s", symbol, document, QgsReadWriteContext())
+    document.appendChild(element)
+    return document, element
+
+
+def _load(element):
+    from qgis.core import QgsReadWriteContext, QgsSymbolLayerUtils
+
+    return QgsSymbolLayerUtils.loadSymbol(element, QgsReadWriteContext())
+
+
+def _children(element, tag):
+    child = element.firstChildElement(tag)
+    while not child.isNull():
+        yield child
+        child = child.nextSiblingElement(tag)
+
+
+def _centre_elements(symbol_element):
+    """Marker <symbol> elements of the CentroidFill layers under ``symbol_element``, in layer order."""
     found = []
-    for label, symbol in symbols:
-        if symbol is not None:
-            _collect(label, symbol, found)
+    for layer in _children(symbol_element, "layer"):
+        inner = layer.firstChildElement("symbol")
+        if inner.isNull():
+            continue
+        if layer.attribute("class") == "CentroidFill":
+            found.append(inner)
+        else:
+            found.extend(_centre_elements(inner))
     return found
 
 
-def _collect(label, symbol, found):
-    for index in range(symbol.symbolLayerCount()):
-        layer = symbol.symbolLayer(index)
-        sub = layer.subSymbol()
-        if sub is None:
-            continue
-        if layer.layerType() == "CentroidFill":
-            found.append((label, layer))
-        else:
-            _collect(label, sub, found)
+def _options(layer_element):
+    """name -> <Option> element of a symbol layer's property map."""
+    options = layer_element.firstChildElement("Option")
+    return {option.attribute("name"): option for option in _children(options, "Option")}
+
+
+def _number(text):
+    try:
+        return float(text)
+    except (TypeError, ValueError):
+        return None
+
+
+def _rescale(marker_element, pixel_to_mm, factor):
+    """Every size, offset and outline of a marker <symbol> element: pixels to mm, then times ``factor``."""
+    for layer in _children(marker_element, "layer"):
+        options = _options(layer)
+        for value_name, unit_name in SIZE_OPTIONS:
+            value, unit = options.get(value_name), options.get(unit_name)
+            if value is None:
+                continue
+            ratio = factor
+            if pixel_to_mm and unit is not None and unit.attribute("value") == "Pixel":
+                ratio *= MM_PER_PIXEL
+                unit.setAttribute("value", "MM")
+            if ratio == 1.0:
+                continue
+            parts = [_number(part) for part in value.attribute("value").split(",")]
+            if parts and all(part is not None for part in parts):
+                value.setAttribute("value", ",".join(repr(part * ratio) for part in parts))
+
+
+def centre_markers(renderer):
+    """(rule label, marker symbol) for every centre marker, pixel sizes read as mm.
+
+    Each marker is a new symbol loaded from XML, the caller's own: for
+    measuring, never for editing the renderer.
+    """
+    found = []
+    for label, symbol, _setter in _rule_symbols(renderer):
+        document, element = _symbol_element(symbol)
+        for marker_element in _centre_elements(element):
+            _rescale(marker_element, True, 1.0)
+            found.append((label, _load(marker_element)))
+    return found
 
 
 def scale_factor(ink_mm, level):
@@ -83,42 +160,6 @@ def _table():
     return json.loads(TABLE_PATH.read_text(encoding="utf-8"))["levels"]
 
 
-def in_millimetres(marker):
-    """Copy of ``marker`` with its pixel sizes and offsets as millimetres (same size at 96 dpi)."""
-    marker = marker.clone()
-    pixels = Qgis.RenderUnit.Pixels
-    for index in range(marker.symbolLayerCount()):
-        layer = marker.symbolLayer(index)
-        if layer.sizeUnit() == pixels:
-            layer.setSize(layer.size() * MM_PER_PIXEL)
-            layer.setSizeUnit(Qgis.RenderUnit.Millimeters)
-        if layer.offsetUnit() == pixels:
-            offset = layer.offset()
-            offset.setX(offset.x() * MM_PER_PIXEL)
-            offset.setY(offset.y() * MM_PER_PIXEL)
-            layer.setOffset(offset)
-            layer.setOffsetUnit(Qgis.RenderUnit.Millimeters)
-        if hasattr(layer, "strokeWidthUnit") and layer.strokeWidthUnit() == pixels:
-            layer.setStrokeWidth(layer.strokeWidth() * MM_PER_PIXEL)
-            layer.setStrokeWidthUnit(Qgis.RenderUnit.Millimeters)
-    return marker
-
-
-def scaled(marker, factor):
-    """Copy of ``marker`` with every size, offset and stroke multiplied by ``factor``."""
-    marker = marker.clone()
-    for index in range(marker.symbolLayerCount()):
-        layer = marker.symbolLayer(index)
-        layer.setSize(layer.size() * factor)
-        offset = layer.offset()
-        offset.setX(offset.x() * factor)
-        offset.setY(offset.y() * factor)
-        layer.setOffset(offset)
-        if hasattr(layer, "setStrokeWidth"):
-            layer.setStrokeWidth(layer.strokeWidth() * factor)
-    return marker
-
-
 def apply_centre_symbol_sizes(layer, level, type_name):
     """Bring every centre pictogram of ``layer`` to the regulated size; returns how many were set.
 
@@ -130,17 +171,27 @@ def apply_centre_symbol_sizes(layer, level, type_name):
     renderer = layer.renderer()
     if not entries or renderer is None:
         return 0
-    markers = centre_markers(renderer)
-    if [label for label, _ in markers] != [entry["kural"] for entry in entries]:
+    rules = []
+    labels = []
+    for label, symbol, setter in _rule_symbols(renderer):
+        document, element = _symbol_element(symbol)
+        markers = _centre_elements(element)
+        rules.append((setter, document, element, markers))
+        labels.extend([label] * len(markers))
+    if labels != [entry["kural"] for entry in entries]:
         return 0
     count = 0
-    for (label, holder), entry in zip(markers, entries):
-        marker = in_millimetres(holder.subSymbol())
-        factor = scale_factor(entry["murekkep_mm"], level)
-        if factor is not None:
-            marker = scaled(marker, factor)
-            count += 1
-        holder.setSubSymbol(marker)
+    remaining = iter(entries)
+    for setter, _document, element, markers in rules:
+        if not markers:
+            continue
+        for marker_element in markers:
+            factor = scale_factor(next(remaining)["murekkep_mm"], level)
+            _rescale(marker_element, True, factor or 1.0)
+            count += factor is not None
+        rebuilt = _load(element)
+        if rebuilt is not None:
+            setter(rebuilt)
     layer.setCustomProperty("mpyy/merkez_sembol_mm", f"{SYMBOL_MM.get(level)} mm ({count} sembol)")
     return count
 

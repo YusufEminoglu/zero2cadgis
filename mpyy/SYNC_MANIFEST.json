@@ -1,6 +1,6 @@
 {
  "files": {
-  "core/centre_symbols.py": "bdda89ed8403e52c0ce609b2293cc8b6c135d37d291835bf05f80227a21933c0",
+  "core/centre_symbols.py": "9e3b7a08c7a4a8f7ef15723598417973ffe4bd669372e569310546b98ade35be",
   "core/db_factory.py": "96c12a68be60f7773ea5172e90a0997c0820dc46d5fd803f1a173f25d59ca01d",
   "core/fonts.py": "8289d4f4a3026abbb5dda1b26dd52cef20debb91940ff35152ba104d905a3e39",
   "core/form_rules.py": "7018b4cdc02bef99669861efa9a15e896ecca229143462eff57fa210956adedb",
