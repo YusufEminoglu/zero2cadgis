@@ -1,5 +1,28 @@
 # Changelog
 
+## [4.1.0] - 2026-09-29
+
+- **Plan notation where the drawing places it**: every Netcad 8 building-rights
+  and road-width Smart Object becomes a point in `<file>_PLAN_NOTATION`
+  ("Building notation": nizam / kat circle, TAKS / KAKS circle, E =, Yençok;
+  "Road widths": the width in a circle), drawn with the Ek-1e notation. Each
+  circle sits on its own object. The plan areas keep the values; their own
+  notation labels and the Smart Object frames are hidden so nothing is drawn
+  twice. Road widths no longer need the road layers to map to Yolorta.
+- **Fixed: layers missing from the NCZ layer list.** The layer cache was never
+  refreshed after a decoder change, so drawings opened before 3.2.0 kept a
+  shorter list (one plan showed 12 of its 28 layers, without the Smart Objects
+  that hold emsal / yençok and road widths). The cache is now tied to the
+  decoder code itself.
+- **Lines at the drawing's own pen**: Netcad's per-layer pen width (mm) is read
+  and used for CAD lines and outlines (0.25 mm where a layer sets none, instead
+  of 0.7 mm); cephe lines take it through `CizgiKalinligi`, and the Ministry
+  style's attribute-driven cephe width is restored.
+- `ROL_CEPHE` (the cephe setback notation) opens visible; it was treated as a
+  helper layer.
+- Emsal / Yençok text of an object without a circle sits on the object.
+- The unmatched group is named `<file>_UNMATCHED_LAYERS`.
+
 ## [4.0.1] - 2026-09-29
 
 - Fixed TR-Only MPYY Style styling failing now and then on QGIS 4 with "'QgsSimpleLineSymbolLayer' object has no attribute 'sizeUnit'" while sizing the area centre pictograms (a stale Python wrapper of a deleted symbol layer). The sizes are now applied on the symbol's XML; the drawn sizes are unchanged.
