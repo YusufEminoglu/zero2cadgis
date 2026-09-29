@@ -58,6 +58,7 @@ TARAMA_RE = re.compile(r"mpyy-tarama:([0-9A-Za-z_.\-]+\.png)")
 
 HEX64_RE = re.compile(r'"([0-9a-f]{16})([0-9a-f]{16})([0-9a-f]{16})([0-9a-f]{16})"')
 SLASH_KEY_FILES = ("styles/mpyy_detail_catalog/decisions.json",)
+TEXT_SUFFIXES = (".py", ".json", ".sld", ".xml", ".qml", ".svg", ".txt", ".md")
 
 
 def _sha(path: str) -> str:
@@ -169,13 +170,23 @@ def main() -> None:
         changed = sorted(k for k in manifest if old.get(k) != manifest[k])
         removed = sorted(k for k in old if k not in manifest)
         # A hand edit to the copy is drift too: the next sync would undo it.
+        # Text is compared line-ending neutral: git's autocrlf may check either out.
+        def same(rel, a, b):
+            if rel.endswith(TEXT_SUFFIXES):
+                return a.replace(b"\r\n", b"\n") == b.replace(b"\r\n", b"\n")
+            return a == b
+
         edited = []
         for rel, src in sorted(files.items()):
             dst = os.path.join(TARGET, *rel.split("/"))
             with open(src, "rb") as handle:
                 want = hub_safe(rel, handle.read())
-            if not os.path.isfile(dst) or open(dst, "rb").read() != want:
+            if not os.path.isfile(dst):
                 edited.append(rel)
+                continue
+            with open(dst, "rb") as handle:
+                if not same(rel, handle.read(), want):
+                    edited.append(rel)
         print(f"{len(changed)} changed/new, {len(removed)} removed since last sync, "
               f"{len(edited)} copied file(s) differ from what a sync writes")
         for k in (changed + removed)[:40]:
