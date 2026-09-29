@@ -2442,6 +2442,7 @@ class Zero2CadGisDockWidget(QDockWidget):
     def _import_netcad_dataset(self) -> None:
         if not self.ncz_readers:
             return
+        self._notation_points = []
 
         try:
             self.progress_ncz.setVisible(True)
@@ -2841,6 +2842,9 @@ class Zero2CadGisDockWidget(QDockWidget):
             matching.confirm(level, tabaka, key)
         return confirmed
 
+    #: The drawing's notation points, filled by the plan-mode layer build.
+    _notation_points: list = []
+
     def _finish_mpyy_import(
             self,
             layer_groups: list[LayerGroup],
@@ -2882,10 +2886,11 @@ class Zero2CadGisDockWidget(QDockWidget):
         extra = []
         if result.leftovers:
             extra.append(LayerGroup(
-                name=f"{base_name}_ESLESMEYEN_TABAKALAR", layers=result.leftovers))
+                name=f"{base_name}_UNMATCHED_LAYERS", layers=result.leftovers))
         extra.extend(tables)
         if extra:
             self._add_groups_to_project(extra, plan_type=level)
+        notation_note = self._add_plan_notation(result, base_name, spatial)
         with suppress(Exception):
             if hasattr(self.iface, "mapCanvas") and self.iface.mapCanvas():
                 self.iface.mapCanvas().refresh()
@@ -2896,7 +2901,42 @@ class Zero2CadGisDockWidget(QDockWidget):
         level_msg = (Qgis.MessageLevel.Warning if result.unmatched
                      else Qgis.MessageLevel.Success)
         self.iface.messageBar().pushMessage(
-            "02CadGis", result.summary(), level_msg, 12)
+            "02CadGis", result.summary() + notation_note, level_msg, 12)
+
+    def _add_plan_notation(self, result, base_name: str, spatial: list) -> str:
+        """Add the drawing's Smart Object notation as point layers; returns a summary note.
+
+        Drawn where the planner put each notation (core/plan_notation.py). The MPYY
+        plan areas keep their values, but their own notation labels are switched
+        off when the drawing brought its notation, so nothing is drawn twice.
+        """
+        from ..core.plan_notation import BUILDING_LAYER, build_notation_layers, hide_drawn_notation_objects
+
+        points = getattr(self, "_notation_points", None) or []
+        if not points or not spatial:
+            return ""
+        layers = build_notation_layers(points, spatial[0].crs())
+        if not layers:
+            return ""
+        project = QgsProject.instance()
+        root = project.layerTreeRoot()
+        group_name = f"{base_name}_PLAN_NOTATION"
+        existing = root.findGroup(group_name)
+        if existing is not None:
+            (existing.parent() or root).removeChildNode(existing)
+        group = root.insertGroup(0, group_name)
+        for layer in layers:
+            project.addMapLayer(layer, False)
+            group.addLayer(layer)
+        self.last_notation_layers = layers
+        hide_drawn_notation_objects(result.leftovers, points)
+        if any(layer.name() == BUILDING_LAYER for layer in layers):
+            for mpyy_layer in result.layers:
+                if mpyy_layer.customProperty("mpyy/building_notation"):
+                    mpyy_layer.setLabelsEnabled(False)
+                    mpyy_layer.triggerRepaint()
+        counts = ", ".join(f"{layer.featureCount()} {layer.name().lower()}" for layer in layers)
+        return f"; plan notation drawn where the drawing places it ({counts})"
 
     def _build_layer_groups_from_buckets(
             self,
@@ -2911,7 +2951,11 @@ class Zero2CadGisDockWidget(QDockWidget):
         text_pts = []
         if is_plan_mode:
             from ..core.cad_engine import is_helper_or_noise_layer
+            from ..core.plan_notation import notation_points
             from ..core.zoning_text_extractor import notation_texts
+
+            self._notation_points = list(self._notation_points) + notation_points(
+                e for buckets in grouped_entities.values() for bkt in buckets.values() for e in bkt.entities)
             for buckets in grouped_entities.values():
                 for bkt in buckets.values():
                     for e in bkt.entities:

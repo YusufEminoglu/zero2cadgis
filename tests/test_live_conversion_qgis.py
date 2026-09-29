@@ -516,6 +516,39 @@ class TestMpyyStructureImportQgis(unittest.TestCase):
         self.assertIn("(PL_ASKERI_ALAN)", text)
         self.assertNotIn("PL_ASKERI_ALAN, GRID", text)
 
+    def test_plan_notation_layers_and_the_frames_they_replace(self):
+        from qgis.core import QgsFeature, QgsField, QgsGeometry, QgsPointXY, QgsVectorLayer
+        from qgis.PyQt.QtCore import QMetaType
+        from zero2cadgis.core.plan_notation import (
+            BUILDING_LAYER, ROAD_LAYER, NotationPoint, build_notation_layers, hide_drawn_notation_objects)
+
+        points = [NotationPoint(500000, 4250000, {"YapiDuzeni": "Ayrik", "KatAdedi": 4}, None, "SM_YAPILASMA"),
+                  NotationPoint(500020, 4250000, {"Taks": 0.3, "TaksTip": "Deger"}, None, "SM_YAPILASMA"),
+                  NotationPoint(500100, 4250100, {}, 15.0, "SM_YOL")]
+        layers = {l.name(): l for l in build_notation_layers(points, QgsCoordinateReferenceSystem("EPSG:5253"))}
+        self.assertEqual(sorted(layers), [BUILDING_LAYER, ROAD_LAYER])
+        self.assertEqual(layers[BUILDING_LAYER].featureCount(), 2)
+        self.assertEqual(layers[ROAD_LAYER].featureCount(), 1)
+        self.assertEqual(layers[BUILDING_LAYER].customProperty("mpyy/building_notation"),
+                         "Ek-1e detay kataloğu yapılaşma notasyonu")
+        self.assertTrue(all(l.labelsEnabled() for l in layers.values()))
+        self.assertEqual(build_notation_layers([], QgsCoordinateReferenceSystem("EPSG:5253")), [])
+
+        leftover = QgsVectorLayer("Polygon?crs=EPSG:5253", "left", "memory")
+        leftover.dataProvider().addAttributes([QgsField("layer_name", QMetaType.Type.QString),
+                                               QgsField("entity_type", QMetaType.Type.QString)])
+        leftover.updateFields()
+        ring = [QgsPointXY(0, 0), QgsPointXY(1, 0), QgsPointXY(1, 1), QgsPointXY(0, 0)]
+        for tabaka, kind in (("SM_YOL", "SmartObject"), ("SM_YOL", "Polyline"), ("SM_OTHER", "SmartObject")):
+            feature = QgsFeature(leftover.fields())
+            feature.setGeometry(QgsGeometry.fromPolygonXY([ring]))
+            feature.setAttributes([tabaka, kind])
+            leftover.dataProvider().addFeature(feature)
+        self.assertEqual(hide_drawn_notation_objects([leftover], points), 1)
+        shown = sorted((f["layer_name"], f["entity_type"]) for f in leftover.getFeatures())
+        # the SM_YOL Smart Object frame is hidden; its other drawing and other layers' objects stay
+        self.assertEqual(shown, [("SM_OTHER", "SmartObject"), ("SM_YOL", "Polyline")])
+
     def test_any_function_can_be_picked_by_hand_in_the_confirmation_table(self):
         from zero2cadgis.dialogs.tabaka_confirm_dialog import TabakaConfirmDialog
         from zero2cadgis.mpyy.core import tabaka_matching as matching
@@ -619,7 +652,7 @@ class TestMpyyStructureImportQgis(unittest.TestCase):
             self.assertEqual(sum(l.featureCount() for l in result.leftovers), 2)
             root = QgsProject.instance().layerTreeRoot()
             self.assertIsNotNone(root.findGroup("1000_TEST_UIP_MPYY_UIP"))
-            self.assertIsNotNone(root.findGroup("1000_TEST_UIP_ESLESMEYEN_TABAKALAR"))
+            self.assertIsNotNone(root.findGroup("1000_TEST_UIP_UNMATCHED_LAYERS"))
             # The MPYY styles come from inside 02CadGis, not from MPYY Studio.
             import sys
             self.assertFalse(any(m.startswith("planx_mpyy_studio") for m in sys.modules))

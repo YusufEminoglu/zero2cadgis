@@ -252,6 +252,29 @@ class TestZoningTextExtractor(unittest.TestCase):
         self.assertEqual((d["TaksTip"], d["EmsalKaksTip"], d["YapiYuksekligiTip"]), ("Deger", "Deger", "Deger"))
         self.assertEqual(parse_zoning_parameters(["A-3"]).as_attribute_dict()["TaksTip"], "")
 
+    def test_each_smart_object_becomes_one_notation_point_where_it_was_drawn(self):
+        from types import SimpleNamespace
+        from zero2cadgis.core.plan_notation import notation_points
+
+        def smart(properties, xy, tabaka="SM_YAPILASMA"):
+            corners = [SimpleNamespace(x=xy[0] + dx, y=xy[1] + dy) for dx, dy in ((-1, -1), (1, -1), (1, 1), (-1, 1))]
+            return SimpleNamespace(properties=properties, coordinates=corners, layer_name=tabaka)
+
+        points = notation_points([
+            smart({"nizam": "AYRIK", "kat": "4", "txtOn": "5", "txtYan": "3"}, (100, 200)),
+            smart({"choiceType": "1", "taks": "0.30", "kaks": "1.20"}, (130, 200)),
+            smart({"genislik": "15"}, (300, 400), "SM_YOL"),
+            smart({"unrelated": "x"}, (0, 0)),                              # nothing to show
+            SimpleNamespace(properties={}, coordinates=[SimpleNamespace(x=1, y=1)], layer_name="X"),
+        ])
+        self.assertEqual(len(points), 3)
+        nizam, taks, road = points
+        self.assertEqual((nizam.x, nizam.y), (100, 200))                       # the object's own place
+        self.assertEqual(nizam.values, {"YapiDuzeni": "Ayrik", "KatAdedi": 4,
+                                        "OnBahceMesafesi": 5.0, "YanBahceMesafesi": 3.0})
+        self.assertEqual(taks.values, {"Taks": 0.30, "TaksTip": "Deger", "EmsalKaks": 1.20, "EmsalKaksTip": "Deger"})
+        self.assertEqual((road.road_width, road.values, road.tabaka), (15.0, {}, "SM_YOL"))
+
 
 if __name__ == "__main__":
     unittest.main()

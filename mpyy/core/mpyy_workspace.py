@@ -717,14 +717,21 @@ def _apply_road_width_labels(layer, sld_text, field="YolGenisligi", keep_rendere
 
     register_mpyy_fonts()
     map_units = Qgis.RenderUnit.MapUnits
-    middle = 'line_interpolate_point($geometry, length($geometry) / 2)'
+    # A point layer (a road-width mark read from the drawing) carries the circle
+    # itself; a road axis carries it at its middle.
+    on_points = layer.geometryType() == Qgis.GeometryType.Point
+    middle = "$geometry" if on_points else 'line_interpolate_point($geometry, length($geometry) / 2)'
     circle = QgsFontMarkerSymbolLayer("ESRI Default Marker", "(", 10, QColor("black"))
     circle.setSizeUnit(map_units)
     circle.setDataDefinedProperty(QgsSymbolLayer.Property.Size, QgsProperty.fromExpression(f'"{field}" * 2.5'))
-    carrier = QgsMarkerLineSymbolLayer()
-    carrier.setPlacements(Qgis.MarkerLinePlacement.CentralPoint)
-    carrier.setSubSymbol(QgsMarkerSymbol([circle]))
-    width_rule = QgsRuleBasedRenderer.Rule(QgsLineSymbol([carrier]), 0, 2000, f'"{field}" > 0', "Yol genişliği")
+    if on_points:
+        width_symbol = QgsMarkerSymbol([circle])
+    else:
+        carrier = QgsMarkerLineSymbolLayer()
+        carrier.setPlacements(Qgis.MarkerLinePlacement.CentralPoint)
+        carrier.setSubSymbol(QgsMarkerSymbol([circle]))
+        width_symbol = QgsLineSymbol([carrier])
+    width_rule = QgsRuleBasedRenderer.Rule(width_symbol, 0, 2000, f'"{field}" > 0', "Yol genişliği")
     if keep_renderer and isinstance(layer.renderer(), QgsRuleBasedRenderer):
         layer.renderer().rootRule().appendChild(width_rule)
     else:
@@ -768,6 +775,11 @@ def _apply_road_width_labels(layer, sld_text, field="YolGenisligi", keep_rendere
     return True
 
 
+def apply_road_width_notation(layer, field="YolGenisligi"):
+    """The road-width circle of a UIP/NIP road axis, or of a road-width point read from a drawing."""
+    return _apply_road_width_labels(layer, None, field)
+
+
 BORDER_TEXT_REPEAT_MM = 40  # katalog "uygun aralıklarla ... yazılacak" der, aralığı ölçmez
 LINE_TEXT_REPEAT_MM = 15  # s.183: üçgenlerle aynı 15mm aralık
 
@@ -775,7 +787,7 @@ LINE_TEXT_REPEAT_MM = 15  # s.183: üçgenlerle aynı 15mm aralık
 def _apply_repeating_text_labels(layer, texts, placement, repeat_mm, level):
     """Repeat each rule's catalog text around/along its geometry, one label rule per SLD rule so
     unrelated rules of the same type stay unlabelled."""
-    from qgis.core import QgsPalLayerSettings, QgsRuleBasedLabeling, QgsTextFormat
+    from qgis.core import QgsPalLayerSettings, QgsProperty, QgsRuleBasedLabeling, QgsTextFormat
 
     from .fonts import register_mpyy_fonts
     from .mpyy_detail_catalog import _level_scale
@@ -1081,16 +1093,20 @@ def apply_building_notation(layer):
     names = set(layer.fields().names())
     if not set(BUILDING_FIELDS) <= names:
         return 0
-    from qgis.core import QgsPalLayerSettings, QgsRuleBasedLabeling, QgsTextFormat
+    from qgis.core import QgsPalLayerSettings, QgsProperty, QgsRuleBasedLabeling, QgsTextFormat
     from .fonts import register_mpyy_fonts
 
     register_mpyy_fonts()
     notation = json.loads((SLD_DIR / "decisions.json").read_text(encoding="utf-8"))["building_notation"]
+    # A point layer (a notation read from the drawing, placed where the planner
+    # drew it) is its own anchor; a plan area takes SembolPoz or its interior.
+    inside = ("$geometry" if layer.geometryType() == Qgis.GeometryType.Point
+              else "pole_of_inaccessibility($geometry, 0.5)")
     anchor = (
         """CASE WHEN regexp_match("SembolPoz", '^ *-?[0-9.]+ *[ ,;] *-?[0-9.]+ *$') """
         """THEN make_point(to_real(regexp_substr("SembolPoz", '^ *(-?[0-9.]+)')), """
         """to_real(regexp_substr("SembolPoz", '(-?[0-9.]+) *$'))) """
-        """ELSE pole_of_inaccessibility($geometry, 0.5) END"""
+        f"""ELSE {inside} END"""
     )
     radius = NOTATION_CIRCLE_M / 2
     gap = radius + 1.0  # the two circles sit side by side around the anchor
@@ -1110,8 +1126,16 @@ def apply_building_notation(layer):
     )
     glyph_drop = 0.13 * NOTATION_CIRCLE_M / ROAD_WIDTH_GLYPH_RATIO  # circle sits 0.13 em above the text box centre
 
+    # A plan area holds both circles side by side around one anchor. A point read
+    # from a drawing is one Netcad notation object, and Netcad draws the nizam /
+    # kat circle and the TAKS / KAKS circle as separate objects (Tire UİP: 1368
+    # and 739, one holding both): each circle then sits on its own point, and
+    # only a point holding both groups keeps them side by side.
+    on_points = layer.geometryType() == Qgis.GeometryType.Point
+    has_nizam, has_taks = order, f"(({taks}) OR ({kaks}))"
+
     def rule(expression, filter_expression, description, size=NOTATION_TEXT_M, font="DejaVu Sans",
-             dx=0.0, dy=0.0, underline=False, below=False, html=False):
+             dx=0.0, dy=0.0, underline=False, below=False, html=False, side=0):
         settings = QgsPalLayerSettings()
         settings.isExpression = True
         settings.fieldName = expression
@@ -1120,6 +1144,13 @@ def apply_building_notation(layer):
         settings.geometryGeneratorType = Qgis.GeometryType.Point
         settings.placement = Qgis.LabelPlacement.OverPoint
         settings.xOffset, settings.yOffset = dx, dy  # map units, y grows downwards
+        if on_points and side:
+            other = has_taks if side < 0 else has_nizam
+            shift = side * gap
+            properties = settings.dataDefinedProperties()
+            properties.setProperty(QgsPalLayerSettings.Property.OffsetXY, QgsProperty.fromExpression(
+                f"to_string((CASE WHEN {other} THEN {shift} ELSE 0 END) + {dx - shift}) || ',' || to_string({dy})"))
+            settings.setDataDefinedProperties(properties)
         if below:
             settings.quadOffset = Qgis.LabelQuadrantPosition.Below
         settings.offsetUnits = Qgis.RenderUnit.MapUnits
@@ -1141,14 +1172,14 @@ def apply_building_notation(layer):
     circle_size = NOTATION_CIRCLE_M / ROAD_WIDTH_GLYPH_RATIO
     inner = radius * 0.52
     root = QgsRuleBasedLabeling.Rule(None)
-    root.appendChild(rule("'('", order, "Yapı düzeni dairesi", circle_size, "ESRI Default Marker", -gap, glyph_drop))
-    root.appendChild(rule(f"""map_get({letters}, "YapiDuzeni") || '-'""", """"YapiDuzeni" IS NOT NULL""", "Yapı düzeni (A-, B-, BL-)", dx=-gap - inner))
-    root.appendChild(rule(number("KatAdedi"), """"KatAdedi" > 0""", "Kat adedi", dx=-gap + inner))
-    root.appendChild(rule(number("OnBahceMesafesi"), """"OnBahceMesafesi" > 0""", "Ön bahçe mesafesi", dx=-gap, dy=-inner))
-    root.appendChild(rule(number("YanBahceMesafesi"), """"YanBahceMesafesi" > 0""", "Yan bahçe mesafesi", dx=-gap, dy=inner))
-    root.appendChild(rule("'('", taks, "TAKS/KAKS dairesi", circle_size, "ESRI Default Marker", gap, glyph_drop))
-    root.appendChild(rule("""format_number("Taks", 2, 'en')""", taks, "TAKS", dx=gap, dy=-2.6, underline=True))
-    root.appendChild(rule("""format_number("EmsalKaks", 2, 'en')""", f"({taks}) AND ({kaks})", "KAKS", dx=gap, dy=3.4))
+    root.appendChild(rule("'('", order, "Yapı düzeni dairesi", circle_size, "ESRI Default Marker", -gap, glyph_drop, side=-1))
+    root.appendChild(rule(f"""map_get({letters}, "YapiDuzeni") || '-'""", """"YapiDuzeni" IS NOT NULL""", "Yapı düzeni (A-, B-, BL-)", dx=-gap - inner, side=-1))
+    root.appendChild(rule(number("KatAdedi"), """"KatAdedi" > 0""", "Kat adedi", dx=-gap + inner, side=-1))
+    root.appendChild(rule(number("OnBahceMesafesi"), """"OnBahceMesafesi" > 0""", "Ön bahçe mesafesi", dx=-gap, dy=-inner, side=-1))
+    root.appendChild(rule(number("YanBahceMesafesi"), """"YanBahceMesafesi" > 0""", "Yan bahçe mesafesi", dx=-gap, dy=inner, side=-1))
+    root.appendChild(rule("'('", taks, "TAKS/KAKS dairesi", circle_size, "ESRI Default Marker", gap, glyph_drop, side=1))
+    root.appendChild(rule("""format_number("Taks", 2, 'en')""", taks, "TAKS", dx=gap, dy=-2.6, underline=True, side=1))
+    root.appendChild(rule("""format_number("EmsalKaks", 2, 'en')""", f"({taks}) AND ({kaks})", "KAKS", dx=gap, dy=3.4, side=1))
     root.appendChild(rule(texts, "", "Emsal ve yençok", dy=radius + 1.5, below=True, html=True))
     layer.setLabeling(QgsRuleBasedLabeling(root))
     layer.setLabelsEnabled(True)
