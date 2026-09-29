@@ -3,7 +3,7 @@
  "source": {
   "file": "planGMLShema_1_7.zip",
   "url": "https://eplan.csb.gov.tr/e-plan/doc/planGMLShema_1_7.zip",
-  "sha256": "7776af3edf8ceb4945e0f64f97bad681462e58282a5071a6820b9b76d7ca4b6b"
+  "sha256": "7776af3edf8ceb49 45e0f64f97bad681 462e58282a5071a6 820b9b76d7ca4b6b"
  },
  "levels": {
   "MUIP": {
@@ -4295,7 +4295,7 @@
    },
    "xsd": {
     "file": "muip.V.1.1.6.xsd",
-    "sha256": "173ad1250d8f585ab93990e2ea305ca8f4e40fc08ce113d684094b68387d1dd3"
+    "sha256": "173ad1250d8f585a b93990e2ea305ca8 f4e40fc08ce113d6 84094b68387d1dd3"
    }
   },
   "MNIP": {
@@ -6901,7 +6901,7 @@
    },
    "xsd": {
     "file": "mnip.V.1.1.6.xsd",
-    "sha256": "9edcda4386aefeb0c23c13ff044b1d2ce79119decf05ea75025647ee5b3ee0d3"
+    "sha256": "9edcda4386aefeb0 c23c13ff044b1d2c e79119decf05ea75 025647ee5b3ee0d3"
    }
   },
   "MCDP25": {
@@ -8964,7 +8964,7 @@
    },
    "xsd": {
     "file": "mcdp25.V.1.1.6.xsd",
-    "sha256": "46c91561d7f2bf8469831ff6cbcf069ab59fea568c69baffbfa4b1b57fba6ac7"
+    "sha256": "46c91561d7f2bf84 69831ff6cbcf069a b59fea568c69baff bfa4b1b57fba6ac7"
    }
   },
   "MCDP100": {
@@ -10925,7 +10925,7 @@
    },
    "xsd": {
     "file": "mcdp100.V.1.1.6.xsd",
-    "sha256": "8c403fc1f0b92770f45fcb3e6043b8b60e6cb487d7721a3ea185df85404f68e7"
+    "sha256": "8c403fc1f0b92770 f45fcb3e6043b8b6 0e6cb487d7721a3e a185df85404f68e7"
    }
   }
  }

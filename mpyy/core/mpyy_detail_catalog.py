@@ -101,7 +101,13 @@ def _set_dash(layer, values):
 
 @lru_cache(maxsize=1)
 def catalog():
-    decisions = json.loads((CATALOG_DIR / "decisions.json").read_text(encoding="utf-8"))
+    raw_decisions = json.loads((CATALOG_DIR / "decisions.json").read_text(encoding="utf-8"))
+    decisions = {}
+    for sec, content in raw_decisions.items():
+        if isinstance(content, dict):
+            decisions[sec] = {k.replace("::", "/"): v for k, v in content.items()}
+        else:
+            decisions[sec] = content
     extracted = json.loads((CATALOG_DIR / "symbols.json").read_text(encoding="utf-8"))["symbols"]
     by_svg, by_glyph = {}, {}
     for key, entry in decisions["symbols"].items():

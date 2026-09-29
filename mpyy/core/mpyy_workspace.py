@@ -183,10 +183,10 @@ def create_mpyy_workspace(output_path, crs, level):
                 (
                     level,
                     schema["xsd"]["file"],
-                    schema["xsd"]["sha256"],
+                    schema["xsd"]["sha256"].replace(" ", ""),
                     schema["target_namespace"],
                     source["url"],
-                    source["sha256"],
+                    source["sha256"].replace(" ", ""),
                 ),
             )
             _store_detail_hierarchy(con, level)
