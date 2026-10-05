@@ -6,8 +6,9 @@
 These helpers construct in-memory NCZ byte streams from first principles
 using the layout documented in ``docs/NCZ_FORMAT.md``. They are not real
 Netcad drawings; their purpose is to exercise every decoder path with
-deterministic bytes so the v1 and v2 engines can be compared field by
-field, and so decoders keep bounds-checking short/odd blocks.
+deterministic bytes, so the engine's output can be checked against values
+the fixture itself wrote, and so decoders keep bounds-checking short and
+odd blocks.
 
 Coordinates are stored northing-first (see the format notes): the value
 at record offset 8 becomes the decoded *y*, and the value at offset 16

@@ -200,17 +200,23 @@ If a file does not parse as expected, retry with cleanup disabled and inspect th
 
 02CadGis reads Netcad NCZ/NCA drawings with its **v2 engine**
 (`core/ncz_engine/v2/`), an independent, block-oriented decoder written
-against the documented format layout in [docs/NCZ_FORMAT.md](docs/NCZ_FORMAT.md)
-rather than by adapting upstream source line by line. Because that format
-knowledge ultimately traces back to
-[Jeomatik NCZ Reader](https://github.com/erdincunal/Jeomatik-NCZ-Reader),
-Copyright (C) 2026 Erdinç Örsan ÜNAL, under GPL-2.0-or-later, the upstream
-copyright, source link, and license are retained in
-[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). The legacy v1 decoder is
-kept as a validated reference and safety fallback; the v2 engine is verified
-to produce byte-identical output to it across the synthetic NCZ corpus in
-`tests/`. The engine architecture and roadmap are in
+against the documented format layout in [docs/NCZ_FORMAT.md](docs/NCZ_FORMAT.md).
+It is the only decoder in the tree: the earlier v1 decoder has been removed.
+The engine architecture and roadmap are in
 [docs/NCZ_ENGINE_V2.md](docs/NCZ_ENGINE_V2.md).
+
+02CadGis versions 0.1.0–4.1.2 shipped an NCZ decoder derived from
+[Jeomatik NCZ Reader](https://github.com/erdincunal/Jeomatik-NCZ-Reader),
+Copyright (C) 2026 Erdinç Örsan ÜNAL, GPL-2.0-or-later. Through 0.3.0 it was
+the only decoder; from 0.4.0 the v2 engine became the primary path, but the
+derived implementation stayed in the tree as its fallback, so every release
+through 4.1.2 carries it. That history — with the upstream copyright, source
+link and license — is recorded in
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). With the v1 code removed,
+the block scanner, the geometry decoders, the result model and the QGIS layer
+builder in the tree are 02CadGis's own code, and no upstream source expression
+is carried forward. The provenance section of `THIRD_PARTY_NOTICES.md` states
+exactly what that covers.
 
 02CadGis is an independent project and is not endorsed by or affiliated
 with Jeomatik.

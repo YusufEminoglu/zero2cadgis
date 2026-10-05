@@ -1,5 +1,24 @@
 # Changelog
 
+## [Unreleased]
+
+- **NCZ engine: one decoder, and it is 02CadGis's own.** The legacy v1 decoder
+  is gone. `core/netcad_parser.py` is now a thin facade over the v2 engine, and
+  the NCZ result model, the block scanner, the geometry decoders and the dock's
+  NCZ layer-building and geometry-conversion paths were rewritten as first-party
+  code: the geometry-kind vocabulary and the kind-to-family table now live with
+  the decoders (`core/ncz_engine/v2/geometry.py`) and are the single source the
+  dock, the index catalog and the field styling all read. Decode behaviour is
+  unchanged — the fixture tests assert the values the fixtures themselves wrote,
+  so a drifting decoder fails rather than being re-baselined. The provenance
+  section of `THIRD_PARTY_NOTICES.md` records the earlier derived decoder and
+  what this rewrite covers.
+
+- **Feature-Level Spatial Clipping & Filtering**: Extended the Spatial Filter tab with two new geometry-level clipping modes alongside full-file import:
+  - **Keep Whole Features (`keep_whole`)**: Selects and imports only the entities intersecting or within the target boundary, preserving their original geometric integrity (ideal for parcels, buildings, and topological networks).
+  - **Exact Clip (`exact_clip`)**: Crops geometries cleanly at the boundary line using spatial intersection (cookie-cutter). Points and text notations are preserved if within the boundary; lines and polygons are clipped to the boundary edge.
+  - Fully integrated across all formats (Netcad NCZ/NCA, CAD DXF/DWG/DGN, and GIS formats) for both direct canvas import and unified GeoPackage generation.
+
 ## [4.1.2] - 2026-09-29
 
 - **Pure Hub Validation (no config suppression)**: Eliminated false-positive high-entropy string detections at the data level without any `.secrets.baseline` config suppression file. Formatted schema sha256 chunks with spaces (normalized on load) and structured catalog decision namespaces with `::` delimiters, achieving an unsuppressed, pristine Hub scan verdict.

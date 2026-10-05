@@ -138,6 +138,13 @@ class TestLiveConversion(unittest.TestCase):
         self.assertIsNotNone(dock.tree_filter_results)
         self.assertEqual(dock.tree_filter_results.columnCount(), 7)
 
+        # Feature-level clipping mode selector
+        self.assertIsNotNone(dock.cmb_filter_clip_mode)
+        self.assertEqual(dock.cmb_filter_clip_mode.count(), 3)
+        self.assertEqual(dock.cmb_filter_clip_mode.itemData(0), "none")
+        self.assertEqual(dock.cmb_filter_clip_mode.itemData(1), "keep_whole")
+        self.assertEqual(dock.cmb_filter_clip_mode.itemData(2), "exact_clip")
+
         # Boundary mode switching
         dock.cmb_filter_boundary_mode.setCurrentIndex(1)  # polygon
         self.assertFalse(dock.widget_filter_poly.isHidden())
@@ -689,6 +696,60 @@ class TestMpyyStructureImportQgis(unittest.TestCase):
         finally:
             dock.close()
             dock.setParent(None)
+
+    def test_clip_or_filter_geometry_modes(self):
+        from zero2cadgis.core.spatial_filter import SpatialClipMode, clip_or_filter_geometry
+        from qgis.core import QgsGeometry, QgsPointXY, QgsWkbTypes
+
+        # Boundary: Square from (0,0) to (100, 100)
+        boundary = QgsGeometry.fromPolygonXY([[
+            QgsPointXY(0, 0), QgsPointXY(100, 0),
+            QgsPointXY(100, 100), QgsPointXY(0, 100),
+            QgsPointXY(0, 0),
+        ]])
+
+        # 1. Point: inside vs outside
+        pt_inside = QgsGeometry.fromPointXY(QgsPointXY(50, 50))
+        pt_outside = QgsGeometry.fromPointXY(QgsPointXY(150, 150))
+
+        # None mode
+        self.assertIsNotNone(clip_or_filter_geometry(pt_outside, boundary, SpatialClipMode.NONE))
+
+        # Keep whole mode
+        self.assertIsNotNone(clip_or_filter_geometry(pt_inside, boundary, SpatialClipMode.KEEP_WHOLE))
+        self.assertIsNone(clip_or_filter_geometry(pt_outside, boundary, SpatialClipMode.KEEP_WHOLE))
+
+        # Exact clip mode for point
+        self.assertIsNotNone(clip_or_filter_geometry(pt_inside, boundary, SpatialClipMode.EXACT_CLIP))
+        self.assertIsNone(clip_or_filter_geometry(pt_outside, boundary, SpatialClipMode.EXACT_CLIP))
+
+        # 2. Line: straddling boundary from (-50, 50) to (150, 50)
+        line_straddle = QgsGeometry.fromPolylineXY([
+            QgsPointXY(-50, 50), QgsPointXY(150, 50)
+        ])
+
+        # Keep whole: keeps entire line length (200 units)
+        res_keep = clip_or_filter_geometry(line_straddle, boundary, SpatialClipMode.KEEP_WHOLE)
+        self.assertIsNotNone(res_keep)
+        self.assertAlmostEqual(res_keep.length(), 200.0)
+
+        # Exact clip: cuts line at boundary (length becomes 100 units from 0 to 100)
+        res_clip = clip_or_filter_geometry(line_straddle, boundary, SpatialClipMode.EXACT_CLIP)
+        self.assertIsNotNone(res_clip)
+        self.assertAlmostEqual(res_clip.length(), 100.0)
+        self.assertEqual(res_clip.type(), QgsWkbTypes.GeometryType.LineGeometry)
+
+        # 3. Polygon: straddling polygon from (50, 0) to (150, 100)
+        poly_straddle = QgsGeometry.fromPolygonXY([[
+            QgsPointXY(50, 0), QgsPointXY(150, 0),
+            QgsPointXY(150, 100), QgsPointXY(50, 100),
+            QgsPointXY(50, 0),
+        ]])
+        res_poly_clip = clip_or_filter_geometry(poly_straddle, boundary, SpatialClipMode.EXACT_CLIP)
+        self.assertIsNotNone(res_poly_clip)
+        # Intersected width is from 50 to 100 (width 50, height 100 -> area 5000)
+        self.assertAlmostEqual(res_poly_clip.area(), 5000.0)
+        self.assertEqual(res_poly_clip.type(), QgsWkbTypes.GeometryType.PolygonGeometry)
 
 
 if __name__ == "__main__":

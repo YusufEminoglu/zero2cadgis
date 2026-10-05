@@ -21,6 +21,13 @@ from .crs_detect import detect_crs
 from .path_utils import has_extension
 
 
+class SpatialClipMode:
+    """Feature-level spatial clipping mode."""
+    NONE = "none"              # Import whole feature untouched (no clipping)
+    KEEP_WHOLE = "keep_whole"  # Keep whole feature if it intersects boundary
+    EXACT_CLIP = "exact_clip"  # Crop geometry at boundary (geometric intersection)
+
+
 @dataclass
 class ExtentBox:
     """Pure bounding box with min/max bounds."""
@@ -69,6 +76,17 @@ class ExtentBox:
             and self.max_x >= other.max_x
             and self.min_y <= other.min_y
             and self.max_y >= other.max_y
+        )
+
+    def clip_intersection(self, other: "ExtentBox") -> "ExtentBox | None":
+        """Compute the intersected bounding box, or None if no overlap."""
+        if not self.intersects(other):
+            return None
+        return ExtentBox(
+            min_x=max(self.min_x, other.min_x),
+            min_y=max(self.min_y, other.min_y),
+            max_x=min(self.max_x, other.max_x),
+            max_y=min(self.max_y, other.max_y),
         )
 
 
@@ -174,7 +192,6 @@ def discover_files(
 def inspect_ncz_extent(file_path: str, fallback_crs: str = "") -> ExtentInspectionResult:
     """Inspect spatial extent and CRS of a Netcad .ncz or .nca drawing."""
     from .ncz_engine.v2.parser import NczCatalog
-    from .netcad_parser import parse_netcad_binary_stream
 
     format_key = "ncz"
     try:
@@ -183,18 +200,11 @@ def inspect_ncz_extent(file_path: str, fallback_crs: str = "") -> ExtentInspecti
 
         catalog = NczCatalog(data).index()
         entities = catalog.decode_all()
-        raw_coords = []
-        if not entities:
-            # Fallback to v1 parser if v2 decoded zero entities
-            fallback_res = parse_netcad_binary_stream(file_path)
-            raw_entities = fallback_res.get("entities", [])
-            for e in raw_entities:
-                for c in getattr(e, "coordinates", []):
-                    raw_coords.append((c.x, c.y))
-        else:
-            for entity in entities:
-                for pt in entity.get("coordinates", []):
-                    raw_coords.append((pt["x"], pt["y"]))
+        raw_coords = [
+            (point["x"], point["y"])
+            for entity in entities
+            for point in entity.get("coordinates", [])
+        ]
 
         coords = [
             (x, y) for (x, y) in raw_coords
@@ -519,3 +529,111 @@ def scan_and_filter_files(
         results.append(res)
 
     return results
+
+
+def clip_or_filter_extent(
+    candidate_box: ExtentBox,
+    target_box: ExtentBox,
+    clip_mode: str = SpatialClipMode.NONE,
+) -> ExtentBox | None:
+    """Filter or clip a candidate ExtentBox against a target ExtentBox.
+
+    Parameters
+    ----------
+    candidate_box : ExtentBox
+        The input bounding box.
+    target_box : ExtentBox
+        The reference bounding box.
+    clip_mode : str
+        SpatialClipMode.NONE ("none"): Return candidate_box unchanged.
+        SpatialClipMode.KEEP_WHOLE ("keep_whole"): Return candidate_box if it overlaps
+            target_box, otherwise None.
+        SpatialClipMode.EXACT_CLIP ("exact_clip"): Return the clipped intersection
+            box, or None if no overlap.
+    """
+    if clip_mode == SpatialClipMode.NONE or not target_box.is_valid:
+        return candidate_box
+    if not candidate_box.is_valid:
+        return None
+
+    if not candidate_box.intersects(target_box):
+        return None
+
+    if clip_mode == SpatialClipMode.KEEP_WHOLE:
+        return candidate_box
+
+    if clip_mode == SpatialClipMode.EXACT_CLIP:
+        return candidate_box.clip_intersection(target_box)
+
+    return candidate_box
+
+
+def clip_or_filter_geometry(
+    geom,
+    target_boundary,
+    clip_mode: str = SpatialClipMode.NONE,
+):
+    """Filter or clip a QgsGeometry against a target boundary polygon.
+
+    Parameters
+    ----------
+    geom : QgsGeometry
+        The input feature geometry.
+    target_boundary : QgsGeometry
+        The clipping boundary polygon.
+    clip_mode : str
+        SpatialClipMode.NONE ("none"): Return original geom untouched.
+        SpatialClipMode.KEEP_WHOLE ("keep_whole"): Return original geom if it
+            intersects target_boundary, otherwise return None.
+        SpatialClipMode.EXACT_CLIP ("exact_clip"): Crop geom at boundary using
+            geometric intersection. For point geometries, returns geom if inside.
+            For lines/polygons, returns the intersected geometry part matching
+            the original geometry dimension.
+    """
+    if clip_mode == SpatialClipMode.NONE or target_boundary is None:
+        return geom
+    if geom is None or geom.isEmpty():
+        return None
+    if target_boundary.isEmpty():
+        return None
+
+    # Fast spatial reject
+    if not geom.intersects(target_boundary):
+        return None
+
+    if clip_mode == SpatialClipMode.KEEP_WHOLE:
+        return geom
+
+    if clip_mode == SpatialClipMode.EXACT_CLIP:
+        # Fast path: if completely within, no cutting needed
+        if geom.within(target_boundary):
+            return geom
+
+        from qgis.core import QgsWkbTypes, QgsGeometry
+        geom_type = geom.type()
+        if geom_type == QgsWkbTypes.GeometryType.PointGeometry:
+            return geom
+
+        clipped = geom.intersection(target_boundary)
+        if clipped is None or clipped.isEmpty() or clipped.isNull():
+            return None
+
+        # Direct type match (e.g. Polygon intersected with Polygon remained Polygon)
+        if clipped.type() == geom_type:
+            return clipped
+
+        # GeometryCollection or mixed type: extract parts matching original dimension
+        with suppress(Exception):
+            matched_parts = []
+            for part in clipped.asGeometryCollection():
+                if part.type() == geom_type and not part.isEmpty():
+                    matched_parts.append(part)
+            if matched_parts:
+                if len(matched_parts) == 1:
+                    return matched_parts[0]
+                return QgsGeometry.unaryUnion(matched_parts)
+
+        return None
+
+    return geom
+

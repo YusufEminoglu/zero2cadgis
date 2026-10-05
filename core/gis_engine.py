@@ -166,7 +166,10 @@ class GisConverterEngine:
                  target_crs: QgsCoordinateReferenceSystem,
                  csv_profile: CsvGeometryProfile | None = None,
                  csv_source_crs: str = "",
-                 source_crs: QgsCoordinateReferenceSystem | str | None = None):
+                 source_crs: QgsCoordinateReferenceSystem | str | None = None,
+                 clip_geometry: Optional[QgsGeometry] = None,
+                 clip_mode: str = "none",
+                 clip_crs: Optional[QgsCoordinateReferenceSystem] = None):
         self.source_path = source_path
         self.target_gpkg = target_gpkg
         self.target_crs = target_crs
@@ -184,6 +187,9 @@ class GisConverterEngine:
         # and ``required_fields`` (the tabaka the MPYY transfer reads) are kept.
         self.dropped_fields: set = set()
         self.required_fields: set = set()
+        self.clip_geometry: Optional[QgsGeometry] = clip_geometry
+        self.clip_mode: str = clip_mode or "none"
+        self.clip_crs: Optional[QgsCoordinateReferenceSystem] = clip_crs
 
         self.source_crs: Optional[QgsCoordinateReferenceSystem] = None
         if source_crs:
@@ -198,6 +204,58 @@ class GisConverterEngine:
             c = QgsCoordinateReferenceSystem(csv_source_crs)
             if c.isValid():
                 self.source_crs = c
+
+    def _effective_clip_boundary(
+            self, dest_crs: QgsCoordinateReferenceSystem) -> Optional[QgsGeometry]:
+        """Transform clip boundary geometry to match dest_crs if needed."""
+        if not self.clip_geometry or self.clip_mode in ("none", "", None):
+            return None
+        clip_boundary = QgsGeometry(self.clip_geometry)
+        clip_crs = self.clip_crs or self.target_crs or QgsProject.instance().crs()
+        if clip_crs.isValid() and dest_crs.isValid() and clip_crs != dest_crs:
+            with contextlib.suppress(Exception):
+                transform = QgsCoordinateTransform(
+                    clip_crs, dest_crs, QgsProject.instance())
+                clip_boundary.transform(transform)
+        return clip_boundary
+
+    def _apply_spatial_clipping_to_layer(
+            self, layer: QgsVectorLayer) -> QgsVectorLayer:
+        """Filter or clip vector layer features according to clip_mode & clip_geometry."""
+        if not self.clip_geometry or self.clip_mode in ("none", "", None):
+            return layer
+
+        boundary = self._effective_clip_boundary(layer.crs())
+        if not boundary or boundary.isEmpty():
+            return layer
+
+        from .spatial_filter import clip_or_filter_geometry
+
+        geom_type_str = memory_geometry_type_name(layer)
+        mem_uri = f"{geom_type_str}?crs={layer.crs().authid()}"
+        mem_layer = QgsVectorLayer(mem_uri, layer.name(), "memory")
+        if not mem_layer.isValid():
+            return layer
+
+        prov = mem_layer.dataProvider()
+        prov.addAttributes(layer.fields())
+        mem_layer.updateFields()
+
+        clipped_features = []
+        for feat in layer.getFeatures():
+            geom = feat.geometry()
+            if not geom or geom.isEmpty():
+                continue
+            clipped_geom = clip_or_filter_geometry(geom, boundary, self.clip_mode)
+            if not clipped_geom or clipped_geom.isEmpty():
+                continue
+            new_feat = QgsFeature(mem_layer.fields())
+            new_feat.setGeometry(clipped_geom)
+            new_feat.setAttributes(feat.attributes())
+            clipped_features.append(new_feat)
+
+        add_features_or_raise(mem_layer, clipped_features, f"Clipped {layer.name()}")
+        return mem_layer
 
     def _effective_source_crs(
             self,
@@ -1301,6 +1359,10 @@ class GisConverterEngine:
             return sources
         return [("", self._resolve_source(is_kmz))]
 
+    def convert_to_gpkg(self, **kwargs) -> list[QgsVectorLayer]:
+        """Convenience alias for convert()."""
+        return self.convert(**kwargs)
+
     def convert(
             self,
             is_kmz: bool = False,
@@ -1327,6 +1389,9 @@ class GisConverterEngine:
                 if html_expansion and "description" in [
                         f.name() for f in vlayer.fields()]:
                     processed_layer = self._expand_html_descriptions(vlayer)
+
+                if self.clip_mode not in ("none", "", None) and self.clip_geometry:
+                    processed_layer = self._apply_spatial_clipping_to_layer(processed_layer)
 
                 if self.cad_split_field:
                     wrote_any = self._write_cad_layer_gpkg(
@@ -1960,6 +2025,9 @@ class GisConverterEngine:
             if html_expansion and "description" in [
                     f.name() for f in vlayer.fields()]:
                 processed_layer = self._expand_html_descriptions(vlayer)
+
+            if self.clip_mode not in ("none", "", None) and self.clip_geometry:
+                processed_layer = self._apply_spatial_clipping_to_layer(processed_layer)
 
             # Group features by geometry type to support layers with mixed geometry types (e.g. DXF layers)
             default_geom_type = memory_geometry_type_name(processed_layer)

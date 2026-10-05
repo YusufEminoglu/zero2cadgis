@@ -30,18 +30,15 @@ from .blocks import (
     scan_blocks,
     scan_embedded_geometry,
 )
-from .geometry import DECODERS, GeometryRecord
+from .geometry import DECODERS, FAMILY_BY_TYPE, GeometryRecord
 
 PARSER_BACKEND_V2 = "pure-python-v2"
 
-# Coarse geometry family per numeric type, for the cheap layer catalog.
-# Type 7 (polyline/polygon) is closure-dependent, so it is reported as a
-# line family until decoded; the value never affects layer-code selection.
-_TYPE_FAMILY = {
-    1: "POINT", 2: "LINE", 3: "POLYGON", 4: "LINE", 5: "POINT",
-    6: "POINT", 7: "LINE", 9: "LINE", 10: "POLYGON", 11: "POLYGON",
-    12: "POLYGON", 13: "POINT", 15: "POLYGON",
-}
+# The coarse geometry family per numeric type comes from the decoder table
+# itself, so the cheap layer catalog can never disagree with what the
+# decoders actually emit. The family only ever describes a layer for the
+# catalog: it never affects which records a decode selects.
+_TYPE_FAMILY = FAMILY_BY_TYPE
 
 
 @dataclass(frozen=True)
@@ -163,8 +160,9 @@ class NczCatalog:
         payload["layer_name"] = metadata.layer_name(layer_code)
         color = metadata.resolve_color(layer_code, color_code)
         if color is None:
-            # v1 post-pass: an unresolved colour (e.g. a non-standard colour
-            # code) falls back to the layer's own colour.
+            # An unresolved colour — a non-standard per-feature colour code
+            # the pen table has no entry for — falls back to the layer's own
+            # colour rather than leaving the feature uncoloured.
             color = metadata.resolve_color(layer_code, 0)
         payload["color_argb"] = color
         payload["line_width"] = metadata.layer_width(layer_code)
@@ -188,7 +186,7 @@ def _drop_smart_object_artifacts(entities: list[dict]) -> list[dict]:
 
 
 def parse_file(file_path: str) -> dict:
-    """Full decode of *file_path* into the v1-compatible payload dict."""
+    """Full decode of *file_path* into the engine's payload dict."""
     with open(file_path, "rb") as handle:
         data = handle.read()
     return parse_bytes(data)

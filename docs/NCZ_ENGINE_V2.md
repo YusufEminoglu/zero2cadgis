@@ -1,12 +1,12 @@
 # NCZ Engine v2 Roadmap
 
-The 02CadGis NCZ engine remains licensed under GPL-2.0-or-later. The v2
+The 02CadGis NCZ engine remains licensed under GPL-2.0-or-later. The
 implementation under `core/ncz_engine/v2/` is an independent, block-oriented
-rewrite written against the format notes in [NCZ_FORMAT.md](NCZ_FORMAT.md)
-rather than by adapting the upstream source line by line. Because that format
-knowledge ultimately traces back to Jeomatik NCZ Reader, the upstream
-copyright, source, license, and 02CadGis modification notices in
-[THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md) are retained.
+decoder written against the format notes in [NCZ_FORMAT.md](NCZ_FORMAT.md),
+and it is the only decoder in the tree. The earlier v1 decoder, which 02CadGis
+0.1.0–4.1.2 shipped as a derivative of an upstream reader, has been removed;
+[THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md) records that history and
+what the rewrite covers.
 
 The goal is not to claim an unmeasured blanket speedup. Each improvement must
 preserve decoded output and publish a reproducible result for a named
@@ -14,9 +14,9 @@ workload.
 
 ## Delivery status (v0.4.0)
 
-The v2 engine is **implemented and active**. `NetcadBinaryReader.parse()`
-uses v2 by default and falls back to the v1 decoder (reported as
-`pure-python (v1 fallback)`) only if v2 raises on a real drawing.
+The v2 engine is **implemented and active** and is the only decoder in the
+tree: `NetcadBinaryReader.parse()` reports `pure-python-v2` and there is no
+fallback path behind it.
 
 Modules:
 
@@ -31,16 +31,16 @@ Modules:
   either fully (`decode_all`) or for a chosen set of layer codes
   (`decode_layers`).
 
-Verified parity: `tests/test_ncz_engine_v2.py` builds synthetic NCZ streams
+Verified decode: `tests/test_ncz_engine_v2.py` builds synthetic NCZ streams
 (`tests/ncz_fixtures.py`) exercising every decoder path, both block layouts
 (kind 21 and the GIS-shifted kind 22), embedded containers, metadata, and
-`@TAB` tables, and asserts field-by-field equality between v1 and v2 output.
-An opt-in test additionally asserts bit-exact (`.17g`) parity against a real
-drawing named by `ZERO2CADGIS_NCZ_FIXTURE`; this was validated on a
-1.2 MiB / 8163-entity municipal Netcad file (60 layers, ITRF/3 zone 42),
-which exposed and fixed two v1 behaviours the synthetic corpus missed: a
-colour fallback for non-standard per-feature colour codes, and matching v1's
-exact `deg * (pi/180)` / `sqrt(x*x + y*y)` float forms in the box decoder.
+`@TAB` tables. The fixture writes each field at its documented offset, so the
+tests assert the values the fixture itself wrote rather than a recording of
+the engine's output — a decoder that drifted would fail, not be re-baselined.
+An opt-in test additionally runs the engine over a real drawing named by
+`ZERO2CADGIS_NCZ_FIXTURE` and asserts finite coordinates and a populated
+layer list; this was validated on a 1.2 MiB / 8163-entity municipal Netcad
+file (60 layers, ITRF/3 zone 42).
 
 Measured on a synthetic 1.5 MiB, ~10k-record drawing (CPython, one machine):
 

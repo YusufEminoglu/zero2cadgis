@@ -68,12 +68,10 @@ every file. Its full notice, including the **131 bundled font files of which
 bundled by the author's decision of 2026-09-28; this notice records what the
 package contains and does not assert a right to redistribute them.
 
-## Jeomatik NCZ Reader
+## Jeomatik NCZ Reader (historical lineage)
 
-The NCZ decoding implementation in `core/netcad_parser.py` and its result
-model in `core/ncz_engine/model.py`, together with NCZ-specific
-layer-building and geometry-conversion portions of `dialogs/dock.py`,
-incorporates and is derived from **Jeomatik NCZ Reader**.
+02CadGis versions 0.1.0 through 4.1.2 shipped an NCZ decoder that was
+adapted from **Jeomatik NCZ Reader**:
 
 - Copyright (C) 2026 Erdinç Örsan ÜNAL
 - Upstream source: <https://github.com/erdincunal/Jeomatik-NCZ-Reader>
@@ -81,15 +79,28 @@ incorporates and is derived from **Jeomatik NCZ Reader**.
 - Upstream license: GNU General Public License v2.0 or later
   (`GPL-2.0-or-later`)
 
-The derived code was adapted and extended for 02CadGis beginning on
-2026-07-04. Those modifications and the surrounding 02CadGis integration are:
+Through 0.3.0 that decoder was the only one. From 0.4.0 the v2 engine
+described below became the primary decoder, but the adapted v1
+implementation remained in the tree and stayed reachable as its fallback,
+so **every published release up to and including 4.1.2 carries it**. Those
+releases remain available under GPL-2.0-or-later, and this notice records
+the provenance of the code they carried.
+
+The adapted v1 implementation has since been removed from the tree, so a
+release cut from the current tree contains none of it. What remains — the
+block scanner, the geometry decoders, the drawing-metadata reader, the
+result model, the two-phase catalog, and the QGIS layer-building and
+geometry-conversion paths under `core/ncz_engine/v2/` — was written for
+02CadGis against the format notes in `docs/NCZ_FORMAT.md`. That code, and
+the 02CadGis integration around it, are:
 
 - Copyright (C) 2026 Yusuf Eminoğlu
 
-02CadGis versions 0.1.0 through 0.2.3 contained the derived NCZ
-implementation. This notice documents that historical lineage and restores
-the upstream copyright, source, and license information beginning with
-02CadGis 0.2.4.
+This rewrite was written by the 02CadGis author with knowledge of the
+upstream implementation, not in isolation from it. It is offered as an
+independent implementation of the format; it is not a legal opinion on the
+derivative-work status of any particular version, and 02CadGis claims no
+such opinion here.
 
 The Jeomatik name, logo, and associated trademarks are not used under the
 GPL and remain the property of their respective owner. 02CadGis is an

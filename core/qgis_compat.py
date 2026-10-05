@@ -6,8 +6,12 @@ import contextlib
 import re
 from functools import lru_cache
 
+# Imported at module scope on purpose: a `from qgis.core import ...` inside a
+# function body makes the name local to that whole function, so an earlier
+# reference in the same body raises UnboundLocalError instead of using the
+# module-level binding.
 with contextlib.suppress(ImportError):
-    from qgis.core import QgsWkbTypes
+    from qgis.core import QgsFeature, QgsGeometry, QgsWkbTypes
 
 
 def fix_mojibake(text: str | None) -> str:
@@ -172,7 +176,6 @@ def add_features_or_raise(layer, features: list, context: str = "Add features") 
     if not ok or added < len(target_features):
         # Fallback: attempt coercing / dropping Z / segmentizing curves / single-multi conversion
         with contextlib.suppress(Exception):
-            from qgis.core import QgsWkbTypes, QgsGeometry, QgsFeature
             coerced_features = []
             layer_wkb = layer.wkbType()
             for feat in target_features:

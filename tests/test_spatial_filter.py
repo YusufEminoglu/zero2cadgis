@@ -11,6 +11,8 @@ import unittest
 from zero2cadgis.core.spatial_filter import (
     ExtentBox,
     ExtentInspectionResult,
+    SpatialClipMode,
+    clip_or_filter_extent,
     discover_files,
     evaluate_extent_intersection,
     inspect_ncz_extent,
@@ -69,6 +71,42 @@ class TestExtentBox(unittest.TestCase):
         self.assertTrue(outer.contains(inner))
         self.assertFalse(inner.contains(outer))
         self.assertFalse(outer.contains(partial))
+
+    def test_extent_box_clip_intersection(self):
+        target = ExtentBox(100.0, 100.0, 200.0, 200.0)
+        cand = ExtentBox(150.0, 50.0, 250.0, 180.0)
+        clipped = cand.clip_intersection(target)
+        self.assertIsNotNone(clipped)
+        self.assertEqual(clipped.min_x, 150.0)
+        self.assertEqual(clipped.min_y, 100.0)
+        self.assertEqual(clipped.max_x, 200.0)
+        self.assertEqual(clipped.max_y, 180.0)
+
+        disjoint = ExtentBox(500.0, 500.0, 600.0, 600.0)
+        self.assertIsNone(disjoint.clip_intersection(target))
+
+    def test_clip_or_filter_extent(self):
+        target = ExtentBox(100.0, 100.0, 200.0, 200.0)
+        cand = ExtentBox(150.0, 50.0, 250.0, 180.0)
+        disjoint = ExtentBox(500.0, 500.0, 600.0, 600.0)
+
+        # Mode: NONE
+        res_none = clip_or_filter_extent(cand, target, SpatialClipMode.NONE)
+        self.assertEqual(res_none, cand)
+
+        # Mode: KEEP_WHOLE
+        res_keep = clip_or_filter_extent(cand, target, SpatialClipMode.KEEP_WHOLE)
+        self.assertEqual(res_keep, cand)
+        self.assertIsNone(clip_or_filter_extent(disjoint, target, SpatialClipMode.KEEP_WHOLE))
+
+        # Mode: EXACT_CLIP
+        res_clip = clip_or_filter_extent(cand, target, SpatialClipMode.EXACT_CLIP)
+        self.assertIsNotNone(res_clip)
+        self.assertEqual(res_clip.min_x, 150.0)
+        self.assertEqual(res_clip.min_y, 100.0)
+        self.assertEqual(res_clip.max_x, 200.0)
+        self.assertEqual(res_clip.max_y, 180.0)
+        self.assertIsNone(clip_or_filter_extent(disjoint, target, SpatialClipMode.EXACT_CLIP))
 
 
 class TestEvaluateExtentIntersection(unittest.TestCase):

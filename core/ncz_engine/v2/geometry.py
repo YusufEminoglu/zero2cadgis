@@ -18,6 +18,44 @@ from .binary import Cursor, finite_pair_in_range
 
 RAD_TO_DEG = 180.0 / math.pi
 
+# ── kind vocabulary ───────────────────────────────────────────────────
+# One name per drawable kind the engine can produce. The dock, the field
+# styling and the exporters all switch on these strings, so they are
+# declared once here and referenced by name rather than spelled out at
+# every use site.
+KIND_POINT = "Point"
+KIND_LINE = "Line"
+KIND_CIRCLE = "Circle"
+KIND_ARC = "Arc"
+KIND_TEXT = "Text"
+KIND_SYMBOL = "Symbol"
+KIND_POLYLINE = "Polyline"
+KIND_POLYGON = "Polygon"
+KIND_MAP_SHEET = "MapSheet"
+KIND_TRIANGLE = "Triangle"
+KIND_BLOCK = "Block"
+KIND_SMART_OBJECT = "SmartObject"
+
+# What each kind draws as: a point, a line, or an area. This is the coarse
+# family, and it is the whole answer to "which layer does this feature go
+# to" — a circle is an area, an arc is a line. A polyline is a line until
+# its ring is read and found to close, which is why :data:`KIND_POLYLINE`
+# is listed as a line here and the closed ring comes back as a polygon.
+KIND_FAMILY = {
+    KIND_POINT: "POINT",
+    KIND_LINE: "LINE",
+    KIND_CIRCLE: "POLYGON",
+    KIND_ARC: "LINE",
+    KIND_TEXT: "POINT",
+    KIND_SYMBOL: "POINT",
+    KIND_POLYLINE: "LINE",
+    KIND_POLYGON: "POLYGON",
+    KIND_MAP_SHEET: "POLYGON",
+    KIND_TRIANGLE: "POLYGON",
+    KIND_BLOCK: "POINT",
+    KIND_SMART_OBJECT: "POLYGON",
+}
+
 
 @dataclass(frozen=True)
 class GeometryRecord:
@@ -206,8 +244,9 @@ def _rotated_rectangle(origin_first: float, origin_second: float,
                        rotation_degrees: float) -> list[dict]:
     """Box corner ring (bottom = cos/-sin, side = sin/cos axes).
 
-    Uses ``deg * (pi/180)`` rather than ``math.radians`` to reproduce the
-    v1 box computation bit for bit.
+    The rotation is applied as an explicit ``deg * (pi/180)`` multiply
+    rather than through ``math.radians``, so every corner comes out of the
+    one operation and the ring stays reproducible.
     """
     angle = rotation_degrees * (math.pi / 180.0)
     return _corner_ring(
@@ -236,7 +275,7 @@ def decode_point(record: GeometryRecord) -> dict | None:
     cursor = record.cursor
     name_offset = record.base + record.shift + 86
     return _entity(
-        record, "Point",
+        record, KIND_POINT,
         [map_point(first, second, _z_with_fallback(record))],
         name=cursor.text(name_offset + 1, cursor.u8(name_offset)))
 
@@ -251,7 +290,7 @@ def decode_line(record: GeometryRecord) -> dict | None:
     if not (finite_pair_in_range(first_a, second_a)
             and finite_pair_in_range(first_b, second_b)):
         return None
-    return _entity(record, "Line", [
+    return _entity(record, KIND_LINE, [
         map_point(first_a, second_a, z_a),
         map_point(first_b, second_b, z_b)])
 
@@ -263,7 +302,7 @@ def decode_circle(record: GeometryRecord) -> dict | None:
         return None
     diameter = abs(cursor.f64(record.base + 50)
                    - cursor.f64(record.base + 66))
-    return _entity(record, "Circle", [map_point(first, second, z)],
+    return _entity(record, KIND_CIRCLE, [map_point(first, second, z)],
                    radius=diameter / 2.0)
 
 
@@ -274,7 +313,7 @@ def decode_arc(record: GeometryRecord) -> dict | None:
         return None
     shifted = record.base + record.shift
     return _entity(
-        record, "Arc", [map_point(first, second, z)],
+        record, KIND_ARC, [map_point(first, second, z)],
         radius=cursor.f64(shifted + 86),
         start_angle=cursor.f64(shifted + 104),
         end_angle=cursor.f64(shifted + 112))
@@ -309,7 +348,7 @@ def decode_text(record: GeometryRecord) -> dict | None:
     if height is None:
         return None
     return _entity(
-        record, "Text",
+        record, KIND_TEXT,
         [map_point(first, second, _z_with_fallback(record))],
         label_text=text,
         text_height=height,
@@ -331,7 +370,7 @@ def decode_symbol(record: GeometryRecord) -> dict | None:
     if size is None:
         size = 5.0
     return _entity(
-        record, "Symbol", [map_point(first, second, z)],
+        record, KIND_SYMBOL, [map_point(first, second, z)],
         label_text=f"S{cursor.u8(code_offset)}",
         text_height=size,
         rotation_degrees=(cursor.f32(shifted + 90) * RAD_TO_DEG) % 360.0)
@@ -365,7 +404,7 @@ def decode_polyline(record: GeometryRecord) -> dict | None:
 
     is_rect, width, height, rotation = _rectangle_metrics(points)
     return _entity(
-        record, "Polygon" if closed else "Polyline", points,
+        record, KIND_POLYGON if closed else KIND_POLYLINE, points,
         label_text=label,
         is_closed=closed,
         box_width=width,
@@ -412,7 +451,7 @@ def decode_compressed_curve(record: GeometryRecord) -> dict | None:
 
     if len(points) < 2:
         return None
-    return _entity(record, "Polyline", points)
+    return _entity(record, KIND_POLYLINE, points)
 
 
 def decode_box(record: GeometryRecord) -> dict | None:
@@ -429,7 +468,7 @@ def decode_box(record: GeometryRecord) -> dict | None:
     height = abs(second_b - second_a)
     rotation = (cursor.f32(shifted + 120) * RAD_TO_DEG) % 360.0
     return _entity(
-        record, "Polygon",
+        record, KIND_POLYGON,
         _rotated_rectangle(first_a, second_a, width, height, rotation),
         is_closed=True,
         box_width=width,
@@ -441,8 +480,9 @@ def decode_box(record: GeometryRecord) -> dict | None:
 def _plan_box_name(record: GeometryRecord) -> str:
     """A ``plan<digits>`` token inside the record, if present.
 
-    Operates on a single lowercased copy of the record bytes and uses
-    ``bytes.find`` instead of a per-byte scan, matching the v1 result.
+    Scans one lowercased copy of the record bytes with ``bytes.find``, so a
+    long record costs a single C-level pass instead of a Python-level loop
+    over every byte.
     """
     cursor = record.cursor
     end = min(cursor.size, record.end)
@@ -500,7 +540,7 @@ def decode_map_sheet(record: GeometryRecord) -> dict | None:
         return None
 
     return _entity(
-        record, "MapSheet",
+        record, KIND_MAP_SHEET,
         [map_point(lo_first, lo_second), map_point(hi_first, lo_second),
          map_point(hi_first, hi_second), map_point(lo_first, hi_second),
          map_point(lo_first, lo_second)],
@@ -536,7 +576,7 @@ def decode_triangle(record: GeometryRecord) -> dict | None:
                        - (b["y"] - a["y"]) * (c["x"] - a["x"]))
     if doubled_area <= 0.0001:
         return None
-    return _entity(record, "Triangle", [a, b, c], is_closed=True)
+    return _entity(record, KIND_TRIANGLE, [a, b, c], is_closed=True)
 
 
 def decode_block_reference(record: GeometryRecord) -> dict | None:
@@ -546,7 +586,7 @@ def decode_block_reference(record: GeometryRecord) -> dict | None:
         return None
     shifted = record.base + record.shift
     return _entity(
-        record, "Block", [map_point(first, second, z)],
+        record, KIND_BLOCK, [map_point(first, second, z)],
         label_text=_printable_prefixed_name(
             cursor, shifted + 86, record.end),
         rotation_degrees=(cursor.f32(shifted + 118) * RAD_TO_DEG) % 360.0)
@@ -596,7 +636,7 @@ def decode_smart_object(record: GeometryRecord) -> dict | None:
     # Netcad 8 notation values (nizam, kat, TAKS, KAKS, Hmax, road width ...).
     properties = parse_property_bag(payload[PROPERTY_SEARCH_START:])
     return _entity(
-        record, "SmartObject",
+        record, KIND_SMART_OBJECT,
         _smart_object_ring(first_a, second_a, width, height, rotation),
         is_closed=True,
         box_width=width,
@@ -625,18 +665,28 @@ def _ascii_token(cursor: Cursor, start: int, end: int) -> str:
     return ""
 
 
-DECODERS = {
-    1: decode_point,
-    2: decode_line,
-    3: decode_circle,
-    4: decode_arc,
-    5: decode_text,
-    6: decode_symbol,
-    7: decode_polyline,
-    9: decode_compressed_curve,
-    10: decode_box,
-    11: decode_map_sheet,
-    12: decode_triangle,
-    13: decode_block_reference,
-    15: decode_smart_object,
-}
+# Geometry type -> the kind that type decodes to, and its decoder. Declared
+# as one table so the decoder registry, the kind vocabulary the rest of the
+# plugin switches on, and the coarse family the cheap layer catalog uses
+# cannot drift apart: adding a decoder here is the only edit any of the
+# three needs. Type 7 sits in the line family because a polyline's ring is
+# only known to close once the record has been decoded.
+DECODER_SPECS = (
+    (1, KIND_POINT, decode_point),
+    (2, KIND_LINE, decode_line),
+    (3, KIND_CIRCLE, decode_circle),
+    (4, KIND_ARC, decode_arc),
+    (5, KIND_TEXT, decode_text),
+    (6, KIND_SYMBOL, decode_symbol),
+    (7, KIND_POLYLINE, decode_polyline),
+    (9, KIND_POLYLINE, decode_compressed_curve),
+    (10, KIND_POLYGON, decode_box),
+    (11, KIND_MAP_SHEET, decode_map_sheet),
+    (12, KIND_TRIANGLE, decode_triangle),
+    (13, KIND_BLOCK, decode_block_reference),
+    (15, KIND_SMART_OBJECT, decode_smart_object),
+)
+
+DECODERS = {code: decode for code, _kind, decode in DECODER_SPECS}
+KIND_BY_TYPE = {code: kind for code, kind, _decode in DECODER_SPECS}
+FAMILY_BY_TYPE = {code: KIND_FAMILY[kind] for code, kind in KIND_BY_TYPE.items()}

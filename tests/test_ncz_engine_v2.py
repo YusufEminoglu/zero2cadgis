@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 # Copyright (C) 2026 Yusuf Eminoğlu
 # SPDX-License-Identifier: GPL-2.0-or-later
-"""NCZ Engine v2: parity with v1, selective decode, and safety tests."""
+"""NCZ Engine v2: decode expectations, selective decode, and safety tests."""
 from __future__ import annotations
 
+import math
 import os
 import tempfile
 import unittest
 from pathlib import Path
 
-from zero2cadgis.core.netcad_parser import parse_netcad_binary_stream
 from zero2cadgis.core.ncz_engine.v2 import NczCatalog, parse_file
 from zero2cadgis.core.ncz_engine.v2.parser import parse_bytes
 from zero2cadgis.tests import ncz_fixtures as fx
@@ -41,71 +41,212 @@ def _normalize_entity(entity: dict) -> tuple:
     )
 
 
-def _normalize_payload(payload: dict) -> dict:
-    return {
-        "entities": sorted(
-            _normalize_entity(e) for e in payload["entities"]),
-        "layer_names": list(payload["layer_names"]),
-        "layer_colors": list(payload["layer_colors"]),
-        "version_name": payload["version_name"],
-        "epsg": payload["epsg"],
-        "projection_text": payload["projection_text"],
-        "unsupported": dict(payload["unsupported_geometry_types"]),
-        "tables": [
-            (t["table_ref"], [
-                (r["row_index"], tuple(sorted(r["columns"].items())))
-                for r in t["rows"]])
-            for t in payload["attribute_tables"]
-        ],
-    }
+class TestNczEngineV2Decode(unittest.TestCase):
+    """The engine decodes the synthetic corpus into the values its builders
+    wrote, at the offsets documented in ``docs/NCZ_FORMAT.md``.
 
+    Every expectation below is derived from the fixture bytes rather than
+    recorded from this engine's own output, so a decoder regression fails
+    these tests instead of being frozen in as the new truth.
+    """
 
-class TestNczEngineV2Parity(unittest.TestCase):
-    """v2 must decode identical output to the v1 reference engine."""
+    #: builder -> (geometry kind, layer code, vertex count)
+    GEOMETRY_CASES = (
+        ("point", fx.point_block, "Point", 0, 1),
+        ("line", fx.line_block, "Line", 1, 2),
+        ("text", fx.text_block, "Text", 2, 1),
+        ("polyline", lambda: fx.polyline_block(closed=False),
+         "Polyline", 1, 3),
+        ("closed polyline", lambda: fx.polyline_block(closed=True),
+         "Polygon", 1, 5),
+        ("circle", fx.circle_block, "Circle", 3, 1),
+        ("arc", fx.arc_block, "Arc", 3, 1),
+        ("triangle", fx.triangle_block, "Triangle", 4, 3),
+        ("symbol", fx.symbol_block, "Symbol", 4, 1),
+        ("box", fx.box_block, "Polygon", 1, 5),
+        ("map sheet", fx.map_sheet_block, "MapSheet", 4, 5),
+        ("block reference", fx.block_reference_block, "Block", 4, 1),
+        ("compressed curve", fx.compressed_curve_block, "Polyline", 1, 5),
+        ("gis point", fx.gis_point_block, "Point", 0, 1),
+        ("embedded container", fx.embedded_container_block, "Point", 2, 1),
+        ("smart object", fx.smart_object_block, "SmartObject", 1, 5),
+    )
 
-    def _write(self, data: bytes) -> str:
-        fd, path = tempfile.mkstemp(suffix=".ncz",
-                                    dir=Path(__file__).resolve().parent)
-        os.close(fd)
-        self.addCleanup(lambda: os.path.exists(path) and os.remove(path))
-        with open(path, "wb") as handle:
-            handle.write(data)
-        return path
+    _LAYERS = [b"L0", b"L1", b"L2", b"L3", b"L4"]
 
-    def _assert_parity(self, data: bytes) -> dict:
-        path = self._write(data)
-        v1 = _normalize_payload(parse_netcad_binary_stream(path))
-        v2 = _normalize_payload(parse_bytes(data))
-        self.assertEqual(v1, v2)
-        return v2
+    def _entities(self, data: bytes) -> list[dict]:
+        return parse_bytes(data)["entities"]
 
-    def test_full_drawing_parity(self):
-        payload = self._assert_parity(fx.full_drawing())
-        # sanity: the fixture actually produced geometry
-        self.assertGreaterEqual(len(payload["entities"]), 8)
+    def _single(self, builder) -> dict:
+        entities = self._entities(
+            fx.layer_table_block(self._LAYERS) + builder())
+        self.assertEqual(len(entities), 1)
+        return entities[0]
+
+    def test_full_drawing_decodes_its_metadata(self):
+        payload = parse_bytes(fx.full_drawing())
+
+        self.assertEqual(payload["parser_backend"], "pure-python-v2")
         self.assertEqual(payload["version_name"], "NCZ-TEST-1.0")
         self.assertEqual(payload["epsg"], "EPSG:5254")
-        self.assertIn("ROADS", payload["layer_names"])
+        self.assertEqual(
+            payload["layer_names"],
+            ["ROADS", "PARCELS", "TEXT", "TRIANGLES", "MISC"])
+        # The LEX.ST2 rows the fixture wrote, resolved to opaque ARGB.
+        self.assertEqual(
+            payload["layer_colors"],
+            [0xFFFF0000, 0xFF008000, 0xFF0000FF, 0xFFC8C800, 0xFF0A0A0A])
 
-    def test_each_geometry_builder_parity(self):
-        for builder in fx.ALL_GEOMETRY_BUILDERS:
-            with self.subTest(builder=getattr(builder, "__name__", "lambda")):
-                data = (fx.layer_table_block([b"L0", b"L1", b"L2", b"L3",
-                                              b"L4"]) + builder())
-                self._assert_parity(data)
+    def test_full_drawing_carries_its_attribute_table(self):
+        payload = parse_bytes(fx.full_drawing())
 
-    def test_parity_on_short_and_odd_blocks(self):
-        payloads = (
-            b"",
-            b"\x00" * 8,
-            fx.block(21, bytes(6)),
-            fx.block(22, bytes(40)),
-            fx.point_block()[:20],
-            fx.version_block() + fx.point_block(),
-        )
-        for data in payloads:
+        self.assertEqual(len(payload["attribute_tables"]), 1)
+        table = payload["attribute_tables"][0]
+        self.assertEqual(table["table_ref"], "@TAB1")
+        self.assertEqual(len(table["rows"]), 1)
+        self.assertEqual(table["rows"][0]["columns"]["label"], "PARCEL-42")
+
+    def test_point_lands_in_map_order(self):
+        """The stored pair is northing-first; the decoded x is the easting."""
+        entity = self._single(fx.point_block)
+
+        self.assertEqual(entity["geometry_kind"], "Point")
+        self.assertEqual(entity["name"], "PT1")
+        self.assertEqual(
+            entity["coordinates"],
+            [{"x": fx.BASE_X, "y": fx.BASE_Y, "z": 0.0}])
+
+    def test_line_spans_the_two_written_endpoints(self):
+        entity = self._single(fx.line_block)
+
+        coordinates = entity["coordinates"]
+        self.assertEqual(len(coordinates), 2)
+        self.assertEqual(
+            (coordinates[0]["x"], coordinates[0]["y"]),
+            (fx.BASE_X, fx.BASE_Y))
+        self.assertEqual(
+            (coordinates[1]["x"], coordinates[1]["y"]),
+            (fx.BASE_X + 100.0, fx.BASE_Y + 100.0))
+
+    def test_text_carries_its_label_and_height(self):
+        entity = self._single(lambda: fx.text_block(
+            layer=2, text=b"LABEL", height=2.5))
+
+        self.assertEqual(entity["geometry_kind"], "Text")
+        self.assertEqual(entity["label_text"], "LABEL")
+        self.assertAlmostEqual(entity["text_height"], 2.5, places=6)
+
+    def test_polyline_vertices_follow_the_written_ring(self):
+        entity = self._single(lambda: fx.polyline_block(closed=False))
+
+        self.assertFalse(entity["is_closed"])
+        # polyline_block writes BASE_X into the first stored slot and BASE_Y
+        # into the second; the first slot is the northing, so the decoded
+        # pair is (x = BASE_Y + dy, y = BASE_X + dx).
+        self.assertEqual(
+            [(c["x"], c["y"]) for c in entity["coordinates"]],
+            [(fx.BASE_Y, fx.BASE_X),
+             (fx.BASE_Y + 10.0, fx.BASE_X + 25.0),
+             (fx.BASE_Y + 40.0, fx.BASE_X + 50.0)])
+
+    def test_closed_polyline_is_reported_closed(self):
+        entity = self._single(lambda: fx.polyline_block(closed=True))
+
+        self.assertTrue(entity["is_closed"])
+        coordinates = entity["coordinates"]
+        self.assertEqual(len(coordinates), 5)
+        self.assertEqual(
+            (coordinates[0]["x"], coordinates[0]["y"]),
+            (coordinates[-1]["x"], coordinates[-1]["y"]))
+
+    def test_circle_radius_comes_from_the_diameter_endpoints(self):
+        entity = self._single(fx.circle_block)
+
+        self.assertEqual(entity["geometry_kind"], "Circle")
+        self.assertAlmostEqual(entity["radius"], 5.0, places=6)
+
+    def test_arc_carries_its_radius_and_sweep(self):
+        entity = self._single(fx.arc_block)
+
+        self.assertEqual(entity["geometry_kind"], "Arc")
+        self.assertAlmostEqual(entity["radius"], 12.0, places=6)
+        self.assertAlmostEqual(entity["start_angle"], 0.0, places=6)
+        self.assertAlmostEqual(entity["end_angle"], 1.5, places=6)
+
+    def test_box_dimensions_follow_the_stored_axes(self):
+        """A box reports its extent per stored axis: ``box_width`` spans the
+        northing axis and ``box_height`` the easting axis, which is the
+        convention the written corner ring and the plan notation share."""
+        entity = self._single(fx.box_block)
+
+        self.assertAlmostEqual(entity["box_width"], 40.0, places=6)
+        self.assertAlmostEqual(entity["box_height"], 60.0, places=6)
+        # The fixture's rotation, in gradians-to-degrees terms: 0.5 rad.
+        self.assertAlmostEqual(
+            entity["rotation_degrees"], 0.5 * 180.0 / 3.141592653589793,
+            places=6)
+
+    def test_symbol_carries_its_code(self):
+        entity = self._single(lambda: fx.symbol_block(layer=4, code=7))
+
+        self.assertEqual(entity["geometry_kind"], "Symbol")
+        self.assertEqual(entity["label_text"], "S7")
+
+    def test_map_sheet_carries_its_name_and_extent(self):
+        entity = self._single(fx.map_sheet_block)
+
+        self.assertEqual(entity["geometry_kind"], "MapSheet")
+        self.assertEqual(entity["label_text"], "SHEET-A4")
+        self.assertAlmostEqual(entity["box_width"], 100.0, places=6)
+        self.assertAlmostEqual(entity["box_height"], 100.0, places=6)
+
+    def test_block_reference_carries_its_name(self):
+        entity = self._single(fx.block_reference_block)
+
+        self.assertEqual(entity["geometry_kind"], "Block")
+        self.assertEqual(entity["label_text"], "BLOCKREF")
+
+    def test_compressed_curve_expands_its_deltas(self):
+        entity = self._single(fx.compressed_curve_block)
+
+        # Origin plus one vertex per stored delta pair.
+        self.assertEqual(len(entity["coordinates"]), 5)
+
+    def test_gis_layout_record_is_read_at_its_shifted_offsets(self):
+        """A kind-22 record keeps its fields 28 bytes further in."""
+        entity = self._single(lambda: fx.gis_point_block(name=b"GISPT"))
+
+        self.assertEqual(entity["geometry_kind"], "Point")
+        self.assertEqual(entity["name"], "GISPT")
+        self.assertEqual(
+            (entity["coordinates"][0]["x"], entity["coordinates"][0]["y"]),
+            (fx.BASE_X, fx.BASE_Y))
+
+    def test_embedded_record_inside_a_container_is_decoded(self):
+        entity = self._single(fx.embedded_container_block)
+
+        self.assertEqual(entity["geometry_kind"], "Point")
+        self.assertEqual(entity["layer_code"], 2)
+        self.assertEqual(entity["name"], "NESTED")
+
+    def test_each_geometry_builder_decodes_to_its_expected_shape(self):
+        for label, builder, kind, layer, vertex_count in self.GEOMETRY_CASES:
+            with self.subTest(geometry=label):
+                entity = self._single(builder)
+                self.assertEqual(entity["geometry_kind"], kind)
+                self.assertEqual(entity["layer_code"], layer)
+                self.assertEqual(len(entity["coordinates"]), vertex_count)
+
+    def test_short_and_odd_blocks_decode_without_raising(self):
+        for data in (b"", b"\x00" * 8, fx.block(21, bytes(6)),
+                     fx.block(22, bytes(40)), fx.point_block()[:20]):
             with self.subTest(length=len(data)):
-                self._assert_parity(data)
+                self.assertEqual(self._entities(data), [])
+
+    def test_a_truncated_record_yields_no_geometry(self):
+        payload = parse_bytes(fx.version_block() + fx.point_block()[:20])
+        self.assertEqual(payload["version_name"], "NCZ-TEST-1.0")
+        self.assertEqual(payload["entities"], [])
 
 
 class TestNczCatalogSelectiveDecode(unittest.TestCase):
@@ -146,24 +287,32 @@ class TestNczCatalogSelectiveDecode(unittest.TestCase):
         self.assertEqual(catalog.decode_layers([]), [])
 
 
-class TestNczEngineV2RealFileParity(unittest.TestCase):
-    """Opt-in v1<->v2 parity on a real drawing named by an env var.
+class TestNczEngineV2RealFile(unittest.TestCase):
+    """Opt-in decode of a real drawing named by an environment variable.
 
-    No third-party drawing is committed. Point ``ZERO2CADGIS_NCZ_FIXTURE``
-    at a real ``.ncz``/``.nca`` file to run this bit-exact parity check.
+    No real drawing is committed. Point ``ZERO2CADGIS_NCZ_FIXTURE`` at a
+    real ``.ncz``/``.nca`` file to run the engine over genuine data rather
+    than the synthetic corpus, which is where format assumptions that the
+    fixtures share would otherwise go unnoticed.
     """
 
-    def test_real_file_bit_exact_parity(self):
+    def test_real_file_decodes(self):
         path = os.environ.get("ZERO2CADGIS_NCZ_FIXTURE")
         if not path or not os.path.isfile(path):
             self.skipTest("set ZERO2CADGIS_NCZ_FIXTURE to a real .ncz file")
 
         with open(path, "rb") as handle:
             data = handle.read()
-        v1 = sorted(_digest_entity(e)
-                    for e in parse_netcad_binary_stream(path)["entities"])
-        v2 = sorted(_digest_entity(e) for e in parse_bytes(data)["entities"])
-        self.assertEqual(v1, v2)
+        payload = parse_bytes(data)
+
+        self.assertEqual(payload["parser_backend"], "pure-python-v2")
+        self.assertTrue(payload["entities"])
+        self.assertTrue(payload["layer_names"])
+        for entity in payload["entities"]:
+            for coordinate in entity["coordinates"]:
+                self.assertTrue(
+                    math.isfinite(coordinate["x"])
+                    and math.isfinite(coordinate["y"]))
 
 
 def _digest_entity(entity: dict) -> tuple:
@@ -437,8 +586,9 @@ class TestNczEngineV2Safety(unittest.TestCase):
     def test_smart_object_corner_fallback_passes_through_both_corners(self):
         # When the stored width/height are unusable, the size comes from the two
         # stored corners. "first" is y and "second" is x (the ring runs width
-        # along x), so width = |dx| and height = |dy|; v1 had these transposed,
-        # which drew any non-square object off its own second corner.
+        # along x), so width = |dx| and height = |dy|. The two are easy to
+        # transpose here, which draws any non-square object off its own second
+        # corner instead of around it.
         body = bytearray(fx.smart_object_block(layer=1)[5:])
         fx._put_f64(body, 169, 0.0)
         fx._put_f64(body, 177, 0.0)

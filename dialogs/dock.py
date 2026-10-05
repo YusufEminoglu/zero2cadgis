@@ -1,12 +1,5 @@
 # -*- coding: utf-8 -*-
-# NCZ-specific layer-building and geometry-conversion portions of this file
-# are derived from Jeomatik NCZ Reader.
-# Copyright (C) 2026 Erdinç Örsan ÜNAL
-# Original source: https://github.com/erdincunal/Jeomatik-NCZ-Reader
-#
-# Modified and extended for 02CadGis beginning 2026-07-04.
-# Modifications Copyright (C) 2026 Yusuf Eminoğlu
-# See THIRD_PARTY_NOTICES.md and LICENSE for details.
+# Copyright (C) 2026 Yusuf Eminoğlu
 # SPDX-License-Identifier: GPL-2.0-or-later
 """zero2cadgis — Tabbed DockWidget Controller.
 100% English, fully integrated with core CAD/GIS engines.
@@ -77,6 +70,9 @@ from ..core.netcad_parser import (
     NetcadEntity,
     NetcadLazyReader,
 )
+# The engine owns the kind vocabulary; the dock only translates it into the
+# QGIS layer a feature belongs on, so a new decoded kind needs no edit here.
+from ..core.ncz_engine.v2 import KIND_FAMILY, KIND_POLYLINE
 from ..core.gis_engine import GisConverterEngine
 from .column_picker import ColumnPicker
 from ..core.csv_sniffer import (
@@ -535,6 +531,25 @@ class Zero2CadGisDockWidget(QDockWidget):
         # layer draws with the default pen. The style draws it at that width.
         QgsField("line_width_mm", QMetaType.Type.Double),
     ]
+
+    # Every NCZ attribute-table layer opens with these three columns — which
+    # file and which @TAB table the row came from, and its position in that
+    # table — followed by the columns the drawing's own rows define.
+    ATTRIBUTE_FIXED_COLUMNS = (
+        ("source_file", QMetaType.Type.QString),
+        ("table_ref", QMetaType.Type.QString),
+        ("row_index", QMetaType.Type.Int),
+    )
+    ATTRIBUTE_FIXED_NAMES = frozenset(
+        name for name, _kind in ATTRIBUTE_FIXED_COLUMNS)
+
+    # Python value type -> QGIS column type, for columns the rows introduce.
+    # Keyed by exact type so a bool is text rather than an integer, and so
+    # anything unlisted (str, None, a column mixing types) stays text.
+    ATTRIBUTE_VALUE_TYPES = {
+        int: QMetaType.Type.Int,
+        float: QMetaType.Type.Double,
+    }
 
     # Added by "Calculate geometry metadata" (CadFeatureAugmenter).
     AUGMENT_FIELD_NAMES = ("geom_len", "geom_area", "cent_x", "cent_y")
@@ -1897,12 +1912,16 @@ class Zero2CadGisDockWidget(QDockWidget):
                     csv_crs = self.csv_src_crs.crs().authid()
 
             src_crs_param = None
-            if fmt.key == "csv" and self.csv_src_crs.crs().isValid():
-                src_crs_param = self.csv_src_crs.crs()
+            clip_geom = getattr(self, "_active_spatial_clip_geom", None)
+            clip_mode = getattr(self, "_active_spatial_clip_mode", "none")
+            clip_crs = getattr(self, "_active_spatial_clip_crs", None)
             self.gis_converter = GisConverterEngine(
                 src, dst, crs,
                 csv_profile=csv_profile, csv_source_crs=csv_crs,
-                source_crs=src_crs_param)
+                source_crs=src_crs_param,
+                clip_geometry=clip_geom,
+                clip_mode=clip_mode,
+                clip_crs=clip_crs)
             if self._cad_split_field and self._is_cad_format(fmt):
                 self.gis_converter.cad_split_field = self._cad_split_field
             self.gis_converter.dropped_fields = self.src_columns.dropped()
@@ -2332,29 +2351,50 @@ class Zero2CadGisDockWidget(QDockWidget):
                     shown += match
                 sub.setHidden(bool(words) and sub.childCount() > 0 and shown == 0)
 
+    # Engine family -> (QGIS geometry the layer holds, group-name suffix).
+    # A point layer is labelled POINT/TEXT because that family carries both
+    # the drawing's symbols and its labels, and the layer tree says so.
+    FAMILY_LAYERS = {
+        "POINT": ("Point", "POINT/TEXT"),
+        "LINE": ("LineString", "LINE"),
+        "POLYGON": ("Polygon", "POLYGON"),
+    }
+    # A closed polyline is an area; a hairline of gap between its first and
+    # last vertex still counts, because CAD drawings routinely leave one.
+    RING_CLOSE_TOLERANCE = 1e-4
+
+    def _rings_shut(self, coords, is_closed: bool) -> bool:
+        """Whether a polyline's vertex list describes an area."""
+        if not coords:
+            return False
+        if is_closed and len(coords) >= 3:
+            return True
+        if len(coords) < 4:
+            return False
+        first, last = coords[0], coords[-1]
+        return (abs(first.x - last.x) < self.RING_CLOSE_TOLERANCE
+                and abs(first.y - last.y) < self.RING_CLOSE_TOLERANCE)
+
     def _geometry_family(
             self,
             geometry_kind: str,
             is_closed: bool = False,
             coords: list | None = None) -> tuple[str, str] | tuple[None, None]:
-        if geometry_kind in ("Point", "Text", "Symbol", "Block"):
-            return "POINT/TEXT", "Point"
-        if geometry_kind in (
-            "Polygon",
-            "Box",
-            "Circle",
-            "Triangle",
-            "MapSheet",
-            "SmartObject"):
-            return "POLYGON", "Polygon"
-        if geometry_kind in ("Line", "Polyline", "Arc"):
-            if geometry_kind == "Polyline":
-                if is_closed and coords and len(coords) >= 3:
-                    return "POLYGON", "Polygon"
-                if coords and len(coords) >= 4 and abs(coords[0].x - coords[-1].x) < 1e-4 and abs(coords[0].y - coords[-1].y) < 1e-4:
-                    return "POLYGON", "Polygon"
-            return "LINE", "LineString"
-        return None, None
+        """The layer family of one decoded feature: (group suffix, QGIS type).
+
+        The kind's family is the engine's — see
+        :data:`zero2cadgis.core.ncz_engine.v2.KIND_FAMILY` — so a kind the
+        decoder grows later is routed without a change here. The one thing
+        the kind alone cannot say is whether a polyline encloses an area,
+        which depends on the vertices.
+        """
+        family = KIND_FAMILY.get(geometry_kind)
+        if family is None:
+            return None, None
+        if geometry_kind == KIND_POLYLINE and self._rings_shut(coords, is_closed):
+            family = "POLYGON"
+        geometry_type, suffix = self.FAMILY_LAYERS[family]
+        return suffix, geometry_type
 
     def _bucket_placement(self, file_base_name: str, batch_name: str, entity, layer_name: str,
                           family: str, merge_geometry_types: bool) -> tuple:
@@ -2595,10 +2635,17 @@ class Zero2CadGisDockWidget(QDockWidget):
                                 bucket.entities.append(entity)
                                 bucket.source_files[id(entity)] = source_file_name
 
+                clip_geom = getattr(self, "_active_spatial_clip_geom", None)
+                clip_mode = getattr(self, "_active_spatial_clip_mode", "none")
+                clip_crs = getattr(self, "_active_spatial_clip_crs", None)
+
                 if not merge_geometry_types:
                     layer_groups.extend(
                         self._build_layer_groups_from_buckets(
-                            grouped_entities, target_crs))
+                            grouped_entities, target_crs,
+                            clip_geometry=clip_geom,
+                            clip_mode=clip_mode,
+                            clip_crs=clip_crs))
 
                 # 2. Attribute Tables
                 if selected_tables:
@@ -2623,9 +2670,15 @@ class Zero2CadGisDockWidget(QDockWidget):
                                 layers=attribute_layers))
 
             if merge_geometry_types:
+                clip_geom = getattr(self, "_active_spatial_clip_geom", None)
+                clip_mode = getattr(self, "_active_spatial_clip_mode", "none")
+                clip_crs = getattr(self, "_active_spatial_clip_crs", None)
                 layer_groups.extend(
                     self._build_layer_groups_from_buckets(
-                        merged_entity_groups, target_crs))
+                        merged_entity_groups, target_crs,
+                        clip_geometry=clip_geom,
+                        clip_mode=clip_mode,
+                        clip_crs=clip_crs))
 
             if not layer_groups:
                 raise ValueError(
@@ -2944,10 +2997,24 @@ class Zero2CadGisDockWidget(QDockWidget):
     def _build_layer_groups_from_buckets(
             self,
             grouped_entities: dict,
-            target_crs: QgsCoordinateReferenceSystem) -> list[LayerGroup]:
+            target_crs: QgsCoordinateReferenceSystem,
+            clip_geometry: QgsGeometry | None = None,
+            clip_mode: str = "none",
+            clip_crs: QgsCoordinateReferenceSystem | None = None) -> list[LayerGroup]:
         layer_groups = []
         is_plan_mode = (getattr(self, "chk_ncz_plan_symbology", None) is None
                         or self.chk_ncz_plan_symbology.isChecked())
+
+        eff_clip_boundary = None
+        if clip_geometry and clip_mode and clip_mode != "none":
+            eff_clip_boundary = QgsGeometry(clip_geometry)
+            c_crs = clip_crs or target_crs or QgsProject.instance().crs()
+            if c_crs.isValid() and target_crs.isValid() and c_crs != target_crs:
+                with suppress(Exception):
+                    transform = QgsCoordinateTransform(
+                        c_crs, target_crs, QgsProject.instance())
+                    eff_clip_boundary.transform(transform)
+
         # Texts are gathered across all groups: without geometry merging the
         # texts sit in a "<file>_POINT/TEXT" group apart from the polygons
         # they describe, and a per-group search found none of them.
@@ -2991,9 +3058,11 @@ class Zero2CadGisDockWidget(QDockWidget):
                     target_crs,
                     source_file_name,
                     bucket.source_files,
+                    clip_boundary=eff_clip_boundary,
+                    clip_mode=clip_mode,
                 )
 
-                if temp_layer:
+                if temp_layer and temp_layer.featureCount() > 0:
                     processed_layer = temp_layer
                     if self.chk_ncz_augment.isChecked():
                         with suppress(Exception):
@@ -3059,7 +3128,9 @@ class Zero2CadGisDockWidget(QDockWidget):
         entities: list[NetcadEntity],
         crs: QgsCoordinateReferenceSystem,
         source_file_name: str,
-        entity_source_files: dict[int, str] | None = None
+        entity_source_files: dict[int, str] | None = None,
+        clip_boundary: QgsGeometry | None = None,
+        clip_mode: str = "none",
     ) -> QgsVectorLayer | None:
 
         uri = f"{geometry_type}?crs={crs.authid()}"
@@ -3100,6 +3171,12 @@ class Zero2CadGisDockWidget(QDockWidget):
             if not geom or geom.isEmpty():
                 continue
 
+            if clip_boundary and clip_mode and clip_mode != "none":
+                from ..core.spatial_filter import clip_or_filter_geometry
+                geom = clip_or_filter_geometry(geom, clip_boundary, clip_mode)
+                if not geom or geom.isEmpty():
+                    continue
+
             source_value = source_file_name
             if entity_source_files:
                 source_value = entity_source_files.get(
@@ -3137,6 +3214,23 @@ class Zero2CadGisDockWidget(QDockWidget):
             layer, features, f"NCZ geometry layer {layer_name}")
         return layer
 
+    def _attribute_columns(self, table: NetcadAttributeTable) -> dict[str, int]:
+        """The QGIS column type each column of *table* needs.
+
+        An @TAB table is a bag of name/value rows with no declared schema, so
+        the schema is inferred: the first value a column holds decides its
+        type, and a column that opens with text — or with a null — stays
+        text even if later rows put numbers in it. Every column the rows
+        mention gets an entry, the three fixed ones included.
+        """
+        types: dict[str, int] = {}
+        for row in table.rows:
+            for name, value in row.columns.items():
+                if name not in types:
+                    types[name] = self.ATTRIBUTE_VALUE_TYPES.get(
+                        type(value), QMetaType.Type.QString)
+        return types
+
     def _create_temp_attribute_layer(
             self,
             table_name: str,
@@ -3146,52 +3240,28 @@ class Zero2CadGisDockWidget(QDockWidget):
         if not layer.isValid():
             return None
 
+        column_types = self._attribute_columns(table)
+        dynamic_names = sorted(
+            name for name in column_types
+            if name not in self.ATTRIBUTE_FIXED_NAMES)
+
+        fields = [QgsField(name, kind)
+                  for name, kind in self.ATTRIBUTE_FIXED_COLUMNS]
+        fields.extend(
+            QgsField(name, column_types[name]) for name in dynamic_names)
+
         provider = layer.dataProvider()
-
-        # Collect dynamic attributes
-        field_names = {"source_file", "table_ref", "row_index"}
-        column_types = {}
-        for row in table.rows:
-            for key, value in row.columns.items():
-                field_names.add(key)
-                if isinstance(value, int) and not isinstance(value, bool):
-                    column_types.setdefault(key, QMetaType.Type.Int)
-                elif isinstance(value, float):
-                    column_types.setdefault(key, QMetaType.Type.Double)
-                else:
-                    column_types.setdefault(key, QMetaType.Type.QString)
-
-        ordered_dynamic_names = sorted(
-            name for name in field_names if name not in {
-                "source_file", "table_ref", "row_index"})
-
-        fields = [
-            QgsField("source_file", QMetaType.Type.QString),
-            QgsField("table_ref", QMetaType.Type.QString),
-            QgsField("row_index", QMetaType.Type.Int),
-        ]
-        for name in ordered_dynamic_names:
-            fields.append(
-                QgsField(
-                    name,
-                    column_types.get(
-                        name,
-                        QMetaType.Type.QString)))
-
         provider.addAttributes(fields)
         layer.updateFields()
 
         features = []
         for row in table.rows:
             feature = QgsFeature(layer.fields())
-            values = []
-            for name in ordered_dynamic_names:
-                values.append(row.columns.get(name))
             feature.setAttributes([
                 source_file_name,
                 table.table_ref,
                 row.row_index,
-                *values
+                *[row.columns.get(name) for name in dynamic_names],
             ])
             features.append(feature)
 
@@ -3203,7 +3273,7 @@ class Zero2CadGisDockWidget(QDockWidget):
                                plan_type: str | None = None) -> None:
         project = QgsProject.instance()
         root = project.layerTreeRoot()
-        from ..core.cad_engine import is_helper_or_noise_layer, CadStylingEngine
+        from ..core.cad_engine import is_helper_or_noise_layer
 
         for item in layer_groups:
             existing_group = root.findGroup(item.name)
@@ -4068,6 +4138,24 @@ class Zero2CadGisDockWidget(QDockWidget):
         fallback_crs_row.addWidget(self.cmb_filter_cad_crs, 1)
         act_vbox.addLayout(fallback_crs_row)
 
+        clip_mode_row = QHBoxLayout()
+        clip_mode_row.addWidget(QLabel("Feature-Level Action:"))
+        self.cmb_filter_clip_mode = QComboBox()
+        self.cmb_filter_clip_mode.addItem(
+            "Import entire drawing (No clipping)", "none")
+        self.cmb_filter_clip_mode.addItem(
+            "Keep whole features intersecting boundary", "keep_whole")
+        self.cmb_filter_clip_mode.addItem(
+            "Exact clip features at boundary (Cookie-cutter)", "exact_clip")
+        self.cmb_filter_clip_mode.setToolTip(
+            "Control whether features inside matched drawings are clipped to the target boundary:\n"
+            "• Entire: Imports the whole drawing without modifying geometries.\n"
+            "• Keep Whole: Only imports features that touch/intersect the boundary, keeping their full geometry.\n"
+            "• Exact Clip: Cuts features cleanly at the boundary line using geometric intersection."
+        )
+        clip_mode_row.addWidget(self.cmb_filter_clip_mode, 1)
+        act_vbox.addLayout(clip_mode_row)
+
         import_row = QHBoxLayout()
         self.btn_filter_import = QPushButton("Import 0 Matched Files")
         self.btn_filter_import.setObjectName("convert_btn")
@@ -4753,16 +4841,37 @@ class Zero2CadGisDockWidget(QDockWidget):
                 "No checked Netcad drawing files found in the results.")
             return
 
+        self._sync_active_spatial_clip_state()
         self._load_ncz_paths(ncz_paths)
         self.main_tab.setCurrentIndex(1)
         if hasattr(self, "spatial_filter_dialog") and self.spatial_filter_dialog.isVisible():
             self.spatial_filter_dialog.hide()
+        clip_note = f" (feature clip: {self._active_spatial_clip_mode})" if getattr(self, "_active_spatial_clip_mode", "none") != "none" else ""
         if self.iface:
             self.iface.messageBar().pushMessage(
                 "02CadGis",
-                f"Transferred {len(ncz_paths)} matched Netcad drawings to Netcad tab.",
+                f"Transferred {len(ncz_paths)} matched Netcad drawings to Netcad tab{clip_note}.",
                 Qgis.MessageLevel.Success, 5,
             )
+
+    def _sync_active_spatial_clip_state(self) -> None:
+        clip_mode = (
+            self.cmb_filter_clip_mode.currentData()
+            if hasattr(self, "cmb_filter_clip_mode") else "none"
+        ) or "none"
+        if clip_mode != "none":
+            with suppress(Exception):
+                b_geom, b_crs = self._get_current_boundary_geometry()
+                buffer_dist = self.spin_filter_buffer.value()
+                if buffer_dist != 0.0 and b_geom:
+                    b_geom = b_geom.buffer(buffer_dist, 5)
+                self._active_spatial_clip_geom = b_geom
+                self._active_spatial_clip_mode = clip_mode
+                self._active_spatial_clip_crs = b_crs
+        else:
+            self._active_spatial_clip_geom = None
+            self._active_spatial_clip_mode = "none"
+            self._active_spatial_clip_crs = None
 
     def _send_filtered_to_cad_tab(self) -> None:
         cad_paths = []
@@ -4779,15 +4888,17 @@ class Zero2CadGisDockWidget(QDockWidget):
                 "No checked drawing or GIS files found in the results.")
             return
 
+        self._sync_active_spatial_clip_state()
         fmt = format_for_path(cad_paths[0]) or SOURCE_FORMATS[0]
         self._apply_source_path(cad_paths[0], fmt)
         self.main_tab.setCurrentIndex(0)
         if hasattr(self, "spatial_filter_dialog") and self.spatial_filter_dialog.isVisible():
             self.spatial_filter_dialog.hide()
+        clip_note = f" (feature clip: {self._active_spatial_clip_mode})" if getattr(self, "_active_spatial_clip_mode", "none") != "none" else ""
         if self.iface:
             self.iface.messageBar().pushMessage(
                 "02CadGis",
-                f"Transferred {len(cad_paths)} matched files to CAD tab (primary: {os.path.basename(cad_paths[0])}).",
+                f"Transferred {len(cad_paths)} matched files to CAD tab (primary: {os.path.basename(cad_paths[0])}){clip_note}.",
                 Qgis.MessageLevel.Success, 5,
             )
 
@@ -4829,6 +4940,18 @@ class Zero2CadGisDockWidget(QDockWidget):
             return
 
         fallback_crs = self.cmb_filter_cad_crs.currentData() or ""
+        clip_mode = (
+            self.cmb_filter_clip_mode.currentData()
+            if hasattr(self, "cmb_filter_clip_mode") else "none"
+        ) or "none"
+        clip_boundary = None
+        clip_crs = None
+        if clip_mode != "none":
+            with suppress(Exception):
+                clip_boundary, clip_crs = self._get_current_boundary_geometry()
+                buffer_dist = self.spin_filter_buffer.value()
+                if buffer_dist != 0.0 and clip_boundary:
+                    clip_boundary = clip_boundary.buffer(buffer_dist, 5)
 
         # Mode 3: Copy to folder
         if self.rb_filter_out_copy.isChecked():
@@ -4899,7 +5022,11 @@ class Zero2CadGisDockWidget(QDockWidget):
                 with suppress(Exception):
                     if r.file_path.lower().endswith(NCZ_EXTENSIONS):
                         layers = self._import_single_ncz_file_to_layers(
-                            r.file_path, fallback_crs)
+                            r.file_path, fallback_crs,
+                            clip_geometry=clip_boundary,
+                            clip_mode=clip_mode,
+                            clip_crs=clip_crs,
+                        )
                         for lyr in layers:
                             safe_name = self._sanitize_name(lyr.name())
                             opts = QgsVectorFileWriter.SaveVectorOptions()
@@ -4916,10 +5043,26 @@ class Zero2CadGisDockWidget(QDockWidget):
                         success_count += 1
                     else:
                         converter = GisConverterEngine(
-                            r.file_path, dst_gpkg, target_crs,
-                            source_crs=target_crs
+                            r.file_path, "", target_crs,
+                            source_crs=target_crs,
+                            clip_geometry=clip_boundary,
+                            clip_mode=clip_mode,
+                            clip_crs=clip_crs,
                         )
-                        converter.convert_to_gpkg()
+                        layers = converter.convert_to_memory()
+                        for lyr in layers:
+                            safe_name = self._sanitize_name(lyr.name())
+                            opts = QgsVectorFileWriter.SaveVectorOptions()
+                            opts.driverName = "GPKG"
+                            opts.layerName = safe_name
+                            opts.actionOnExistingFile = (
+                                QgsVectorFileWriter.ActionOnExistingFile.CreateOrOverwriteLayer
+                            )
+                            opts.fileEncoding = "UTF-8"
+                            QgsVectorFileWriter.writeAsVectorFormatV3(
+                                lyr, dst_gpkg,
+                                QgsProject.instance().transformContext(), opts
+                            )
                         success_count += 1
 
             self.progress_spatial_filter.setValue(100)
@@ -4970,10 +5113,32 @@ class Zero2CadGisDockWidget(QDockWidget):
             with suppress(Exception):
                 if r.file_path.lower().endswith(NCZ_EXTENSIONS):
                     layers = self._import_single_ncz_file_to_layers(
-                        r.file_path, fallback_crs)
+                        r.file_path, fallback_crs,
+                        clip_geometry=clip_boundary,
+                        clip_mode=clip_mode,
+                        clip_crs=clip_crs,
+                    )
                     if layers:
                         sub_group = import_group.addGroup(r.file_name)
                         for lyr in layers:
+                            QgsProject.instance().addMapLayer(lyr, False)
+                            sub_group.addLayer(lyr)
+                        success_count += 1
+                elif clip_mode != "none" and clip_boundary:
+                    target_crs = QgsProject.instance().crs()
+                    if not target_crs.isValid():
+                        target_crs = QgsCoordinateReferenceSystem("EPSG:4326")
+                    converter = GisConverterEngine(
+                        r.file_path, "", target_crs,
+                        source_crs=target_crs,
+                        clip_geometry=clip_boundary,
+                        clip_mode=clip_mode,
+                        clip_crs=clip_crs,
+                    )
+                    mem_layers = converter.convert_to_memory()
+                    if mem_layers:
+                        sub_group = import_group.addGroup(r.file_name)
+                        for lyr in mem_layers:
                             QgsProject.instance().addMapLayer(lyr, False)
                             sub_group.addLayer(lyr)
                         success_count += 1
@@ -5015,7 +5180,12 @@ class Zero2CadGisDockWidget(QDockWidget):
         )
 
     def _import_single_ncz_file_to_layers(
-            self, file_path: str, fallback_crs: str) -> list[QgsVectorLayer]:
+            self,
+            file_path: str,
+            fallback_crs: str,
+            clip_geometry: QgsGeometry | None = None,
+            clip_mode: str = "none",
+            clip_crs: QgsCoordinateReferenceSystem | None = None) -> list[QgsVectorLayer]:
         reader = NetcadLazyReader(file_path).index()
         summaries = reader.layer_summaries()
         wanted_codes = {s.layer_code for s in summaries if s.record_count > 0}
@@ -5082,7 +5252,11 @@ class Zero2CadGisDockWidget(QDockWidget):
                     bucket.source_files[id(entity)] = base_name
 
         layer_groups = self._build_layer_groups_from_buckets(
-            grouped, target_crs)
+            grouped, target_crs,
+            clip_geometry=clip_geometry,
+            clip_mode=clip_mode,
+            clip_crs=clip_crs,
+        )
         result_layers = []
         for g in layer_groups:
             result_layers.extend(g.layers)
