@@ -237,7 +237,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 3em 0; }
 <nav id="sidebar">
 <div id="sidebar-header">
 <div class="logo">02CadGis</div>
-<div class="subtitle">Reference Manual &middot; v3.1.0</div>
+<div class="subtitle">Reference Manual &middot; v4.1.2</div>
 </div>
 <div id="search-wrap"><input type="text" id="search" placeholder="Search&hellip;" autocomplete="off"></div>
 <ul id="toc">
@@ -294,12 +294,13 @@ hr { border: none; border-top: 1px solid var(--border); margin: 3em 0; }
 <li><a href="#ncz-import" data-name="ncz-import" data-display="batch import tab tables joins">Batch Import, @TAB Tables &amp; Joins</a></li>
 </ul></li>
 <li class="toc-group">
-<button class="toc-group-btn" aria-expanded="true"><span class="arrow">&#x25BC;</span> PlanGML &amp; Symbology</button>
+<button class="toc-group-btn" aria-expanded="true"><span class="arrow">&#x25BC;</span> MPYY Transfer (T&uuml;rk&ccedil;e &#304;mar Planlar&#305;)</button>
 <ul class="toc-algs">
-<li><a href="#plangml" data-name="plangml" data-display="plangml mode overview">PlanGML Mode Overview</a></li>
-<li><a href="#uip-catalog" data-name="uip-catalog" data-display="uip tabaka catalog upper groups">UIP Tabaka Catalog &amp; Upper Groups</a></li>
-<li><a href="#gosterim" data-name="gosterim" data-display="350 gosterim rules tarama">350+ G&ouml;sterim Rules &amp; Tarama</a></li>
-<li><a href="#plangml-schema" data-name="plangml-schema" data-display="plangml attribute schema">PlanGML Attribute Schema</a></li>
+<li><a href="#mpyy" data-name="mpyy" data-display="tr only mpyy style overview">TR-Only MPYY Style Overview</a></li>
+<li><a href="#mpyy-styles" data-name="mpyy-styles" data-display="mpyy styles plan level reference scale">MPYY Styles &amp; Reference Scale</a></li>
+<li><a href="#mpyy-match" data-name="mpyy-match" data-display="layer name resolution confirmation table">Layer-Name Resolution &amp; Confirmation</a></li>
+<li><a href="#mpyy-notation" data-name="mpyy-notation" data-display="plan notation zoning values">Plan Notation &amp; Carried Zoning Values</a></li>
+<li><a href="#mpyy-unmatched" data-name="mpyy-unmatched" data-display="unmatched layers pen widths">Unmatched Layers, Unfit Features &amp; Pen Widths</a></li>
 </ul></li>
 <li class="toc-group">
 <button class="toc-group-btn" aria-expanded="true"><span class="arrow">&#x25BC;</span> Parameters</button>
@@ -314,7 +315,13 @@ hr { border: none; border-top: 1px solid var(--border); margin: 3em 0; }
 <ul class="toc-algs">
 <li><a href="#output-modes" data-name="output-modes" data-display="geopackage scratch live modes">GeoPackage, Scratch &amp; Live</a></li>
 <li><a href="#export" data-name="export" data-display="dxf kml kmz export">DXF / KML / KMZ Export</a></li>
+<li><a href="#export-mbtiles" data-name="export-mbtiles" data-display="mbtiles tms xyz tile pyramid export">MBTiles / Tile Pyramid Export</a></li>
 <li><a href="#styling" data-name="styling" data-display="cad colors labels mojibake repair">CAD Colors, Labels &amp; Mojibake Repair</a></li>
+</ul></li>
+<li class="toc-group">
+<button class="toc-group-btn" aria-expanded="true"><span class="arrow">&#x25BC;</span> Batch Tools</button>
+<ul class="toc-algs">
+<li><a href="#batch-filter" data-name="batch-filter" data-display="batch spatial extent filter pafta">Batch Spatial Extent Filter</a></li>
 </ul></li>
 <li class="toc-group">
 <button class="toc-group-btn" aria-expanded="true"><span class="arrow">&#x25BC;</span> Interpretation Guide</button>
@@ -324,7 +331,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 3em 0; }
 <li><a href="#guide-kml-kmz" data-name="guide-kml-kmz" data-display="kml kmz workflow">KML / KMZ Workflow</a></li>
 <li><a href="#guide-gdb" data-name="guide-gdb" data-display="gdb mdb workflow">GDB / MDB Workflow</a></li>
 <li><a href="#guide-csv" data-name="guide-csv" data-display="csv tsv workflow">CSV / TSV Workflow</a></li>
-<li><a href="#guide-plangml" data-name="guide-plangml" data-display="plangml workflow">PlanGML Workflow</a></li>
+<li><a href="#guide-mpyy" data-name="guide-mpyy" data-display="mpyy transfer workflow">MPYY Transfer Workflow</a></li>
 <li><a href="#troubleshooting" data-name="troubleshooting" data-display="troubleshooting common errors">Troubleshooting</a></li>
 <li><a href="#performance" data-name="performance" data-display="performance characteristics benchmarks">Performance Characteristics</a></li>
 <li><a href="#cross-format" data-name="cross-format" data-display="cross format comparison matrix">Cross-Format Comparison</a></li>
@@ -341,7 +348,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 3em 0; }
 </ul>
 <div id="sidebar-footer">
 <a href="#appendix-a">CRS Quick Reference</a>
-<a href="#appendix-b">PlanGML Symbology Excerpt</a>
+<a href="#appendix-b">MPYY Style Bundle</a>
 <a href="#appendix-c">Glossary</a>
 <a href="#appendix-d">Bibliography &amp; Third-Party Notices</a>
 <a href="#appendix-e">NCZ Block Type Reference</a>
@@ -358,8 +365,8 @@ hr { border: none; border-top: 1px solid var(--border); margin: 3em 0; }
 </div>
 </div>
 <div class="meta">
-  v3.1.0 &middot; Yusuf Emino&#287;lu &middot;
-  Dokuz Eyl&uuml;l University, Dept. of City &amp; Regional Planning &middot; August 2026 &middot;
+  v4.1.2 &middot; Yusuf Emino&#287;lu &middot;
+  Dokuz Eyl&uuml;l University, Dept. of City &amp; Regional Planning &middot; October 2026 &middot;
   <a href="https://github.com/YusufEminoglu/zero2cadgis">GitHub</a> &middot; <a href="https://gitlab.com/yusufeminoglu/zero2cadgis">GitLab</a>
 </div>
 </div>
@@ -377,7 +384,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 3em 0; }
   <li><b>No silent data loss.</b> Every readable feature is written. Problematic geometries are repaired, not dropped. Empty entities are filtered with a logged warning, never a fatal error.</li>
   <li><b>Selective conversion.</b> The layer tree shows what is in the file <em>before</em> conversion. Unchecked layers cost zero decode time.</li>
   <li><b>Format-native parsers where GDAL falls short.</b> The plugin carries its own NCZ parser, DGN v8 reader, CSV sniffer, and MS Access reader &mdash; each activating when the corresponding GDAL driver is absent or incomplete.</li>
-  <li><b>Turkish planning data is a first-class citizen.</b> The CRS detector knows every EPSG code in the Turkish survey projection families. The PlanGML engine applies the official Ministry e-Plan symbology. The mojibake repairer recovers Turkish characters from mis-encoded CAD layers.</li>
+  <li><b>Turkish planning data is a first-class citizen.</b> The CRS detector knows every EPSG code in the Turkish survey projection families. The MPYY transfer writes an imar plan's tabaka into MPYY 1.1.7 feature types and draws them with the Ministry's UIP / NIP / CDP styles. The mojibake repairer recovers Turkish characters from mis-encoded CAD layers.</li>
   <li><b>Progressive disclosure.</b> The dock shows only the controls relevant to the selected input type. Drag-and-drop auto-detects format and switches tabs.</li>
 </ol>
 
@@ -390,7 +397,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 3em 0; }
 </table>
 
 <h3 id="dock">Dock Panel &amp; Drag-and-Drop</h3>
-<p>The dock has three stacked panels: <b>CAD &amp; GIS Converter</b> (source selection, layer tree, output options), <b>Netcad NCZ/NCA Importer</b> (multi-file, metadata, CRS, PlanGML), and <b>CAD &amp; GIS Exporter</b> (DXF/KML/KMZ output). Dropping any supported file onto the dock auto-detects the format and switches to the correct panel. Session preferences &mdash; target path, CRS, cleanup options, last-used folders &mdash; persist via <code>QSettings</code>.</p>
+<p>The dock has three stacked panels: <b>CAD &amp; GIS Converter</b> (source selection, layer tree, output options), <b>Netcad NCZ/NCA Importer</b> (multi-file, metadata, CRS, MPYY transfer), and <b>CAD &amp; GIS Exporter</b> (DXF/KML/KMZ/MBTiles output). Dropping any supported file onto the dock auto-detects the format and switches to the correct panel. Session preferences &mdash; target path, CRS, cleanup options, last-used folders &mdash; persist via <code>QSettings</code>.</p>
 
 <!-- ══════════════════════════════════════════════════════════════ -->
 <!-- 2. Theoretical Background -->
@@ -442,7 +449,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 3em 0; }
   <li><b>Label</b> &mdash; font, size, placement for textual annotations.</li>
 </ul>
 
-<p>The PlanX Adaptive Symbology Engine (PASE) compiles this catalogue offline into <code>symbology-style.db</code> (888 KB, shipped with the plugin) and matches CAD tabaka names against it at import time. The matching algorithm is longest-token-subsequence: a tabaka name is normalised (uppercase, Turkish character mapping, tokenisation) and compared against all catalogue keys, with plan-type fallback (UIP &rarr; NIP &rarr; CDP). When an official rule is found, it is applied with full fidelity; when none matches, the legacy PASE keyword catalogue provides sensible defaults. A tabaka that matches nothing receives the empty-code-cell policy (cells left blank, upper group set to D&#304;&#286;ER PLAN ALANLARI) rather than an invented code.</p>
+<p>02CadGis carries that gösterim as the <b>MPYY style bundle under <code>mpyy/</code></b> &mdash; the Ministry's e-Plan SLDs rewritten to the MPYY 1.1.7 schema, together with the tarama tiles and the plan symbol fonts they reference. The bundle travels inside the plugin: nothing is downloaded and no style server is needed. Resolving a drawing's tabaka onto it is deliberately conservative, because a wrong function is worse than an unresolved one. Each layer name is resolved by an <em>exact</em> match, by a mapping the user confirmed earlier and the plugin remembered, or by a spelling rule that cannot change the meaning (a copy number, an export suffix, the <code>_ALANI</code> ending, a <code>PL_</code> prefix). Anything else is only <em>proposed</em> &mdash; ranked word by word against the Ek-1e function names and MPYY codes &mdash; and waits for confirmation. A tabaka that resolves to nothing receives the empty-code-cell policy (cells left blank, upper group set to D&#304;&#286;ER PLAN ALANLARI) rather than an invented code.</p>
 
 <h3 id="theory-datamodel">CAD vs. GIS Data Models</h3>
 
@@ -501,7 +508,7 @@ S \xrightarrow{\text{read}} \mathcal{L} = \{(L_k, \Gamma_k)\} \xrightarrow{\text
   <li><b>Split</b> (\(\mathcal{S}\)): For CAD formats, partition the single GDAL entities layer by the <code>Layer</code> or <code>Level</code> field. For non-CAD formats, \(\mathcal{S}\) is the identity. Where a CAD layer subset contains mixed geometry types, \(\mathcal{S}\) further partitions into homogeneous geometry type groups.</li>
   <li><b>Clean</b> (\(\mathcal{C}\)): Apply <code>CadCleanupEngine</code>: duplicate vertex removal (\(\varepsilon_c = 10^{-4}\) map units) followed by collinear simplification (see below).</li>
   <li><b>Transform</b> (\(\mathcal{T}\)): Resolve source CRS \(\text{CRS}_S\) via the detection algorithm, then apply \(\text{QgsCoordinateTransform}(\text{CRS}_S, \text{CRS}_T)\) to all coordinates.</li>
-  <li><b>Export</b> (\(\mathcal{E}\)): Write each homogeneous layer to a GeoPackage table via <code>QgsVectorFileWriter</code> with <code>CreateOrOverwriteLayer</code> semantics, applying attribute schema expansion, mojibake repair, and optional PlanGML column population.</li>
+  <li><b>Export</b> (\(\mathcal{E}\)): Write each homogeneous layer to a GeoPackage table via <code>QgsVectorFileWriter</code> with <code>CreateOrOverwriteLayer</code> semantics, applying attribute schema expansion and mojibake repair. When TR-Only MPYY Style is enabled this stage is replaced entirely: the features are written into an MPYY workspace GeoPackage by function rather than by tabaka (see <a href="#mpyy">MPYY Transfer</a>).</li>
 </ul>
 
 <h3 id="form-collinear">Collinear Simplification Algorithm</h3>
@@ -749,16 +756,28 @@ Output: Geometry profile (x_field, y_field, wkt_field, crs_authid)
 <h2 id="ncz-arch">NCZ Engine v2</h2>
 
 <h3>Engine Architecture</h3>
-<p>The v2 engine is a ground-up rewrite &mdash; an independent, block-oriented Netcad binary decoder with <b>zero dependency on Netcad software</b>. Verified bit-for-bit identical to the previous engine across a synthetic corpus and validated against a real 8,163-entity municipal drawing.</p>
+<p>The v2 engine is a ground-up rewrite &mdash; an independent, block-oriented
+Netcad binary decoder with <b>zero dependency on Netcad software</b>. It is the
+<b>only</b> decoder in the tree: the earlier implementation has been removed, and
+<code>core/netcad_parser.py</code> is now a thin first-party facade that
+re-exports the v2 result model and readers. Its correctness is guarded by a
+synthetic fixture corpus that exercises the decoder paths and both block layouts,
+and by an opt-in parity test against a real 8,163-entity municipal drawing.</p>
 
 <table>
 <tr><th>Module</th><th>File</th><th>Role</th></tr>
-<tr><td><b>Binary Reader</b></td><td><code>binary.py</code></td><td>Bounds-checked stream. Every read validates offset and length &mdash; no buffer overrun possible.</td></tr>
-<tr><td><b>Parser</b></td><td><code>parser.py</code></td><td>File header, block index, dispatch to decoders by block type.</td></tr>
-<tr><td><b>Geometry Decoder</b></td><td><code>geometry.py</code></td><td>Registry of decoders per entity type (point, line, polyline, circle, arc, text, block reference, etc.).</td></tr>
-<tr><td><b>Attribute Decoder</b></td><td><code>attributes.py</code></td><td>Decodes @TAB attribute tables stored inside drawings.</td></tr>
-<tr><td><b>Block Catalogue</b></td><td><code>blocks.py</code></td><td>Reusable geometry definitions &mdash; resolves block references by insertion point, scale, and rotation.</td></tr>
+<tr><td><b>Binary Reader</b></td><td><code>binary.py</code></td><td>Bounds-checked cursor primitives. Every read validates offset and length &mdash; no buffer overrun possible.</td></tr>
+<tr><td><b>Block Scanner</b></td><td><code>blocks.py</code></td><td>Walks the block chain and builds the drawing's metadata: layers, the <code>LEX.ST2</code> style table (colours and pen widths), and the CRS hints.</td></tr>
+<tr><td><b>Geometry Decoder</b></td><td><code>geometry.py</code></td><td>Registry of decoders keyed by entity kind (point, line, polyline, circle, arc, text, block reference, &hellip;), with the <code>KIND_*</code> vocabulary and each kind's geometry family.</td></tr>
+<tr><td><b>Smart Object Properties</b></td><td><code>properties.py</code></td><td>Parses the Netcad 8 Smart Object property bag &mdash; the source of the zoning values the plan notation and the MPYY transfer read.</td></tr>
+<tr><td><b>Attribute Decoder</b></td><td><code>attributes.py</code></td><td>Decodes <code>@TAB</code> attribute tables stored inside drawings.</td></tr>
+<tr><td><b>Index Cache</b></td><td><code>cache.py</code></td><td>Fingerprinted on-disk cache of the catalog, keyed by file size and modification time and stamped with a cache version.</td></tr>
+<tr><td><b>Parser</b></td><td><code>parser.py</code></td><td>Orchestrator: the two-phase index / selective-decode flow, and <code>parse_file</code>. Reports its backend as a constant.</td></tr>
 </table>
+<p>The result model itself (<code>NetcadEntity</code>,
+<code>NetcadAttributeTable</code>, <code>NetcadParseResult</code>) lives one level
+up in <code>core/ncz_engine/model.py</code>, shared by the engine and everything
+that consumes it.</p>
 
 <h3 id="ncz-lazy">Lazy Catalog &amp; Selective Decode</h3>
 <p>Selecting a drawing reads only the <b>file header + block index</b>. The layer tree (CAD layer names, entity counts, types) is built from the index &mdash; near-instant even for large municipal files. Geometry is decoded <b>only for checked layers</b> at import time. A 50-layer drawing where you need 5 costs only the decode time of those 5.</p>
@@ -786,52 +805,190 @@ Output: Geometry profile (x_field, y_field, wkt_field, crs_authid)
 </div>
 
 <h3 id="ncz-import">Batch Import, @TAB Tables &amp; Joins</h3>
-<p>Multiple NCZ/NCA files can be selected simultaneously. By default, file groups stay separate. <b>Merge geometry types</b> joins layers with the same name across files. <b>@TAB tables</b> (attribute tables stored inside the drawing) are decoded and presented alongside CAD layers; checking both a layer and its matching @TAB performs an automatic attribute join on entity name/label. Optional <b>geometry metrics</b> add length, area, and centroid fields.</p>
+<p>Multiple NCZ/NCA files can be selected simultaneously. By default each file's
+layers stay separate, under their own file-name prefix. <b>Build unified upper
+layers</b> merges the tabaka into one layer per geometry family, across files if
+you are importing more than one. <b>@TAB tables</b> (attribute tables stored
+inside the drawing) are decoded and presented alongside CAD layers; checking both
+a layer and its matching <code>@TAB</code> performs an automatic attribute join
+on entity name or label. Optional <b>geometry metrics</b> add length, area and
+centroid fields.</p>
 
 <!-- ══════════════════════════════════════════════════════════════ -->
-<!-- 7. PlanGML -->
+<!-- 7. MPYY Transfer -->
 <!-- ══════════════════════════════════════════════════════════════ -->
-<h2 id="plangml">PlanGML &amp; Symbology</h2>
+<h2 id="mpyy">MPYY Transfer (Turkish &#304;mar Plans)</h2>
 
-<h3>PlanGML Mode Overview</h3>
-<p>PlanGML mode (opt-in) transforms a raw CAD drawing into a <b>standards-compliant spatial plan</b>. Three actions occur: (1) tabaka are grouped into the Ministry's official upper groups; (2) PlanGML schema columns are populated from the MPYY UIP database; (3) the official e-Plan symbology is applied &mdash; each tabaka drawn with its Ministry-defined fill, stroke, hatch pattern, and label style.</p>
+<h3>TR-Only MPYY Style Overview</h3>
+<p><b>TR-Only MPYY Style</b> is an opt-in mode that turns a Turkish implementation, master
+or environmental plan from a raw CAD drawing into an <b>MPYY workspace</b>: a
+GeoPackage whose layers are the MPYY 1.1.7 feature types, written with the plan's
+code values and drawn with the Ministry's own styles.</p>
+
+<p>It is offered in two places, and it is <b>off by default in both</b>:</p>
+<table class="key-table">
+<tr><th>Panel</th><th>Control</th><th>Applies to</th></tr>
+<tr><td>Netcad NCZ/NCA importer</td><td><i>TR-Only MPYY Style: MPYY structure and styles (U&#304;P / N&#304;P / &Ccedil;DP)</i></td><td>Every checked drawing</td></tr>
+<tr><td>CAD &amp; GIS converter</td><td><i>TR-Only MPYY Style (DXF / DWG): MPYY structure and styles</i></td><td>DXF and DWG sources only; checking it for another format raises a warning and is ignored</td></tr>
+</table>
 
 <div class="card accent">
-<b>Offline-first.</b> All 350+ g&ouml;sterim rules and 131 tarama tiles are <b>compiled into the plugin</b> (<code>symbology-style.db</code>, 888 KB). Nothing is downloaded; no style server is needed. The g&ouml;sterim is the official standard, not 02CadGis artwork &mdash; see <code>THIRD_PARTY_NOTICES.md</code>.
+<b>Leave it off for anything that is not an imar plan.</b> Topographic surveys,
+utility networks, cadastral sheets and civil-engineering drawings have no MPYY
+function, and forcing them through the transfer would replace their tabaka names
+and their drawing colours with a classification that does not describe them.
+With the mode off, every import behaves exactly as the rest of this manual
+describes.
 </div>
 
-<h3 id="uip-catalog">UIP Tabaka Catalog &amp; Upper Groups</h3>
-<p>The catalog maps 256 official tabaka to their hierarchy. A documented alias list resolves local municipal spellings onto the official tabaka they represent. Tabaka not in the catalog get <b>empty code cells</b> (not invented codes) and go to <b>D&#304;&#286;ER PLAN ALANLARI</b> &mdash; deliberately the only group name not from the Ministry's catalog.</p>
+<p>Switching the mode on also changes two neighbouring controls, because the
+transfer owns the layer structure: <b>Build unified upper layers</b> is disabled
+and unchecked while the mode is active, and <b>Apply original ARGB colors</b> is
+locked on. The ARGB lock is not cosmetic &mdash; the layers that cannot be
+transferred are handed back in the drawing's own colours, and those colours have
+to survive (see <a href="#mpyy-unmatched">Unmatched Layers</a>).</p>
 
-<h3 id="gosterim">350+ G&ouml;sterim Rules &amp; Tarama</h3>
-<p>The <b>PlanX Adaptive Symbology Engine (PASE)</b> matches each tabaka against the official e-Plan catalog. Each rule specifies: fill colour, stroke, hatch pattern, tarama tile path, plan type applicability (UIP 1/1000, NIP 1/5000, CDP 1/25,000+). The plan type is auto-detected from the file name and can be overridden.</p>
+<h3 id="mpyy-styles">MPYY Styles &amp; Reference Scale</h3>
 
-<h3 id="plangml-schema">PlanGML Attribute Schema</h3>
-<p>When PlanGML mode is on, each feature receives 16 official columns: <code>UST_GRUP_ID</code>, <code>UST_GRUP_ADI</code>, <code>ALT_GRUP_ID</code>, <code>ALT_GRUP_ADI</code>, <code>DETAY_GRUP_ID</code>, <code>PLAN_KODU</code>, <code>FONKSIYON_KODU</code>, <code>LEJANT_KODU</code>, <code>KOD</code>, <code>TAM_ADI</code>, <code>GISTERIM</code>, <code>GUSTERIM_ADI</code>, <code>LEJANT</code>, <code>FONKSIYON</code>, <code>KULLANIM</code>, and <code>uip_tabaka</code> (the drawing's original tabaka name, always preserved).</p>
+<p>The styling in this mode is <b>MPYY Studio's MPYY U&#304;P / N&#304;P / &Ccedil;DP
+style set</b>, carried inside 02CadGis under <code>mpyy/</code>. Each level is one
+Ministry e-Plan SLD per MPYY feature type, with the Ek-1e catalogue corrections
+and the plan symbol fonts those styles reference. Nothing is downloaded at run
+time and no style server is involved; the retired e-Plan database
+(<code>symbology-style.db</code>) is not read by any code path. Appendix B lists
+what the bundle contains.</p>
 
-<h3 id="pase-matching">Adaptive Tabaka Matching Algorithm</h3>
+<p><b>Plan level.</b> The <i>Plan level</i> selector offers <i>Auto</i>,
+<i>Implementation plan &ndash; U&#304;P (1/1000)</i>, <i>Master plan &ndash;
+N&#304;P (1/5000)</i> and <i>Environmental plan &ndash; &Ccedil;DP (1/25,000+)</i>.
+<i>Auto</i> reads the level from the file name: the marker words
+<code>UIP</code>/<code>UYGULAMA</code>/<code>MUIP</code>,
+<code>NIP</code>/<code>NAZIM</code>/<code>MNIP</code> and
+<code>CDP</code>/<code>CEVRE</code>/<code>MCDP</code> first, then a scale number
+(<code>500</code>, <code>1000</code>, <code>2000</code> &rarr; U&#304;P;
+<code>5000</code>, <code>10000</code> &rarr; N&#304;P; <code>25000</code> and
+above &rarr; &Ccedil;DP). The name is matched with Turkish letters folded, so
+<code>&Ccedil;DP</code> and <code>CDP</code> both read as an environmental plan.
+If a file name says nothing at all, <i>Auto</i> assumes U&#304;P; if the level
+still cannot be named, the import <b>stops and says so</b> rather than writing
+the plan into the wrong style set.</p>
 
-<p>The PlanX Adaptive Symbology Engine (PASE) uses a longest-token-subsequence matching strategy that is robust to the variations in tabaka naming encountered in real municipal drawings. A tabaka name like <code>"1000_UIP_PL_KONUT_ALANI_POLYGON"</code> must be matched to the official catalogue entry for <code>"PL_KONUT"</code> despite the scale prefix, plan type prefix, geometry type suffix, and Turkish character variations.</p>
+<p><b>Reference scale.</b> U&#304;P, N&#304;P and &Ccedil;DP are drawn at 1/1000,
+1/5000 and 1/25,000, and the styles scale with the view, so the on-screen plan
+looks like the printed sheet at that scale. Area pictograms are placed at the
+regulation's 10, 7 and 5 mm, and the legend is scoped to the plan in front of
+you: it lists only the values the drawing actually uses, not the whole
+catalogue.</p>
 
-<p>The matching algorithm proceeds in four tiers of decreasing specificity:</p>
+<p><b>The catalogue.</b> The official tabaka identity &mdash; upper group, MPYY
+function and code, and the geometry the function is defined for &mdash; comes
+from a catalogue generated from the Mek&#226;nsal Planlar Yap&#305;m
+Y&ouml;netmeli&#287;i U&#304;P database. A tabaka the catalogue does not know is
+given <b>empty code cells rather than an invented code</b>, and is placed in
+<b>D&#304;&#286;ER PLAN ALANLARI</b> &mdash; deliberately the only group name in
+the output that is not the Ministry's.</p>
+
+<h3 id="mpyy-match">Layer-Name Resolution &amp; Confirmation</h3>
+
+<p>Everything hinges on answering one question per CAD layer: which MPYY function
+is <code>PL_KONUT</code>? The transfer answers it in four ways, and <b>only the
+first three can write an MPYY code without a person looking at it</b>:</p>
 
 <ol>
-  <li><b>Tier 1 &mdash; Official e-Plan catalogue (longest-token-subsequence).</b> The layer name is normalised (uppercase, Turkish-to-ASCII mapping <code>&Ccedil;&rarr;C, &#286;&rarr;G, &#304;&rarr;I, &Ouml;&rarr;O, &#350;&rarr;S, &Uuml;&rarr;U</code>, non-alphanumeric to underscore, leading scale/plan-type prefixes stripped), then tokenised on underscores. All catalogue keys (also tokenised) are sorted by decreasing token count and decreasing key length for longest-first priority. Matching checks whether all tokens of a catalogue key appear as a contiguous subsequence in the layer name tokens. When a match is found for the requested plan type, that entry is used; when the token is missing for the requested plan type, the fallback chain (UIP &rarr; NIP &rarr; CDP or NIP &rarr; UIP &rarr; CDP or CDP &rarr; NIP &rarr; UIP) reuses the closest official equivalent.</li>
-  <li><b>Tier 2 &mdash; Attribute-based matching.</b> If the layer carries PlanGML schema columns populated from a previous import, PASE checks the <code>PLAN_KODU</code>, <code>FONKSIYON_KODU</code>, and <code>LEJANT_KODU</code> fields against the keyword lists of the legacy PASE catalogue. This tier handles re-imported or enriched layers where the tabaka identity is already known.</li>
-  <li><b>Tier 3 &mdash; Exact tabaka name match (legacy PASE catalogue).</b> The raw layer name (with Turkish characters normalised) is compared verbatim against every keyword in the legacy catalogue. Both direct match and <code>"PL_"</code>-prefixed variants are tried, because some municipalities use <code>"KONUT"</code> while others use <code>"PL_KONUT"</code> for the same function.</li>
-  <li><b>Tier 4 &mdash; Substring keyword match (legacy PASE catalogue).</b> Normalised tokens from the layer name are checked against normalised keywords. A single matching token is sufficient for a match, so <code>"YESIL_ALAN"</code> matches the <code>"YESIL_ALAN"</code> keyword even if the full layer name is <code>"1000_UIP_ACIK_VE_YESIL_ALANLAR"</code>.</li>
-  <li><b>Tier 5 &mdash; Default fallback.</b> A neutral grey fill with medium opacity and the upper group D&#304;&#286;ER PLAN ALANLARI. The original tabaka name is preserved in all columns that store it, so downstream analysis can filter and reclassify.</li>
+  <li><b>Exact.</b> The layer name is a key of the tabaka crosswalk table. Nothing is inferred.</li>
+  <li><b>Confirmed before.</b> The name was ticked in the confirmation table on an earlier drawing and is remembered (see below).</li>
+  <li><b>Spelling rule.</b> The name differs from a crosswalk key only in ways that cannot change its meaning: a trailing copy number (<code>_2</code>), a Netcad export suffix (<code>_NETCAD</code>, <code>_NETC</code>, <code>_NTC</code>, <code>_NET</code>), the <code>_ALANI</code> / <code>_ALAN</code> / <code>_TESISI</code> / <code>_TESIS</code> / <code>_TES</code> ending, the <code>PL_</code> prefix, or a compact versus underscored spelling. A rule is applied <b>only when every rule that fires points at the same key</b>; if two readings are possible, nothing is applied and the layer goes to the confirmation table instead.</li>
+  <li><b>Proposal.</b> Anything else is only <i>proposed</i>. A proposal never becomes an MPYY code on its own, however confident the ranking is.</li>
 </ol>
 
-<h3 id="two-stage-rendering">Two-Stage Hybrid Rendering Pipeline</h3>
+<p>Proposals are ranked word by word against the Ek-1e function names and MPYY
+codes: a synonym list, a stop-word list, common layer prefixes, Turkish plural
+and possessive endings, run-together names split back into words, and an
+inverse-document-frequency weight so that a rare word counts for more than a
+common one. Geometry is used as a filter &mdash; a line tabaka is not proposed
+against a polygon function. If a single word fits more than eight different
+functions it is treated as uninformative and yields no proposal at all. Layer
+names containing <code>IPTAL</code> or <code>ITIRAZ</code> (cancelled, objected)
+are never resolved and never proposed.</p>
 
-<p>Symbology application uses a two-stage strategy that chooses between categorised and single-symbol rendering based on the data content:</p>
+<p><b>The confirmation table.</b> When anything is left unresolved, the import
+opens <i>TR-Only MPYY Style {U&#304;P/N&#304;P/&Ccedil;DP} &mdash; match CAD
+layers</i>. Its columns are <b>Confirm</b>, <b>CAD layer</b>, <b>Geometry</b>,
+<b>Features</b>, <b>MPYY function (type to search)</b> and <b>Reason</b>, and the
+reason column states which rule or ranking produced the row. The rows start
+<b>unticked</b>: a proposal is something you accept, not something you have to
+remember to reject, so that a drawing full of unrecognised tabaka cannot be
+transferred wholesale by clicking through. You can tick a proposal, or ignore
+the ranking entirely and type to search for any MPYY function by hand — doing
+so ticks the row for you. Rows with no proposal at all are hidden behind
+<i>Also show the N layer(s) without a proposal</i>. The dialog then offers
+<i>Confirm ticked and transfer</i> or <i>Transfer without confirming</i>, and the
+second is a deliberate, informed choice rather than the default.</p>
 
-<p><b>Stage 1 &mdash; Categorised renderer.</b> If the layer has a field from the PlanGML schema candidate list (<code>uip_tabaka</code>, <code>ALT_GRUP_ADI</code>, <code>TAM_ADI</code>, <code>GISTERIM</code>, etc.) that contains 1&ndash;300 unique values, a <code>QgsCategorizedSymbolRenderer</code> is created. Each unique value is independently matched against the symbology catalogues, producing a symbol that reflects that specific tabaka's official appearance. A single-tabaka layer is still categorised (1 category) because the single-value path correctly resolves the tabaka's official symbol, whereas the fallback single-symbol path (Stage 2) matches against the <em>layer name</em>, which for official upper-group names (e.g. <code>"SU_ATIKSU_VE_ATIK_SISTEMLERI"</code>) does not contain any keyword and would render grey. This behaviour was corrected in v2.8.1.</p>
+<p><b>Remembered mappings.</b> A mapping you confirm is written to a per-user
+file, <code>&lt;QGIS profile&gt;/mpyy/tabaka_eslesmeleri.json</code>, keyed by
+plan level. The same tabaka name then resolves by itself on the next drawing, so
+a municipal spelling you had to confirm once is only ever confirmed once. The
+file is written atomically through a rename, so an interrupted write cannot
+leave a half-file behind, and it is shared with the other plugins that carry the
+same module. <code>MPYY_TABAKA_ESLESME</code> points the file somewhere else —
+see <a href="#appendix-f">Appendix F</a>.</p>
 
-<p><b>Stage 2 &mdash; Single-symbol renderer.</b> Applied when no suitable category field exists. The layer name is matched against the catalogues. For polygon layers, the symbol is a multi-layer fill symbol consisting of (a) an optional background fill with the official colour, (b) optional vector hatch pattern layers (one for diagonal/cross patterns, two for cross hatch with perpendicular angles), and (c) a clean outline layer with the official stroke colour and dash style. For official e-Plan rules with tarama tiles, the fill layer is replaced by a <code>QgsRasterFillSymbolLayer</code> rendering the Ministry's pattern image at its native pixel size. For line layers, the symbol respects the official dash pattern vector (e.g. <code class="nowrap">[12, 4, 2, 4]</code> from the SLD) via <code>setCustomDashVector</code>.</p>
+<h3 id="mpyy-notation">Plan Notation &amp; Carried Zoning Values</h3>
 
-<p>Text labelling uses the <code>pick_label_field</code> function, which probes candidate field names (<code>"label"</code>, <code>"label_text"</code>, <code>"text"</code>, <code>"yazi"</code>, <code>"kat_adedi"</code>, <code>"emsal"</code>, etc.) and accepts a candidate only when at least one non-empty value has been observed in the layer. This prevents binding labels to a column that exists but is empty on all features &mdash; a failure mode that previously produced silently blank labels. Point layers that carry text render with a subtle 0.6 mm anchor marker so the text's insertion point is visible without competing with the label content.</p>
+<p>An imar plan carries its zoning decisions in text: nizam, kat, TAKS, KAKS /
+emsal, H<sub>max</sub>, front and side setbacks. The transfer reads them from
+two places &mdash; the notation texts in the drawing and the property bags of
+Netcad 8 Smart Objects &mdash; and writes them into the MPYY fields, but only
+where the MPYY form accepts the value. A value no MPYY field can hold is
+dropped, not coerced into the nearest field. Where the drawing states a value
+more than once, it is kept only if every statement agrees; a contradiction is
+not resolved by picking one.</p>
+
+<p><b>Plan notation.</b> Rather than let the MPYY area layers label themselves,
+the transfer redraws the planner's own notation where the planner placed it.
+Every Smart Object whose properties carry a building-rights or road-width
+parameter becomes a point in a <code>&lt;file&gt;_PLAN_NOTATION</code> group,
+split into two layers:</p>
+<table class="key-table">
+<tr><th>Layer</th><th>Carries</th></tr>
+<tr><td><b>Building notation</b></td><td>Yap&#305; d&uuml;zeni (nizam), kat adedi, TAKS and its type, emsal / KAKS and its type, yap&#305; y&uuml;ksekli&#287;i and its type, &ouml;n and yan bah&ccedil;e mesafeleri, and the symbol position &mdash; drawn as the Ek-1e building notation (the nizam / kat circle, the TAKS / KAKS circle, <code>E =</code>, <i>Yen&ccedil;ok</i>).</td></tr>
+<tr><td><b>Road widths</b></td><td>The road width from the Smart Object, drawn as the width in a circle.</td></tr>
+</table>
+<p>Empty layers are not created. To keep the plan from being drawn twice, the
+same transfer hides the Smart Object frames in the leftover drawing layers with
+a layer subset, and switches the building-notation labels of the MPYY area
+layers off. The plan areas keep their values as attributes either way &mdash;
+only the duplicate labelling is suppressed.</p>
+
+<h3 id="mpyy-unmatched">Unmatched Layers, Unfit Features &amp; Pen Widths</h3>
+
+<p>Not every layer belongs in the MPYY workspace, and the transfer says so
+rather than absorbing it. Two things are kept out:</p>
+<ul>
+  <li><b>Layers with no MPYY type</b> &mdash; after resolution, confirmation and
+  proposals, a tabaka that still has no function is left alone.</li>
+  <li><b>Features whose geometry does not fit their type</b> &mdash; a text or an
+  open line inside a tabaka that transferred into a polygon function, for
+  instance. These are counted per layer and reported.</li>
+</ul>
+<p>Both are handed back as one layer-tree group named
+<code>&lt;file&gt;_UNMATCHED_LAYERS</code>, drawn in the drawing's <b>own ARGB
+colours</b> &mdash; which is why that control is locked on in this mode. The
+import summary states how many layers and features went there, so the split is
+never silent. Nothing is discarded and nothing is guessed: what the MPYY
+workspace could not describe is still in front of you, in the colours it was
+drawn in, ready to be classified by hand.</p>
+
+<p><b>Pen widths.</b> Netcad stores a pen width in millimetres per layer, in the
+drawing's own style table, and 02CadGis carries it through: every feature gets a
+<code>line_width_mm</code> attribute, lines are drawn at that width and polygon
+outlines at that width as well. A layer that sets no pen falls back to
+<b>0.25 mm</b> &mdash; chosen because a heavier default turned every contour and
+helper line of a plan bold. In the MPYY transfer the same value fills the MPYY
+<code>CizgiKalinligi</code> field, so a feature that keeps its drawing pen in
+QGIS keeps it in the MPYY output, and &ouml;nerilen / korunan / d&uuml;zeltilen
+cephe lines take their width from it.</p>
 
 <!-- ══════════════════════════════════════════════════════════════ -->
 <!-- 8. Parameters -->
@@ -869,16 +1026,28 @@ Output: Geometry profile (x_field, y_field, wkt_field, crs_authid)
 
 <table class="key-table">
 <tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
-<tr><td><code>Merge geometry types</code></td><td>boolean</td><td><code>False</code></td><td>When importing multiple NCZ files, merge layers sharing the same name across files into single output layers. When disabled, each file's layers stay separate with file-name prefixes.</td></tr>
-<tr><td><code>Apply PlanGML schema</code></td><td>boolean</td><td><code>False</code></td><td>Populate the 16-column PlanGML attribute schema for each feature. Matches tabaka names against the official MPYY UIP catalog. Empty cells for unrecognised tabaka (no code invention).</td></tr>
-<tr><td><code>Apply PlanGML symbology</code></td><td>boolean</td><td><code>False</code></td><td>Apply the official e-Plan g&ouml;sterim symbology (fill, stroke, hatch, tarama tile, label) via the PlanX Adaptive Symbology Engine. Sourced from the compiled <code>symbology-style.db</code>.</td></tr>
-<tr><td><code>Plan type</code></td><td>enum</td><td><code>AUTO</code></td><td>Selects the official style set: UIP (1/1000), NIP (1/5000), CDP (1/25,000+), or AUTO (inferred from file/layer name). Controls which plan-type-specific g&ouml;sterim rules are applied. Falls back through UIP &rarr; NIP &rarr; CDP when a token is missing for the selected type.</td></tr>
-<tr><td><code>Calculate geometry metrics</code></td><td>boolean</td><td><code>False</code></td><td>Add <code>geom_len</code>, <code>geom_area</code>, <code>cent_x</code>, <code>cent_y</code> columns computed from each feature's geometry. Length and area are in target CRS units; centroids are point coordinates.</td></tr>
-<tr><td><code>Import @TAB attribute tables</code></td><td>boolean</td><td><code>True</code></td><td>Decode @TAB attribute tables embedded in the NCZ file. Tables are presented as checkable rows in the layer tree alongside CAD layers. Checking both a layer and its @TAB performs automatic join on entity name.</td></tr>
-<tr><td><code>NCZ index cache</code></td><td>boolean</td><td><code>True</code></td><td>Cache the decoded drawing metadata, layer catalog, and attribute tables locally (JSON, per-user cache directory). Keyed by SHA-256 of absolute path + (size, mtime_ns) fingerprint. Controlled by <code>ZERO2CADGIS_NCZ_CACHE_DISABLE</code>.</td></tr>
-<tr><td><code>NCZ selective decode</code></td><td>boolean</td><td><code>True</code></td><td>Decode geometry only for checked layers (v2 engine). Unchecked layers contribute zero decode time. When disabled, all records are decoded (v1-compatible full-parse mode).</td></tr>
-<tr><td><code>CAD colour styling</code></td><td>boolean</td><td><code>True</code></td><td>Apply ARGB colours from the NCZ drawing to output layers as categorised QGIS renderers. When disabled, layers use default QGIS styling. NCZ colour codes: 0 = by layer, 1 = forced blue, 255 = forced red; layer colours come from LEX.ST2 block.</td></tr>
+<tr><td><code>Destination CRS:</code></td><td>CRS</td><td>(project CRS)</td><td>CRS written to the output layers. Netcad drawings store an SRS id rather than an EPSG code, so the panel preselects one from the drawing's projection text and a sample of its coordinates; the selection is only a preselection and your choice is what gets used.</td></tr>
+<tr><td><code>Simplify collinear vertices</code></td><td>boolean</td><td><code>True</code></td><td>Drop vertices that lie on the straight line between their neighbours, within tolerance. See <a href="#form-collinear">Collinear Simplification</a>.</td></tr>
+<tr><td><code>Clean duplicate nodes</code></td><td>boolean</td><td><code>True</code></td><td>Remove repeated consecutive nodes and near-zero segments left by the drawing.</td></tr>
+<tr><td><code>Calculate geometry metadata (Area, Length)</code></td><td>boolean</td><td><code>True</code></td><td>Add the geometry metric columns &mdash; length, area and centroid &mdash; computed from each feature's geometry in target CRS units.</td></tr>
+<tr><td><code>Polyline Closure Tolerance</code></td><td>double, 0.0&ndash;10.0 m</td><td><code>0.10 m</code></td><td>Vertex gap below which an open polyline is closed into a polygon. Keep it small unless the drawing has known snap gaps: it is the control that decides whether a cadastral parcel closes.</td></tr>
+<tr><td><code>Apply original ARGB colors and line styles</code></td><td>boolean</td><td><code>True</code></td><td>Draw each layer with the drawing's ARGB colour and its pen width, as a categorised renderer. NCZ colour codes: 0 = by layer, 1 = forced blue, 255 = forced red; layer colours and pen widths come from the drawing's style table. <b>Locked on while TR-Only MPYY Style is active.</b></td></tr>
+<tr><td><code>TR-Only MPYY Style: MPYY structure and styles (U&#304;P / N&#304;P / &Ccedil;DP)</code></td><td>boolean</td><td><code>False</code></td><td>Import as an MPYY workspace instead of raw CAD layers. See <a href="#mpyy">MPYY Transfer</a>. Off by default and intended to stay off for anything that is not an imar plan.</td></tr>
+<tr><td><code>Plan level:</code></td><td>enum</td><td><code>Auto</code></td><td><i>Auto (detect from file name)</i>, <i>Implementation plan &ndash; U&#304;P (1/1000)</i>, <i>Master plan &ndash; N&#304;P (1/5000)</i> or <i>Environmental plan &ndash; &Ccedil;DP (1/25,000+)</i>. Read only when TR-Only MPYY Style is on.</td></tr>
+<tr><td><code>Convert text elements to map labels</code></td><td>boolean</td><td><code>True</code></td><td>Turn drawing text into QGIS labels on the layer that owns the text. Point layers keep a subtle anchor marker so an insertion point stays visible.</td></tr>
+<tr><td><code>Join attribute tables (@TAB) automatically</code></td><td>boolean</td><td><code>True</code></td><td>Link <code>@TAB</code> tables back to geometry where a matching name or label field exists. With it off, tables are still decoded and can be joined by hand.</td></tr>
+<tr><td><code>Attribute columns:</code></td><td>column set</td><td>(all)</td><td>Untick a column to leave it out of the written layers. Columns the styles, the labels, the three-layer categories and the MPYY transfer read are locked on and cannot be dropped; unticked columns are discarded only after every step that needs them has run. MPYY layers always carry their own MPYY 1.1.7 columns regardless.</td></tr>
+<tr><td><code>Build unified upper layers (Polygon / Line / Point)</code></td><td>boolean</td><td><code>True</code></td><td>Merge the drawings' tabaka into one layer per geometry family instead of one layer per tabaka. <b>Disabled and unchecked while TR-Only MPYY Style is on</b>, because the transfer defines the layer structure itself.</td></tr>
+<tr><td><code>Merge all layers into 3 layers (Polygon / Line / Point-Text)</code></td><td>boolean</td><td><code>False</code></td><td>Write every tabaka of a drawing into exactly three layers &mdash; <code>_POLYGON</code>, <code>_LINE</code>, <code>_POINT/TEXT</code>. Each feature keeps its tabaka in <code>layer_name</code> and the renderer is categorised by that field, so every tabaka keeps its own drawing colour; helper and pen tabaka are listed but switched off. With several drawings and unified upper layers on, they share the three layers.</td></tr>
+<tr><td><code>Import directly as temporary scratch layers (no GPKG)</code></td><td>boolean</td><td><code>False</code></td><td>Write to QGIS memory layers instead of a GeoPackage. In MPYY mode the workspace goes to a temporary file instead.</td></tr>
 </table>
+<p>Two engine behaviours are not switches. <b>Selective decode</b> always
+applies: choosing a drawing indexes only its layers and metadata, so the layer
+tree appears almost immediately even for large municipal files, and geometry is
+decoded only for the layers checked at import time. The <b>index cache</b> is
+likewise always on unless <code>ZERO2CADGIS_NCZ_CACHE_DISABLE</code> is set; it
+is keyed to the drawing's size and modification time and rebuilds itself when the
+drawing changes. <b>Clear cache</b> on the Netcad tab resets it by hand.</p>
 
 <h3 id="param-output">Output &amp; Export Parameters</h3>
 
@@ -887,11 +1056,33 @@ Output: Geometry profile (x_field, y_field, wkt_field, crs_authid)
 <tr><td><code>Output mode</code></td><td>enum</td><td><code>GeoPackage</code></td><td>One of: <b>GeoPackage</b> (permanent .gpkg, CRS transform applied), <b>Scratch</b> (temporary memory layer, CRS transform applied), <b>Live</b> (zero-copy reference, no CRS transform, for GDB/MDB only).</td></tr>
 <tr><td><code>Target GeoPackage</code></td><td>file path</td><td>(user-selected)</td><td>Destination .gpkg file. Created if absent; layers are added with CreateOrOverwriteLayer semantics. Existing layers with the same name are replaced.</td></tr>
 <tr><td><code>Target CRS</code></td><td>CRS</td><td>(project CRS)</td><td>Target coordinate reference system for GeoPackage and Scratch output modes. Source coordinates are transformed via QgsCoordinateTransform using the PROJ pipeline.</td></tr>
-<tr><td><code>Export format</code></td><td>enum</td><td><code>DXF</code></td><td>Export format for the exporter panel: DXF (via QgsVectorFileWriter, attributes skipped), KML, or KMZ (KML zipped as doc.kml with DEFLATE compression).</td></tr>
-<tr><td><code>DXF preserve layer names</code></td><td>boolean</td><td><code>True</code></td><td>Write QGIS layer names as DXF layer names to preserve organisational intent for CAD collaborators.</td></tr>
-<tr><td><code>KML/KMZ name field</code></td><td>field name</td><td><code>"name"</code></td><td>Attribute column used as the KML <code>&lt;name&gt;</code> element for each exported feature.</td></tr>
-<tr><td><code>KML/KMZ description field</code></td><td>field name</td><td><code>"description"</code></td><td>Attribute column used as the KML <code>&lt;description&gt;</code> element for each exported feature.</td></tr>
+<tr><td><code>Select Source Layer:</code></td><td>enum</td><td>(first layer)</td><td>One vector layer from the project. For MBTiles the list gains a first entry, <i>[All Visible Canvas Layers / Project]</i>, which renders the whole canvas rather than one layer.</td></tr>
+<tr><td><code>Target Export Format:</code></td><td>enum</td><td><code>DXF</code></td><td><b>AutoCAD DXF (*.dxf)</b>, <b>Google Earth KML (*.kml)</b>, <b>Google Earth KMZ (*.kmz)</b> or <b>Web Map Tiles MBTiles (*.mbtiles)</b>. DXF is written through <code>QgsVectorFileWriter</code> with attribute creation skipped, so the drawing carries geometry and layer structure but no attribute table. KMZ is a KML written as <code>doc.kml</code> inside a DEFLATE zip.</td></tr>
+<tr><td><code>Output CRS:</code></td><td>CRS</td><td>(layer CRS)</td><td>Enabled for DXF only, where the engineering or project CRS is meaningful. The control is disabled and forced for the other two formats, and the hint under it says which: <b>KML/KMZ is always EPSG:4326</b> for standards-compliant Google Earth positioning, and <b>MBTiles is always EPSG:3857</b> (Web Mercator) with TMS/XYZ tiling.</td></tr>
+<tr><td><code>Feature Scope:</code> <i>Selected features only</i></td><td>boolean</td><td><code>False</code></td><td>Export only the features currently selected on the source layer. Hidden for MBTiles, which renders the canvas. Selecting this with nothing selected on the layer is an error rather than an empty export.</td></tr>
+<tr><td><code>Save Location:</code></td><td>file path</td><td>(user-selected)</td><td>Destination file. The write goes to a temporary file that is validated and only then published over the destination, so an interrupted export cannot replace an existing deliverable with a partial file.</td></tr>
 </table>
+
+<p><b>Tile Settings</b> appear when MBTiles is chosen:</p>
+<table class="key-table">
+<tr><th>Parameter</th><th>Range</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>Min Zoom:</code></td><td>0&ndash;24</td><td><code>14</code></td><td>Lowest zoom level of the pyramid. Lower values add a wider overview and cost tiles fast.</td></tr>
+<tr><td><code>Max Zoom:</code></td><td>0&ndash;24</td><td><code>16</code></td><td>Highest zoom level. This is the one that decides whether a plan is legible when zoomed in.</td></tr>
+<tr><td>Tile format</td><td>enum</td><td><code>PNG</code></td><td><b>PNG (Transparent)</b> or <b>JPEG (Opaque)</b>. PNG keeps transparency, which is what makes an overlay usable; JPEG is smaller. JPEG quality is 75.</td></tr>
+<tr><td><code>DPI:</code></td><td>72&ndash;600</td><td><code>96</code></td><td>Tile resolution. 96 is the standard web-map DPI and the right answer unless you have a reason.</td></tr>
+<tr><td><code>Metatile:</code></td><td>1&ndash;8</td><td><code>1</code></td><td>Metatile buffer. 1 is fastest and lightest on memory.</td></tr>
+<tr><td><code>Extent:</code></td><td>enum</td><td>Auto</td><td><b>CAD / Vector Data Extent (Auto)</b> renders only the drawing area &mdash; fast and compact &mdash; or <b>Current Map Canvas Extent</b> renders what is on screen.</td></tr>
+</table>
+<p>An estimate label under these controls counts the tiles the current settings
+would produce and reports what to expect: <i>Fast, &lt; 5 sec</i> up to about 250
+tiles, <i>Moderate, ~10&ndash;30 sec</i> up to about 2,500, and a red warning above
+that. The exporter <b>refuses to run above an estimated 25,000 tiles</b> and says
+why, rather than filling a disk or freezing QGIS. The number of tiles actually
+written is read back from the output and reported with the feature count.</p>
+<p>The Netcad tab carries a shortcut to this panel,
+<i>Need raster tiles? Open MBTiles Exporter &rarr;</i>, which opens the exporter
+format already set to MBTiles &mdash; the intended route for turning a converted
+plan into a web-map pyramid in one step.</p>
 
 <!-- ══════════════════════════════════════════════════════════════ -->
 <!-- 9. Output & Export -->
@@ -907,10 +1098,81 @@ Output: Geometry profile (x_field, y_field, wkt_field, crs_authid)
 </table>
 
 <h3 id="export">DXF / KML / KMZ Export</h3>
-<p>The exporter panel writes any active QGIS vector layer to DXF, KML, or KMZ via <code>QgsVectorFileWriter</code>. DXF preserves layer names and colour intent for CAD collaborators.</p>
+<p>The exporter panel writes any active QGIS vector layer, or its current
+selection, to DXF, KML or KMZ through <code>QgsVectorFileWriter</code>. DXF is
+written with attribute creation skipped, so it carries geometry and layer names
+for CAD collaborators but no attribute table; KML and KMZ are forced to WGS 84
+(EPSG:4326) so Google Earth positions them correctly. Each write goes to a
+temporary file that is validated first and only then published over the
+destination, so an interrupted export cannot destroy an existing deliverable.</p>
+
+<h3 id="export-mbtiles">MBTiles / Tile Pyramid Export</h3>
+<p>The same panel writes a raster tile pyramid &mdash; <code>.mbtiles</code>, in
+TMS or XYZ addressing &mdash; from the styled canvas, using QGIS's native tile
+algorithm. Source selection differs from the vector exports: the layer list gains
+<i>[All Visible Canvas Layers / Project]</i>, which renders the whole canvas with
+its real styling rather than one layer's geometry. The output is always
+reprojected to <b>EPSG:3857</b> (Web Mercator), which is what every web map
+expects, and tiles are antialiased.</p>
+<p>The controls are Min and Max Zoom (default 14 and 16), tile format
+(<b>PNG (Transparent)</b> or <b>JPEG (Opaque)</b>, quality 75), DPI (default 96,
+the standard web-map value), Metatile (default 1, the fastest and lightest on
+memory) and Extent &mdash; the drawing's own extent or the current canvas. An
+estimate label counts the tiles the current settings imply and says what to
+expect: under about 250 tiles it reports <i>Fast, &lt; 5 sec</i>; up to about
+2,500, <i>Moderate, ~10&ndash;30 sec</i>; above that it warns. The exporter
+refuses a run estimated above <b>25,000 tiles</b> rather than filling a disk or
+freezing QGIS, and reports the number of tiles actually written, read back from
+the output.</p>
+<p>Transparency is the reason to prefer PNG here: a plan exported as an opaque
+JPEG cannot be laid over a basemap. Use JPEG only when file size matters more
+than overlaying. The Netcad tab's <i>Need raster tiles? Open MBTiles Exporter
+&rarr;</i> link jumps straight to this panel with MBTiles selected, which is the
+intended route from a converted plan to a web-map deliverable.</p>
 
 <h3 id="styling">CAD Colors, Labels &amp; Mojibake Repair</h3>
 <p>Netcad ARGB colours are preserved via categorised renderers (one symbol per colour). Text labels select a column that <b>actually contains text</b> (not merely exists while empty). Point layers with text draw a subtle 0.6 mm anchor. The <b>mojibake repair engine</b> applies multi-pass encoding recovery: UTF-8 &rarr; CP1254 &rarr; CP1252 &rarr; ISO-8859-9 &rarr; direct character replacement map for stubborn byte sequences. Applied to layer names, attributes, labels, and UI tree items. DXF <code>\U+XXXX</code> escapes are also unescaped.</p>
+
+<h2 id="batch-filter">Batch Tools</h2>
+
+<h3>Batch Spatial Extent Filter</h3>
+<p>Surveying and municipal archives arrive as a directory of hundreds of sheets
+&mdash; paftas &mdash; and the task is usually to find the handful that cover one
+area. Opening them one at a time in QGIS is what the filter exists to replace.
+It scans a folder (recursively by default) or an explicit file list and reports
+which drawings intersect a boundary <b>without loading any of them into
+memory</b>: only the header and the extent are read, so an unmatched sheet costs
+nothing but its file read.</p>
+<p>The extensions it understands are the ones the plugin imports:
+<code>.ncz .nca .dxf .dwg .dgn .kml .kmz .shp .gdb .geojson .json .gml .sqlite
+.db .gpx .accdb .mdb .csv .tsv</code>. File geodatabases are treated as one unit
+each rather than as a folder of files. For NCZ and NCA the extent comes from the
+drawing's own decoded coordinates, with origin-artefact points and non-finite or
+oversized values discarded; for everything else it comes from the OGR layer
+extents and the source CRS.</p>
+<table class="key-table">
+<tr><th>Boundary source</th><th>Uses</th></tr>
+<tr><td><b>Active Map Canvas Extent</b></td><td>Whatever the map canvas currently shows. The fastest way to say "here".</td></tr>
+<tr><td><b>Selected Feature(s) in Polygon Layer</b></td><td>A polygon layer in the project. <i>Use only selected polygon features</i> (on by default) unions the current selection instead of the whole layer &mdash; a district boundary, an administrative area, a site outline.</td></tr>
+<tr><td><b>Print Layout Map Extent</b></td><td>The extent of a print layout's map item. This is the one to use when the sheet boundary is the deliverable's frame rather than an arbitrary view.</td></tr>
+<tr><td><b>Manual Bounding Box</b></td><td>A bounding box typed in directly, for an area you know the coordinates of.</td></tr>
+</table>
+<p>The match is either <b>Intersects</b> or <b>Within</b>, with an optional metre
+buffer so that a sheet whose edge only touches the boundary can be included or
+excluded deliberately. The comparison uses real geometry and CRS transforms when
+QGIS can build them and falls back to a plain bounding-box test when it cannot,
+so the filter still works on a layer whose CRS is unassigned. Results are timed
+and reported as <i>Scan complete in N s: M matched out of K candidate files</i>.</p>
+<p>Three things consume the result. <b>Preview Footprints on Canvas</b> draws the
+matched extents as a labelled overlay so you can see the coverage before
+committing. <b>Import Matched Files</b> then takes exactly the matches through
+the normal import path, in one of three output modes: <b>Directly into QGIS
+Canvas</b> (the default), <b>Unified GeoPackage</b> (all matches into one
+<code>.gpkg</code>), or <b>Copy matched files to folder</b> (the originals
+copied out, converted by nothing). <b>Send to CAD Tab</b> hands the selection
+back to the converter tab instead, so you can inspect it there first. This is
+the intended way to pull a district's worth of sheets out of a provincial
+archive without opening the ones you do not need.</p>
 
 <!-- ══════════════════════════════════════════════════════════════ -->
 <!-- 10. Interpretation Guide -->
@@ -936,8 +1198,8 @@ Output: Geometry profile (x_field, y_field, wkt_field, crs_authid)
 <h4>DXF Layer Name Conventions</h4>
 <p>DXF layer names in Turkish planning practice follow several common conventions that affect how they appear in the layer tree. Understanding these conventions helps in deciding whether to split by layer and which layers to import:</p>
 <ul>
-  <li><b>Standardised MPYY names</b> &mdash; layers named after official tabaka codes, e.g. <code>PL_KONUT</code>, <code>PL_YOL</code>, <code>PL_PARK</code>. These are immediately recognisable to the PlanGML engine and will receive official symbology when PlanGML mode is enabled. The underscore convention is significant: <code>PL_</code> is the MPYY prefix for planning layers; <code>SNR_</code> for boundary/limit layers; numeric prefixes (e.g. <code>100_</code>, <code>200_</code>) are upper-group codes.</li>
-  <li><b>Local municipal names</b> &mdash; layers with descriptive Turkish names like <code>KONUT ALANI</code>, <code>MEVCUT YOL</code>, <code>PARK VE YESIL ALAN</code>. These are matched by the PASE keyword catalogue through normalisation and token matching. Turkish characters in layer names are normalised by the mojibake repair engine before matching.</li>
+  <li><b>Standardised MPYY names</b> &mdash; layers named after official tabaka codes, e.g. <code>PL_KONUT</code>, <code>PL_YOL</code>, <code>PL_PARK</code>. These resolve exactly when TR-Only MPYY Style is enabled, with no confirmation step. The underscore convention is significant: <code>PL_</code> is the MPYY prefix for planning layers; <code>SNR_</code> for boundary/limit layers; numeric prefixes (e.g. <code>100_</code>, <code>200_</code>) are upper-group codes. The <code>PL_</code> prefix is also one of the spelling rules the transfer treats as meaning-preserving, so <code>KONUT</code> and <code>PL_KONUT</code> resolve to the same function.</li>
+  <li><b>Local municipal names</b> &mdash; layers with descriptive Turkish names like <code>KONUT ALANI</code>, <code>MEVCUT YOL</code>, <code>PARK VE YESIL ALAN</code>. These are <i>proposed</i> against the Ek-1e function names and MPYY codes in the confirmation table, never applied automatically. Turkish characters in layer names are normalised first, and the search box in the layer filter matches them loosely.</li>
   <li><b>Numeric-only layer names</b> &mdash; some CAD operators use layer names like <code>0</code>, <code>1</code>, <code>2</code> or colour-based names. These layers convey no semantic meaning and must be manually classified after import. The plugin preserves them as-is; the user should rename them in QGIS or use the layer tree to identify their content before conversion.</li>
   <li><b>Null or empty layer names</b> &mdash; entities on AutoCAD layer <code>0</code> (the default layer) or with an empty layer string appear as <code>(no layer)</code> in the tree. These entities are typically construction geometry or drafting artefacts; unless you specifically need them, uncheck this entry.</li>
 </ul>
@@ -980,11 +1242,43 @@ Output: Geometry profile (x_field, y_field, wkt_field, crs_authid)
 
 <p><b>Step 2: CRS detection.</b> The projection text is parsed, sample coordinates are read, and the detector proposes an EPSG code with a confidence level and explanation. <b>Green (high confidence)</b> means both datum and zone are certain. <b>Yellow (medium confidence)</b> means one signal is missing (typically the datum &mdash; TUREF is assumed for modern data). <b>Red (none)</b> means neither signal is sufficient; you must select manually. Always verify the proposed CRS against your knowledge of the data.</p>
 
-<p><b>Step 3: Layer selection.</b> The layer tree shows each CAD layer by code, name, record count, and geometry families. Check only the layers you need. @TAB tables appear alongside layers; checking both a layer and its @TAB performs the automatic join. Use "Select All" / "Deselect All" for bulk operations.</p>
+<p><b>Step 3: Layer selection.</b> The layer tree shows each CAD layer by name, geometry family and record count. Check only the layers you need. <code>@TAB</code> tables appear alongside layers; checking both a layer and its <code>@TAB</code> performs the automatic join. Use <b>Select All</b> / <b>Deselect All</b> for bulk operations.</p>
 
-<p><b>Step 4: PlanGML (optional).</b> Enable both "Apply PlanGML schema" and "Apply PlanGML symbology" for planning data. Select the plan type (AUTO usually works, inferring from scale prefixes in the file name). The plugin populates the 16-column schema and styles each feature per the official e-Plan catalogue.</p>
+<p><b>Step 3a: Filtering the list.</b> The box above the tree filters by name and by
+geometry. Every word you type must match: <code>LINE</code>,
+<code>POLYGON</code>, <code>POINT</code> or <code>TEXT</code> keep the layers
+holding that geometry, and any other word must appear in the layer name. So
+<code>PL_ line</code> lists the plan layers that contain lines. Turkish letters
+are matched loosely &mdash; <code>&#305;</code>/<code>i</code>/<code>&#304;</code>/<code>I</code>
+are the same letter and <code>&#351; &ccedil; &#287; &ouml; &uuml;</code> match
+<code>s c g o u</code>, so <i>askeri</i> finds <code>PL_ASKERI_ALAN</code> and
+<i>yap&#305;</i> finds <code>SM_YAPILASMA</code>. Select All / Deselect All act on
+the listed layers only, so a filter is a safe way to bulk-check a subset; hidden
+layers keep whatever state they had.</p>
 
-<p><b>Step 5: Batch options.</b> When importing multiple files, decide whether to merge same-named layers across files ("Merge geometry types") or keep them separate. Geometry metrics (<code>geom_len</code>, <code>geom_area</code>, <code>cent_x</code>, <code>cent_y</code>) are useful for quality checking but add processing time.</p>
+<p><b>Step 3b: Attribute columns.</b> Untick any column you do not want written.
+The columns the styles, the labels, the three-layer categories and the MPYY
+transfer read are locked on &mdash; dropping <code>layer_name</code>, the colour,
+the label or the text height would silently change what you see. Unticked columns
+are discarded only after every step that needs them has run, and MPYY layers keep
+their own MPYY 1.1.7 columns regardless.</p>
+
+<p><b>Step 4: TR-Only MPYY Style (optional).</b> For an imar plan, check
+<i>TR-Only MPYY Style: MPYY structure and styles (U&#304;P / N&#304;P /
+&Ccedil;DP)</i> and leave <i>Plan level</i> on <i>Auto</i> unless the file name
+does not say which plan it is. The import then writes an MPYY workspace instead
+of raw CAD layers, and any tabaka it cannot resolve comes back to you in the
+confirmation table rather than being guessed. See
+<a href="#guide-mpyy">MPYY Transfer Workflow</a>. Leave this off for
+topographic, cadastral, utility and engineering drawings.</p>
+
+<p><b>Step 5: Batch options.</b> <i>Build unified upper layers</i> merges the
+tabaka into one layer per geometry family; <i>Merge all layers into 3 layers</i>
+goes further and writes exactly three. Geometry metadata adds the length, area
+and centroid columns, useful for quality checking. Both are covered in
+<a href="#guide-mpyy">MPYY Transfer Workflow</a>; the merge controls are
+disabled while the MPYY mode is on, because the transfer defines the layer
+structure itself.</p>
 
 <h3 id="guide-kml-kmz">KML / KMZ Workflow</h3>
 
@@ -1018,13 +1312,68 @@ Output: Geometry profile (x_field, y_field, wkt_field, crs_authid)
 <b>Large CSV note.</b> The sniffer reads only the first 256 KB of the file. If your geometry columns appear after this prefix, the sniffer will not detect them. Select them manually in the override fields.
 </div>
 
-<h3 id="guide-plangml">PlanGML Workflow</h3>
+<h3 id="guide-mpyy">MPYY Transfer Workflow</h3>
 
-<p><b>Step 1: Prerequisites.</b> PlanGML mode requires an NCZ drawing whose tabaka names follow the MPYY convention (e.g. <code>PL_KONUT</code>, <code>PL_PARK</code>, <code>PL_YOL</code>). Drawings using arbitrary local naming will have unrecognised tabaka routed to D&#304;&#286;ER PLAN ALANLARI with empty code cells.</p>
+<p><b>Step 1: Decide that this is an imar plan.</b> The mode is for Uygulama,
+Naz&#305;m and &Ccedil;evre D&uuml;zeni plans. If the drawing is a topographic
+survey, a utility network, a cadastral sheet or an engineering drawing, stop
+here and import it with the mode off &mdash; the rest of this section does not
+apply to it, and forcing it through would replace its tabaka names and drawing
+colours with a classification that does not describe it.</p>
 
-<p><b>Step 2: Enable.</b> On the NCZ Importer tab, check both "Apply PlanGML schema" and "Apply PlanGML symbology". Verify the auto-detected plan type. For files named like <code>1000_BAHCESARAY_IMAR.ncz</code> the plan type will be detected as UIP.</p>
+<p><b>Step 2: Enable the mode and pick the level.</b> On the Netcad tab, check
+<i>TR-Only MPYY Style: MPYY structure and styles (U&#304;P / N&#304;P /
+&Ccedil;DP)</i>; on the converter tab, the equivalent box applies to DXF and DWG
+only. Leave <i>Plan level</i> on <i>Auto</i> in the normal case: a file named
+<code>1000_BAHCESARAY_IMAR.ncz</code> resolves to
+U&#304;P because of the <code>1000</code>, <code>5000_&hellip;</code> resolves to
+N&#304;P and <code>25000_&hellip;</code> to &Ccedil;DP, and a name containing
+<code>NAZIM</code> resolves to N&#304;P whatever its scale prefix says. Set the
+level by hand when the file name is uninformative; if the level cannot be
+determined at all, the import stops and tells you rather than styling the plan
+as the wrong kind.</p>
 
-<p><b>Step 3: Output verification.</b> After conversion, each feature has 17 columns (16 PlanGML + <code>uip_tabaka</code>). The symbology is applied as a QGIS categorised renderer on the <code>uip_tabaka</code> field when multiple tabaka are present, or a single-symbol renderer for single-tabaka layers. Hatch patterns (tarama) render via raster fill symbol layers at the Ministry's native pixel resolution.</p>
+<p><b>Step 3: Answer the confirmation table.</b> Layers whose names match the
+crosswalk exactly, were confirmed on an earlier drawing, or differ only by a
+copy number, a Netcad export suffix, a <code>PL_</code> prefix or an
+<code>_ALANI</code>-type ending transfer without asking. Everything else arrives
+in <i>TR-Only MPYY Style {U&#304;P/N&#304;P/&Ccedil;DP} &mdash; match CAD
+layers</i>, unticked, with the reason each was proposed. Tick what is right, type
+to pick a function by hand where the proposal is wrong, and leave the row
+unticked where you would rather keep the drawing's own layer. Confirmed rows are
+remembered for the next drawing, so this table shrinks as you work through an
+archive.</p>
+
+<p><b>Step 4: Read the result.</b> The import produces an MPYY workspace
+GeoPackage for the level, the layers styled at the plan's reference scale with a
+legend scoped to the values the plan uses, and &mdash; where the drawing carried
+the planner's own notation &mdash; a
+<code>&lt;file&gt;_PLAN_NOTATION</code> group with <i>Building notation</i> and
+<i>Road widths</i>. Anything the transfer could not place is in
+<code>&lt;file&gt;_UNMATCHED_LAYERS</code>, in the drawing's own colours. The
+summary confirms the split by name and by count. Check it before delivering: an
+unmatched layer is a decision still to be made, not an error.</p>
+
+<p><b>Step 5: Layer structure.</b> Two controls interact with this mode. With
+the mode off, <i>Build unified upper layers</i> merges the tabaka into one layer
+per geometry family, and <i>Merge all layers into 3 layers (Polygon / Line /
+Point-Text)</i> writes exactly three layers labelled
+<code>&lt;owner&gt;_POLYGON</code>, <code>&lt;owner&gt;_LINE</code> and
+<code>&lt;owner&gt;_POINT/TEXT</code>; each feature keeps its tabaka in
+<code>layer_name</code>, the renderer is categorised by that field so every
+tabaka keeps its own drawing colour, and helper and pen layers are listed but
+switched off. With the mode on, those two are superseded and the first is
+disabled outright &mdash; the MPYY workspace's layer structure is the MPYY
+feature types, and tabaka that have no MPYY type are what ends up in the
+unmatched group instead.</p>
+
+<div class="card warn">
+<b>The single most common mistake with this mode is leaving it on.</b> It is off
+by default for that reason. If an import that used to produce recognisable CAD
+layers suddenly produces MPYY feature types, an MPYY workspace with an empty
+code column, or a group of layers in the drawing's own colours, check this
+checkbox first.
+</div>
 
 <h3 id="troubleshooting">Troubleshooting</h3>
 
@@ -1038,7 +1387,9 @@ Output: Geometry profile (x_field, y_field, wkt_field, crs_authid)
 <tr><td>CSV imports with wrong delimiter or no geometry</td><td>First 100 lines are header/metadata; data structure differs afterward</td><td>Override the auto-detected settings manually. Specify delimiter, X/Y or WKT columns, and CRS explicitly.</td></tr>
 <tr><td>GDB/MDB fails with "Unable to open"</td><td>Missing ODBC driver for .mdb; incompatible GDB version; file locked by another process</td><td>For .mdb: install 64-bit Microsoft Access Database Engine. For .gdb: ensure no other process (ArcGIS, ArcCatalog) has the GDB open. Try copying the GDB directory and opening the copy.</td></tr>
 <tr><td>GeoPackage conversion succeeds but feature count is lower than expected</td><td>Features with no geometry (NULL geometry) are filtered. Empty geometries are skipped.</td><td>This is by design. Check the plugin's warning log for the count of skipped features. If many features were dropped, inspect the source in its native application to verify geometry presence.</td></tr>
-<tr><td>PlanGML symbology shows grey (default) for a known tabaka</td><td>The tabaka name does not match any keyword in the official or legacy catalogues</td><td>Check the exact spelling (including underscores, Turkish characters) against the catalog. If the tabaka is genuinely missing, it receives the D&#304;&#286;ER PLAN ALANLARI group with a neutral grey fill. The original tabaka name is preserved in <code>uip_tabaka</code>.</td></tr>
+<tr><td>A tabaka that should be a known function comes back in the confirmation table, or lands in <code>_UNMATCHED_LAYERS</code></td><td>The name matched no crosswalk key and no meaning-preserving spelling rule, so it was only proposed &mdash; the transfer never applies a proposal by itself</td><td>This is the intended behaviour, not a failure. Confirm the row in <i>match CAD layers</i> and the mapping is remembered for the next drawing. If the name is genuinely a local spelling, confirm it once; if the function does not exist, leave the row unticked and classify it by hand after import. Check the spelling against the Ek-1e function list &mdash; Turkish characters are folded for matching, but word order and abbreviations are not.</td></tr>
+<tr><td>Imported layers are MPYY feature types instead of the drawing's own CAD layers</td><td>TR-Only MPYY Style was left on</td><td>Uncheck it. The mode is off by default and is meant for imar plans only; every other source should be imported with it off.</td></tr>
+<tr><td>MPYY import stops with "the plan level (U&#304;P / N&#304;P / &Ccedil;DP) could not be determined"</td><td><i>Plan level</i> is on <i>Auto</i> and the file name carries neither a recognisable marker word nor a scale number</td><td>Set the level explicitly in the <i>Plan level</i> selector. The import stops rather than styling the plan as the wrong kind.</td></tr>
 <tr><td>Conversion is slow for a large file</td><td>All layers are selected for conversion; collinear simplification is heavy on very complex polylines</td><td>Uncheck layers you do not need. The NCZ v2 engine decodes only checked layers. For GDAL-based formats, use Live mode first to inspect the data, then convert only the layers you need.</td></tr>
 </table>
 
@@ -1149,7 +1500,7 @@ Output: Geometry profile (x_field, y_field, wkt_field, crs_authid)
 
 <h4>Attribute Null Handling</h4>
 
-<p>CAD files frequently have attributes that exist on some entities but not others. The plugin preserves this faithfully: missing attributes become NULL in the GeoPackage output. The mojibake repair and PlanGML schema population operate only on non-null string values. The PlanGML empty-code policy deliberately leaves cells blank rather than filling them with invented values, maintaining a clean distinction between "this tabaka is in the catalog" and "this tabaka was unrecognised."</p>
+<p>CAD files frequently have attributes that exist on some entities but not others. The plugin preserves this faithfully: missing attributes become NULL in the GeoPackage output. The mojibake repair and the MPYY transfer operate only on non-null string values. The transfer's empty-cell policy deliberately leaves a code blank rather than filling it with an invented value, maintaining a clean distinction between &ldquo;this tabaka is a catalogued function&rdquo; and &ldquo;this tabaka was left unresolved&rdquo;. A blank code is a truthful statement about the input; a plausible-looking invented one is not, and it would survive into any downstream analysis that trusted it.</p>
 
 <h4>CRS Validation</h4>
 
@@ -1341,19 +1692,15 @@ Output: Geometry profile (x_field, y_field, wkt_field, crs_authid)
 
 <p style="margin-top:.6em;font-size:.88em;color:var(--muted);">Complete EPSG code tables for all 28 Turkish projected CRS variants are maintained in <code>core/crs_detect.py</code>. The detector covers TUREF TM (5253&ndash;5259), TUREF GK (5269&ndash;5275), ED50 TM (2319&ndash;2325), ED50 GK (2206&ndash;2212), WGS 84 UTM (32635&ndash;32638), and ED50 UTM (23035&ndash;23038).</p>
 
-<h2 id="appendix-b">Appendix B &mdash; PlanGML Symbology Excerpt</h2>
+<h2 id="appendix-b">Appendix B &mdash; MPYY Style Bundle</h2>
+<p>The MPYY transfer draws plan layers with the Ministry's g&ouml;sterim, rewritten to the MPYY 1.1.7 schema and carried inside the plugin under <code>mpyy/</code>. Three plan levels are covered:</p>
 <table>
-<tr><th>Upper Group</th><th>Example Tabaka</th><th>Fill</th><th>Stroke</th></tr>
-<tr><td>KONUT ALANLARI</td><td>PL_KONUT (Yerle&#351;ik)</td><td>#FDE49B</td><td>#B37400, 0.7 mm</td></tr>
-<tr><td>KONUT ALANLARI</td><td>PL_GELISME_KONUT</td><td>#FEF0D9</td><td>#D4A017, 0.7 mm</td></tr>
-<tr><td>TICARET ALANLARI</td><td>PL_TICARET</td><td>#D47879</td><td>#8B0000, 0.5 mm</td></tr>
-<tr><td>EGITIM TESISLERI</td><td>PL_ILKOKUL</td><td>#FEFA96</td><td>#B3A000, 0.5 mm</td></tr>
-<tr><td>SAGLIK TESISLERI</td><td>PL_HASTANE</td><td>#FAC8C8</td><td>#CC0000, 0.5 mm</td></tr>
-<tr><td>ACIK VE YESIL ALANLAR</td><td>PL_PARK</td><td>#BEE6B0</td><td>#2E7D32, 0.3 mm</td></tr>
-<tr><td>YOL VE ULA&#350;IM</td><td>PL_YOL</td><td>#FFFFFF</td><td>#333333, 0.3 mm</td></tr>
-<tr><td>PLANLAMA SINIRLARI</td><td>PL_SINIR</td><td>&mdash;</td><td>#FF0000, 1.2 mm dash</td></tr>
+<tr><th>Level</th><th>Plan</th><th>Reference scale</th><th>SLD styles</th></tr>
+<tr><td><b>UIP</b></td><td>Uygulama &#304;mar Plan&#305; &mdash; implementation plan</td><td>1/1000</td><td>94</td></tr>
+<tr><td><b>NIP</b></td><td>Naz&#305;m &#304;mar Plan&#305; &mdash; master plan</td><td>1/5000</td><td>86</td></tr>
+<tr><td><b>CDP</b></td><td>&Ccedil;evre D&uuml;zeni Plan&#305; &mdash; environmental plan</td><td>1/25,000 and above</td><td>71</td></tr>
 </table>
-<p style="color:var(--muted);font-size:.85em;">Complete catalog: 350+ rules in <code>core/symbology.py</code>. Sourced from the official e-Plan SLD files.</p>
+<p style="color:var(--muted);font-size:.85em;">251 styles in total, in <code>mpyy/styles/mpyy_sld/</code>. The bundle also carries what those styles reference: the tarama tiles and the plan symbol fonts and catalogue symbols under <code>mpyy/resources/</code> (131 font files, 45 catalogue symbols). <code>mpyy/SYNC_MANIFEST.json</code> records the sha256 of every file. No individual colour or width is reproduced here on purpose: the styles are applied from the bundle, and a value transcribed into prose is a value that can silently drift away from the one actually drawn.</p>
 
 <h2 id="appendix-c">Appendix C &mdash; Glossary</h2>
 <table>
@@ -1361,15 +1708,17 @@ Output: Geometry profile (x_field, y_field, wkt_field, crs_authid)
 <tr><td><b>ACI</b></td><td>AutoCAD Color Index &mdash; 255 indexed colours in DXF/DWG. Mapped to RGB for QGIS rendering.</td></tr>
 <tr><td><b>CAD layer / Level</b></td><td>Named grouping of entities within a CAD drawing. DXF: Layer; DGN: Level. The plugin splits by this grouping.</td></tr>
 <tr><td><b>Collinear simplification</b></td><td>Removing intermediate vertices lying on a straight line between neighbours. Reduces vertex count without visual change.</td></tr>
-<tr><td><b>e-Plan</b></td><td>The Turkish Ministry's electronic plan portal (eplan.csb.gov.tr). Source of official g&ouml;sterim standards.</td></tr>
+<tr><td><b>e-Plan</b></td><td>The Turkish Ministry's electronic plan portal (eplan.csb.gov.tr), source of the official g&ouml;sterim style set. The plugin ships that symbology rewritten to the MPYY schema, as the bundle under <code>mpyy/</code>.</td></tr>
 <tr><td><b>G&ouml;sterim</b></td><td>Turkish: the official visual representation (colour, hatch, line type) of a plan function per Ministry standards.</td></tr>
 <tr><td><b>Live mode</b></td><td>Zero-copy reference &mdash; data stays in the source file; QGIS reads on demand.</td></tr>
 <tr><td><b>Mojibake</b></td><td>Garbled text from incorrect encoding interpretation. Turkish CAD files frequently exhibit CP1254&#8596;CP1252&#8596;UTF-8 mojibake.</td></tr>
 <tr><td><b>MPYY</b></td><td>Mek&acirc;nsal Planlar Yap&#305;m Y&ouml;netmeli&#287;i &mdash; Turkish Spatial Planning Regulation. Defines the official UIP tabaka catalog.</td></tr>
 <tr><td><b>NCZ / NCA</b></td><td>Netcad's native binary drawing formats. NCZ is standard; NCA is a compatible variant.</td></tr>
 <tr><td><b>ODA</b></td><td>Open Design Alliance &mdash; provides <code>ODAFileConverter</code> for modern DWG conversion.</td></tr>
-<tr><td><b>PASE</b></td><td>PlanX Adaptive Symbology Engine &mdash; matches CAD tabaka to official e-Plan g&ouml;sterim rules.</td></tr>
-<tr><td><b>PlanGML</b></td><td>Turkish Ministry's XML-based spatial plan data standard. The plugin populates PlanGML schema columns.</td></tr>
+<tr><td><b>MPYY transfer</b></td><td>The import mode that writes an imar plan's tabaka into MPYY 1.1.7 feature types and draws them with the Ministry's UIP / NIP / CDP styles. Replaced the earlier PlanGML styling mode at 4.0.0.</td></tr>
+<tr><td><b>Plan level</b></td><td>Which of the three official style sets applies: UIP (implementation plan, 1/1000), NIP (master plan, 1/5000) or CDP (environmental plan, 1/25,000 and above). <em>Auto</em> reads it from the file name.</td></tr>
+<tr><td><b>Plan notation</b></td><td>The drawing's own notation symbols &mdash; building-rights circles (nizam / kat, TAKS / KAKS, E =, Yençok) and road-width circles &mdash; written to a <code>&lt;file&gt;_PLAN_NOTATION</code> point layer where the planner placed them.</td></tr>
+<tr><td><b>PlanGML</b></td><td>Turkish Ministry's XML-based spatial plan data standard. 02CadGis does not read or write PlanGML documents; the name survives only in the module that resolves a CAD tabaka to its official MPYY identity (<code>core/plangml_schema.py</code>) and in a few internal comments. The user-facing feature is <a href="#mpyy">MPYY transfer</a>.</td></tr>
 <tr><td><b>SRS id</b></td><td>Netcad-internal coordinate system identifier. Not an EPSG code &mdash; never use as one.</td></tr>
 <tr><td><b>Tabaka</b></td><td>Turkish: layer. In planning, a named spatial feature category (e.g. PL_KONUT) per the MPYY.</td></tr>
 <tr><td><b>Tarama</b></td><td>Turkish: hatch pattern. Official tile image used as polygon fill for certain plan functions.</td></tr>
@@ -1410,7 +1759,7 @@ Output: Geometry profile (x_field, y_field, wkt_field, crs_authid)
 <p class="ref">T.C. &Ccedil;evre, &#350;ehircilik ve &#304;klim De&#287;i&#351;ikli&#287;i Bakanl&#305;&#287;&#305;. (2024). <i>e-Plan G&ouml;sterim Katalo&#287;u.</i> <a href="https://eplan.csb.gov.tr">eplan.csb.gov.tr</a></p>
 
 <div class="card accent" style="margin-top:1.5em;">
-<b>Third-Party Notices.</b> The PlanGML symbology reproduces the official Ministry e-Plan g&ouml;sterim standards from publicly available sources. No official font files are redistributed. The <code>MpyyUipDb_2026_02_27.gpkg</code> catalog is compiled and maintained by Yusuf Emino&#287;lu from the Ministry's published tabaka lists. The vendored <code>olefile</code> library is used under its BSD license for DGN v8 OLE2 reading. Full attribution: <a href="https://github.com/YusufEminoglu/zero2cadgis/blob/main/THIRD_PARTY_NOTICES.md">THIRD_PARTY_NOTICES.md</a> &middot; <a href="https://gitlab.com/yusufeminoglu/zero2cadgis/-/blob/main/THIRD_PARTY_NOTICES.md">THIRD_PARTY_NOTICES.md (GitLab)</a>.
+<b>Third-Party Notices.</b> The MPYY symbology reproduces the official Ministry e-Plan g&ouml;sterim standards, rewritten to the MPYY 1.1.7 schema; the g&ouml;sterim itself is the Ministry's and is not claimed as original work here. The <code>MpyyUipDb_2026_02_27.gpkg</code> catalog is compiled and maintained by Yusuf Emino&#287;lu from the Ministry's published tabaka lists. The style bundle under <code>mpyy/</code> carries the tarama tiles and the plan symbol fonts those styles reference &mdash; among them font files whose redistribution terms are not established; the bundle's own notice records what it contains and does not assert a right to redistribute them. The NCZ decoder shipped in versions 0.1.0 through 4.1.2 was adapted from <b>Jeomatik NCZ Reader</b> (Copyright &copy; 2026 Erdin&ccedil; &Ouml;rsan &Uuml;NAL, GPL-2.0-or-later); the current tree carries only 02CadGis's own v2 engine. The vendored <code>olefile</code> library is used under its BSD license for DGN v8 OLE2 reading. Full attribution: <a href="https://github.com/YusufEminoglu/zero2cadgis/blob/main/THIRD_PARTY_NOTICES.md">THIRD_PARTY_NOTICES.md</a> &middot; <a href="https://gitlab.com/yusufeminoglu/zero2cadgis/-/blob/main/THIRD_PARTY_NOTICES.md">THIRD_PARTY_NOTICES.md (GitLab)</a>.
 </div>
 
 <h2 id="appendix-e">Appendix E &mdash; NCZ Block Type Reference</h2>
@@ -1433,7 +1782,7 @@ Output: Geometry profile (x_field, y_field, wkt_field, crs_authid)
 </table>
 
 <h3>NCZ Coordinate Conventions</h3>
-<p>All coordinate pairs in NCZ geometry records are stored northing-first: the first f64 value at +8 is the northing (Y in GIS), and the second f64 value at +16 is the easting (X in GIS). The <code>map_point(first, second)</code> helper transposes these to GIS convention: <code>{"x": second, "y": first, "z": z}</code>. This transposition is verified bit-for-bit against v1 output. Z values are stored as f32 at offset +24; some record types store an alternative Z at +28 (used as fallback when +24 is 0.0). All coordinate values must be finite and within [&minus;10<sup>8</sup>, 10<sup>8</sup>] to pass the range validation gate in <code>finite_pair_in_range()</code>.</p>
+<p>All coordinate pairs in NCZ geometry records are stored northing-first: the first f64 value at +8 is the northing (Y in GIS), and the second f64 value at +16 is the easting (X in GIS). The <code>map_point(first, second)</code> helper transposes these to GIS convention: <code>{"x": second, "y": first, "z": z}</code>. The transposition is applied once, at a single point in the decoder, so no downstream consumer sees drawing order. Z values are stored as f32 at offset +24; some record types store an alternative Z at +28 (used as fallback when +24 is 0.0). All coordinate values must be finite and within [&minus;10<sup>8</sup>, 10<sup>8</sup>] to pass the range validation gate in <code>finite_pair_in_range()</code>.</p>
 
 <h3>@TAB Attribute Table Variants</h3>
 <p>@TAB records are classified into three variants by the attribute decoder:</p>
@@ -1457,33 +1806,76 @@ Output: Geometry profile (x_field, y_field, wkt_field, crs_authid)
 </ul>
 
 <h3>Benchmark Reproducibility</h3>
-<p>All performance claims in this manual are reproducible. The benchmark script (<code>benchmarks/ncz_engine_benchmark.py</code>) records fixture SHA-256, Python/QGIS build details, p50/p95 duration, MiB/s throughput, entities/s, peak Python allocation (via <code>tracemalloc</code>), and a normalised output SHA-256 digest. A benchmark run is invalid if repeated output hashes differ. To reproduce:</p>
+<p>All performance claims in this manual are reproducible. The benchmark script (<code>benchmarks/ncz_engine_benchmark.py</code>) records the drawing's SHA-256 and byte size, the Python runtime (version, implementation, platform, processor), warmup and run counts, p50 and p95 parse duration, MiB/s throughput, entities per second, peak Python allocation (via <code>tracemalloc</code>), entity and attribute-table counts, and a normalised output digest. Every measured run is digested, and <b>a run raises rather than reporting if the digests differ</b> &mdash; non-deterministic output is a failure, not a benchmark. Defaults are 2 warmups and 7 measured runs; <code>--runs</code> must be at least 3 for the p95 to mean anything. To reproduce:</p>
 <pre>python zero2cadgis/benchmarks/ncz_engine_benchmark.py \
     C:/path/small.ncz C:/path/large.ncz \
-    --label v1-baseline --output C:/path/v1-baseline.json</pre>
-<p>The benchmark JSON includes fixture metadata (SHA-256, byte size, producer, covered geometry types, expected entity/table counts) and is designed for before/after comparison during engine development. The synthetic fixture corpus (<code>tests/ncz_fixtures.py</code>) exercises every decoder path, both block layouts, embedded containers, metadata blocks, and @TAB tables, and is validated field-by-field against v1 output. Validation against real municipal drawings requires setting the <code>ZERO2CADGIS_NCZ_FIXTURE</code> environment variable to a licensed drawing path; this opt-in test was validated on a 1.2 MiB / 8,163-entity municipal Netcad file (60 layers, ITRF/3 zone 42).</p>
+    --label release-4.1.2 --output C:/path/release-4.1.2.json</pre>
+<p>The output digest covers each entity's kind, layer, colour and label, every
+coordinate to 17 significant digits, and every <code>@TAB</code> cell, so it is
+sensitive to any decode change at all; the label field is free text for
+before/after comparison. The synthetic fixture corpus
+(<code>tests/ncz_fixtures.py</code>) exercises the decoder paths, both block
+layouts, embedded containers, metadata blocks and <code>@TAB</code> tables.
+Validation against real municipal drawings is opt-in: set
+<code>ZERO2CADGIS_NCZ_FIXTURE</code> to a drawing you are licensed to use and the
+parity test runs against it. That test was last validated on a 1.2 MiB /
+8,163-entity municipal Netcad file (60 layers, ITRF / 3&deg; zone 42).</p>
+<p>Because the v1 decoder is no longer in the tree, the benchmark compares
+releases of the v2 engine against each other; the numbers are a regression guard
+for future work rather than a v1-versus-v2 comparison.</p>
 
 <h2 id="appendix-f">Appendix F &mdash; Configuration Reference</h2>
+<p>02CadGis keeps no configuration file of its own. Everything it remembers between
+sessions lives either in QGIS's <code>QSettings</code> store or in the two caches
+described below, and every override it honours is an environment variable. This
+appendix lists the keys the shipped code actually reads and writes.</p>
+
+<h3>QSettings keys</h3>
+<p>All keys sit in the <code>QSettings</code> scope QGIS itself uses, so they are
+per-user and survive plugin upgrades.</p>
 <table class="key-table">
-<tr><th>Setting</th><th>Storage</th><th>Default</th><th>Description</th></tr>
-<tr><td><code>zero2cadgis/oda_converter_path</code></td><td>QSettings</td><td>(empty)</td><td>Custom path to ODAFileConverter.exe. Set via the interactive setup dialog. Overrides all auto-detection.</td></tr>
-<tr><td><code>zero2cadgis/last_source_dir</code></td><td>QSettings</td><td>(empty)</td><td>Last-used directory for source file selection. Persisted between sessions.</td></tr>
-<tr><td><code>zero2cadgis/last_target_dir</code></td><td>QSettings</td><td>(empty)</td><td>Last-used directory for GeoPackage output. Persisted between sessions.</td></tr>
-<tr><td><code>zero2cadgis/last_target_crs</code></td><td>QSettings</td><td>(project CRS)</td><td>Last-used target CRS authid (e.g. <code>EPSG:5257</code>). Persisted between sessions.</td></tr>
-<tr><td><code>zero2cadgis/cad_split_layers</code></td><td>QSettings</td><td><code>true</code></td><td>Default state of "Split into CAD layers" checkbox.</td></tr>
-<tr><td><code>zero2cadgis/cad_simplify</code></td><td>QSettings</td><td><code>true</code></td><td>Default state of collinear simplification checkbox.</td></tr>
-<tr><td><code>zero2cadgis/plan_type</code></td><td>QSettings</td><td><code>AUTO</code></td><td>Default PlanGML plan type: UIP, NIP, CDP, or AUTO.</td></tr>
-<tr><td><code>ZERO2CADGIS_NCZ_CACHE_DISABLE</code></td><td>Environment</td><td>(unset)</td><td>Set to <code>1</code>/<code>true</code>/<code>yes</code> to disable the NCZ index cache. Useful for debugging or when working with rapidly-changing files.</td></tr>
-<tr><td><code>ZERO2CADGIS_OGR_CACHE_DISABLE</code></td><td>Environment</td><td>(unset)</td><td>Set to <code>1</code>/<code>true</code>/<code>yes</code> to disable the OGR catalog cache.</td></tr>
-<tr><td><code>ZERO2CADGIS_NCZ_FIXTURE</code></td><td>Environment</td><td>(unset)</td><td>Path to a real NCZ file for opt-in validation testing. Used by <code>test_ncz_engine_v2.py</code> to assert bit-exact parity for a specific drawing.</td></tr>
-<tr><td><code>ODA_FILE_CONVERTER_PATH</code></td><td>Environment</td><td>(unset)</td><td>Path to ODAFileConverter.exe. Checked during ODA discovery (tier 3). Useful for CI and containerised environments.</td></tr>
-<tr><td><code>ODA_PATH</code></td><td>Environment</td><td>(unset)</td><td>Alternative environment variable for ODA installation directory.</td></tr>
-<tr><td><code>ODA_CONVERTER</code></td><td>Environment</td><td>(unset)</td><td>Alternative environment variable for ODA converter executable path.</td></tr>
+<tr><th>Key</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>zero2cadgis/oda_converter_path</code></td><td>(empty)</td><td>Path to <code>ODAFileConverter.exe</code>, set through the interactive setup dialog. When present it overrides every automatic ODA discovery path.</td></tr>
+<tr><td><code>zero2cadgis/opts/&lt;widget&gt;</code></td><td>(unset)</td><td>The checked state of each persistent checkbox, stored under that checkbox's own widget name. Written on every toggle; read once when the dock is built. The eleven persisted boxes are <code>chk_conv_simplify</code>, <code>chk_conv_clean</code>, <code>chk_conv_kml_expand</code>, <code>chk_conv_raster</code>, <code>chk_conv_load</code>, <code>chk_ncz_simplify</code>, <code>chk_ncz_clean</code>, <code>chk_ncz_augment</code>, <code>chk_ncz_style</code>, <code>chk_ncz_label</code> and <code>chk_ncz_join</code>. A key with no stored value leaves the widget at its built-in default.</td></tr>
+<tr><td><code>zero2cadgis/opts/ncz_tolerance</code></td><td>(widget default)</td><td>Closure tolerance of the Netcad tab, in drawing units. Persisted on every change.</td></tr>
+<tr><td><code>zero2cadgis/last_import_dir</code></td><td>(empty)</td><td>Folder the last source file was picked from; the next file dialog opens there.</td></tr>
+<tr><td><code>zero2cadgis/last_export_dir</code></td><td>(empty)</td><td>Folder the last export was written to; the next export dialog opens there.</td></tr>
 </table>
+<p>Option state is deliberately per-checkbox rather than one blob, so a key that
+is missing, unparsable or written by an older version falls back to the widget's
+own default instead of resetting the whole panel: the reader accepts only
+<code>true</code>/<code>1</code> as &ldquo;checked&rdquo; and ignores anything it
+cannot parse.</p>
+
+<h3>Environment variables</h3>
+<table class="key-table">
+<tr><th>Variable</th><th>Read by</th><th>Effect</th></tr>
+<tr><td><code>ZERO2CADGIS_NCZ_CACHE_DISABLE</code></td><td>NCZ index cache</td><td>Set to <code>1</code>, <code>true</code> or <code>yes</code> to stop reading and writing the per-drawing NCZ index cache. Every drawing is then indexed from scratch.</td></tr>
+<tr><td><code>ZERO2CADGIS_OGR_CACHE_DISABLE</code></td><td>OGR catalog cache</td><td>Same values; disables the Geodatabase / database layer-catalog cache.</td></tr>
+<tr><td><code>ZERO2CADGIS_NCZ_FIXTURE</code></td><td><code>tests/test_ncz_engine_v2.py</code></td><td>Path to a real NCZ drawing; the opt-in validation test is skipped unless it is set. No production code path reads it.</td></tr>
+<tr><td><code>ZERO2CADGIS_MPYY_DB</code></td><td><code>tests/test_plangml_schema.py</code></td><td>Path to the Ministry <code>MpyyUipDb</code> GeoPackage; the opt-in catalog test is skipped unless it is set. No production code path reads it.</td></tr>
+<tr><td><code>MPYY_TABAKA_ESLESME</code></td><td>Layer-name mapping</td><td>Overrides the location of the per-user file that remembers confirmed layer-name mappings (see below). Intended for tests and shared workstations.</td></tr>
+<tr><td><code>ODA_FILE_CONVERTER_PATH</code></td><td>ODA discovery</td><td>Path to <code>ODAFileConverter.exe</code>. Consulted during automatic discovery, for CI and containerised environments where the usual install locations are absent.</td></tr>
+<tr><td><code>ODA_PATH</code></td><td>ODA discovery</td><td>Alternative spelling for the ODA installation directory.</td></tr>
+<tr><td><code>ODA_CONVERTER</code></td><td>ODA discovery</td><td>Alternative spelling for the converter executable path.</td></tr>
+</table>
+<p>The three ODA spellings are discovery hints, not overrides: the
+<code>zero2cadgis/oda_converter_path</code> setting above still wins, so a path
+set in the dialog is what gets used.</p>
+
+<h3>Files and caches written outside QSettings</h3>
+<table class="key-table">
+<tr><th>Path</th><th>Contents</th></tr>
+<tr><td><code>%LOCALAPPDATA%\zero2cadgis\ncz_index\&lt;hash&gt;.json</code></td><td>The NCZ index cache: one JSON file per drawing, named by a hash of the drawing's absolute path and keyed to its size and modification time. Falls back to <code>$XDG_CACHE_HOME</code> and then <code>~/.cache</code> where <code>LOCALAPPDATA</code> is unset. Rebuilt automatically when a drawing changes; <b>Clear cache</b> on the Netcad tab removes it.</td></tr>
+<tr><td><code>&lt;QGIS profile&gt;/mpyy/tabaka_eslesmeleri.json</code></td><td>The confirmed layer-name mappings &mdash; the ones a person ticked in the match dialog &mdash; so the same tabaka name resolves by itself on the next drawing. Written atomically through a temporary file and a rename, so an interrupted write cannot leave a half-file. With no QGIS the fallback is <code>~/.mpyy/</code>. The file is deliberately shared with the other plugins that carry this module.</td></tr>
+</table>
+<p>Both are caches of one kind or another: deleting either costs time on the next
+run and nothing else. The mapping file is the exception &mdash; it holds
+decisions a person made, so back it up before clearing a QGIS profile.</p>
 
 <div class="footer">
-  <p>02CadGis Universal CAD/GIS Importer &mdash; Academic Reference Manual &middot; v3.1.0</p>
-  <p>Yusuf Emino&#287;lu &middot; Dokuz Eyl&uuml;l University &middot; August 2026</p>
+  <p>02CadGis Universal CAD/GIS Importer &mdash; Academic Reference Manual &middot; v4.1.2</p>
+  <p>Yusuf Emino&#287;lu &middot; Dokuz Eyl&uuml;l University &middot; October 2026</p>
   <p><a href="https://github.com/YusufEminoglu/zero2cadgis">github.com/YusufEminoglu/zero2cadgis</a> &middot; <a href="https://gitlab.com/yusufeminoglu/zero2cadgis">gitlab.com/yusufeminoglu/zero2cadgis</a></p>
 </div>
 
