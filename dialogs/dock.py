@@ -1183,8 +1183,9 @@ class Zero2CadGisDockWidget(QDockWidget):
             "Build unified upper layers (Polygon / Line / Point)")
         self.chk_ncz_merge_geometry.setToolTip(
             "Merge CAD tabaka into one layer per geometry type instead of one "
-            "layer each. In PlanGML mode the layers are grouped by official "
-            "upper group and categorized by tabaka inside each group.")
+            "layer each; with several drawings they share the merged layers. "
+            "Unavailable while TR-Only MPYY Style is on: that mode writes the "
+            "MPYY feature types and defines the layer structure itself.")
         self.chk_ncz_merge_geometry.setChecked(True)
         self.chk_ncz_merge_geometry.setEnabled(True)
         ncz_opt_form.addRow(self.chk_ncz_merge_geometry)
@@ -1509,7 +1510,7 @@ class Zero2CadGisDockWidget(QDockWidget):
         <h3>2. Netcad NCZ/NCA Importer</h3>
         <p>The Netcad importer is designed for municipal drawing packages where geometry, CAD layers, colors, text, and attribute tables arrive together.</p>
         <ol>
-          <li>Select one or more `.ncz` or compatible `.nca` drawing files. Batch import keeps files separate by default; enable <b>Merge geometry types</b> to group by geometry type and merge matching layer names across files.</li>
+          <li>Select one or more `.ncz` or compatible `.nca` drawing files. Batch import keeps each file's layers separate by default; enable <b>Build unified upper layers</b> to merge the tabaka into one layer per geometry family, across files.</li>
           <li>Check the metadata card before importing. Version, projection text, detected EPSG, feature count, and table count help you catch wrong files early.</li>
           <li>Use the layer tree to import only the CAD layers and `@TAB` tables you need. Parent checkboxes select or clear whole groups.</li>
           <li>Set the destination CRS. If an EPSG code is detected, 02CadGis preselects it; otherwise it falls back to the project CRS.</li>
@@ -2426,9 +2427,10 @@ class Zero2CadGisDockWidget(QDockWidget):
             self, is_batch_import: bool | None = None) -> None:
         """Decide whether unified upper layers can be produced.
 
-        In CAD mode merging only makes sense across several drawings. PlanGML
-        mode is defined by grouping tabaka into official upper groups, so it
-        enables merging for a single plan file too.
+        Merging only makes sense across several drawings, and never while
+        TR-Only MPYY Style is on: that mode writes the MPYY feature types, so
+        the workspace's own layer structure is what the import produces and
+        there is nothing left to merge.
         """
         if is_batch_import is None:
             is_batch_import = len(self.current_netcad_paths or []) > 1
@@ -4172,7 +4174,8 @@ class Zero2CadGisDockWidget(QDockWidget):
 
         self.btn_filter_send_ncz = QPushButton("Send to Netcad Tab")
         self.btn_filter_send_ncz.setToolTip(
-            "Send only the matched Netcad files to Tab 2 for layer-by-layer inspection or official PlanGML styling.")
+            "Send only the matched Netcad files to Tab 2 for layer-by-layer "
+            "inspection, or to import them with TR-Only MPYY Style.")
         self.btn_filter_send_ncz.setEnabled(False)
         self.btn_filter_send_ncz.clicked.connect(self._send_filtered_to_ncz_tab)
         import_row.addWidget(self.btn_filter_send_ncz)
