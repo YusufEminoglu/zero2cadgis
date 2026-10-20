@@ -888,6 +888,30 @@ class TestSpatialClipConversionQgis(unittest.TestCase):
             kinds = {feature.geometry().type() for feature in layer.getFeatures()}
             self.assertEqual(kinds, {layer.geometryType()}, layer.name())
 
+    def test_a_dgn_splits_by_level_and_honours_the_boundary(self):
+        # GDAL writes DGN v7 only; the v8 path (dgn_v8_reader) needs a real file.
+        from osgeo import ogr
+        dgn = os.path.join(self.work, "plan.dgn")
+        ds = ogr.GetDriverByName("DGN").CreateDataSource(
+            dgn, options=["3D=NO", "ORIGIN=0,0,0", "UOR_PER_SUB_UNIT=1000"])  # room for x < 0
+        layer = ds.GetLayer(0) if ds.GetLayerCount() else ds.CreateLayer("elements")
+        for wkt, level in (("LINESTRING(-50 50, 150 50)", 3), ("LINESTRING(200 200, 300 300)", 3),
+                           ("POLYGON((10 10, 40 10, 40 40, 10 40, 10 10))", 12)):
+            feature = ogr.Feature(layer.GetLayerDefn())
+            feature.SetField("Level", level)
+            feature.SetGeometry(ogr.CreateGeometryFromWkt(wkt))
+            layer.CreateFeature(feature)
+        ds = None
+        infos, field = self._engine(dgn, "none").discover_cad_layers(is_kmz=False)
+        self.assertEqual(field, "Level")
+        self.assertEqual(sorted(info.key for info in infos), ["12", "3"])
+        for mode, line_length in (("none", 341.421356), ("keep_whole", 200.0), ("exact_clip", 100.0)):
+            for out in ("gpkg", "memory"):
+                with self.subTest(mode=mode, out=out):
+                    layers = self._run(self._engine(dgn, mode, "Level"), out)
+                    self.assertEqual(len(layers), 2)            # one per level
+                    self.assertAlmostEqual(self._summary(layers)[1], line_length, places=4)
+
     def test_fid_runs_compress_into_between_and_one_in_list(self):
         terms = GisConverterEngine._fid_terms("FID", [7, 1, 2, 3, 4, 9, 10, 20])
         self.assertEqual(terms, ["FID BETWEEN 1 AND 4", "FID IN (7,9,10,20)"])
