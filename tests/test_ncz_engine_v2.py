@@ -356,6 +356,35 @@ class TestNetcadLazyReader(unittest.TestCase):
         self.assertTrue(summaries)
         self.assertTrue(all(s.record_count > 0 for s in summaries))
 
+    def test_records_left_out_of_a_decode_are_reported(self):
+        from zero2cadgis.core.netcad_parser import NetcadLazyReader
+
+        unknown = bytearray(fx.point_block(layer=0))
+        unknown[6] = 8                      # a geometry type with no decoder
+        drawing = b"".join([
+            fx.version_block(),
+            fx.layer_table_block([b"PL_KLO", b"YAZI"]),
+            fx.point_block(layer=0),
+            bytes(unknown), bytes(unknown),
+            fx.text_block(layer=1, text=b""),   # a text record without text
+            fx.text_block(layer=1),
+        ])
+        reader = NetcadLazyReader(self._write(drawing)).index()
+        entities = reader.decode_layers([0, 1])
+        self.assertEqual(len(entities), 2)
+        self.assertEqual(reader.last_unsupported, {8: 2})
+        self.assertEqual(reader.last_unreadable, {5: 1})
+        note = reader.skipped_summary()
+        self.assertIn("2 record(s) of a geometry type", note)
+        self.assertIn("(type 8)", note)
+        self.assertIn("1 record(s) that do not hold a valid Text", note)
+        # the report describes the last call only
+        reader.decode_layers([0])
+        self.assertEqual(reader.last_unreadable, {})
+        self.assertEqual(reader.last_unsupported, {8: 2})
+        reader.decode_layers([1])
+        self.assertEqual(reader.last_unsupported, {})
+
     def test_decode_layers_returns_netcad_entities_for_subset(self):
         from zero2cadgis.core.netcad_parser import NetcadLazyReader
 

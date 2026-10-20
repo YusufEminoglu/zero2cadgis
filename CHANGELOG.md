@@ -35,6 +35,13 @@
   GeoPackage**: one GeoPackage layer per geometry type, where points and
   polygons used to be stored in the LINESTRING layer.
 
+- **The Netcad importer says what it left out.** Records of a geometry type
+  02CadGis does not decode yet, and records that hold no valid geometry
+  (empty text, zero size, coordinates out of range), used to be dropped
+  silently; each import now names them per file. On the real drawings at
+  hand: TİRE UİP 56 + 2 records of 85 075, the İzmir railway drawing 63 of
+  67 984 (56 of them type 8 on `PL_KLO`).
+
 - **DXF CAD layers keep their own name** when split (`PARK`, not
   `Level PARK`); the `Level` label belongs to DGN's numbered levels.
 

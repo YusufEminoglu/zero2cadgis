@@ -21,6 +21,7 @@ consumer never has to guess which decoder produced a payload.
 from __future__ import annotations
 
 import dataclasses
+import os
 
 from .ncz_engine.model import (
     NetcadAttributeRow,
@@ -31,6 +32,7 @@ from .ncz_engine.model import (
 )
 from .ncz_engine.v2 import PARSER_BACKEND_V2, NczCatalog
 from .ncz_engine.v2 import cache as ncz_cache
+from .ncz_engine.v2.geometry import KIND_BY_TYPE
 from .ncz_engine.v2 import parse_file as parse_file_v2
 
 __all__ = [
@@ -178,6 +180,9 @@ class NetcadLazyReader:
         self._summaries: list[NczLayerSummary] = []
         self._attr_dicts: list[dict] = []
         self._catalog: NczCatalog | None = None  # kept on a fresh decode
+        # Records the last decode_layers() call left out, by geometry type.
+        self.last_unsupported: dict[int, int] = {}
+        self.last_unreadable: dict[int, int] = {}
 
     def index(self) -> "NetcadLazyReader":
         cached = ncz_cache.load(self.file_path)
@@ -266,7 +271,32 @@ class NetcadLazyReader:
         if self._catalog is None:
             with open(self.file_path, "rb") as handle:
                 self._catalog = NczCatalog(handle.read()).index()
-        return [
+        entities = [
             self._reader._entity_from_dict(payload)
             for payload in self._catalog.decode_layers(wanted)
         ]
+        self.last_unsupported = dict(self._catalog.last_unsupported)
+        self.last_unreadable = dict(self._catalog.last_unreadable)
+        return entities
+
+    def skipped_summary(self) -> str:
+        """One sentence on the records the last decode left out, or ""."""
+        parts = []
+        unsupported = sum(self.last_unsupported.values())
+        if unsupported:
+            types = ", ".join(str(t) for t in sorted(self.last_unsupported))
+            parts.append(
+                f"{unsupported:,} record(s) of a geometry type 02CadGis does "
+                f"not decode yet (type {types})")
+        unreadable = sum(self.last_unreadable.values())
+        if unreadable:
+            kinds = ", ".join(
+                KIND_BY_TYPE.get(t, f"type {t}")
+                for t in sorted(self.last_unreadable))
+            parts.append(
+                f"{unreadable:,} record(s) that do not hold a valid {kinds} "
+                "(empty text, zero size or coordinates out of range)")
+        if not parts:
+            return ""
+        return (f"{os.path.basename(self.file_path)}: "
+                + " and ".join(parts) + " left out of the import.")

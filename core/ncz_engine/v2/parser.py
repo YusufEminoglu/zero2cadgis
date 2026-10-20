@@ -68,6 +68,10 @@ class NczCatalog:
         self.metadata = DrawingMetadata()
         self.records: list[RecordIndex] = []
         self.unsupported: dict[int, int] = {}
+        # What the most recent decode call left out, by numeric geometry type:
+        # types with no decoder, and records a decoder could not read.
+        self.last_unsupported: dict[int, int] = {}
+        self.last_unreadable: dict[int, int] = {}
         self._indexed = False
 
     # ── phase 1: index ────────────────────────────────────────────
@@ -139,18 +143,24 @@ class NczCatalog:
         cursor = self._cursor
         metadata = self.metadata
         entities: list[dict] = []
+        unsupported: dict[int, int] = {}
+        unreadable: dict[int, int] = {}
         for record in records:
-            decoder = DECODERS.get(record.geometry_type)
+            kind = record.geometry_type
+            decoder = DECODERS.get(kind)
             if decoder is None:
-                self.unsupported[record.geometry_type] = (
-                    self.unsupported.get(record.geometry_type, 0) + 1)
+                unsupported[kind] = unsupported.get(kind, 0) + 1
+                self.unsupported[kind] = self.unsupported.get(kind, 0) + 1
                 continue
             payload = decoder(GeometryRecord(
                 cursor, record.base, record.size, record.shift))
             if payload is None:
+                unreadable[kind] = unreadable.get(kind, 0) + 1
                 continue
             self._finalize(payload, metadata)
             entities.append(payload)
+        self.last_unsupported = unsupported
+        self.last_unreadable = unreadable
         return _drop_smart_object_artifacts(entities)
 
     @staticmethod

@@ -2606,6 +2606,10 @@ class Zero2CadGisDockWidget(QDockWidget):
 
                 # Selective decode: only the checked layers are materialized.
                 decoded_entities = reader.decode_layers(selected_codes)
+                skipped_note = reader.skipped_summary()
+                if skipped_note:
+                    self.iface.messageBar().pushMessage(
+                        "02CadGis", skipped_note, Qgis.MessageLevel.Warning, 12)
 
                 grouped_entities = (
                     merged_entity_groups if merge_geometry_types else {})
