@@ -8,13 +8,25 @@ group and code, and its function and code — so the PlanGML schema columns of a
 imported plan carry the standard values.
 
 The source tables are ``uipPolygonTable`` and ``uipLineTable``, both with
-columns ``id1, ust_konu_grup, id2, uip_fonksiyon, id3, uip_tabaka``.
+columns ``id1, ust_konu_grup, id2, uip_fonksiyon, id3, uip_tabaka``. The same
+two tables as JSON (``polygon_functions`` / ``line_functions``), which MPYY
+Studio ships as ``styles/uip_lookup_tables.json``, are read the same way.
+
+A tabaka the database defines more than once is kept with all its
+definitions, never by keeping the first one:
+
+* in both tables (``SNR_SAHIL_SERIDI``: area 114200, line 114107) — the record
+  lists ``geometriler`` and the code per geometry in ``kodlar``;
+* twice in one table for different functions (``PL_ENERJI_DEPOLAMA``: 106100
+  energy storage, 106200 refinery) — the tabaka alone cannot tell which, so
+  the function code and name stay empty and ``secenekler`` lists both.
 
 Development-only: excluded from the released zip via ``.zipignore`` and re-run
 by hand whenever the Ministry publishes a new database.
 
 Usage:
     py -3 tools/compile_mpyy_catalog.py "C:/path/to/MpyyUipDb_2026_02_27.gpkg"
+    py -3 tools/compile_mpyy_catalog.py "../planx_mpyy_studio/styles/uip_lookup_tables.json"
 
 Copyright (C) 2026 Yusuf Eminoğlu
 SPDX-License-Identifier: GPL-2.0-or-later
@@ -22,6 +34,7 @@ SPDX-License-Identifier: GPL-2.0-or-later
 from __future__ import annotations
 
 import io
+import json
 import os
 import pprint
 import sqlite3
@@ -37,6 +50,8 @@ PLUGIN_ROOT = os.path.dirname(HERE)
 OUT_CATALOG = os.path.join(PLUGIN_ROOT, "core", "mpyy_catalog.py")
 
 SOURCE_TABLES = (("uipPolygonTable", "POLYGON"), ("uipLineTable", "LINE"))
+JSON_TABLES = {"uipPolygonTable": "polygon_functions",
+               "uipLineTable": "line_functions"}
 NO_TABAKA = {"", "YOK", "NULL", "-"}
 
 # ---------------------------------------------------------------------------
@@ -193,54 +208,91 @@ ALIASES = {
 }
 
 
-def read_catalog(gpkg_path: str):
-    connection = sqlite3.connect(gpkg_path)
-    cursor = connection.cursor()
-    catalog, duplicates, skipped = {}, [], 0
+def _source_rows(source_path: str):
+    """``(geometry family, row)`` pairs from the GeoPackage or its JSON copy."""
+    if source_path.lower().endswith(".json"):
+        with open(source_path, encoding="utf-8") as handle:
+            tables = json.load(handle)
+        for table, family in SOURCE_TABLES:
+            for row in tables[JSON_TABLES[table]]:
+                yield family, (row["id1"], row["ust_konu_grup"], row["id2"],
+                               row["uip_fonksiyon"], row["id3"], row["uip_tabaka"])
+        return
+    connection = sqlite3.connect(source_path)
+    try:
+        cursor = connection.cursor()
+        for table, family in SOURCE_TABLES:
+            rows = cursor.execute(
+                f"SELECT id1, ust_konu_grup, id2, uip_fonksiyon, id3, uip_tabaka "
+                f"FROM {table}").fetchall()
+            for row in rows:
+                yield family, row
+    finally:
+        connection.close()
 
-    for table, family in SOURCE_TABLES:
-        rows = cursor.execute(
-            f"SELECT id1, ust_konu_grup, id2, uip_fonksiyon, id3, uip_tabaka "
-            f"FROM {table}").fetchall()
-        for id1, grup, id2, fonksiyon, id3, tabaka in rows:
-            name = (tabaka or "").strip().upper()
-            if name in NO_TABAKA:
-                skipped += 1
-                continue
-            record = {
-                "ust_grup_id": str(id1).strip(),
-                "ust_grup_adi": (grup or "").strip(),
-                "fonksiyon_kodu": str(id2).strip(),
-                "fonksiyon_adi": (fonksiyon or "").strip(),
-                "geometri": family,
-            }
-            # id3 repeats id2 throughout the published database; assert it so a
-            # future release that diverges is noticed instead of silently lost.
-            if str(id3).strip() != record["fonksiyon_kodu"]:
-                record["detay_kodu"] = str(id3).strip()
-            if name in catalog:
-                duplicates.append((name, catalog[name]["fonksiyon_adi"],
-                                   record["fonksiyon_adi"]))
-                continue                      # first definition wins
-            catalog[name] = record
 
-    connection.close()
-    return catalog, duplicates, skipped
+def _merge(name: str, kept: dict, record: dict, notes: list) -> None:
+    """Fold a second definition of *name* into the record already read."""
+    family = record["geometri"]
+    geometries = kept.setdefault("geometriler", [kept["geometri"]])
+    if family not in geometries:
+        # Defined as an area and as a line: both are real, each with its code.
+        geometries.append(family)
+        codes = kept.setdefault("kodlar", {kept["geometri"]: kept["fonksiyon_kodu"]})
+        codes[family] = record["fonksiyon_kodu"]
+        notes.append(f"{name}: {', '.join(f'{g} {c}' for g, c in codes.items())}")
+        return
+    if len(geometries) == 1:
+        del kept["geometriler"]
+    # Two functions under one tabaka in the same table: which one a drawing
+    # means cannot be read from the tabaka, so no code is chosen for it.
+    options = kept.setdefault(
+        "secenekler", [[kept["fonksiyon_kodu"], kept["fonksiyon_adi"]]])
+    options.append([record["fonksiyon_kodu"], record["fonksiyon_adi"]])
+    kept["fonksiyon_kodu"] = ""
+    kept["fonksiyon_adi"] = ""
+    notes.append(f"{name}: ambiguous, "
+                 + "; ".join(f"{c} {n}" for c, n in options))
+
+
+def read_catalog(source_path: str):
+    catalog, notes, skipped = {}, [], 0
+    for family, (id1, grup, id2, fonksiyon, id3, tabaka) in _source_rows(source_path):
+        name = (tabaka or "").strip().upper()
+        if name in NO_TABAKA:
+            skipped += 1
+            continue
+        record = {
+            "ust_grup_id": str(id1).strip(),
+            "ust_grup_adi": (grup or "").strip(),
+            "fonksiyon_kodu": str(id2).strip(),
+            "fonksiyon_adi": (fonksiyon or "").strip(),
+            "geometri": family,
+        }
+        # id3 repeats id2 throughout the published database; assert it so a
+        # future release that diverges is noticed instead of silently lost.
+        if str(id3).strip() != record["fonksiyon_kodu"]:
+            record["detay_kodu"] = str(id3).strip()
+        if name in catalog:
+            _merge(name, catalog[name], record, notes)
+            continue
+        catalog[name] = record
+    return catalog, notes, skipped
 
 
 def main():
     if len(sys.argv) != 2:
         print(__doc__)
         raise SystemExit(2)
-    gpkg_path = sys.argv[1]
+    source_path = sys.argv[1]
 
-    catalog, duplicates, skipped = read_catalog(gpkg_path)
-    print(f"Read {len(catalog)} tabaka from {os.path.basename(gpkg_path)} "
+    catalog, notes, skipped = read_catalog(source_path)
+    print(f"Read {len(catalog)} tabaka from {os.path.basename(source_path)} "
           f"({skipped} rows carry no tabaka name)")
-    if duplicates:
-        print(f"{len(duplicates)} tabaka defined twice; kept the first:")
-        for name, kept, dropped in duplicates:
-            print(f"  {name}: kept '{kept}', dropped '{dropped}'")
+    if notes:
+        print(f"{len(notes)} tabaka defined more than once, all definitions kept:")
+        for note in notes:
+            print(f"  {note}")
 
     unknown = sorted(t for t in ALIASES.values() if t not in catalog)
     if unknown:

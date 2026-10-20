@@ -39,8 +39,16 @@
   02CadGis does not decode yet, and records that hold no valid geometry
   (empty text, zero size, coordinates out of range), used to be dropped
   silently; each import now names them per file. On the real drawings at
-  hand: TİRE UİP 56 + 2 records of 85 075, the İzmir railway drawing 63 of
+  hand: TİRE UİP 56 + 2 records of 85 133, the İzmir railway drawing 63 of
   67 984 (56 of them type 8 on `PL_KLO`).
+
+- **Tabaka the Ministry defines twice keep both definitions.** The catalog
+  compiler kept the first of two definitions. `SNR_SAHIL_SERIDI` (area 114200,
+  line 114107) and `KST_HAVA_KORIDORU` (119004 / 119103) were taken for areas
+  only, so open line work on them was closed into invented faces; they are now
+  area-and-line, and their lines stay lines. `PL_ENERJI_DEPOLAMA` names two
+  functions (106100 energy storage, 106200 refinery): the tabaka cannot tell
+  which, so it keeps its upper group and carries no function code.
 
 - **DXF CAD layers keep their own name** when split (`PARK`, not
   `Level PARK`); the `Level` label belongs to DGN's numbered levels.

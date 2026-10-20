@@ -50,14 +50,19 @@ def _tokens(name: str) -> List[str]:
 
 
 def is_plan_area_tabaka(tabaka_name: Optional[str]) -> bool:
-    """True if the tabaka names a land-use area or a block (ada) boundary."""
+    """True if the tabaka names a land-use area or a block (ada) boundary.
+
+    A tabaka the Ministry also defines as a line (SNR_SAHIL_SERIDI,
+    KST_HAVA_KORIDORU) is not: its open line work is that line, and closing it
+    into faces would invent areas. Closed rings of it stay areas regardless.
+    """
     if not tabaka_name:
         return False
     with suppress(Exception):
         from .plangml_schema import lookup_tabaka
         identity = lookup_tabaka(tabaka_name)
         if identity is not None:
-            return identity.geometri == "POLYGON" or identity.tabaka == "ADAKENARI"
+            return identity.area_only or identity.tabaka == "ADAKENARI"
     tokens = _tokens(tabaka_name)
     if tokens and tokens[0] == "PL":
         return True

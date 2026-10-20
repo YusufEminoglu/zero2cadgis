@@ -45,10 +45,29 @@ class TabakaIdentity:
     tabaka: str                 # official tabaka name
     ust_grup_id: str            # e.g. "112000"
     ust_grup_adi: str           # e.g. "KONUT ALANLARI / YERLEŞİM ALANLARI"
-    fonksiyon_kodu: str         # e.g. "112002"
+    fonksiyon_kodu: str         # e.g. "112002"; "" when the tabaka is ambiguous
     fonksiyon_adi: str          # e.g. "YERLEŞİK KONUT ALANI"
-    geometri: str               # "POLYGON" | "LINE"
+    geometri: str               # "POLYGON" | "LINE" (the first definition)
     matched_as: str             # "exact" | "alias"
+    # Every geometry the Ministry defines the tabaka with, and the function
+    # code of each: SNR_SAHIL_SERIDI is an area (114200) and a line (114107).
+    geometriler: tuple = ()
+    kodlar: tuple = ()          # ((geometry, code), ...)
+    # Functions sharing the tabaka in one geometry (PL_ENERJI_DEPOLAMA: energy
+    # storage 106100 or refinery 106200); fonksiyon_kodu is "" then.
+    secenekler: tuple = ()      # ((code, name), ...)
+
+    @property
+    def area_only(self) -> bool:
+        """Defined as an area and never as a line."""
+        return self.geometriler == ("POLYGON",)
+
+    def code_for(self, geometry: str) -> str:
+        """The function code for features of *geometry*, or "" if none is defined."""
+        codes = dict(self.kodlar)
+        if codes:
+            return codes.get(geometry, "")
+        return self.fonksiyon_kodu if geometry == self.geometri else ""
 
 
 # A plan-revision drawing marks the function it proposes or adds with a suffix;
@@ -147,6 +166,9 @@ def lookup_tabaka(name: Optional[str]) -> Optional[TabakaIdentity]:
         fonksiyon_adi=record["fonksiyon_adi"],
         geometri=record["geometri"],
         matched_as=matched_as,
+        geometriler=tuple(record.get("geometriler") or (record["geometri"],)),
+        kodlar=tuple(sorted(record.get("kodlar", {}).items())),
+        secenekler=tuple(tuple(option) for option in record.get("secenekler", ())),
     )
 
 

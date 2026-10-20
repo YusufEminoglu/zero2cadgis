@@ -40,6 +40,11 @@ class TestCadPolygonizer(unittest.TestCase):
         self.assertFalse(is_plan_area_tabaka("PAFTA_GRID"))
         self.assertFalse(is_plan_area_tabaka("KAREYAJ"))
         self.assertFalse(is_plan_area_tabaka("YOL_ORTA_HAT"))
+        # Defined by the Ministry as an area AND as a line: open line work on
+        # it is the line, not the edge of an area waiting to be closed.
+        self.assertFalse(is_plan_area_tabaka("SNR_SAHIL_SERIDI"))
+        self.assertFalse(is_plan_area_tabaka("KST_HAVA_KORIDORU"))
+        self.assertTrue(is_plan_area_tabaka("PL_ENERJI_DEPOLAMA"))
 
     def test_polygonize_empty_or_headless(self):
         # Empty inputs should return empty list

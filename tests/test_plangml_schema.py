@@ -166,19 +166,57 @@ class TestCatalogIntegrity(unittest.TestCase):
     def test_every_record_is_complete(self):
         for tabaka, record in MPYY_TABAKA.items():
             with self.subTest(tabaka=tabaka):
-                for key in ("ust_grup_id", "ust_grup_adi",
-                            "fonksiyon_kodu", "fonksiyon_adi", "geometri"):
+                keys = ["ust_grup_id", "ust_grup_adi", "geometri"]
+                if "secenekler" not in record:
+                    keys += ["fonksiyon_kodu", "fonksiyon_adi"]
+                for key in keys:
                     self.assertTrue(record.get(key), f"{tabaka}.{key} empty")
                 self.assertTrue(record["ust_grup_id"].isdigit())
-                self.assertTrue(record["fonksiyon_kodu"].isdigit())
                 self.assertIn(record["geometri"], ("POLYGON", "LINE"))
+                codes = [record["fonksiyon_kodu"]] if record["fonksiyon_kodu"] else []
+                codes += list(record.get("kodlar", {}).values())
+                codes += [code for code, _name in record.get("secenekler", ())]
+                self.assertTrue(codes)
+                self.assertTrue(all(code.isdigit() for code in codes), codes)
 
     def test_function_codes_sit_inside_their_group(self):
         # 112002 belongs to group 112000: the first three digits agree.
         for tabaka, record in MPYY_TABAKA.items():
             with self.subTest(tabaka=tabaka):
-                self.assertEqual(record["fonksiyon_kodu"][:3],
-                                 record["ust_grup_id"][:3])
+                codes = [record["fonksiyon_kodu"]] if record["fonksiyon_kodu"] else []
+                codes += list(record.get("kodlar", {}).values())
+                codes += [code for code, _name in record.get("secenekler", ())]
+                for code in codes:
+                    self.assertEqual(code[:3], record["ust_grup_id"][:3])
+
+
+class TestTabakaDefinedMoreThanOnce(unittest.TestCase):
+    """The Ministry's database defines three tabaka twice. The compiler used to
+    keep the first definition and drop the other, so a coastline drawn as a
+    line on SNR_SAHIL_SERIDI counted as an area and was polygonized."""
+
+    def test_an_area_and_a_line_keep_both_codes(self):
+        for tabaka, area, line in (("SNR_SAHIL_SERIDI", "114200", "114107"),
+                                   ("KST_HAVA_KORIDORU", "119004", "119103")):
+            with self.subTest(tabaka=tabaka):
+                identity = lookup_tabaka(tabaka)
+                self.assertEqual(identity.geometriler, ("POLYGON", "LINE"))
+                self.assertFalse(identity.area_only)
+                self.assertEqual(identity.code_for("POLYGON"), area)
+                self.assertEqual(identity.code_for("LINE"), line)
+
+    def test_two_functions_under_one_tabaka_get_no_code(self):
+        identity = lookup_tabaka("PL_ENERJI_DEPOLAMA")
+        self.assertEqual(identity.fonksiyon_kodu, "")
+        self.assertEqual(identity.code_for("POLYGON"), "")
+        self.assertEqual([code for code, _ in identity.secenekler], ["106100", "106200"])
+        self.assertEqual(identity.ust_grup_id, "106000")    # the group is not in doubt
+
+    def test_a_single_definition_answers_for_its_own_geometry_only(self):
+        identity = lookup_tabaka("PL_KONUT")
+        self.assertTrue(identity.area_only)
+        self.assertEqual(identity.code_for("POLYGON"), "112002")
+        self.assertEqual(identity.code_for("LINE"), "")
 
     def test_lookup_returns_the_documented_shape(self):
         self.assertIsInstance(lookup_tabaka("PL_PARK"), TabakaIdentity)
