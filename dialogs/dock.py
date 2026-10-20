@@ -1163,6 +1163,18 @@ class Zero2CadGisDockWidget(QDockWidget):
             "5000 the master plan (NİP), 25000 and above the environmental plan (ÇDP).")
         ncz_opt_form.addRow("Plan level:", self.cmb_plan_type)
 
+        self.chk_ncz_plan_check = QCheckBox(
+            "Check plan consistency (density, notation, overlapping areas)")
+        self.chk_ncz_plan_check.setToolTip(
+            "After a plan-mode import, report what the plan says that does not add "
+            "up: KAKS above TAKS × floors or below TAKS, values outside their "
+            "physical range, notation that disagrees inside one area or lies in "
+            "none, and land-use (PL_) areas that overlap or are drawn twice. "
+            "Findings go to a 'Plan check' layer; nothing is changed.")
+        self.chk_ncz_plan_check.setChecked(True)
+        self.chk_ncz_plan_check.setEnabled(False)
+        ncz_opt_form.addRow(self.chk_ncz_plan_check)
+
         self.chk_ncz_label = QCheckBox("Convert text elements to map labels")
         self.chk_ncz_label.setChecked(True)
         ncz_opt_form.addRow(self.chk_ncz_label)
@@ -2461,6 +2473,11 @@ class Zero2CadGisDockWidget(QDockWidget):
         chk_plan = getattr(self, "chk_ncz_plan_symbology", None)
         is_plan = chk_plan is not None and chk_plan.isChecked()
 
+        # The plan check reads the zoning values, which only plan mode extracts.
+        chk_check = getattr(self, "chk_ncz_plan_check", None)
+        if chk_check is not None:
+            chk_check.setEnabled(is_plan)
+
         # Merging CAD layers only makes sense across several drawings; in plan
         # mode the MPYY workspace is the structure, so nothing is merged there.
         chk_merge.setEnabled(is_batch_import and not is_plan)
@@ -2711,6 +2728,9 @@ class Zero2CadGisDockWidget(QDockWidget):
                 raise ValueError(
                     "Selected Netcad data did not produce any valid layers.")
 
+            if self.chk_ncz_plan_symbology.isChecked() and self.chk_ncz_plan_check.isChecked():
+                self._run_plan_check(layer_groups, base_name, target_crs)
+
             if self.chk_ncz_plan_symbology.isChecked():
                 from ..core.mpyy_transfer import mpyy_level_for
                 level = mpyy_level_for(self._resolve_plan_type(first_file))
@@ -2825,6 +2845,35 @@ class Zero2CadGisDockWidget(QDockWidget):
                 self,
                 "Import Error",
                 f"Failed to import Netcad dataset:\n{exc}")
+
+    last_plan_check = None
+
+    def _run_plan_check(self, layer_groups, base_name: str, crs) -> None:
+        """Check the plan areas just built, before the MPYY transfer moves them."""
+        from ..core.plan_check import build_finding_layers, check_plan
+
+        polygons = [layer for group in layer_groups for layer in group.layers
+                    if layer.geometryType() == QgsWkbTypes.GeometryType.PolygonGeometry]
+        result = check_plan(polygons, getattr(self, "_notation_points", None) or [])
+        self.last_plan_check = result
+        layers = build_finding_layers(result, crs)
+        if layers:
+            project = QgsProject.instance()
+            root = project.layerTreeRoot()
+            group_name = f"{base_name}_PLAN_CHECK"
+            existing = root.findGroup(group_name)
+            if existing is not None:
+                (existing.parent() or root).removeChildNode(existing)
+            group = root.insertGroup(0, group_name)
+            for layer in layers:
+                project.addMapLayer(layer, False)
+                node = group.addLayer(layer)
+                if node is not None and layer.customProperty("zero2cadgis/hidden"):
+                    node.setItemVisibilityChecked(False)
+        counts = result.by_severity()
+        level = (Qgis.MessageLevel.Warning if counts["error"] or counts["warning"]
+                 else Qgis.MessageLevel.Info)
+        self.iface.messageBar().pushMessage("02CadGis", result.summary(), level, 12)
 
     def _conv_plan_type(self, source: str) -> str:
         choice = {1: "UIP", 2: "NIP", 3: "CDP"}.get(self.cmb_conv_plan_type.currentIndex())

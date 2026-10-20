@@ -2,6 +2,19 @@
 
 ## [Unreleased]
 
+- **Plan check.** A plan-mode Netcad import now reports what the plan says
+  that does not add up, in a `<file>_PLAN_CHECK` group (on by default in plan
+  mode; nothing is changed):
+  - KAKS above TAKS × floors (it cannot be built) or below TAKS;
+  - values outside their physical range, which the MPYY transfer leaves out;
+  - land-use (`PL_`) areas that overlap, and areas stored twice — each extra
+    copy once. Constraint and boundary tabaka are not compared;
+  - building notation that lies in no plan area, and, in a hidden notes
+    layer, areas whose notation disagrees and which therefore carry no value.
+  On TİRE UİP (4 472 plan areas, 2 108 notation points): 4 unreachable KAKS,
+  99 overlaps, 220 land-use areas the drawing stores twice byte for byte,
+  1 stray notation, 374 notes.
+
 - **NCZ engine: one decoder, and it is 02CadGis's own.** The legacy v1 decoder
   is gone. `core/netcad_parser.py` is now a thin facade over the v2 engine, and
   the NCZ result model, the block scanner, the geometry decoders and the dock's

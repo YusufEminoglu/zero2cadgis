@@ -693,6 +693,17 @@ class TestMpyyStructureImportQgis(unittest.TestCase):
             # The MPYY styles come from inside 02CadGis, not from MPYY Studio.
             import sys
             self.assertFalse(any(m.startswith("planx_mpyy_studio") for m in sys.modules))
+            # The fixture draws every closed ring at the same place: the plan
+            # check reports the land-use (PL_) areas as one area drawn several
+            # times, and nothing about the ADAKENARI or CIZPEN rings.
+            check = dock.last_plan_check
+            self.assertIsNotNone(check)
+            self.assertTrue(check.findings)
+            self.assertEqual({f.check for f in check.findings}, {"duplicate_area"})
+            for finding in check.findings:
+                self.assertTrue(finding.tabaka.startswith("PL_"), finding.message)
+                self.assertTrue(finding.other_tabaka.startswith("PL_"), finding.message)
+            self.assertIsNotNone(root.findGroup("1000_TEST_UIP_PLAN_CHECK"))
         finally:
             dock.close()
             dock.setParent(None)
@@ -750,6 +761,131 @@ class TestMpyyStructureImportQgis(unittest.TestCase):
         # Intersected width is from 50 to 100 (width 50, height 100 -> area 5000)
         self.assertAlmostEqual(res_poly_clip.area(), 5000.0)
         self.assertEqual(res_poly_clip.type(), QgsWkbTypes.GeometryType.PolygonGeometry)
+
+
+class TestPlanCheckQgis(unittest.TestCase):
+    """core/plan_check: each check on a case it must report and one it must not."""
+
+    FIELDS = (("layer_name", "QString"), ("Taks", "Double"), ("EmsalKaks", "Double"),
+              ("KatAdedi", "Int"))
+
+    def _layer(self, rows):
+        from qgis.core import QgsFeature, QgsField, QgsGeometry, QgsVectorLayer
+        from qgis.PyQt.QtCore import QMetaType
+        layer = QgsVectorLayer("Polygon?crs=EPSG:5258", "areas", "memory")
+        layer.dataProvider().addAttributes(
+            [QgsField(name, getattr(QMetaType.Type, kind)) for name, kind in self.FIELDS])
+        layer.updateFields()
+        features = []
+        for wkt, tabaka, taks, kaks, floors in rows:
+            feature = QgsFeature(layer.fields())
+            feature.setGeometry(QgsGeometry.fromWkt(wkt))
+            feature.setAttributes([tabaka, taks, kaks, floors])
+            features.append(feature)
+        layer.dataProvider().addFeatures(features)
+        return layer
+
+    @staticmethod
+    def _square(x, y, size=100):
+        return f"POLYGON(({x} {y},{x + size} {y},{x + size} {y + size},{x} {y + size},{x} {y}))"
+
+    def _checks(self, result):
+        return sorted((f.check, f.tabaka) for f in result.findings)
+
+    def test_density_reports_only_what_cannot_be_right(self):
+        from zero2cadgis.core.plan_check import check_plan
+        layer = self._layer([
+            (self._square(0, 0), "PL_KONUT", 0.40, 2.00, 4),       # 1.60 at most
+            (self._square(200, 0), "PL_KONUT", 0.40, 1.20, 4),     # KAKS binds: fine
+            (self._square(400, 0), "PL_KONUT", 0.40, 1.60, 4),     # exactly reachable
+            (self._square(600, 0), "PL_TICARET", 0.30, 0.20, None),
+            (self._square(800, 0), "PL_KONUT", 35.0, 1.40, 4),     # 35 for 0.35
+            (self._square(1000, 0), "PL_KONUT", None, None, None),
+        ])
+        result = check_plan([layer])
+        self.assertEqual(result.areas_checked, 6)
+        self.assertEqual(self._checks(result), [
+            ("kaks_below_taks", "PL_TICARET"),
+            ("unreachable_kaks", "PL_KONUT"),
+            ("value_out_of_range", "PL_KONUT"),
+        ])
+        unreachable = next(f for f in result.findings if f.check == "unreachable_kaks")
+        self.assertIn("at most 1.6", unreachable.message)
+
+    def test_only_land_use_decisions_are_compared_for_overlaps(self):
+        from zero2cadgis.core.plan_check import check_plan
+        layer = self._layer([
+            (self._square(0, 0), "PL_KONUT", None, None, None),
+            (self._square(90, 0), "PL_PARK", None, None, None),        # 10 x 100 = 1000 m²
+            (self._square(0, 0), "KST_TASKIN", None, None, None),      # a constraint: by design
+            (self._square(-10, -10, 300), "ADAKENARI", None, None, None),  # a block
+            (self._square(500, 0), "PL_PARK", None, None, None),
+            (self._square(500, 0), "PL_PARK", None, None, None),       # drawn twice ...
+            (self._square(500, 0), "PL_PARK", None, None, None),       # ... and three times
+            (self._square(550, 0), "PL_OKUL", None, None, None),       # overlaps the copies once
+            (self._square(189.995, 0), "PL_OKUL", None, None, None),   # 0.005 x 100 = 0.5 m²: snapping noise
+        ])
+        result = check_plan([layer])
+        # each extra copy once; an overlap with the copies once, not per copy
+        self.assertEqual(self._checks(result), [
+            ("duplicate_area", "PL_PARK"), ("duplicate_area", "PL_PARK"),
+            ("overlapping_areas", "PL_KONUT"), ("overlapping_areas", "PL_PARK")])
+        overlap = next(f for f in result.findings if f.tabaka == "PL_KONUT")
+        self.assertEqual(overlap.other_tabaka, "PL_PARK")
+        self.assertAlmostEqual(overlap.values["overlap_m2"], 1000.0)
+
+    def test_a_block_does_not_repeat_the_fault_of_the_area_inside_it(self):
+        from zero2cadgis.core.plan_check import check_plan
+        layer = self._layer([
+            (self._square(0, 0), "PL_KONUT", 0.30, 1.08, 3),
+            (self._square(-5, -5, 110), "ADAKENARI", 0.30, 1.08, 3),   # same values, around it
+            (self._square(500, 0, 50), "ADAKENARI", 0.40, 2.00, 4),    # a block on its own
+        ])
+        result = check_plan([layer])
+        self.assertEqual(self._checks(result), [
+            ("unreachable_kaks", "ADAKENARI"), ("unreachable_kaks", "PL_KONUT")])
+        block = next(f for f in result.findings if f.tabaka == "ADAKENARI")
+        self.assertEqual(block.values["Taks"], 0.40)
+
+    def test_notation_disagreeing_in_an_area_or_lying_in_none(self):
+        from zero2cadgis.core.plan_check import check_plan
+        from zero2cadgis.core.plan_notation import NotationPoint
+        layer = self._layer([(self._square(0, 0), "PL_KONUT", None, None, None),
+                             (self._square(200, 0), "PL_KONUT", None, None, None)])
+        points = [
+            NotationPoint(20, 20, {"KatAdedi": 4}), NotationPoint(60, 60, {"KatAdedi": 5}),
+            NotationPoint(220, 20, {"KatAdedi": 3}), NotationPoint(260, 60, {"Taks": 0.3}),
+            NotationPoint(150, 50, {"KatAdedi": 2}),                 # on the road between
+            NotationPoint(150, 80, {}, 12.0),                        # a road width: expected there
+        ]
+        result = check_plan([layer], points)
+        self.assertEqual(result.notation_checked, 5)
+        self.assertEqual(self._checks(result), [
+            ("notation_disagrees", "PL_KONUT"), ("notation_outside_areas", "")])
+        disagree = next(f for f in result.findings if f.check == "notation_disagrees")
+        self.assertIn("KatAdedi 4 / 5", disagree.message)
+
+    def test_findings_become_a_point_layer_and_an_overlap_layer(self):
+        from zero2cadgis.core.plan_check import build_finding_layers, check_plan
+        layer = self._layer([
+            (self._square(0, 0), "PL_KONUT", 0.40, 2.00, 4),
+            (self._square(50, 0), "PL_PARK", None, None, None),
+        ])
+        result = check_plan([layer])
+        from zero2cadgis.core.plan_notation import NotationPoint
+        layer.dataProvider().addFeatures([])
+        points = [NotationPoint(10, 10, {"KatAdedi": 4}), NotationPoint(20, 20, {"KatAdedi": 5})]
+        result = check_plan([layer], points)
+        layers = build_finding_layers(result, QgsCoordinateReferenceSystem("EPSG:5258"))
+        self.assertEqual([l.name() for l in layers],
+                         ["Plan check", "Plan check notes", "Plan check overlaps"])
+        self.assertEqual(layers[0].featureCount(), 2)                # unreachable KAKS + overlap
+        self.assertEqual(layers[1].featureCount(), 1)                # the disagreeing notation
+        self.assertTrue(layers[1].customProperty("zero2cadgis/hidden"))
+        self.assertEqual(layers[2].featureCount(), 1)
+        self.assertEqual(sorted(f["severity"] for f in layers[0].getFeatures()), ["warning", "warning"])
+        self.assertEqual(build_finding_layers(check_plan([]), QgsCoordinateReferenceSystem("EPSG:5258")), [])
+        self.assertIn("nothing to report", check_plan([]).summary())
 
 
 class TestSpatialClipConversionQgis(unittest.TestCase):
