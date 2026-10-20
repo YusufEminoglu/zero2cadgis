@@ -956,6 +956,9 @@ class Zero2CadGisDockWidget(QDockWidget):
 
         cad_gis_layout.addWidget(out_group)
 
+        self.conv_clip_row, self.lbl_conv_clip = self._make_clip_indicator()
+        cad_gis_layout.addWidget(self.conv_clip_row)
+
         # Progress Bar & Trigger
         self.progress_conv = QProgressBar()
         self.progress_conv.setVisible(False)
@@ -1211,6 +1214,9 @@ class Zero2CadGisDockWidget(QDockWidget):
         self._sync_merge_geometry_availability()
 
         ncz_layout.addWidget(ncz_opt_group)
+
+        self.ncz_clip_row, self.lbl_ncz_clip = self._make_clip_indicator()
+        ncz_layout.addWidget(self.ncz_clip_row)
 
         # Progress Bar & Trigger
         self.progress_ncz = QProgressBar()
@@ -1894,6 +1900,16 @@ class Zero2CadGisDockWidget(QDockWidget):
         if not crs.isValid():
             crs = QgsProject.instance().crs()
 
+        if (self.rb_out_live.isChecked()
+                and self._active_spatial_clip_mode == "exact_clip"
+                and self._active_spatial_clip_geom is not None):
+            QMessageBox.warning(
+                self, "Live Mode",
+                "Exact clip crops geometry, and live mode reads the source as it is.\n"
+                "Choose the GeoPackage or Temporary output mode, or set the Spatial "
+                "Filter to 'Keep whole features'.")
+            return
+
         self.progress_conv.setVisible(True)
         self.progress_conv.setValue(5)
         self.progress_conv.setFormat("Initializing GIS Converter...")
@@ -2054,6 +2070,11 @@ class Zero2CadGisDockWidget(QDockWidget):
                         feature_count=int(layer.featureCount()),
                         crs=layer.crs().authid(),
                     ))
+            if self.gis_converter.clip_active:
+                mode_name += (" + Spatial Filter: "
+                              + self._CLIP_MODE_LABELS.get(
+                                  self.gis_converter.clip_mode,
+                                  self.gis_converter.clip_mode))
             receipt = build_conversion_receipt(
                 source=src,
                 mode=mode_name,
@@ -3026,8 +3047,14 @@ class Zero2CadGisDockWidget(QDockWidget):
             from ..core.plan_notation import notation_points
             from ..core.zoning_text_extractor import notation_texts
 
-            self._notation_points = list(self._notation_points) + notation_points(
+            new_points = notation_points(
                 e for buckets in grouped_entities.values() for bkt in buckets.values() for e in bkt.entities)
+            if eff_clip_boundary is not None:
+                # The notation follows the spatial filter like every other feature.
+                new_points = [
+                    p for p in new_points
+                    if eff_clip_boundary.intersects(QgsGeometry.fromPointXY(QgsPointXY(p.x, p.y)))]
+            self._notation_points = list(self._notation_points) + new_points
             for buckets in grouped_entities.values():
                 for bkt in buckets.values():
                     for e in bkt.entities:
@@ -4857,24 +4884,82 @@ class Zero2CadGisDockWidget(QDockWidget):
                 Qgis.MessageLevel.Success, 5,
             )
 
+    _active_spatial_clip_geom = None
+    _active_spatial_clip_mode = "none"
+    _active_spatial_clip_crs = None
+
     def _sync_active_spatial_clip_state(self) -> None:
+        """Carry the Spatial Filter's boundary and clip mode to the import tabs.
+
+        A boundary that cannot be read clears the clip instead of leaving the
+        previous one in force, and says so.
+        """
         clip_mode = (
             self.cmb_filter_clip_mode.currentData()
             if hasattr(self, "cmb_filter_clip_mode") else "none"
         ) or "none"
+        self._clear_spatial_clip(refresh=False)
         if clip_mode != "none":
-            with suppress(Exception):
+            try:
                 b_geom, b_crs = self._get_current_boundary_geometry()
                 buffer_dist = self.spin_filter_buffer.value()
                 if buffer_dist != 0.0 and b_geom:
                     b_geom = b_geom.buffer(buffer_dist, 5)
+            except Exception as exc:
+                b_geom, b_crs = None, None
+                if self.iface:
+                    self.iface.messageBar().pushMessage(
+                        "02CadGis",
+                        f"Feature clipping is off: the boundary could not be read ({exc}).",
+                        Qgis.MessageLevel.Warning, 8)
+            if b_geom is not None and not b_geom.isEmpty():
                 self._active_spatial_clip_geom = b_geom
                 self._active_spatial_clip_mode = clip_mode
                 self._active_spatial_clip_crs = b_crs
-        else:
-            self._active_spatial_clip_geom = None
-            self._active_spatial_clip_mode = "none"
-            self._active_spatial_clip_crs = None
+        self._refresh_clip_indicators()
+
+    _CLIP_MODE_LABELS = {
+        "keep_whole": "keep whole features that touch the boundary",
+        "exact_clip": "crop features at the boundary",
+    }
+
+    def _make_clip_indicator(self):
+        """A hidden row stating the Spatial Filter clip in force, with Clear."""
+        row = QWidget()
+        layout = QHBoxLayout(row)
+        layout.setContentsMargins(2, 0, 2, 0)
+        label = QLabel()
+        label.setWordWrap(True)
+        layout.addWidget(label, 1)
+        button = QPushButton("Clear")
+        button.setToolTip("Import whole files again, without the Spatial Filter boundary.")
+        button.clicked.connect(lambda: self._clear_spatial_clip())
+        layout.addWidget(button)
+        row.setVisible(False)
+        return row, label
+
+    def _clear_spatial_clip(self, refresh: bool = True) -> None:
+        self._active_spatial_clip_geom = None
+        self._active_spatial_clip_mode = "none"
+        self._active_spatial_clip_crs = None
+        if refresh:
+            self._refresh_clip_indicators()
+
+    def _refresh_clip_indicators(self) -> None:
+        mode = self._active_spatial_clip_mode
+        active = mode != "none" and self._active_spatial_clip_geom is not None
+        crs = self._active_spatial_clip_crs
+        crs_note = f" ({crs.authid()})" if crs is not None and crs.isValid() else ""
+        text = (f"Spatial Filter boundary{crs_note}: "
+                f"{self._CLIP_MODE_LABELS.get(mode, mode)}." if active else "")
+        for row_name, label_name in (("conv_clip_row", "lbl_conv_clip"),
+                                     ("ncz_clip_row", "lbl_ncz_clip")):
+            row = getattr(self, row_name, None)
+            label = getattr(self, label_name, None)
+            if row is None or label is None:
+                continue
+            label.setText(text)
+            row.setVisible(active)
 
     def _send_filtered_to_cad_tab(self) -> None:
         cad_paths = []

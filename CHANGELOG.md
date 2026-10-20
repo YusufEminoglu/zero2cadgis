@@ -14,10 +14,29 @@
   section of `THIRD_PARTY_NOTICES.md` records the earlier derived decoder and
   what this rewrite covers.
 
-- **Feature-Level Spatial Clipping & Filtering**: Extended the Spatial Filter tab with two new geometry-level clipping modes alongside full-file import:
-  - **Keep Whole Features (`keep_whole`)**: Selects and imports only the entities intersecting or within the target boundary, preserving their original geometric integrity (ideal for parcels, buildings, and topological networks).
-  - **Exact Clip (`exact_clip`)**: Crops geometries cleanly at the boundary line using spatial intersection (cookie-cutter). Points and text notations are preserved if within the boundary; lines and polygons are clipped to the boundary edge.
-  - Fully integrated across all formats (Netcad NCZ/NCA, CAD DXF/DWG/DGN, and GIS formats) for both direct canvas import and unified GeoPackage generation.
+- **Feature-level spatial filter.** Besides choosing which files touch a
+  boundary, the Spatial Filter now acts on the features inside them:
+  *keep whole features* imports only the features that touch the boundary,
+  unchanged; *exact clip* crops lines and polygons at the boundary and keeps
+  the points inside it. It applies to the Netcad importer and to every output
+  mode of the CAD & GIS converter:
+  - A DXF / DWG / DGN layer mixes points, lines and polygons; features are
+    clipped and written per geometry type, so every kind survives.
+  - The live mode stays zero-copy: each layer is narrowed by a subset string
+    on its feature ids. Exact clip changes the geometry, which a live
+    reference cannot carry, so the live mode refuses it and says why.
+  - Plan notation points follow the boundary like every other feature.
+  - Both import tabs show the boundary in force, with a Clear button. A
+    boundary that cannot be read switches clipping off and says so, instead
+    of leaving the previous boundary active.
+  - A boundary that holds no feature reports exactly that.
+
+- **A DXF converted without the CAD-layer split now writes a conformant
+  GeoPackage**: one GeoPackage layer per geometry type, where points and
+  polygons used to be stored in the LINESTRING layer.
+
+- **DXF CAD layers keep their own name** when split (`PARK`, not
+  `Level PARK`); the `Level` label belongs to DGN's numbered levels.
 
 ## [4.1.2] - 2026-09-29
 

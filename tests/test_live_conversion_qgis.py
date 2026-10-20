@@ -752,6 +752,197 @@ class TestMpyyStructureImportQgis(unittest.TestCase):
         self.assertEqual(res_poly_clip.type(), QgsWkbTypes.GeometryType.PolygonGeometry)
 
 
+class TestSpatialClipConversionQgis(unittest.TestCase):
+    """The Spatial Filter boundary through the converter engine and the dock.
+
+    A DXF entities layer mixes points, lines and polygons under one declared
+    type; the first clipping implementation copied it into a single-type
+    memory layer, so every DXF import with a boundary failed, and the live mode
+    ignored the boundary altogether.
+    """
+
+    BOUNDARY = "POLYGON((0 0,100 0,100 100,0 100,0 0))"
+    # (wkt, CAD layer): one of each kind inside / straddling, one outside
+    DXF_ROWS = (
+        ("LINESTRING(-50 50, 150 50)", "ROAD"),        # straddles: 200 m whole, 100 m inside
+        ("LINESTRING(200 200, 300 300)", "ROAD"),      # outside
+        ("POINT(10 10)", "TXT"),
+        ("POINT(500 500)", "TXT"),                     # outside
+        ("POLYGON((10 10, 40 10, 40 40, 10 40, 10 10))", "PARK"),
+    )
+
+    def setUp(self):
+        from osgeo import ogr, osr
+        self.work = tempfile.mkdtemp(prefix="zero2cadgis-clip-")
+        self.crs = QgsCoordinateReferenceSystem("EPSG:5258")
+        self.dxf = os.path.join(self.work, "mix.dxf")
+        ds = ogr.GetDriverByName("DXF").CreateDataSource(self.dxf)
+        layer = ds.CreateLayer("entities")
+        for wkt, cad_layer in self.DXF_ROWS:
+            feature = ogr.Feature(layer.GetLayerDefn())
+            feature.SetField("Layer", cad_layer)
+            feature.SetGeometry(ogr.CreateGeometryFromWkt(wkt))
+            layer.CreateFeature(feature)
+        ds = None
+        # 30 points on the diagonal, 11 of them (0..100) touch the boundary
+        self.gpkg = os.path.join(self.work, "pts.gpkg")
+        srs = osr.SpatialReference()
+        srs.ImportFromEPSG(5258)
+        ds = ogr.GetDriverByName("GPKG").CreateDataSource(self.gpkg)
+        layer = ds.CreateLayer("pts", srs, ogr.wkbPoint)
+        for x in range(0, 300, 10):
+            feature = ogr.Feature(layer.GetLayerDefn())
+            feature.SetGeometry(ogr.CreateGeometryFromWkt(f"POINT({x} {x})"))
+            layer.CreateFeature(feature)
+        ds = None
+        self.layers = []
+
+    def tearDown(self):
+        QgsProject.instance().removeAllMapLayers()
+        self.layers.clear()
+        gc.collect()
+        with suppress(OSError):
+            import shutil
+            shutil.rmtree(self.work)
+
+    def _engine(self, src, mode, split="", boundary=None):
+        from qgis.core import QgsGeometry
+        engine = GisConverterEngine(
+            src, os.path.join(self.work, f"out_{mode}_{split}_{len(self.layers)}.gpkg"),
+            self.crs, source_crs=self.crs,
+            clip_geometry=QgsGeometry.fromWkt(boundary or self.BOUNDARY),
+            clip_mode=mode, clip_crs=self.crs)
+        engine.cad_split_field = split
+        return engine
+
+    def _run(self, engine, out):
+        layers = {"gpkg": engine.convert, "memory": engine.convert_to_memory,
+                  "live": engine.load_layers_live}[out]()
+        self.layers.extend(layers)
+        return layers
+
+    @staticmethod
+    def _summary(layers):
+        from qgis.core import QgsWkbTypes
+        counts = {"point": 0, "line": 0, "polygon": 0}
+        line_length = 0.0
+        for layer in layers:
+            for feature in layer.getFeatures():
+                kind = feature.geometry().type()
+                if kind == QgsWkbTypes.GeometryType.PointGeometry:
+                    counts["point"] += 1
+                elif kind == QgsWkbTypes.GeometryType.LineGeometry:
+                    counts["line"] += 1
+                    line_length += feature.geometry().length()
+                elif kind == QgsWkbTypes.GeometryType.PolygonGeometry:
+                    counts["polygon"] += 1
+        return counts, round(line_length, 6)
+
+    def test_a_mixed_dxf_layer_keeps_every_kind_under_a_boundary(self):
+        for split in ("", "Layer"):
+            for out in ("gpkg", "memory"):
+                with self.subTest(split=split, out=out):
+                    whole = self._summary(self._run(self._engine(self.dxf, "keep_whole", split), out))
+                    self.assertEqual(whole, ({"point": 1, "line": 1, "polygon": 1}, 200.0))
+                    cropped = self._summary(self._run(self._engine(self.dxf, "exact_clip", split), out))
+                    self.assertEqual(cropped, ({"point": 1, "line": 1, "polygon": 1}, 100.0))
+
+    def test_live_layers_are_narrowed_without_a_copy(self):
+        for src, expected in ((self.dxf, 3), (self.gpkg, 11)):
+            with self.subTest(src=os.path.basename(src)):
+                layers = self._run(self._engine(src, "keep_whole"), "live")
+                self.assertEqual(sum(layer.featureCount() for layer in layers), expected)
+                for layer in layers:
+                    self.assertEqual(layer.providerType(), "ogr")
+                    self.assertEqual(layer.source().split("|")[0], src)
+                    self.assertTrue(layer.subsetString())
+        # a CAD-layer subset keeps its own filter and gains the FID one
+        layers = self._run(self._engine(self.dxf, "keep_whole", "Layer"), "live")
+        road = next(layer for layer in layers if layer.name() == "ROAD")
+        self.assertEqual(road.featureCount(), 1)
+        self.assertIn("\"Layer\" = 'ROAD'", road.subsetString())
+
+    def test_live_mode_refuses_an_exact_clip_instead_of_ignoring_it(self):
+        with self.assertRaisesRegex(ValueError, "Exact clip"):
+            self._run(self._engine(self.dxf, "exact_clip"), "live")
+
+    def test_a_boundary_that_holds_nothing_says_so(self):
+        far = "POLYGON((9000 9000,9100 9000,9100 9100,9000 9100,9000 9000))"
+        for out in ("gpkg", "memory", "live"):
+            with self.subTest(out=out):
+                with self.assertRaisesRegex(ValueError, "inside the spatial filter boundary"):
+                    self._run(self._engine(self.dxf, "keep_whole", boundary=far), out)
+
+    def test_dxf_cad_layers_keep_their_tabaka_name(self):
+        engine = self._engine(self.dxf, "none", "Layer")
+        names = sorted(layer.name() for layer in self._run(engine, "memory"))
+        self.assertEqual(names, ["PARK", "ROAD", "TXT"])
+
+    def test_an_unsplit_dxf_writes_one_gpkg_layer_per_geometry_type(self):
+        # GeoPackage allows one geometry type per layer; points used to land in
+        # a LINESTRING layer (GDAL: "not normally allowed by the specification").
+        layers = self._run(self._engine(self.dxf, "none"), "gpkg")
+        self.assertEqual(sum(layer.featureCount() for layer in layers), len(self.DXF_ROWS))
+        self.assertEqual(len(layers), 3)
+        for layer in layers:
+            kinds = {feature.geometry().type() for feature in layer.getFeatures()}
+            self.assertEqual(kinds, {layer.geometryType()}, layer.name())
+
+    def test_fid_runs_compress_into_between_and_one_in_list(self):
+        terms = GisConverterEngine._fid_terms("FID", [7, 1, 2, 3, 4, 9, 10, 20])
+        self.assertEqual(terms, ["FID BETWEEN 1 AND 4", "FID IN (7,9,10,20)"])
+
+    def _dock(self):
+        from zero2cadgis.dialogs.dock import Zero2CadGisDockWidget
+        window = QMainWindow()
+        iface = MagicMock()
+        iface.mainWindow.return_value = window
+        icon_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "icons"))
+        dock = Zero2CadGisDockWidget(iface, icon_dir, window)
+        self.addCleanup(lambda: (dock.close(), dock.setParent(None)))
+        return dock
+
+    def test_the_dock_shows_the_clip_in_force_and_clears_it(self):
+        from qgis.core import QgsGeometry
+        dock = self._dock()
+        self.assertTrue(dock.conv_clip_row.isHidden())
+        dock._active_spatial_clip_geom = QgsGeometry.fromWkt(self.BOUNDARY)
+        dock._active_spatial_clip_mode = "keep_whole"
+        dock._active_spatial_clip_crs = self.crs
+        dock._refresh_clip_indicators()
+        self.assertFalse(dock.conv_clip_row.isHidden())
+        self.assertFalse(dock.ncz_clip_row.isHidden())
+        self.assertIn("EPSG:5258", dock.lbl_conv_clip.text())
+        dock._clear_spatial_clip()
+        self.assertTrue(dock.conv_clip_row.isHidden())
+        self.assertEqual(dock._active_spatial_clip_mode, "none")
+
+    def test_an_unreadable_boundary_clears_the_previous_clip(self):
+        from qgis.core import QgsGeometry
+        dock = self._dock()
+        dock._active_spatial_clip_geom = QgsGeometry.fromWkt(self.BOUNDARY)
+        dock._active_spatial_clip_mode = "exact_clip"
+        dock.cmb_filter_clip_mode.setCurrentIndex(1)       # keep_whole
+        dock._get_current_boundary_geometry = MagicMock(side_effect=ValueError("no layer"))
+        dock._sync_active_spatial_clip_state()
+        self.assertIsNone(dock._active_spatial_clip_geom)
+        self.assertEqual(dock._active_spatial_clip_mode, "none")
+
+    def test_plan_notation_outside_the_boundary_is_left_out(self):
+        from unittest.mock import patch
+        from qgis.core import QgsGeometry
+        from zero2cadgis.core.plan_notation import NotationPoint
+        dock = self._dock()
+        dock.chk_ncz_plan_symbology.setChecked(True)
+        dock._notation_points = []
+        points = [NotationPoint(50, 50, {"KatAdedi": 4}), NotationPoint(500, 500, {"KatAdedi": 2})]
+        with patch("zero2cadgis.core.plan_notation.notation_points", return_value=points):
+            dock._build_layer_groups_from_buckets(
+                {}, self.crs, clip_geometry=QgsGeometry.fromWkt(self.BOUNDARY),
+                clip_mode="keep_whole", clip_crs=self.crs)
+        self.assertEqual([(p.x, p.y) for p in dock._notation_points], [(50, 50)])
+
+
 if __name__ == "__main__":
     unittest.main()
 

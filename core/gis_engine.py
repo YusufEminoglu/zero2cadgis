@@ -20,6 +20,7 @@ from qgis.core import (
     QgsCoordinateReferenceSystem,
     QgsCoordinateTransform,
     QgsFeature,
+    QgsFeatureRequest,
     QgsField,
     QgsFields,
     QgsGeometry,
@@ -49,6 +50,7 @@ from . import ogr_catalog_cache
 from .dgn_v8_reader import DgnV8Reader, is_dgn_v8 as _is_dgn_v8, check_dgn_driver_available
 from .msaccess_reader import MsAccessDbReader, is_msaccess_available
 from .crs_detect import detect_crs
+from .spatial_filter import SpatialClipMode, clip_or_filter_geometry
 from .export_utils import (
     ExportResult,
     atomic_output,
@@ -205,57 +207,194 @@ class GisConverterEngine:
             if c.isValid():
                 self.source_crs = c
 
+    # OGR drivers whose attribute filter is the datasource's own SQL, where the
+    # FID column goes by its real name instead of OGR SQL's ``FID``.
+    _NATIVE_SQL_DRIVERS = frozenset(
+        {"GPKG", "SQLite", "PGeo", "PostgreSQL", "MSSQLSpatial", "OCI"})
+    # A live layer is narrowed with an FID filter; past this many terms the
+    # filter costs more than a copy, so the user is pointed to a copy mode.
+    LIVE_CLIP_MAX_TERMS = 5000
+
+    @property
+    def is_cad_source(self) -> bool:
+        """DXF / DWG / DGN: one OGR layer that mixes geometry types."""
+        return os.path.splitext(self.source_path)[1].lower() in (
+            ".dxf", ".dwg", ".dgn")
+
+    @property
+    def clip_active(self) -> bool:
+        """True when a spatial boundary narrows or crops what is imported."""
+        return (self.clip_geometry is not None
+                and not self.clip_geometry.isEmpty()
+                and self.clip_mode not in (SpatialClipMode.NONE, "", None))
+
     def _effective_clip_boundary(
             self, dest_crs: QgsCoordinateReferenceSystem) -> Optional[QgsGeometry]:
-        """Transform clip boundary geometry to match dest_crs if needed."""
-        if not self.clip_geometry or self.clip_mode in ("none", "", None):
+        """Return the clip boundary in *dest_crs*, or None without a boundary."""
+        if not self.clip_active:
             return None
         clip_boundary = QgsGeometry(self.clip_geometry)
         clip_crs = self.clip_crs or self.target_crs or QgsProject.instance().crs()
         if clip_crs.isValid() and dest_crs.isValid() and clip_crs != dest_crs:
-            with contextlib.suppress(Exception):
-                transform = QgsCoordinateTransform(
-                    clip_crs, dest_crs, QgsProject.instance())
-                clip_boundary.transform(transform)
+            transform = QgsCoordinateTransform(
+                clip_crs, dest_crs, QgsProject.instance())
+            clip_boundary.transform(transform)
         return clip_boundary
 
-    def _apply_spatial_clipping_to_layer(
-            self, layer: QgsVectorLayer) -> QgsVectorLayer:
-        """Filter or clip vector layer features according to clip_mode & clip_geometry."""
-        if not self.clip_geometry or self.clip_mode in ("none", "", None):
-            return layer
+    def _clip_request(self, layer_crs) -> QgsFeatureRequest:
+        """A request limited to the boundary's extent in the layer's own CRS.
 
-        boundary = self._effective_clip_boundary(layer.crs())
-        if not boundary or boundary.isEmpty():
-            return layer
+        The box is grown by 2 % because a boundary reprojected vertex by vertex
+        can bow outside the box of its transformed vertices; the exact test
+        follows per feature, so the margin only costs a few extra reads.
+        """
+        request = QgsFeatureRequest()
+        boundary = self._effective_clip_boundary(layer_crs)
+        if boundary is not None and not boundary.isEmpty():
+            box = QgsRectangle(boundary.boundingBox())
+            box.grow(max(box.width(), box.height()) * 0.02)
+            request.setFilterRect(box)
+        return request
 
-        from .spatial_filter import clip_or_filter_geometry
+    def _grouped_features(
+            self, layer: QgsVectorLayer,
+            geometryless_type: str | None = None) -> dict[str, list]:
+        """Read *layer* into ``{geometry type: [(geometry, feature), ...]}``.
 
-        geom_type_str = memory_geometry_type_name(layer)
-        mem_uri = f"{geom_type_str}?crs={layer.crs().authid()}"
-        mem_layer = QgsVectorLayer(mem_uri, layer.name(), "memory")
-        if not mem_layer.isValid():
-            return layer
+        Geometry comes back in the target CRS and, with a spatial boundary set,
+        already filtered or cropped by it. Grouping by the geometry each feature
+        actually has keeps CAD layers whole: a DXF entities layer mixes points,
+        lines and polygons under one declared type. Features without geometry
+        go under *geometryless_type* when given and are dropped otherwise --
+        always when a boundary is set, since they cannot lie inside one.
+        """
+        src_crs = self._effective_source_crs(layer)
+        if not layer.crs().isValid():
+            layer.setCrs(src_crs)
 
-        prov = mem_layer.dataProvider()
-        prov.addAttributes(layer.fields())
-        mem_layer.updateFields()
+        transform = None
+        if src_crs.isValid() and src_crs != self.target_crs:
+            transform = QgsCoordinateTransform(
+                src_crs, self.target_crs, QgsProject.instance())
 
-        clipped_features = []
-        for feat in layer.getFeatures():
+        boundary = None
+        request = QgsFeatureRequest()
+        if self.clip_active:
+            boundary = self._effective_clip_boundary(self.target_crs)
+            request = self._clip_request(src_crs)
+
+        groups: dict[str, list] = {}
+        for feat in layer.getFeatures(request):
             geom = feat.geometry()
-            if not geom or geom.isEmpty():
-                continue
-            clipped_geom = clip_or_filter_geometry(geom, boundary, self.clip_mode)
-            if not clipped_geom or clipped_geom.isEmpty():
-                continue
-            new_feat = QgsFeature(mem_layer.fields())
-            new_feat.setGeometry(clipped_geom)
-            new_feat.setAttributes(feat.attributes())
-            clipped_features.append(new_feat)
+            if geom and not geom.isEmpty() and transform:
+                geom.transform(transform)
+            if boundary is not None:
+                geom = clip_or_filter_geometry(geom, boundary, self.clip_mode)
+                if geom is None or geom.isEmpty():
+                    continue
+            geom_type_str = _get_geom_type_str(geom)
+            if geom_type_str == "NoGeometry":
+                if geometryless_type is None:
+                    continue
+                geom_type_str = geometryless_type
+            groups.setdefault(geom_type_str, []).append((geom, feat))
+        return groups
 
-        add_features_or_raise(mem_layer, clipped_features, f"Clipped {layer.name()}")
-        return mem_layer
+    def _fid_column_for_filter(self, vlayer: QgsVectorLayer) -> str:
+        """The FID name a provider subset string understands for *vlayer*."""
+        driver = ""
+        with contextlib.suppress(Exception):
+            driver = vlayer.dataProvider().storageType()
+        if driver not in self._NATIVE_SQL_DRIVERS:
+            return "FID"
+        parts = vlayer.source().split("|")
+        layer_name = next(
+            (part[len("layername="):] for part in parts[1:]
+             if part.startswith("layername=")), "")
+        column = ""
+        ds = ogr.Open(parts[0])
+        if ds is not None:
+            ogr_layer = (ds.GetLayerByName(layer_name) if layer_name
+                         else ds.GetLayerByIndex(0))
+            if ogr_layer is not None:
+                column = ogr_layer.GetFIDColumn()
+            ds = None
+        column = column or "fid"
+        return '"' + column.replace('"', '""') + '"'
+
+    @staticmethod
+    def _fid_terms(column: str, fids: list[int]) -> list[str]:
+        """Compress FIDs into ``BETWEEN`` runs plus one ``IN`` list."""
+        terms: list[str] = []
+        singles: list[int] = []
+        ordered = sorted(set(fids))
+        start = prev = None
+        for fid in ordered + [None]:
+            if fid is not None and prev is not None and fid == prev + 1:
+                prev = fid
+                continue
+            if start is not None:
+                if prev - start >= 2:
+                    terms.append(f"{column} BETWEEN {start} AND {prev}")
+                else:
+                    singles.extend(range(start, prev + 1))
+            start = prev = fid
+        if singles:
+            terms.append(
+                f"{column} IN ({','.join(str(v) for v in singles)})")
+        return terms
+
+    def _check_live_clip_mode(self) -> None:
+        """Refuse exact clipping in live mode before anything is read.
+
+        Exact clipping changes the geometry itself, which a reference to the
+        source cannot carry.
+        """
+        if self.clip_mode == SpatialClipMode.EXACT_CLIP:
+            raise ValueError(
+                "Exact clip crops geometry, and live mode reads the source "
+                "as it is. Choose 'Keep whole features' for a live load, or "
+                "use the GeoPackage or Temporary output mode to crop.")
+
+    def _narrow_live_layer(self, vlayer: QgsVectorLayer) -> bool:
+        """Keep only the features the boundary touches, without copying them.
+
+        Returns False when no feature qualifies.
+        """
+        self._check_live_clip_mode()
+        if vlayer.providerType() != "ogr":
+            raise ValueError(
+                f"Live layer '{vlayer.name()}' cannot be narrowed by a spatial "
+                "filter. Use the GeoPackage or Temporary output mode.")
+
+        boundary = self._effective_clip_boundary(vlayer.crs())
+        engine = QgsGeometry.createGeometryEngine(boundary.constGet())
+        engine.prepareGeometry()
+        request = self._clip_request(vlayer.crs())
+        request.setNoAttributes()
+        fids = [
+            feat.id() for feat in vlayer.getFeatures(request)
+            if feat.hasGeometry()
+            and engine.intersects(feat.geometry().constGet())
+        ]
+        if not fids:
+            return False
+
+        terms = self._fid_terms(self._fid_column_for_filter(vlayer), fids)
+        listed = terms[-1].count(",") + 1 if " IN (" in terms[-1] else 0
+        if len(terms) + listed > self.LIVE_CLIP_MAX_TERMS:
+            raise ValueError(
+                f"{len(fids):,} features of '{vlayer.name()}' touch the "
+                "boundary, too scattered for a live filter. Use the "
+                "GeoPackage or Temporary output mode.")
+        fid_filter = " OR ".join(terms)
+        existing = vlayer.subsetString().strip()
+        subset = f"({existing}) AND ({fid_filter})" if existing else fid_filter
+        if not vlayer.setSubsetString(subset):
+            raise ValueError(
+                f"Live layer '{vlayer.name()}' rejected the spatial filter. "
+                "Use the GeoPackage or Temporary output mode.")
+        return True
 
     def _effective_source_crs(
             self,
@@ -1071,8 +1210,10 @@ class GisConverterEngine:
             lname = fix_mojibake(dgn_layer_names.get(lvl_num, ""))
             if lname and value not in (None, ""):
                 display = f"{lname} (Level {value})"
-            elif value not in (None, ""):
+            elif value not in (None, "") and is_numeric:
                 display = f"Level {value}"
+            elif value not in (None, ""):
+                display = str(value)
             else:
                 display = "NO_LAYER"
             display = fix_mojibake(display)
@@ -1390,11 +1531,13 @@ class GisConverterEngine:
                         f.name() for f in vlayer.fields()]:
                     processed_layer = self._expand_html_descriptions(vlayer)
 
-                if self.clip_mode not in ("none", "", None) and self.clip_geometry:
-                    processed_layer = self._apply_spatial_clipping_to_layer(processed_layer)
-
-                if self.cad_split_field:
-                    wrote_any = self._write_cad_layer_gpkg(
+                # A boundary rewrites features one by one, and a CAD layer mixes
+                # points, lines and polygons under one declared type, which a
+                # conformant GeoPackage layer cannot hold: both go through the
+                # per-geometry-type writer.
+                if (self.cad_split_field or self.clip_active
+                        or self.is_cad_source):
+                    wrote_any = self._write_grouped_gpkg(
                         processed_layer, layer_name, wrote_any,
                         transform_context, working_gpkg, layer_specs)
                     continue
@@ -1405,15 +1548,8 @@ class GisConverterEngine:
                 if self.dropped_fields:
                     options.attributes = self._kept_indexes(processed_layer.fields())
 
-                fid_index = processed_layer.fields().lookupField("fid")
-                if fid_index >= 0:
-                    fid_type = processed_layer.fields()[fid_index] \
-                        .typeName().lower()
-                    if fid_type not in (
-                            "integer", "integer64", "int", "int2", "int4",
-                            "int8", "int16", "int32", "int64", "long",
-                            "longlong"):
-                        options.layerOptions = ["FID=cadgis_fid"]
+                options.layerOptions = self._fid_layer_options(
+                    processed_layer.fields())
                 options.actionOnExistingFile = (
                     QgsVectorFileWriter.ActionOnExistingFile.CreateOrOverwriteLayer
                     if wrote_any
@@ -1435,8 +1571,7 @@ class GisConverterEngine:
                 layer_specs.append((layer_name, options.layerName))
 
             if not wrote_any:
-                raise ValueError(
-                    "No readable layers were selected for conversion.")
+                raise ValueError(self._nothing_converted_message())
 
         loaded_layers = []
         for display_name, stored_name in layer_specs:
@@ -1448,28 +1583,39 @@ class GisConverterEngine:
             loaded_layers.append(gpkg_layer)
         return loaded_layers
 
-    def _write_cad_layer_gpkg(self, processed_layer, layer_name, wrote_any,
-                              transform_context, output_path,
-                              layer_specs) -> bool:
-        """Write one CAD-layer subset to GPKG, split by geometry type."""
-        src_crs = self._effective_source_crs(processed_layer)
-        if not processed_layer.crs().isValid():
-            processed_layer.setCrs(src_crs)
+    @staticmethod
+    def _fid_layer_options(fields) -> list[str]:
+        """GPKG layer options moving a non-integer ``fid`` column aside.
 
-        transform = None
-        if src_crs.isValid() and src_crs != self.target_crs:
-            transform = QgsCoordinateTransform(
-                src_crs, self.target_crs, QgsProject.instance())
+        GeoPackage reserves ``fid`` for the integer key; a GML / GeoJSON source
+        with a text ``fid`` attribute fails with "Wrong field type for fid".
+        """
+        fid_index = fields.lookupField("fid")
+        if fid_index < 0:
+            return []
+        fid_type = fields[fid_index].typeName().lower()
+        if fid_type in ("integer", "integer64", "int", "int2", "int4",
+                        "int8", "int16", "int32", "int64", "long",
+                        "longlong"):
+            return []
+        return ["FID=cadgis_fid"]
 
-        groups: dict[str, list] = {}
-        for feat in processed_layer.getFeatures():
-            geom = feat.geometry()
-            if geom and not geom.isEmpty() and transform:
-                geom.transform(transform)
-            geom_type_str = _get_geom_type_str(geom)
-            if geom_type_str == "NoGeometry":
-                continue
-            groups.setdefault(geom_type_str, []).append((geom, feat))
+    def _nothing_converted_message(self) -> str:
+        if self.clip_active:
+            return ("No feature of the selected layers falls inside the "
+                    "spatial filter boundary.")
+        return "No readable layers were selected for conversion."
+
+    def _write_grouped_gpkg(self, processed_layer, layer_name, wrote_any,
+                            transform_context, output_path,
+                            layer_specs) -> bool:
+        """Write one layer to GPKG, one GPKG layer per geometry type.
+
+        Used for CAD-layer subsets and for any layer under a spatial boundary.
+        Returns the updated *wrote_any*; a layer the boundary empties writes
+        nothing.
+        """
+        groups = self._grouped_features(processed_layer)
 
         dgn_layer_names = {}
         if self.source_path.lower().endswith(".dgn"):
@@ -1534,6 +1680,7 @@ class GisConverterEngine:
             options = QgsVectorFileWriter.SaveVectorOptions()
             options.driverName = "GPKG"
             options.layerName = gpkg_layer_name
+            options.layerOptions = self._fid_layer_options(mem_layer.fields())
             options.actionOnExistingFile = (
                 QgsVectorFileWriter.ActionOnExistingFile.CreateOrOverwriteLayer
                 if wrote_any
@@ -1547,7 +1694,13 @@ class GisConverterEngine:
                     f"{err_msg}")
             wrote_any = True
 
-            layer_specs.append((gpkg_layer_name, gpkg_layer_name))
+            # CAD-layer subsets have always shown their GPKG name; any other
+            # layer keeps the name it has without a boundary.
+            display_name = gpkg_layer_name
+            if not self.cad_split_field:
+                display_name = (layer_name if len(groups) == 1
+                                else f"{layer_name}_{geom_type_str}")
+            layer_specs.append((display_name, gpkg_layer_name))
         return wrote_any
 
     def load_layers_live(
@@ -1564,15 +1717,24 @@ class GisConverterEngine:
         feature Geodatabase layer becomes usable in milliseconds; QGIS reads
         features lazily from the source and reprojects on the fly using each
         layer's own CRS.
+
+        With a spatial boundary, each layer is narrowed by a subset string on
+        its FIDs ("keep whole features"); nothing is copied either way.
         """
+        if self.clip_active:
+            self._check_live_clip_mode()
         loaded_layers = []
         for layer_name, vlayer in self._iter_source_layers(
                 is_kmz, selected_layers):
             if progress_cb:
                 progress_cb(layer_name)
+            if self.clip_active and not self._narrow_live_layer(vlayer):
+                continue
             loaded_layers.append(vlayer)
 
         if not loaded_layers:
+            if self.clip_active:
+                raise ValueError(self._nothing_converted_message())
             raise ValueError(
                 "No readable layers were selected for live loading.")
         return loaded_layers
@@ -2026,35 +2188,15 @@ class GisConverterEngine:
                     f.name() for f in vlayer.fields()]:
                 processed_layer = self._expand_html_descriptions(vlayer)
 
-            if self.clip_mode not in ("none", "", None) and self.clip_geometry:
-                processed_layer = self._apply_spatial_clipping_to_layer(processed_layer)
-
-            # Group features by geometry type to support layers with mixed geometry types (e.g. DXF layers)
+            # Group features by geometry type to support layers with mixed
+            # geometry types (e.g. DXF layers).
             default_geom_type = memory_geometry_type_name(processed_layer)
-            features_by_type = {}
-
-            src_crs = self._effective_source_crs(processed_layer)
-            if not processed_layer.crs().isValid():
-                processed_layer.setCrs(src_crs)
-
-            transform = None
-            if src_crs.isValid() and src_crs != self.target_crs:
-                transform = QgsCoordinateTransform(
-                    src_crs, self.target_crs, QgsProject.instance())
-
-            for feat in processed_layer.getFeatures():
-                geom = feat.geometry()
-                if geom and not geom.isEmpty() and transform:
-                    geom.transform(transform)
-
-                geom_type_str = _get_geom_type_str(geom)
-                if geom_type_str == "NoGeometry":
-                    geom_type_str = default_geom_type
-
-                # Store geometry and original feature for later reconstruction
-                features_by_type.setdefault(geom_type_str, []).append((geom, feat))
+            features_by_type = self._grouped_features(
+                processed_layer, geometryless_type=default_geom_type)
 
             if not features_by_type:
+                if self.clip_active:
+                    continue
                 features_by_type[default_geom_type] = []
 
             for geom_type_str, type_data in sorted(features_by_type.items()):
@@ -2089,6 +2231,5 @@ class GisConverterEngine:
                 loaded_layers.append(mem_layer)
 
         if not loaded_layers:
-            raise ValueError(
-                "No readable layers were selected for conversion.")
+            raise ValueError(self._nothing_converted_message())
         return loaded_layers
