@@ -320,26 +320,66 @@ def check_plan(
 
 
 FINDING_COLOURS = {ERROR: "#d7191c", WARNING: "#fdae61", INFO: "#2b83ba"}
+# Columns of every finding layer (the dock's and the Processing outputs).
+FINDING_FIELD_SPECS = (
+    ("severity", "QString"), ("check", "QString"), ("label", "QString"),
+    ("message", "QString"), ("tabaka", "QString"), ("other_tabaka", "QString"),
+    ("Taks", "Double"), ("EmsalKaks", "Double"), ("KatAdedi", "Double"),
+    ("overlap_m2", "Double"),
+)
+
+
+def finding_fields():
+    from qgis.core import QgsField, QgsFields
+    from qgis.PyQt.QtCore import QMetaType
+    fields = QgsFields()
+    for name, kind in FINDING_FIELD_SPECS:
+        fields.append(QgsField(name, getattr(QMetaType.Type, kind)))
+    return fields
+
+
+def finding_attributes(finding: PlanFinding) -> list:
+    numeric = {}
+    for name in ("Taks", "EmsalKaks", "KatAdedi", "overlap_m2"):
+        value = finding.values.get(name)
+        numeric[name] = value if isinstance(value, (int, float)) else None
+    return [finding.severity, finding.check, finding.label, finding.message,
+            finding.tabaka, finding.other_tabaka, numeric["Taks"],
+            numeric["EmsalKaks"], numeric["KatAdedi"], numeric["overlap_m2"]]
+
+
+def finding_point(finding: PlanFinding):
+    """Where a finding is marked: the point itself, or a point on the overlap."""
+    from qgis.core import QgsWkbTypes
+    geometry = finding.geometry
+    if geometry.type() == QgsWkbTypes.GeometryType.PolygonGeometry:
+        return _anchor(geometry)
+    return geometry
+
+
+def finding_area(finding: PlanFinding):
+    """The overlap polygon as a multipolygon, or None for a point finding."""
+    from qgis.core import QgsGeometry, QgsWkbTypes
+    if finding.geometry.type() != QgsWkbTypes.GeometryType.PolygonGeometry:
+        return None
+    area = QgsGeometry(finding.geometry)
+    area.convertToMultiType()
+    return area
 
 
 def build_finding_layers(result: PlanCheckResult, crs) -> List[Any]:
     """A point layer of every finding and a polygon layer of the overlaps."""
     from qgis.core import (
-        QgsCategorizedSymbolRenderer, QgsFeature, QgsField, QgsFillSymbol, QgsGeometry,
-        QgsMarkerSymbol, QgsRendererCategory, QgsVectorLayer, QgsWkbTypes,
+        QgsCategorizedSymbolRenderer, QgsFeature, QgsFillSymbol,
+        QgsMarkerSymbol, QgsRendererCategory, QgsVectorLayer,
     )
-    from qgis.PyQt.QtCore import QMetaType
 
     if not result.findings:
         return []
-    string, double = QMetaType.Type.QString, QMetaType.Type.Double
-    fields = [("severity", string), ("check", string), ("label", string), ("message", string),
-              ("tabaka", string), ("other_tabaka", string), ("Taks", double),
-              ("EmsalKaks", double), ("KatAdedi", double), ("overlap_m2", double)]
 
     def make(geometry_type: str, name: str):
         layer = QgsVectorLayer(f"{geometry_type}?crs={crs.authid()}", name, "memory")
-        layer.dataProvider().addAttributes([QgsField(n, t) for n, t in fields])
+        layer.dataProvider().addAttributes(finding_fields().toList())
         layer.updateFields()
         return layer
 
@@ -347,26 +387,18 @@ def build_finding_layers(result: PlanCheckResult, crs) -> List[Any]:
     notes = make("Point", "Plan check notes")
     point_features, overlap_features, note_features = [], [], []
     for finding in result.findings:
-        numeric = {}
-        for name in ("Taks", "EmsalKaks", "KatAdedi", "overlap_m2"):
-            value = finding.values.get(name)
-            numeric[name] = value if isinstance(value, (int, float)) else None
-        attributes = [finding.severity, finding.check, finding.label, finding.message,
-                      finding.tabaka, finding.other_tabaka, numeric["Taks"],
-                      numeric["EmsalKaks"], numeric["KatAdedi"], numeric["overlap_m2"]]
-        geometry = finding.geometry
-        is_area = geometry.type() == QgsWkbTypes.GeometryType.PolygonGeometry
+        attributes = finding_attributes(finding)
         feature = QgsFeature(points.fields())
         feature.setAttributes(attributes)
-        feature.setGeometry(_anchor(geometry) if is_area else geometry)
+        feature.setGeometry(finding_point(finding))
         (note_features if finding.severity == INFO else point_features).append(feature)
-        if is_area:
+        area = finding_area(finding)
+        if area is not None:
             polygon = QgsFeature(overlaps.fields())
             polygon.setAttributes(attributes)
-            area = QgsGeometry(geometry)
-            area.convertToMultiType()
             polygon.setGeometry(area)
             overlap_features.append(polygon)
+
     def styled(layer, features):
         layer.dataProvider().addFeatures(features)
         layer.updateExtents()

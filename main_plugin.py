@@ -2,12 +2,14 @@
 """zero2cadgis — Main plugin entry class.
 
 Toolbar-only integration: a single dockable-panel toggle icon, no
-top-level QGIS menu.
+top-level QGIS menu; the algorithms sit in the Processing Toolbox under
+02CadGis.
 """
 from __future__ import annotations
 
 import os
 
+from qgis.core import QgsApplication
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QToolBar, QMessageBox
@@ -26,10 +28,17 @@ class Zero2CadGis:
         self.actions: list[QAction] = []
         self.toolbar: QToolBar | None = None
         self._dock = None
+        self.provider = None
 
     # ───────────────────────── QGIS lifecycle ─────────────────────────
 
+    def initProcessing(self) -> None:
+        from .processing.provider import Zero2CadGisProvider
+        self.provider = Zero2CadGisProvider()
+        QgsApplication.processingRegistry().addProvider(self.provider)
+
     def initGui(self) -> None:
+        self.initProcessing()
         self.toolbar = QToolBar(self.TOOLBAR_NAME)
         self.toolbar.setObjectName("Zero2CadGisToolbar")
         self.iface.addToolBar(self.toolbar)
@@ -47,6 +56,9 @@ class Zero2CadGis:
         )
 
     def unload(self) -> None:
+        if self.provider is not None:
+            QgsApplication.processingRegistry().removeProvider(self.provider)
+            self.provider = None
         if self._dock:
             self.iface.removeDockWidget(self._dock)
             self._dock.setParent(None)

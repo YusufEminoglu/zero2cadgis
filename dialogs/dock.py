@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import os
 import re
-import math
 import shutil
 import time
 import contextlib
@@ -70,16 +69,13 @@ from ..core.netcad_parser import (
     NetcadEntity,
     NetcadLazyReader,
 )
-# The engine owns the kind vocabulary; the dock only translates it into the
-# QGIS layer a feature belongs on, so a new decoded kind needs no edit here.
-from ..core.ncz_engine.v2 import KIND_FAMILY, KIND_POLYLINE
 from ..core.gis_engine import GisConverterEngine
 from .column_picker import ColumnPicker
 from ..core.csv_sniffer import (
     CsvGeometryProfile,
     sniff_delimited_dataset,
 )
-from ..core.cad_engine import CadCleanupEngine, CadStylingEngine, CadFeatureAugmenter, CadExportEngine
+from ..core.cad_engine import CadStylingEngine, CadFeatureAugmenter, CadExportEngine
 from ..core.symbology import PLAN_REFERENCE_SCALES
 from ..core.path_utils import ensure_extension, has_extension
 from ..core.qgis_compat import (
@@ -88,13 +84,11 @@ from ..core.qgis_compat import (
     memory_geometry_type_name,
 )
 from ..core.conversion_receipt import ConvertedLayer, build_conversion_receipt
+from ..core import ncz_layers
 from ..core.spatial_filter import (
-    ExtentBox,
     ExtentInspectionResult,
     SUPPORTED_FILTER_EXTENSIONS,
     discover_files,
-    inspect_file_extent,
-    evaluate_qgis_spatial_match,
     scan_and_filter_files,
 )
 
@@ -509,28 +503,7 @@ class LayerGroup:
 class Zero2CadGisDockWidget(QDockWidget):
     """100% English controller managing GIS/CAD converter, exporter, and NCZ imports."""
 
-    CAD_FIELD_DEFINITIONS = [
-        QgsField("source_file", QMetaType.Type.QString),
-        QgsField("layer_code", QMetaType.Type.Int),
-        QgsField("layer_name", QMetaType.Type.QString),
-        QgsField("entity_type", QMetaType.Type.QString),
-        QgsField("name", QMetaType.Type.QString),
-        QgsField("label", QMetaType.Type.QString),
-        QgsField("color_argb", QMetaType.Type.QString),
-        QgsField("radius", QMetaType.Type.Double),
-        QgsField("start_ang", QMetaType.Type.Double),
-        QgsField("end_ang", QMetaType.Type.Double),
-        QgsField("text_h", QMetaType.Type.Double),
-        QgsField("rotation", QMetaType.Type.Double),
-        QgsField("box_width", QMetaType.Type.Double),
-        QgsField("box_height", QMetaType.Type.Double),
-        QgsField("scale", QMetaType.Type.Double),
-        QgsField("grid_x", QMetaType.Type.Double),
-        QgsField("grid_y", QMetaType.Type.Double),
-        # The drawing layer's pen width in mm (Netcad LEX.ST2), empty when the
-        # layer draws with the default pen. The style draws it at that width.
-        QgsField("line_width_mm", QMetaType.Type.Double),
-    ]
+    CAD_FIELD_DEFINITIONS = ncz_layers.cad_fields()
 
     # Every NCZ attribute-table layer opens with these three columns — which
     # file and which @TAB table the row came from, and its position in that
@@ -1617,7 +1590,7 @@ class Zero2CadGisDockWidget(QDockWidget):
         )
         btn_locate = msg_box.addButton("Locate ODAFileConverter.exe...", QMessageBox.ButtonRole.ActionRole)
         btn_download = msg_box.addButton("Download ODA Converter", QMessageBox.ButtonRole.HelpRole)
-        btn_cancel = msg_box.addButton(QMessageBox.StandardButton.Cancel)
+        msg_box.addButton(QMessageBox.StandardButton.Cancel)
 
         msg_box.exec()
         clicked = msg_box.clickedButton()
@@ -2388,47 +2361,20 @@ class Zero2CadGisDockWidget(QDockWidget):
     # Engine family -> (QGIS geometry the layer holds, group-name suffix).
     # A point layer is labelled POINT/TEXT because that family carries both
     # the drawing's symbols and its labels, and the layer tree says so.
-    FAMILY_LAYERS = {
-        "POINT": ("Point", "POINT/TEXT"),
-        "LINE": ("LineString", "LINE"),
-        "POLYGON": ("Polygon", "POLYGON"),
-    }
-    # A closed polyline is an area; a hairline of gap between its first and
-    # last vertex still counts, because CAD drawings routinely leave one.
-    RING_CLOSE_TOLERANCE = 1e-4
+    FAMILY_LAYERS = ncz_layers.FAMILY_LAYERS
+    RING_CLOSE_TOLERANCE = ncz_layers.RING_CLOSE_TOLERANCE
 
     def _rings_shut(self, coords, is_closed: bool) -> bool:
         """Whether a polyline's vertex list describes an area."""
-        if not coords:
-            return False
-        if is_closed and len(coords) >= 3:
-            return True
-        if len(coords) < 4:
-            return False
-        first, last = coords[0], coords[-1]
-        return (abs(first.x - last.x) < self.RING_CLOSE_TOLERANCE
-                and abs(first.y - last.y) < self.RING_CLOSE_TOLERANCE)
+        return ncz_layers.rings_shut(coords, is_closed)
 
     def _geometry_family(
             self,
             geometry_kind: str,
             is_closed: bool = False,
             coords: list | None = None) -> tuple[str, str] | tuple[None, None]:
-        """The layer family of one decoded feature: (group suffix, QGIS type).
-
-        The kind's family is the engine's — see
-        :data:`zero2cadgis.core.ncz_engine.v2.KIND_FAMILY` — so a kind the
-        decoder grows later is routed without a change here. The one thing
-        the kind alone cannot say is whether a polyline encloses an area,
-        which depends on the vertices.
-        """
-        family = KIND_FAMILY.get(geometry_kind)
-        if family is None:
-            return None, None
-        if geometry_kind == KIND_POLYLINE and self._rings_shut(coords, is_closed):
-            family = "POLYGON"
-        geometry_type, suffix = self.FAMILY_LAYERS[family]
-        return suffix, geometry_type
+        """The layer family of one decoded feature: (group suffix, QGIS type)."""
+        return ncz_layers.geometry_family(geometry_kind, is_closed, coords)
 
     def _bucket_placement(self, file_base_name: str, batch_name: str, entity, layer_name: str,
                           family: str, merge_geometry_types: bool) -> tuple:
@@ -3214,87 +3160,12 @@ class Zero2CadGisDockWidget(QDockWidget):
         clip_boundary: QgsGeometry | None = None,
         clip_mode: str = "none",
     ) -> QgsVectorLayer | None:
-
-        uri = f"{geometry_type}?crs={crs.authid()}"
-        layer = QgsVectorLayer(uri, layer_name, "memory")
-        if not layer.isValid():
-            return None
-
-        field_defs = list(self.CAD_FIELD_DEFINITIONS)
-
-        provider = layer.dataProvider()
-        provider.addAttributes(field_defs)
-        layer.updateFields()
-
-        features = []
-        for entity in entities:
-            coords = entity.coordinates
-
-            if self.chk_ncz_clean.isChecked():
-                coords = CadCleanupEngine.clean_duplicates(coords)
-
-            if self.chk_ncz_simplify.isChecked() and len(coords) > 3:
-                coords = CadCleanupEngine.simplify_collinear(coords)
-
-            geom = self._coords_to_geometry(
-                entity.geometry_kind,
-                geometry_type,
-                coords,
-                entity.radius,
-                entity.start_angle,
-                entity.end_angle,
-                entity.is_closed,
-            )
-            if geom and geometry_type == "Polygon" and entity.interior_rings:
-                with suppress(Exception):
-                    geom = QgsGeometry.fromPolygonXY([
-                        [QgsPointXY(c.x, c.y) for c in ring]
-                        for ring in [coords, *entity.interior_rings]])
-            if not geom or geom.isEmpty():
-                continue
-
-            if clip_boundary and clip_mode and clip_mode != "none":
-                from ..core.spatial_filter import clip_or_filter_geometry
-                geom = clip_or_filter_geometry(geom, clip_boundary, clip_mode)
-                if not geom or geom.isEmpty():
-                    continue
-
-            source_value = source_file_name
-            if entity_source_files:
-                source_value = entity_source_files.get(
-                    id(entity), source_file_name)
-
-            tabaka_name = entity.layer_name or f"LAYER_{entity.layer_code}"
-
-            attr_values = [
-                source_value,
-                entity.layer_code,
-                tabaka_name,
-                entity.geometry_kind,
-                entity.name,
-                entity.label_text,
-                "" if entity.color_argb is None else str(entity.color_argb),
-                entity.radius,
-                entity.start_angle,
-                entity.end_angle,
-                entity.text_height,
-                entity.rotation_degrees,
-                entity.box_width,
-                entity.box_height,
-                entity.scale,
-                entity.grid_x,
-                entity.grid_y,
-                getattr(entity, "line_width", None),
-            ]
-
-            feature = QgsFeature(layer.fields())
-            feature.setGeometry(geom)
-            feature.setAttributes(attr_values)
-            features.append(feature)
-
-        add_features_or_raise(
-            layer, features, f"NCZ geometry layer {layer_name}")
-        return layer
+        return ncz_layers.build_entity_layer(
+            layer_name, geometry_type, entities, crs, source_file_name,
+            entity_source_files, clip_boundary, clip_mode,
+            clean=self.chk_ncz_clean.isChecked(),
+            simplify=self.chk_ncz_simplify.isChecked(),
+            close_tolerance=self.spin_ncz_tolerance.value())
 
     def _attribute_columns(self, table: NetcadAttributeTable) -> dict[str, int]:
         """The QGIS column type each column of *table* needs.
@@ -3403,100 +3274,12 @@ class Zero2CadGisDockWidget(QDockWidget):
         end_angle: float,
         is_closed: bool,
     ) -> QgsGeometry | None:
-        if geometry_type == "Point":
-            if not coords:
-                return None
-            pt = coords[0]
-            return QgsGeometry.fromPointXY(QgsPointXY(pt.x, pt.y))
+        return ncz_layers.coords_to_geometry(
+            geometry_kind, geometry_type, coords, radius, start_angle, end_angle,
+            is_closed, self.spin_ncz_tolerance.value())
 
-        if geometry_type == "LineString":
-            if geometry_kind == "Arc":
-                if not coords:
-                    return None
-                arc_points = self._approximate_arc(
-                    coords[0], radius, start_angle, end_angle)
-                if len(arc_points) < 2:
-                    return None
-                return QgsGeometry.fromPolylineXY(arc_points)
-            if len(coords) < 2:
-                return None
-            return QgsGeometry.fromPolylineXY(
-                [QgsPointXY(c.x, c.y) for c in coords])
 
-        if geometry_type == "Polygon":
-            if geometry_kind == "Circle":
-                if not coords:
-                    return None
-                ring = self._approximate_circle(coords[0], radius)
-                return QgsGeometry.fromPolygonXY([ring])
 
-            ring = [QgsPointXY(c.x, c.y) for c in coords]
-            if len(ring) < 3:
-                return None
-
-            force_close = is_closed or geometry_kind in {
-                "Box", "Triangle", "MapSheet", "SmartObject", "Polyline"}
-            ring = CadCleanupEngine.close_polyline(
-                ring,
-                self.spin_ncz_tolerance.value(),
-                force=force_close,
-            )
-
-            if len(ring) < 4:
-                return None
-            return QgsGeometry.fromPolygonXY([ring])
-
-        return None
-
-    def _approximate_circle(
-            self,
-            center,
-            radius,
-            segments=72) -> list[QgsPointXY]:
-        if radius <= 0:
-            return []
-        points = []
-        for index in range(segments):
-            angle = (2.0 * math.pi * index) / segments
-            points.append(
-                QgsPointXY(
-                    center.x + math.cos(angle) * radius,
-                    center.y + math.sin(angle) * radius,
-                )
-            )
-        points.append(QgsPointXY(points[0]))
-        return points
-
-    def _approximate_arc(
-            self,
-            center,
-            radius,
-            start_angle,
-            end_angle) -> list[QgsPointXY]:
-        if radius <= 0:
-            return []
-
-        start = self._angle_to_radians(start_angle)
-        end = self._angle_to_radians(end_angle)
-        if abs(end - start) <= 1e-9:
-            end = start + (2.0 * math.pi)
-        while end < start:
-            end += 2.0 * math.pi
-
-        span = end - start
-        segments = max(8, min(96, int(abs(span) / (math.pi / 24.0)) + 1))
-        return [
-            QgsPointXY(
-                center.x + math.cos(start + (span * index / segments)) * radius,
-                center.y + math.sin(start + (span * index / segments)) * radius,
-            )
-            for index in range(segments + 1)
-        ]
-
-    def _angle_to_radians(self, angle: float) -> float:
-        if abs(angle) <= (2.0 * math.pi) + 1e-6:
-            return float(angle)
-        return math.radians(angle)
 
     # ───────────────────────── Join Relations ─────────────────────────
 
