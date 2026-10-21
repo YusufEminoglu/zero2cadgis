@@ -14,6 +14,13 @@ and their code lists. Here each catalogue row of a level becomes a choice:
 ``activate`` opens that type's layer for editing, makes those values the
 defaults of every new feature and starts the add-feature tool, so the drawn
 feature already carries its function; the form can still change it.
+
+The local drawing templates (Yerel UİP, Yerel NİP) have their own function
+vocabulary, kept in the workspace's own lookup tables (``uipPolygonTable``,
+``uipLineTable``, ``fonksiyonlar-5000_tablo``) or in the value list of the
+function field. ``local_functions`` reads it from the loaded workspace, so a
+choice fills exactly the values the planner's template defines: nothing is
+mapped across vocabularies and nothing is invented.
 """
 
 from __future__ import annotations
@@ -39,6 +46,12 @@ class PlanFunction:
     feature_type: str
     attrs: tuple            # ((field, code), ...)
     page: int
+    layer_mark: str = ""    # the target layer's mpyy/template mark; "" = the MPYY type's
+    source: str = "ek1e"    # "ek1e" (Ministry catalogue) or "yerel" (local template)
+
+    @property
+    def mark(self) -> str:
+        return self.layer_mark or "mpyy:" + self.feature_type
 
     @property
     def label(self) -> str:
@@ -82,15 +95,105 @@ def plan_functions(level: str) -> list[PlanFunction]:
     return out
 
 
-def find_layer(feature_type: str, project=None):
-    """The loaded MPYY workspace layer of ``feature_type``, if any."""
+def find_layer(feature_type: str, project=None, mark: str = ""):
+    """The loaded workspace layer carrying ``mark`` (default: the MPYY type's), if any."""
     from qgis.core import QgsProject
 
     project = project or QgsProject.instance()
+    wanted = mark or "mpyy:" + feature_type
     for layer in project.mapLayers().values():
-        if layer.customProperty("mpyy/template") == "mpyy:" + feature_type:
+        if layer.customProperty("mpyy/template") == wanted:
             return layer
     return None
+
+
+# Local templates: drawing layer -> (level, lookup table or None, name field,
+# group field, {drawing-layer field: lookup field}, geometry word).
+LOCAL_SOURCES = {
+    "uip-alanlar": ("UIP", "uipPolygonTable", "uip_fonksiyon", "ust_konu_grup",
+                    {"uipfonksiyon": "uip_fonksiyon", "ustkonugrup": "ust_konu_grup",
+                     "uip_tabaka": "uip_tabaka", "id1": "id1", "id2": "id2", "id3": "id3"}, "alan"),
+    "uip_cizgiler": ("UIP", "uipLineTable", "uip_fonksiyon", "ust_konu_grup",
+                     {"uipfonksiyon": "uip_fonksiyon"}, "çizgi"),
+    "alanlar-5000": ("NIP", "fonksiyonlar-5000_tablo", "nip_fonksiyon", "ust_konu_grup",
+                     {"nipfonksiyon": "nip_fonksiyon"}, "alan"),
+    "cizgiler_5000_v2": ("NIP", None, "nipfonksiyon", None, {}, "çizgi"),
+}
+
+
+def _value_map(layer, field: str) -> list:
+    """The stored values of a ValueMap widget, in the order the form shows them."""
+    index = layer.fields().indexFromName(field)
+    if index < 0:
+        return []
+    setup = layer.editorWidgetSetup(index)
+    if setup.type() != "ValueMap":
+        return []
+    entries = setup.config().get("map", [])
+    if isinstance(entries, dict):
+        entries = [{k: v} for k, v in entries.items()]
+    values = []
+    for entry in entries:
+        for value in entry.values():
+            text = "" if value is None else str(value)
+            # QGIS writes NULL in a value map as a fixed placeholder string.
+            if text and not text.startswith("{2839923C") and text not in values:
+                values.append(text)
+    return values
+
+
+def _blank(value) -> bool:
+    return value is None or str(value) in ("", "NULL")
+
+
+def local_functions(level: str, project=None) -> list:
+    """The functions of the loaded local template workspace(s) of ``level``."""
+    from qgis.core import QgsProject
+
+    project = project or QgsProject.instance()
+    by_mark = {}
+    for layer in project.mapLayers().values():
+        mark = layer.customProperty("mpyy/template")
+        if mark:
+            by_mark.setdefault(str(mark), layer)
+    out = []
+    for mark, (lvl, table, name_field, group_field, fields, kind) in LOCAL_SOURCES.items():
+        target = by_mark.get(mark)
+        if lvl != level or target is None:
+            continue
+        if table:
+            lookup = by_mark.get(table)
+            if lookup is None:
+                continue
+            names = lookup.fields().names()
+            rows = [{name: feature[name] for name in names} for feature in lookup.getFeatures()]
+        else:
+            rows = [{name_field: value} for value in _value_map(target, name_field)]
+            fields = {name_field: name_field}
+        present = set(target.fields().names())
+        level_word = "UİP" if lvl == "UIP" else "NİP"
+        for n, row in enumerate(rows):
+            name = row.get(name_field)
+            if _blank(name):
+                continue
+            attrs = tuple((field, str(row[source])) for field, source in fields.items()
+                          if field in present and not _blank(row.get(source)))
+            group = "" if not group_field or _blank(row.get(group_field)) else str(row[group_field])
+            out.append(PlanFunction(
+                record_id=f"yerel:{mark}:{n}", name=str(name), group=group,
+                subgroup=(group + " · " if group else "") + f"Yerel {level_word} {kind}",
+                level=lvl, feature_type=target.name(), attrs=attrs, page=0, layer_mark=mark, source="yerel"))
+    return out
+
+
+def loaded_kinds(project=None) -> dict:
+    """Which workspaces are loaded: {"mpyy": bool, "yerel": {levels}}."""
+    from qgis.core import QgsProject
+
+    project = project or QgsProject.instance()
+    marks = {str(layer.customProperty("mpyy/template") or "") for layer in project.mapLayers().values()}
+    return {"mpyy": any(m.startswith("mpyy:") for m in marks),
+            "yerel": {source[0] for mark, source in LOCAL_SOURCES.items() if mark in marks}}
 
 
 def activate(function: PlanFunction, project=None, iface=None):
@@ -103,7 +206,7 @@ def activate(function: PlanFunction, project=None, iface=None):
     """
     from qgis.core import QgsDefaultValue
 
-    layer = find_layer(function.feature_type, project)
+    layer = find_layer(function.feature_type, project, function.mark)
     if layer is None:
         raise LookupError(
             f"'{function.feature_type}' katmanı yüklü bir MPYY çalışma alanında bulunamadı.")
@@ -114,8 +217,16 @@ def activate(function: PlanFunction, project=None, iface=None):
             layer.setDefaultValueDefinition(index, QgsDefaultValue())
     for field, code in function.attrs:
         index = layer.fields().indexFromName(field)
-        if index >= 0:
-            layer.setDefaultValueDefinition(index, QgsDefaultValue("'" + code.replace("'", "''") + "'"))
+        if index < 0:
+            continue
+        if layer.fields().at(index).isNumeric():
+            try:
+                literal = repr(float(code)) if "." in str(code) else str(int(code))
+            except ValueError:
+                continue
+        else:
+            literal = "'" + str(code).replace("'", "''") + "'"
+        layer.setDefaultValueDefinition(index, QgsDefaultValue(literal))
     layer.setCustomProperty(ACTIVE_PROPERTY, ",".join(field for field, _code in function.attrs))
     layer.setCustomProperty("mpyy/aktif_fonksiyon_adi", function.name)
     if not layer.isEditable():
