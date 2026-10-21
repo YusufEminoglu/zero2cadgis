@@ -2,6 +2,30 @@
 
 ## [Unreleased]
 
+## [4.2.0] - 2026-10-21
+
+- **Processing algorithms.** The converter, the Netcad importer and the plan
+  check are now also in the Processing Toolbox under *02CadGis*, so they can
+  sit in a model, run as a batch over many files, or be called from a script
+  (`processing.run("zero2cadgis:importnetcad", {...})`):
+  - *Convert CAD / GIS dataset to GeoPackage* (`convertdataset`) — the
+    converter engine, with the CAD-layer / DGN-level split and the spatial
+    boundary;
+  - *Import Netcad NCZ drawing to GeoPackage* (`importnetcad`) — one layer
+    per tabaka and geometry, with the dock's CAD columns. The CRS is worked
+    out from the drawing when it is not given, and a drawing whose CRS
+    cannot be worked out is refused rather than guessed. The plan-mode steps
+    (MPYY structure, zoning values, plan notation) stay in the dock;
+  - *Check plan consistency* (`checkplan`) — the plan check over any
+    plan-area layers, with an optional notation layer; findings as a point
+    layer, overlaps as a polygon layer.
+  The dock and the algorithms build Netcad layers through the same code
+  (`core/ncz_layers.py`), so a drawing comes out the same whichever way it is
+  imported.
+- **MPYY copy synced with PlanX MPYY Studio 1.0.0** (`tools/sync_mpyy_styles.py`):
+  the function picker also draws by function in the local UİP and NİP
+  templates, and fills a numeric function field with a number.
+
 - **Plan check.** A plan-mode Netcad import now reports what the plan says
   that does not add up, in a `<file>_PLAN_CHECK` group (on by default in plan
   mode; nothing is changed):
