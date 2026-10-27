@@ -10,7 +10,7 @@
     <br><a href="https://geophilo.com/zero2cadgis/"><img alt="Documentation" src="https://img.shields.io/badge/📖_Reference_Manual-02CadGis-13a0a0?style=for-the-badge"></a>
   </p>
   <p>
-    <a href="https://geophilo.com/zero2cadgis/ZERO2CADGIS_REFERENCE_MANUAL.html"><b>📖 Comprehensive Academic Reference Manual</b></a>
+    <a href="https://geophilo.com/zero2cadgis/manual.html"><b>📖 Comprehensive Academic Reference Manual</b></a>
   </p>
 </div>
 

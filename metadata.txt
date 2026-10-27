@@ -2,8 +2,11 @@
 name=02CadGis - CAD/GIS Importer
 qgisMinimumVersion=3.22
 qgisMaximumVersion=4.99
-description=Convert AutoCAD DWG/DXF, Netcad NCZ/NCA drawings, KML/KMZ, GML, GeoJSON, CSV, SpatiaLite, GPX, DGN, and GDB datasets directly into optimized GeoPackage layers with QGIS styling, batch spatial extent filtering, and 1-click Web Map Tiles MBTiles raster pyramid export.
-about=An advanced CAD and GIS dataset converter utility for the PlanX ecosystem, with native & ODA-assisted support for AutoCAD DWG (*.dwg) and DXF drawings, Netcad NCZ/NCA, KML, KMZ, GML, GeoJSON, delimited CSV/TSV text with automatic X/Y or WKT geometry detection, SpatiaLite/SQLite, GPX, DGN, and GDB formats directly, with drag-and-drop loading, pre-conversion layer preview and selection, CAD collinear simplification, coordinate transformation, automatic labeling, database joins, remembered import and export folders across sessions, a fast Batch Spatial Extent Filter to scan hundreds of drawings in seconds, and direct Web Map Tiles (MBTiles / TMS / XYZ) raster pyramid export with automated Web Mercator reprojection. Online User Manual & Documentation: https://geophilo.com/zero2cadgis/ | If you find this plugin helpful, please consider starring the repository on GitLab (https://gitlab.com/geophilo1/zero2cadgis)!
+description=Open DWG, DXF, Netcad NCZ/NCA, KML/KMZ, DGN, GDB and more as styled GeoPackage layers: preview and pick layers, filter hundreds of drawings by extent and export MBTiles.
+about=02CadGis brings drawings and exchange files into QGIS as clean GeoPackage layers. Drop in AutoCAD DWG or DXF, Netcad NCZ/NCA, KML/KMZ, GML, GeoJSON, CSV/TSV with X/Y or WKT columns, SpatiaLite, GPX, DGN or File Geodatabase; preview the layers inside, keep the ones you need and convert.
+    On the way in it simplifies collinear CAD vertices, transforms coordinates, labels features and joins attribute tables. The Batch Spatial Extent Filter scans hundreds of drawings in seconds and keeps only those that touch your study area. Turkish zoning drawings can be styled with bundled MPYY UİP, NİP and ÇDP symbology. Rasters export as MBTiles, TMS or XYZ tile pyramids, and three Processing tools make the same steps scriptable.
+    Older DWG files (up to R2000) open directly; newer DWG versions need the free ODA File Converter or LibreDWG's dwg2dxf installed.
+    Manual: https://geophilo.com/zero2cadgis/manual.html
 version=4.2.0
 author=Geophilo
 email=yusuf.eminoglu@deu.edu.tr
@@ -13,7 +16,7 @@ homepage=https://geophilo.com/zero2cadgis/
 category=Vector
 hasProcessingProvider=yes
 icon=icons/icon.png
-tags=cad,dwg,dxf,gpkg,kml,ncz,nca,gdb,mdb,dgn,gml,geojson,csv,spatialite,gpx,converter,importer,spatial-filter,extent,mbtiles,tms,tiles
+tags=cad,dwg,dxf,gpkg,kml,ncz,nca,gdb,mdb,dgn,gml,geojson,csv,spatialite,gpx,converter,importer,spatial-filter,extent,mbtiles,tms,tiles,netcad,autocad,geophilo
 experimental=False
 deprecated=False
 license=GPL-2.0-or-later
