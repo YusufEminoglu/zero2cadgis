@@ -7,7 +7,7 @@ about=02CadGis brings drawings and exchange files into QGIS as clean GeoPackage 
     On the way in it simplifies collinear CAD vertices, transforms coordinates, labels features and joins attribute tables. The Batch Spatial Extent Filter scans hundreds of drawings in seconds and keeps only those that touch your study area. Turkish zoning drawings can be styled with bundled MPYY UİP, NİP and ÇDP symbology. Rasters export as MBTiles, TMS or XYZ tile pyramids, and three Processing tools make the same steps scriptable.
     Older DWG files (up to R2000) open directly; newer DWG versions need the free ODA File Converter or LibreDWG's dwg2dxf installed.
     Manual: https://geophilo.com/zero2cadgis/manual.html
-version=4.2.0
+version=4.2.1
 author=Geophilo
 email=yusuf.eminoglu@deu.edu.tr
 repository=https://gitlab.com/geophilo1/zero2cadgis
