@@ -263,7 +263,7 @@ QGIS_Plugin_Releases\zero2cadgis.zip
 
 ## Ownership and License
 
-- 02CadGis developer and maintainer: Yusuf Eminoğlu
+- 02CadGis developer and maintainer: Geophilo
 - Email: yusuf.eminoglu@deu.edu.tr
 - Repository: <https://gitlab.com/geophilo1/zero2cadgis>
 - License: GNU General Public License v2.0 or later
